@@ -1,0 +1,10 @@
+- seller when he finish the service can move it to the deliver form the or complete fomr the order
+
+
+buyer
+	* create job
+	* show his jobs 
+	* show his proposals 
+	* accept proposals
+	* go to create order payment 
+	* and money move to the walet of the platform

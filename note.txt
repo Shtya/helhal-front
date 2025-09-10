@@ -1,0 +1,40 @@
+dashboard
+	- bugs when close the sidebar in the mobile and go to desktop the sidebar doesn't appear
+
+
+
+
+- notification redirect the page of the order fomr the notification 
+- the component of not found in notification popup
+
+
+
+
+
+- go the seller and handle the part of apply on this job 
+- handle accept the proposal and the other stats
+
+
+- check the category and teh subcategory  in the step one of create gigs
+
+- work on 
+	1. get my gigs and when click on it go to it ( and show how the buyer show it ) 
+	✅2. edit on the gigs
+	2. show the gigs in the dashboard to approve on it
+	3. the buyer can show the gigs
+	5. get for the seller the buyers that need this his services to contact with them 
+
+
+- handle the category and the subcategory in one component to create a new and get
+
+
+- push of options in step4 not work ( button ) 
+- cart
+- when click on the username in the card go to his account profile to view and can contact with him
+- in the backend handle he slug and the name is one 
+
+
+- handle the pagination in case have more than 4 pages
+- handle the email in case the email is too long in the popup avatar
+
+- handle the sellerLevel to be his values is lvl1,lvl2,new,top
