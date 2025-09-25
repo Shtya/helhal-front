@@ -2,11 +2,11 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, Eraser } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 
 export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChange, selectedValues }) {
-  const BRAND = '#108A00';
+  const BRAND = '#007a55';
   const rootRef = useRef(null);
 
   // -------- Utils
@@ -144,11 +144,11 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
       disabled={disabled}
       className={`w-full px-2 py-1 mx-1 rounded-md flex items-center justify-between text-left transition
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        ${active ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-50 text-slate-800'}`}>
+        ${active ? 'gradient text-white' : 'hover:bg-emerald-50 text-slate-800'}`}>
       <span className='flex items-center gap-2'>
         <span
           className={`w-5 h-5 rounded-md border flex items-center justify-center
-            ${active ? 'border-transparent bg-white/20' : 'border-[#108A0013] bg-[#108A0033]'}`}>
+            ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513]'}`}>
           {active && <Check className='w-3 h-3 text-white' />}
         </span>
         <div>
@@ -170,7 +170,6 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
     </div>
   );
 
-  // -------- Render
   return (
     <>
       {open && <div className='fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn' onClick={() => setOpen(false)} />}
@@ -184,7 +183,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
           onClick={() => setOpen(o => !o)}
           className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition ${open ? 'ring-2' : ''}`}
           style={{
-            borderColor: open ? BRAND : '#cbd5e1',
+            borderColor: open ? `${BRAND}90` : '#cbd5e1',
             boxShadow: open ? `0 0 0 3px ${BRAND}66 inset` : undefined,
           }}>
           <span className='truncate'>{totalSelected > 0 ? `${totalSelected} filter${totalSelected > 1 ? 's' : ''} applied` : 'Filters'}</span>
@@ -193,8 +192,9 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
 
         {/* Panel */}
         <div
-          className={`absolute left-0 mt-2 w-[350px] rounded-2xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
-          ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
+          className={`absolute left-0 mt-2 w-[350px] rounded-xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
+          ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
+          style={{ border: `1px solid ${BRAND}60` }}>
           <div className='py-4 max-h-[70vh] overflow-auto'>
             {/* Seller level */}
             {levelOptions.length > 0 && (
@@ -224,9 +224,9 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
             )}
 
             {/* Footer */}
-            <div className='px-4 -mb-2 flex items-center justify-between gap-2'>
-              <Button name='Clear All' color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
-              {hasChanges && <Button name='Apply' color='default' className='!w-fit !h-[35px]' onClick={applyChanges} />}
+            <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>
+              <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
+              {hasChanges && <Button icon={<Check size={16} />} color='default' className='!w-fit !h-[35px]' onClick={applyChanges} />}
             </div>
           </div>
         </div>

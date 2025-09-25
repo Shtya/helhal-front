@@ -1,11 +1,19 @@
-// services/apiService.js
 import api from '@/lib/axios';
 
 class ApiService {
   constructor() {
     this.client = api;
   }
-
+  normalizeParams(params = {}) {
+    const out = {};
+    Object.entries(params).forEach(([k, v]) => {
+      if (v === undefined || v === null || v === '') return;
+      if (Array.isArray(v)) out[k] = v.join(',');
+      else if (typeof v === 'object' && v?.id !== undefined) out[k] = v.id;
+      else out[k] = v;
+    });
+    return out;
+  }
   async request(cfg = {}) {
     try {
       const res = await this.client.request(cfg);
@@ -59,11 +67,16 @@ class ApiService {
     });
   }
 
- 
   getServicesFilterOptions(category) {
     return this.request({
       method: 'GET',
       url: `/services/category/${category}/filter-options`,
+    });
+  }
+  getAllFilterOptions() {
+    return this.request({
+      method: 'GET',
+      url: `/services/filter-options`,
     });
   }
   // ========== Services ==========
@@ -124,6 +137,36 @@ class ApiService {
       method: 'GET',
       url: '/services/search',
       params: query,
+      ...extra,
+    });
+  }
+
+  getServicesAdmin(query = {}, extra = {}) {
+    const params = this.normalizeParams(query);
+    return this.request({
+      method: 'GET',
+      url: '/services/admin',
+      params,
+      ...extra,
+    });
+  }
+
+  getServicesPublic(query = {}, extra = {}) {
+    const params = this.normalizeParams(query);
+    return this.request({
+      method: 'GET',
+      url: '/services/all',
+      params,
+      ...extra,
+    });
+  }
+
+  getMyServices(query = {}, extra = {}) {
+    const params = this.normalizeParams(query);
+    return this.request({
+      method: 'GET',
+      url: '/services/me',
+      params,
       ...extra,
     });
   }

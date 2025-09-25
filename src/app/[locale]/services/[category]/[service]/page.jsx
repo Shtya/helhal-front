@@ -3,11 +3,9 @@
 import { useEffect, useState, use, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Timer, FileText, Info, Trash2, Tag as TagIcon, CheckCircle2, Crown, AlertCircle, UploadCloud, Table2, LayoutGrid, ArrowLeft, ArrowRight, ChevronDown, MessageCircle, Zap, Repeat, Eye, MousePointer2, ShieldCheck, Gauge, Star, Clock, Box, Shield, ChevronRight, Globe, Calendar, MapPin, Award, ChevronLeft, Maximize2, X, GraduationCap, ExternalLink, Image as ImageIcon } from 'lucide-react';
+import { Timer, FileText, Info, Tag as TagIcon, CheckCircle2, Crown, AlertCircle, UploadCloud, Table2, LayoutGrid, ChevronDown, MessageCircle, Zap, Repeat, Eye, MousePointer2, ShieldCheck, Gauge, Star, Clock, Box, Shield, ChevronRight, Globe, Calendar, MapPin, Award, ChevronLeft, Maximize2, X, GraduationCap, ExternalLink, Image as ImageIcon, Clock3, Globe2, BadgeCheck, FolderTree, Layers, Images } from 'lucide-react';
 
-import Breadcrumbs from '@/components/atoms/Breadcrumbs';
 import Button from '@/components/atoms/Button';
-import FavoriteButton from '@/components/atoms/FavoriteButton';
 import PriceTag from '@/components/atoms/priceTag';
 import Input from '@/components/atoms/Input';
 import NotFound from '@/components/molecules/NotFound';
@@ -15,7 +13,9 @@ import ServiceSlider from '@/components/common/ServiceSlider';
 import { apiService } from '@/services/GigServices';
 import Img from '@/components/atoms/Img';
 import FAQSection from '@/components/common/Faqs';
-import api from '@/lib/axios';
+import api, { baseImg } from '@/lib/axios';
+import { getInitials } from '@/components/molecules/Header';
+import { Link } from '@/i18n/navigation';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -27,11 +27,10 @@ const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, n
 
   return {
     serviceId: serviceData.id,
-    packageType: selectedPackage?.name || '',
+    packageType: selectedPackage?.type || '',
     quantity: 1,
     notes: notes || '',
     requirementsAnswers: answers,
-    // optional: include snapshot for analytics/traceability
     snapshot: {
       price: selectedPackage?.price ?? 0,
       deliveryTime: selectedPackage?.deliveryTime ?? 0,
@@ -55,7 +54,7 @@ const scrollToRequirement = id => {
 };
 
 export default function ServiceDetailsPage({ params }) {
-  const { category, service } = use(params);
+  const { service } = use(params);
   const [serviceData, setServiceData] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -86,7 +85,6 @@ export default function ServiceDetailsPage({ params }) {
     };
   }, [service]);
 
-  // keep errors reactive
   useEffect(() => {
     if (!serviceData?.requirements?.length) return;
     const errs = {};
@@ -143,9 +141,9 @@ export default function ServiceDetailsPage({ params }) {
 
     try {
       setLoadingSubmit(true);
-      await api.post('/orders', { ...orderData });
-      router.push('/orders');
-    } catch (e) {
+      const res = await api.post('/orders/checkout', { ...orderData });
+       router.push(res.data.paymentUrl+ `?orderId:${res.data.order.id}`);
+     } catch (e) {
       console.error('Error creating order:', e);
     } finally {
       setLoadingSubmit(false);
@@ -158,38 +156,33 @@ export default function ServiceDetailsPage({ params }) {
   return (
     <div className='min-h-screen'>
       <div className='container'>
-        {/* Breadcrumbs */}
-        <div className='mb-6 max-md:hidden '>
-          <Breadcrumbs items={[{ label: 'Services', href: '/services' }, { label: serviceData.category?.name || category, href: `/services/${category}` }, { label: serviceData.title }]} />
-        </div>
-
-        <div className='flex flex-col lg:flex-row gap-4 max-md:mt-8 '>
+        <div className=' flex flex-col lg:flex-row gap-6  mt-8 '>
           {/* Main */}
           <div className='w-full lg:w-[calc(100%-400px)]'>
-            <HeaderPanel serviceData={serviceData}   />
-            <Features />
+            <HeaderPanel serviceData={serviceData} />
+
             <MediaGallery images={serviceData.gallery} />
             <AboutService serviceData={serviceData} />
 
             {!!serviceData.packages?.length && <PackagesSection packages={serviceData.packages} selectedPackage={selectedPackage} setSelectedPackage={setSelectedPackage} />}
 
-            {!!serviceData.requirements?.length && <RequirementsSection requirements={serviceData.requirements} answers={requirementAnswers} onChange={handleRequirementChange} validationErrors={validationErrors}    />}
+            {!!serviceData.requirements?.length && <RequirementsSection requirements={serviceData.requirements} answers={requirementAnswers} onChange={handleRequirementChange} validationErrors={validationErrors} />}
 
-            <AboutSeller serviceData={serviceData}   />
+            <AboutSeller serviceData={serviceData} />
 
             {!!serviceData.faq?.length && (
-              <div className='bg-white rounded-2xl  border border-slate-200  shadow-inner md:p-6 py-6 mb-6'>
+              <div className='bg-white rounded-xl  border border-slate-200  shadow-custom  md:py-12 py-6 '>
                 <FAQSection className='!my-0' faqs={serviceData.faq} showTitle={true} />
               </div>
             )}
-
-            <div className='bg-white rounded-2xl  border border-slate-200  shadow-inner p-6'>
-              <ServiceSlider services={serviceData.relatedServices} title='Related Services' />
-            </div>
           </div>
 
           {/* Sidebar */}
           <PurchaseSidebar selectedPackage={selectedPackage} setIsSidebarOpen={setIsSidebarOpen} handleContactSeller={() => router.push(`/chat?userId=${serviceData?.seller?.id}`)} serviceData={serviceData} onTryOpenOrderOptions={tryOpenOrderOptions} />
+        </div>
+
+        <div className=' mt-8 bg-white rounded-xl  border border-slate-200  shadow-custom  p-6'>
+          <ServiceSlider services={serviceData.relatedServices} className={"!mt-4"} title='Related Services' />
         </div>
       </div>
 
@@ -202,7 +195,6 @@ export default function ServiceDetailsPage({ params }) {
             </div>
             <div className='flex gap-2'>
               <Button name='Contact' variant='outline' className='text-sm' onClick={() => router.push(`/chat?userId=${serviceData?.seller?.id}`)} icon={<MessageCircle size={14} className='mr-1' />} />
-              {/* NEW: block opening when invalid */}
               <Button name='Continue' className='text-sm' onClick={tryOpenOrderOptions} />
             </div>
           </div>
@@ -215,137 +207,58 @@ export default function ServiceDetailsPage({ params }) {
   );
 }
 
-export const Divider = ({ className }) => {
-  return <div className={`w-full h-[2px] border-b border-b-slate-200 my-[30px] ${className}`}></div>;
+export const Divider = ({ className = '' }) => <div className={`my-8 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent ${className}`} />;
+
+const Separator = () => <span aria-hidden className='h-4 w-px bg-slate-200' />;
+
+const Stat = ({ icon: Icon, value, label, title }) => (
+  <div className='flex items-center gap-2' title={title || label}>
+    <Icon className='h-4 w-4 text-slate-700' />
+    <span className='font-semibold text-slate-900'>{value}</span>
+    <span className='text-slate-500'>{label}</span>
+  </div>
+);
+
+const countryFlag = code => {
+  if (!code) return '🏳️';
+  try {
+    const cc = code.trim().slice(0, 2).toUpperCase();
+    return cc.replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+  } catch {
+    return '🏳️';
+  }
 };
 
-function HeaderPanel({ serviceData }) {
-  function countryFlag(code) {
-    if (!code) return '🏳️';
-    try {
-      const cc = code.trim().slice(0, 2).toUpperCase();
-      return cc.replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
-    } catch {
-      return '🏳️';
-    }
-  }
+function HeaderPanel({ serviceData = {}, Img }) {
+  const seller = serviceData?.seller || {};
+  const rating = Number(serviceData?.rating ?? 0);
+  const ratingFmt = rating.toFixed(1);
+  const reviewsCount = serviceData?.reviews?.length ?? 0;
+  const ordersCount = serviceData?.ordersCount ?? 0;
+  const country = seller?.country;
 
-  const chips = [
-    serviceData?.seller?.sellerLevel && {
-      icon: <Award className='h-3.5 w-3.5' />,
-      text: serviceData.seller.sellerLevel.toUpperCase(),
-      classes: 'border-amber-200 bg-amber-50 text-amber-800',
-    },
-    serviceData.fastDelivery && {
-      icon: <Zap className='h-3.5 w-3.5' />,
-      text: 'Fast delivery',
-      classes: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    },
-    serviceData.additionalRevision && {
-      icon: <Repeat className='h-3.5 w-3.5' />,
-      text: 'Extra revisions',
-      classes: 'border-slate-200 bg-slate-50 text-slate-700',
-    },
-  ].filter(Boolean);
-
-  return (
-    <div className='relative rounded-2xl border border-slate-200 bg-white p-5 shadow-inner hover:shadow-md focus-within:shadow-md'>
-      {/* animated gradient ring */}
-      <div className='pointer-events-none absolute -inset-px rounded-2xl [background:conic-gradient(from_180deg,theme(colors.emerald.200/.35),transparent_30%,theme(colors.sky.200/.35),transparent_70%,theme(colors.emerald.200/.35))] [mask:linear-gradient(#000,#000)_content-box,linear-gradient(#000,#000)] [mask-composite:exclude] p-[1px]' />
-
-      {/* subtle top halo */}
-      <div className='pointer-events-none absolute inset-x-6 -top-10 h-16 rounded-full bg-gradient-to-r from-emerald-200/40 via-transparent to-emerald-200/40 blur-2xl' />
-
-      <div className='flex flex-col md:flex-row md:items-start md:justify-between gap-5'>
-        <div className='min-w-0'>
-          {/* title + chips */}
-          <div className='flex flex-wrap items-center gap-2'>
-            <h1 className='text-2xl md:text-3xl font-bold tracking-tight text-slate-900'>{serviceData.title}</h1>
-            {chips.map((c, i) => (
-              <span key={i} className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${c.classes}`}>
-                {c.icon}
-                {c.text}
-              </span>
-            ))}
-          </div>
-
-          {/* meta row */}
-          <div className='mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-600'>
-            <div className='inline-flex items-center'>
-              <Star className='mr-1 h-4 w-4 text-amber-500 fill-current' />
-              <span className='font-medium'>{serviceData.rating ?? 0}</span>
-              <span className='ml-1'>({serviceData.reviews?.length ?? 0})</span>
-            </div>
-
-            <span className='h-4 w-px bg-slate-200' />
-
-            <span className='inline-flex items-center gap-1'>
-              <ShieldCheck className='h-4 w-4' />
-              {serviceData.ordersCount ?? 0} orders completed
-            </span>
-
-            {!!serviceData.performanceScore && (
-              <>
-                <span className='h-4 w-px bg-slate-200' />
-                <span className='inline-flex items-center gap-1'>
-                  <Gauge className='h-4 w-4' />
-                  Score: <span className='font-medium'>{Number(serviceData.performanceScore).toFixed(2)}</span>
-                </span>
-              </>
-            )}
-
-            {serviceData?.seller?.country && (
-              <>
-                <span className='h-4 w-px bg-slate-200' />
-                <span className='inline-flex items-center gap-1'>
-                  <span aria-hidden className='text-base'>
-                    {countryFlag(serviceData.seller.country)}
-                  </span>
-                  From {serviceData.seller.country}
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* seller strip (glass) */}
-      <div className='mt-6 grid grid-cols-[auto,1fr] items-center gap-4 rounded-xl border border-slate-200 bg-white/60 p-4 backdrop-blur-sm'>
-        <div className='relative'>
-          <img src={serviceData.seller?.profileImage || '/images/placeholder-avatar.png'} alt={serviceData.seller?.username || 'Seller'} className='h-16 w-16 rounded-xl object-cover ring-2 ring-white shadow-inner' />
-        </div>
-
-        <div className='min-w-0'>
-          <div className='flex flex-wrap items-center gap-2'>
-            <h3 className='font-semibold text-slate-900'>{serviceData.seller?.username || 'Unknown Seller'}</h3>
-            {!!serviceData?.seller?.skills?.length && (
-              <span className='truncate text-xs text-slate-500'>
-                {serviceData.seller.skills.slice(0, 3).join(' • ')}
-                {serviceData.seller.skills.length > 3 ? ` +${serviceData.seller.skills.length - 3}` : ''}
-              </span>
-            )}
-          </div>
-
-          <p className='mt-1 line-clamp-1 text-sm text-slate-600'>{serviceData.seller?.description || serviceData.brief}</p>
-
-          {/* quick stats */}
-          <div className='mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600'>
-            <Chip icon={<Eye className='h-3.5 w-3.5' />} label={`Impressions: ${serviceData.impressions ?? 0}`} />
-            <Chip icon={<MousePointer2 className='h-3.5 w-3.5' />} label={`Clicks: ${serviceData.clicks ?? 0}`} />
-            {Array.isArray(serviceData.searchTags) && serviceData.searchTags.length > 0 && (
-              <span className='hidden sm:inline rounded-md bg-white px-2 py-1 shadow-inner'>
-                Tags: {serviceData.searchTags.slice(0, 2).join(', ')}
-                {serviceData.searchTags.length > 2 ? ` +${serviceData.searchTags.length - 2}` : ''}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+  const chips = useMemo(
+    () =>
+      [
+        serviceData?.seller?.sellerLevel && {
+          icon: <Award className='h-3.5 w-3.5' />,
+          text: String(serviceData.seller.sellerLevel).toUpperCase(),
+          classes: 'border-amber-200 bg-amber-50 text-amber-800',
+        },
+        serviceData?.fastDelivery && {
+          icon: <Zap className='h-3.5 w-3.5' />,
+          text: 'Fast delivery',
+          classes: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+        },
+        serviceData?.additionalRevision && {
+          icon: <Repeat className='h-3.5 w-3.5' />,
+          text: 'Extra revisions',
+          classes: 'border-slate-200 bg-slate-50 text-slate-700',
+        },
+      ].filter(Boolean),
+    [serviceData],
   );
-}
 
-function Features({ className = '' }) {
   const features = [
     {
       title: 'Top Rated',
@@ -359,7 +272,7 @@ function Features({ className = '' }) {
       accent: 'from-blue-50 to-indigo-50',
       border: 'border-blue-100/80',
       iconWrap: 'bg-blue-100 text-blue-700',
-      glow: 'from-blue-300/30 via-blue-200/0 to-indigo-300/30',
+      glow: ' ',
     },
     {
       title: 'Verified Quality',
@@ -373,37 +286,115 @@ function Features({ className = '' }) {
       accent: 'from-emerald-50 to-green-50',
       border: 'border-emerald-100/80',
       iconWrap: 'bg-emerald-100 text-emerald-700',
-      glow: 'from-emerald-300/30 via-emerald-200/0 to-green-300/30',
+      glow: ' ',
     },
   ];
 
   return (
-    <div className={`relative my-8 ${className}`}>
-      {/* subtle page halo */}
-      <div className='pointer-events-none absolute inset-x-0 -top-8 h-24 bg-gradient-to-r from-emerald-200/20 via-sky-200/0 to-violet-200/20 blur-2xl' />
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} className='relative mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-custom hover:shadow-md'>
+      {/* Title + Chips */}
+      <div className='relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
+        <div className='min-w-0'>
+          <div className='flex flex-wrap items-center gap-2'>
+            <h1 className='text-[22px] leading-tight md:text-3xl font-extrabold tracking-tight text-slate-900'>{serviceData?.title || 'Untitled Service'}</h1>
+            {chips.map((c, i) => (
+              <Chip key={i} icon={c.icon} text={c.text} className={c.classes} />
+            ))}
+          </div>
 
-      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-        {features.map((f, i) => (
-          <motion.div key={f.title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.45, delay: i * 0.08, ease: 'easeOut' }} whileHover={{ y: -2 }} className={`group relative rounded-2xl p-5 bg-gradient-to-r ${f.accent} border ${f.border} shadow-inner hover:shadow-md focus-within:shadow-md`} tabIndex={0}>
-            <div className={`pointer-events-none absolute -inset-px rounded-2xl bg-gradient-to-r ${f.glow} opacity-0 transition-opacity duration-300 group-hover:opacity-100`} />
+          {/* Meta */}
+          <div className='mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-700'>
+            <span className='inline-flex items-center' aria-label={`Rating ${ratingFmt} out of 5`} title='Rating'>
+              <Star className='mr-1 h-4 w-4 text-amber-500 fill-current' />
+              <span className='font-semibold'>{ratingFmt}</span>
+              <span className='ml-1 text-slate-500'>({reviewsCount})</span>
+            </span>
 
-            <div className='flex items-start gap-3'>
-              <div className={`shrink-0 p-2 rounded-xl ${f.iconWrap} ring-1 ring-white/60 dark:ring-white/10`} aria-hidden>
-                {f.Icon}
-              </div>
+            <Separator />
 
-              <div className='min-w-0'>
-                <h3 className='text-base font-semibold tracking-tight text-slate-900  '>{f.title}</h3>
-                <p className='mt-1 text-sm text-slate-600/90 '>{f.desc}</p>
-              </div>
+            <Stat icon={ShieldCheck} value={ordersCount} label='orders completed' title='Orders completed' />
+
+            {country ? (
+              <>
+                <Separator />
+                <span className='inline-flex items-center gap-2' title={`Seller location: ${country}`}>
+                  <span aria-hidden className='text-base leading-none'>
+                    {countryFlag(country)}
+                  </span>
+                  <span className='truncate max-w-[10rem] text-slate-600'>From {country}</span>
+                </span>
+              </>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      {/* Seller strip */}
+      <div className='mt-6 grid grid-cols-[auto,1fr] items-center gap-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4 backdrop-blur'>
+        <div className='flex items-center gap-3'>
+          <div className='relative'>
+            <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30' />
+            <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(seller?.username)}</span>}</div>
+          </div>
+
+          <div className='min-w-0'>
+            <div className='flex flex-wrap items-center gap-2'>
+              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none'>
+                {seller?.username || 'Unknown Seller'}
+              </Link>
+              {!!seller?.sellerLevel && (
+                <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
+                  <BadgeCheck className='h-3 w-3 text-emerald-600' />
+                  {String(seller.sellerLevel).toUpperCase()}
+                </span>
+              )}
             </div>
 
-            {/* focus outline for a11y */}
-            <span className='absolute inset-0 rounded-2xl ring-2 ring-transparent focus-visible:ring-slate-400/50 transition' />
-          </motion.div>
+            <p className='mt-1 line-clamp-1 text-sm text-slate-600'>{seller?.description || serviceData?.brief || 'No description provided.'}</p>
+
+            {!!seller?.skills?.length && (
+              <div className='mt-1 flex flex-wrap items-center gap-1.5'>
+                {seller.skills.slice(0, 4).map(s => (
+                  <span key={s} className='rounded-md bg-white px-2 py-0.5 text-[11px] text-slate-600 ring-1 ring-slate-200'>
+                    {s}
+                  </span>
+                ))}
+                {seller.skills.length > 4 ? <span className='text-[11px] text-slate-500'>+{seller.skills.length - 4} more</span> : null}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right mini-stats */}
+        <div className='justify-self-end hidden md:flex items-center gap-4 text-sm'>
+          <div className='flex items-center gap-2'>
+            <Clock3 className='h-4 w-4 text-slate-600' />
+            <span className='text-slate-700'>Avg. response</span>
+            <span className='font-semibold text-slate-900'>{serviceData?.avgResponse || '—'}</span>
+          </div>
+          <div className='flex items-center gap-2'>
+            <Globe2 className='h-4 w-4 text-slate-600' />
+            <span className='text-slate-700'>Lang</span>
+            <span className='font-semibold text-slate-900'>{Array.isArray(seller?.languages) && seller.languages.length ? seller.languages.slice(0, 2).join(', ') : '—'}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Features */}
+      <div className='mt-5 grid grid-cols-1 gap-4 md:grid-cols-2'>
+        {features.map(f => (
+          <div key={f.title} className={`group relative rounded-xl border ${f.border} bg-[#f9fbfd] p-5  transition-shadow hover:shadow-md`}>
+            <div className='flex items-start gap-3'>
+              <div className={`shrink-0 rounded-xl p-2 ring-1 ring-white/60 ${f.iconWrap}`}>{f.Icon}</div>
+              <div className='min-w-0'>
+                <h3 className='text-base font-semibold tracking-tight text-slate-900'>{f.title}</h3>
+                <p className='mt-1 text-sm text-slate-600/90'>{f.desc}</p>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -432,26 +423,24 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
   };
 
   return (
-    <div className='relative rounded-2xl border border-slate-200 bg-white shadow-inner overflow-hidden'>
+    <div className='relative p-4 rounded-xl border border-slate-200 bg-white shadow-custom  overflow-hidden'>
       <div className='relative group outline-none' tabIndex={0} role='region' aria-label='Service gallery' onKeyDown={onKeyDown}>
         <div className='relative w-full aspect-[16/9] bg-slate-100'>
           {!loaded && <div className='absolute inset-0 animate-pulse bg-slate-100' />}
 
-          <AnimatePresence mode='wait'>
-            <motion.img key={safeImages[active]?.url} src={safeImages[active]?.url} alt={`Image ${active + 1}`} onLoad={() => setLoaded(true)} className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02] ${loaded ? 'opacity-100' : 'opacity-0'}`} initial={{ opacity: 0, scale: 1.01 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0.2, scale: 1.005 }} />
-          </AnimatePresence>
+          <motion.img key={safeImages[active]?.url} src={safeImages[active]?.url?.startsWith('http') ? safeImages[active]?.url : baseImg + safeImages[active]?.url} alt={`Image ${active + 1}`} onLoad={() => setLoaded(true)} className={` rounded-xl absolute inset-0 h-full w-full object-cover transition-transform duration-300   ${loaded ? 'opacity-100' : 'opacity-0'}`} initial={{ opacity: 0, scale: 1.01 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0.2, scale: 1.005 }} />
 
           {/* edge fades */}
-          <div className='pointer-events-none absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-white/70 to-transparent' />
-          <div className='pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white/70 to-transparent' />
+          <div className='pointer-events-none absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-white/50 to-transparent' />
+          <div className='pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white/50 to-transparent' />
 
           {/* controls */}
           {safeImages.length > 1 && (
             <>
-              <button type='button' aria-label='Previous image' onClick={prev} className='absolute flex-none left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+              <button type='button' aria-label='Previous image' onClick={prev} className=' cursor-pointer absolute flex-none left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500'>
                 <ChevronLeft className='h-[25px] w-[21px] cursor-pointer flex-none ' />
               </button>
-              <button type='button' aria-label='Next image' onClick={next} className='absolute flex-none right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+              <button type='button' aria-label='Next image' onClick={next} className=' cursor-pointer absolute flex-none right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500'>
                 <ChevronRight className='h-[25px] w-[21px] cursor-pointer flex-none ' />
               </button>
             </>
@@ -462,7 +451,7 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
             <span className='rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow'>
               {active + 1} / {safeImages.length}
             </span>
-            <button type='button' onClick={() => setLightbox(true)} className='inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow hover:bg-white'>
+            <button type='button' onClick={() => setLightbox(true)} className=' cursor-pointer inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow hover:bg-white'>
               <Maximize2 className='h-3.5 w-3.5' />
               View
             </button>
@@ -471,12 +460,12 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
       </div>
 
       {/* Thumbnails strip */}
-      <div className='relative p-3'>
+      <div className='relative  pt-4 '>
         {/* edge masks */}
         <div className='pointer-events-none absolute inset-y-0 left-0  w-8 bg-gradient-to-r from-white to-transparent' />
         <div className='pointer-events-none absolute inset-y-0 right-0  w-8 bg-gradient-to-l from-white to-transparent' />
 
-        <div ref={stripRef} className='flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-1' role='tablist' aria-label='Select image'>
+        <div ref={stripRef} className='flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory ' role='tablist' aria-label='Select image'>
           {safeImages.map((img, i) => {
             const activeState = i === active;
             return (
@@ -487,9 +476,9 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
                 aria-selected={activeState}
                 aria-label={`Show image ${i + 1}`}
                 onClick={() => setActive(i)}
-                className={`relative h-20 w-28 flex-shrink-0 snap-start overflow-hidden rounded-lg border transition 
+                className={` hover:scale-[.95] duration-300 cursor-pointer relative h-20 w-28 flex-shrink-0 snap-start overflow-hidden rounded-xl border transition 
                  ${activeState ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-slate-200 hover:border-slate-300'}`}>
-                <img src={img.url} alt={img.alt || `Thumbnail ${i + 1}`} className='h-full w-full object-cover' loading='lazy' decoding='async' />
+                <Img src={img.url} alt={img.alt || `Thumbnail ${i + 1}`} className='h-full w-full object-cover' loading='lazy' decoding='async' />
               </button>
             );
           })}
@@ -506,8 +495,8 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
 
             {/* lightbox content */}
             <div className='absolute inset-0 flex items-center justify-center p-4'>
-              <div className='relative max-h-[90vh] max-w-[92vw]'>
-                <motion.img key={`lb-${safeImages[active]?.url}`} src={safeImages[active]?.url} alt={`Image ${active + 1}`} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className='max-h-[90vh] max-w-[92vw] rounded-xl object-contain shadow-2xl' />
+              <div className='relative max-h-[90vh] w-full max-w-[92vw]'>
+                <motion.img key={`lb-${safeImages[active]?.url}`} src={safeImages[active]?.url?.startsWith('http') ? safeImages[active]?.url : baseImg + safeImages[active]?.url} alt={`Image ${active + 1}`} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className='max-h-[90vh] w-full mx-auto max-w-[92vw] rounded-xl object-contain shadow-2xl' />
                 {safeImages.length > 1 && (
                   <>
                     <button onClick={prev} className='absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white' aria-label='Previous image'>
@@ -527,27 +516,28 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
   );
 }
 
-function AboutService({ serviceData, onTagClick }) {
+function AboutService({ serviceData = {}, onTagClick }) {
   const [expanded, setExpanded] = useState(false);
 
   const tags = useMemo(() => {
     const arr = Array.isArray(serviceData?.searchTags) ? serviceData.searchTags : [];
     const map = new Map();
     arr.forEach(t => {
-      const key = String(t).trim();
+      const key = String(t || '').trim();
+      if (!key) return;
       const lk = key.toLowerCase();
       const val = map.get(lk);
-      if (val) map.set(lk, { label: val.label, count: val.count + 1 });
-      else map.set(lk, { label: key, count: 1 });
+      map.set(lk, { label: key, count: val ? val.count + 1 : 1 });
     });
     return Array.from(map.values()).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
   }, [serviceData?.searchTags]);
 
   const brief = String(serviceData?.brief || '');
+  const longBrief = brief.length > 180;
 
   return (
-    <section aria-labelledby='about-title' className=' my-8 bg-white rounded-2xl shadow-inner border border-slate-200 overflow-hidden mb-6'>
-      {/* header */}
+    <section aria-labelledby='about-title' className='my-8 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
+      {/* Header */}
       <div className='flex items-center justify-between px-6 pt-6'>
         <div className='flex items-center gap-2'>
           <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700'>
@@ -559,24 +549,24 @@ function AboutService({ serviceData, onTagClick }) {
         </div>
       </div>
 
-      {/* brief with collapse */}
+      {/* Brief with collapse */}
       <div className='px-6 pb-4'>
         <div className={`relative mt-4 text-slate-700 leading-7 ${expanded ? '' : 'max-h-32 overflow-hidden pr-1'}`}>
-          <p className='whitespace-pre-line'>{brief}</p>
-          {!expanded && brief.length > 180 && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent' />}
+          <p className='whitespace-pre-line'>{brief || 'No description provided.'}</p>
+          {!expanded && longBrief && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent' />}
         </div>
 
-        {brief.length > 180 && (
-          <button onClick={() => setExpanded(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800' aria-expanded={expanded} aria-controls='about-content'>
+        {longBrief && (
+          <button onClick={() => setExpanded(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800' aria-expanded={expanded}>
             {expanded ? 'Show less' : 'Read more'}
             <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} aria-hidden='true' />
           </button>
         )}
       </div>
 
-      {/* tags */}
+      {/* Tags */}
       {tags.length > 0 && (
-        <div className='px-6 pb-6 pt-4 border-t border-slate-100'>
+        <div className='border-t border-slate-100 px-6 pb-6 pt-4'>
           <div className='mb-2 flex items-center gap-2'>
             <TagIcon className='h-4 w-4 text-slate-500' />
             <h3 className='text-sm font-medium text-slate-900'>Tags</h3>
@@ -586,13 +576,13 @@ function AboutService({ serviceData, onTagClick }) {
           <AnimatePresence initial={false}>
             <motion.div layout className='flex flex-wrap gap-2' transition={{ layout: { duration: 0.2 } }}>
               {tags.slice(0, expanded ? tags.length : 10).map((t, i) => (
-                <motion.button key={t.label + i} layout onClick={() => onTagClick?.(t.label)} className='group inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-100' title={t.count > 1 ? `${t.label} (${t.count})` : t.label}>
+                <motion.button key={t.label + i} layout onClick={() => onTagClick?.(t.label)} className='group inline-flex items-center gap-1 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-100' title={t.count > 1 ? `${t.label} (${t.count})` : t.label}>
                   <span>#{t.label}</span>
-                  {t.count > 1 && <span className='rounded-full bg-white/70 px-1.5 text-xs text-emerald-700 group-hover:bg-white'>×{t.count}</span>}
+                  {t.count > 1 && <span className='rounded-xl bg-white/70 px-1.5 text-xs text-emerald-700 group-hover:bg-white'>×{t.count}</span>}
                 </motion.button>
               ))}
               {!expanded && tags.length > 10 && (
-                <button onClick={() => setExpanded(true)} className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50'>
+                <button onClick={() => setExpanded(true)} className='inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50'>
                   +{tags.length - 10} more
                 </button>
               )}
@@ -603,98 +593,112 @@ function AboutService({ serviceData, onTagClick }) {
     </section>
   );
 }
-
-function scoreValue(p) {
-  // simple value score = features / price
-  const f = Array.isArray(p.features) ? p.features.length : 0;
-  const price = Number(p.price || 1);
-  return f / Math.max(price, 1);
-}
-
 function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
   const [view, setView] = useState('cards');
   const containerRef = useRef(null);
 
+  function scoreValue(p) {
+    const f = Array.isArray(p.features) ? p.features.length : 0;
+    const price = Number(p.price || 1);
+    return f / Math.max(price, 1);
+  }
+
   const { list, recommendedIndex } = useMemo(() => {
     const list = packages || [];
-    const stdIdx = list.findIndex(p => /standard/i.test(p?.name || ''));
+    const stdIdx = list.findIndex(p => /standard/i.test(p?.type || ''));
     const rec = stdIdx !== -1 ? stdIdx : list.reduce((best, p, i) => (scoreValue(p) > scoreValue(list[best]) ? i : best), 0);
     return { list, recommendedIndex: Math.max(0, rec) };
   }, [packages]);
 
-  // keep selected in sync if not set yet
-  const selectedName = selectedPackage?.name ?? list[0]?.name;
+  const selectedName = selectedPackage?.type ?? list[0]?.type;
 
   const onKeyDown = e => {
     if (!list.length) return;
     const idx = Math.max(
       0,
-      list.findIndex(p => p.name === selectedName),
+      list.findIndex(p => p.type === selectedName),
     );
-    if (e.key === 'ArrowRight') {
-      setSelectedPackage(list[(idx + 1) % list.length]);
-    }
-    if (e.key === 'ArrowLeft') {
-      setSelectedPackage(list[(idx - 1 + list.length) % list.length]);
-    }
+    if (e.key === 'ArrowRight') setSelectedPackage(list[(idx + 1) % list.length]);
+    if (e.key === 'ArrowLeft') setSelectedPackage(list[(idx - 1 + list.length) % list.length]);
   };
 
   return (
-    <section className='bg-white rounded-2xl shadow-inner border border-slate-200 p-6 mb-6' aria-labelledby='packages-title'>
-      <div className='mb-6 flex items-center justify-between gap-3'>
-        <h2 id='packages-title' className='text-xl font-semibold text-slate-900'>
-          Packages
-        </h2>
+    <section className='rounded-xl border border-slate-200 bg-white p-6 shadow-sm mb-6' aria-labelledby='packages-title'>
+      {/* Header */}
+      <div className='mb-5 flex items-center justify-between gap-3'>
         <div className='flex items-center gap-2'>
-          <button type='button' onClick={() => setView('cards')} className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm ${view === 'cards' ? 'border-emerald-300 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`} aria-pressed={view === 'cards'}>
+          <div className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-slate-100'>
+            <Table2 className='h-4 w-4 text-slate-700' />
+          </div>
+          <h2 id='packages-title' className='text-lg md:text-xl font-semibold text-slate-900'>
+            Packages
+          </h2>
+        </div>
+
+        {/* View toggle */}
+        <div className='inline-flex rounded-xl border border-slate-200 bg-white p-1'>
+          <button
+            type='button'
+            onClick={() => setView('cards')}
+            className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
+              ${view === 'cards' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+            aria-pressed={view === 'cards'}
+            aria-label='Cards view'>
             <LayoutGrid className='h-4 w-4' /> Cards
           </button>
-          <button type='button' onClick={() => setView('compare')} className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm ${view === 'compare' ? 'border-emerald-300 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`} aria-pressed={view === 'compare'}>
+          <button
+            type='button'
+            onClick={() => setView('compare')}
+            className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
+              ${view === 'compare' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+            aria-pressed={view === 'compare'}
+            aria-label='Compare view'>
             <Table2 className='h-4 w-4' /> Compare
           </button>
         </div>
       </div>
 
-      <div ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className='outline-none' aria-label='Package selection (use left/right arrows to switch)'>
+      {/* Content */}
+      <div ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className='outline-none '  >
         <AnimatePresence mode='wait'>
           {view === 'cards' ? (
-            <motion.div key='cards' initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className=' relative grid h-full  grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
+            <motion.div key='cards' initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className='relative grid h-full  gap-5 grid-cols-3  overflow-auto  '>
               {list.map((pkg, index) => {
-                const active = selectedName === pkg.name;
+                const active = selectedName === pkg.type;
                 const recommended = index === recommendedIndex;
                 return (
-                  <motion.div
-                    type='button'
-                    key={pkg.name + index}
-                    whileHover={{ y: -3 }}
-                    onClick={() => setSelectedPackage(pkg)}
-                    className={` h-full flex flex-col items-start relative text-left rounded-xl border p-5 transition shadow-inner
-                      ${active ? 'border-emerald-300 card-glow' : 'border-slate-200 hover:border-slate-300 bg-white'}`}>
-                    <div className={`  mb-1 flex items-start justify-between gap-3 `}>
-                      <h3 className='text-lg font-bold text-slate-900'>{pkg.name}</h3>
-                      <PriceTag price={pkg.price} className='!text-lg' />
+                  <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} onClick={() => setSelectedPackage(pkg)} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-emerald-300 bg-emerald-50/30 ring-1 ring-emerald-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
+                    <div className='mb-2 flex flex-wrap w-full items-start justify-between gap-1'>
+                      <div className='flex items-center gap-2'>
+                        <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type}</h3>
+                        {recommended && (
+                          <span className='inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800'>
+                            <Crown className='h-3.5 w-3.5' /> Recommended
+                          </span>
+                        )}
+                      </div>
+                      <PriceTag price={pkg.price} className='!text-lg !font-bold !text-slate-900' />
                     </div>
 
-                    {recommended && (
-                      <span className=' mb-3 inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800'>
-                        <Crown className='h-3.5 w-3.5' /> Recommended
-                      </span>
-                    )}
+                    {/* Description */}
+                    {pkg.description && <p className='mb-4 line-clamp-2 text-sm leading-6 text-slate-600'>{pkg.description}</p>}
 
-                    {pkg.description && <p className='mb-4 text-sm text-slate-600 line-clamp-2'>{pkg.description}</p>}
-
-                    <div className='mb-4 flex items-center justify-between text-sm text-slate-700'>
-                      <span className='inline-flex items-center gap-1'>
-                        <Clock className='h-4 w-4' />
-                        {pkg.deliveryTime} Day(s)
+                    {/* Meta */}
+                    <div className='mb-4 flex w-full items-center justify-between text-sm text-slate-700'>
+                      <span className='inline-flex items-center gap-1.5'>
+                        <Clock className='h-4 w-4 text-slate-600' />
+                        <span className='font-medium text-slate-900'>{pkg.deliveryTime}</span>
+                        <span className='text-slate-500'>Day(s)</span>
                       </span>
-                      <span className='inline-flex items-center gap-1'>
-                        <Box className='h-4 w-4' />
-                        {pkg.revisions} Revisions
+                      <span className='inline-flex items-center gap-1.5'>
+                        <Box className='h-4 w-4 text-slate-600' />
+                        <span className='font-medium text-slate-900'>{pkg.revisions}</span>
+                        <span className='text-slate-500'>Revisions</span>
                       </span>
                     </div>
 
-                    <ul className='mb-4 space-y-2 pb-[30px] '>
+                    {/* Features */}
+                    <ul className='mb-4 w-full space-y-2 pb-12'>
                       {(pkg.features || []).slice(0, 4).map((feature, i) => (
                         <li key={i} className='flex items-start text-sm'>
                           <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600' />
@@ -704,9 +708,11 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                       {pkg.features?.length > 4 && <li className='pl-6 text-xs text-slate-500'>+ {pkg.features.length - 4} more</li>}
                     </ul>
 
+                    {/* CTA */}
                     <Button
                       name={active ? 'Selected' : 'Select Package'}
-                      className={` absolute bottom-[10px] !w-[calc(100%-20px)] left-[10px] h-[40px] ${active ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-900 hover:bg-slate-950'}`}
+                      className={`absolute left-[10px] !w-[calc(100%-20px)] bottom-[10px] h-10 transition
+                        ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`}
                       onClick={e => {
                         e.stopPropagation();
                         setSelectedPackage(pkg);
@@ -718,61 +724,61 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
             </motion.div>
           ) : (
             <motion.div key='compare' initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className='overflow-x-auto'>
-              <div className='min-w-[720px]'>
-                <div className='grid grid-cols-[200px_repeat(3,minmax(160px,1fr))] gap-2'>
-                  {/* header row */}
-                  <div></div>
+              <div className='min-w-[780px]'>
+                <div className='grid grid-cols-[220px_repeat(3,minmax(180px,1fr))] gap-2'>
+                  {/* Header row (package names) */}
+                  <div className='px-2 py-3 text-sm font-medium text-slate-500'>Option</div>
                   {list.map((p, i) => {
-                    const active = selectedName === p.name;
+                    const active = selectedName === p.name; // (UI only; logic untouched)
                     return (
                       <div
                         key={'h' + i}
-                        className={`rounded-lg border px-4 py-3 text-center text-sm font-semibold
-                        ${active ? 'border-emerald-500 bg-emerald-50 text-emerald-900' : 'border-slate-200 bg-white text-slate-900'}`}>
-                        {p.name}
+                        className={`rounded-xl px-4 py-3 text-center text-sm font-semibold uppercase tracking-wide
+                          ${active ? 'border border-emerald-500 bg-emerald-50 text-emerald-900' : 'border border-slate-200 bg-white text-slate-900'}`}>
+                        {p.type}
                       </div>
                     );
                   })}
 
-                  {/* price */}
-                  <div className='py-3 text-sm text-slate-600'>Price</div>
+                  {/* Price */}
+                  <div className='py-3 pl-2 text-sm text-slate-600'>Price</div>
                   {list.map((p, i) => (
-                    <div key={'price' + i} className='rounded-lg border border-slate-200 bg-white px-4 py-3 text-center'>
-                      <PriceTag price={p.price} className='!text-base' />
+                    <div key={'price' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
+                      <PriceTag price={p.price} className='!text-base !font-semibold' />
                     </div>
                   ))}
 
-                  {/* delivery */}
-                  <div className='py-3 text-sm text-slate-600'>Delivery</div>
+                  {/* Delivery */}
+                  <div className='py-3 pl-2 text-sm text-slate-600'>Delivery</div>
                   {list.map((p, i) => (
-                    <div key={'del' + i} className='rounded-lg border border-slate-200 bg-white px-4 py-3 text-center'>
+                    <div key={'del' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
                       {p.deliveryTime} Day(s)
                     </div>
                   ))}
 
-                  {/* revisions */}
-                  <div className='py-3 text-sm text-slate-600'>Revisions</div>
+                  {/* Revisions */}
+                  <div className='py-3 pl-2 text-sm text-slate-600'>Revisions</div>
                   {list.map((p, i) => (
-                    <div key={'rev' + i} className='rounded-lg border border-slate-200 bg-white px-4 py-3 text-center'>
+                    <div key={'rev' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
                       {p.revisions}
                     </div>
                   ))}
 
-                  {/* features count */}
-                  <div className='py-3 text-sm text-slate-600'>Features</div>
+                  {/* Features count */}
+                  <div className='py-3 pl-2 text-sm text-slate-600'>Features</div>
                   {list.map((p, i) => (
-                    <div key={'fc' + i} className='rounded-lg border border-slate-200 bg-white px-4 py-3 text-center'>
+                    <div key={'fc' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
                       {(p.features || []).length}
                     </div>
                   ))}
 
                   {/* CTA row */}
-                  <div></div>
+                  <div className='py-2 pl-2' />
                   {list.map((p, i) => {
                     const active = selectedName === p.name;
                     return (
-                      <div key={'cta' + i} className='px-2 py-3 text-center'>
-                        <Button name={active ? 'Selected' : 'Select'} className={`w-full ${active ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-900 hover:bg-slate-950'}`} onClick={() => setSelectedPackage(p)} />
+                      <div key={'cta' + i} className='px-2 py-2 text-center'>
+                        <Button name={active ? 'Selected' : 'Select'} className={`w-full transition  ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`} onClick={() => setSelectedPackage(p)} />
                       </div>
                     );
                   })}
@@ -814,7 +820,7 @@ function RequirementsSection({ requirements, answers, onChange, validationErrors
   };
 
   return (
-    <section className='relative mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-inner'>
+    <section className='relative mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-custom '>
       {/* header */}
       <div className='flex items-center justify-between gap-3 px-6 pt-6'>
         <div className='min-w-0'>
@@ -880,7 +886,7 @@ function RequirementsSection({ requirements, answers, onChange, validationErrors
                     </label>
 
                     {!!val && (
-                      <div className='mt-2 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700'>
+                      <div className='mt-2 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700'>
                         <CheckCircle2 className='h-4 w-4 text-emerald-600' />
                         Selected: <span className='font-medium'>{val?.name || String(val)}</span>
                       </div>
@@ -936,9 +942,6 @@ function AboutSeller({ serviceData }) {
   const education = Array.isArray(seller.education) ? seller.education : [];
   const portfolio = Array.isArray(seller.portfolioItems) ? seller.portfolioItems.slice(0, 3) : [];
 
-  const verified = !!seller.sellerLevel || certifications.length > 0;
-  const topRated = (serviceData?.rating ?? 0) >= 4.5;
-
   const [descOpen, setDescOpen] = useState(false);
 
   function countryFlag(code) {
@@ -963,40 +966,35 @@ function AboutSeller({ serviceData }) {
   }
 
   return (
-    <section className='bg-white rounded-2xl shadow-inner border border-slate-200 overflow-hidden mb-6'>
+    <section className='bg-white rounded-xl shadow-custom  border border-slate-200 overflow-hidden mb-6'>
       {/* header */}
       <div className='p-6'>
-        <div className='flex items-start justify-between gap-4'>
-          <div className='flex items-center gap-4 min-w-0'>
-            <Img src={seller?.profileImage || '/images/placeholder-avatar.png'} alt={seller?.username || 'Seller'} className='h-16 w-16 rounded-xl object-cover ring-2 ring-white shadow' />
-            <div className='min-w-0'>
-              <div className='flex flex-wrap items-center gap-2'>
-                <h2 className='text-xl font-semibold text-slate-900'>About the Seller</h2>
-                {verified && (
-                  <span className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-800'>
-                    <ShieldCheck className='h-3.5 w-3.5' /> Verified
-                  </span>
-                )}
-                {seller?.sellerLevel && (
-                  <span className='inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800'>
-                    <Award className='h-3.5 w-3.5' /> {String(seller.sellerLevel).toUpperCase()}
-                  </span>
-                )}
-                {topRated && (
-                  <span className='inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-800'>
-                    <Star className='h-3.5 w-3.5' /> Top Rated
-                  </span>
-                )}
-              </div>
-              <p className='mt-1 text-sm text-slate-600'>{seller?.username} is a verified professional with expertise in this field.</p>
+        <div className='flex items-center gap-3'>
+          <div className='relative'>
+            <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30' />
+            <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(seller?.username)}</span>}</div>
+          </div>
+
+          <div className='min-w-0'>
+            <div className='flex flex-wrap items-center gap-2'>
+              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none'>
+                {seller?.username || 'Unknown Seller'}
+              </Link>
+              {!!seller?.sellerLevel && (
+                <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
+                  <BadgeCheck className='h-3 w-3 text-emerald-600' />
+                  {String(seller.sellerLevel).toUpperCase()}
+                </span>
+              )}
             </div>
+
+            <p className='mt-1 line-clamp-1 text-sm text-slate-600'>{seller?.description || serviceData?.brief || 'No description provided.'}</p>
           </div>
         </div>
 
         {/* quick stats */}
         <div className='mt-4 flex flex-wrap items-center gap-2 text-xs'>
           <StatPill icon={<Star className='h-3.5 w-3.5 text-amber-600' />} label='Rating' value={(serviceData?.rating ?? 0).toFixed(1)} />
-          <StatPill icon={<Gauge className='h-3.5 w-3.5' />} label='Performance' value={(serviceData?.performanceScore ?? 0).toFixed(2)} />
           <StatPill icon={<Calendar className='h-3.5 w-3.5' />} label='Orders' value={String(serviceData?.ordersCount ?? 0)} />
         </div>
       </div>
@@ -1104,8 +1102,8 @@ function AboutSeller({ serviceData }) {
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
               {portfolio.map((p, i) => (
-                <a key={i} href={p.url} target='_blank' rel='noopener noreferrer' className='group relative block overflow-hidden rounded-lg border border-slate-200 bg-slate-50' title={p.title}>
-                  <img src={p.image} alt={p.title || 'Portfolio'} className='h-28 w-full object-cover transition group-hover:scale-[1.02]' />
+                <a key={i} href={p.url} target='_blank' rel='noopener noreferrer' className='group relative block overflow-hidden rounded-xl border border-slate-200 bg-slate-50' title={p.title}>
+                  <Img src={p.image} alt={p.title || 'Portfolio'} className='h-28 w-full object-cover transition group-hover:scale-[1.02]' />
                   <div className='absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/50 to-transparent px-2 py-1.5 text-xs text-white opacity-0 group-hover:opacity-100 transition'>
                     <span className='line-clamp-1'>{p.title}</span>
                     <ExternalLink className='h-3.5 w-3.5' />
@@ -1133,16 +1131,16 @@ function PurchaseSidebar({ selectedPackage, handleContactSeller, serviceData, on
   }, [features, selectedPackage?.price]);
 
   return (
-    <div className='w-full lg:w-full'>
+    <div className='w-full lg:w-[400px]'>
       <aside className='sticky top-28'>
-        <div className='relative rounded-2xl border border-slate-200 bg-white p-6 shadow-inner'>
-          <div className='pointer-events-none absolute -inset-px rounded-2xl p-[1px] card-glow ' />
+        <div className='relative rounded-xl border border-slate-200 bg-white p-6 shadow-custom '>
+          <div className='pointer-events-none absolute -inset-px rounded-xl p-[1px]   ' />
 
           {selectedPackage ? (
             <>
               <div className='mb-4 flex items-start justify-between'>
                 <h3 className='text-lg font-semibold text-slate-900'>{selectedPackage.name}</h3>
-                <FavoriteButton service={serviceData} packageType={selectedPackage.name} />
+                {/* <FavoriteButton service={serviceData} packageType={selectedPackage.name} /> */}
               </div>
 
               <div className='mb-3 flex items-center justify-between'>
@@ -1193,7 +1191,7 @@ function PurchaseSidebar({ selectedPackage, handleContactSeller, serviceData, on
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
                 <Button name='Continue' className='flex-1' onClick={onTryOpenOrderOptions} />
-                <button type='button' onClick={handleContactSeller} aria-label='Chat with seller' className='inline-flex h-11 w-11 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 shadow-inner hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+                <button type='button' onClick={handleContactSeller} aria-label='Chat with seller' className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500'>
                   <MessageCircle size={18} />
                 </button>
               </div>
@@ -1227,7 +1225,7 @@ function InfoRow({ icon, title, value }) {
 
 function StatPill({ icon, label, value }) {
   return (
-    <span className='inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 shadow-inner text-slate-700'>
+    <span className='inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 shadow-custom  text-slate-700'>
       {icon}
       <span className='font-medium'>{value}</span>
       <span className='text-slate-500'>· {label}</span>
@@ -1238,7 +1236,7 @@ function StatPill({ icon, label, value }) {
 /* === tiny helper === */
 function Chip({ icon, label }) {
   return (
-    <span className='inline-flex items-center gap-1.5 rounded-md bg-white px-2 py-1 shadow-inner'>
+    <span className='inline-flex items-center gap-1.5 rounded-md bg-white px-2 py-1 shadow-custom '>
       {icon}
       {label}
     </span>
@@ -1259,7 +1257,7 @@ function SkeletonPage() {
       </div>
 
       <div className='flex flex-col lg:flex-row gap-8'>
-        <div className='w-full lg:w-2/3 space-y-6'>
+        <div className='w-full lg:w-[calc(100%-400px)] space-y-6'>
           {/* Header */}
           <div>
             <SkeletonLine className='w-2/3 h-7 mb-4' />
@@ -1278,7 +1276,7 @@ function SkeletonPage() {
             {[1, 2].map(i => (
               <div key={i}>
                 <div className='flex items-center gap-3 mb-3'>
-                  <div className='w-9 h-9 bg-slate-200 rounded-lg' />
+                  <div className='w-9 h-9 bg-slate-200 rounded-xl' />
                   <SkeletonLine className='w-24' />
                 </div>
                 <SkeletonLine className='w-full' />
@@ -1287,11 +1285,11 @@ function SkeletonPage() {
           </div>
 
           {/* Gallery */}
-          <div className='rounded-2xl shadow-inner overflow-hidden border border-slate-100 bg-white'>
+          <div className='rounded-xl shadow-custom  overflow-hidden border border-slate-100 bg-white'>
             <div className='h-72 bg-slate-200' />
             <div className='p-4 flex gap-2'>
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className='w-20 h-20 bg-slate-200 rounded-lg' />
+                <div key={i} className='w-20 h-20 bg-slate-200 rounded-xl' />
               ))}
             </div>
           </div>
@@ -1323,7 +1321,7 @@ function SkeletonPage() {
         </div>
 
         {/* Sidebar */}
-        <div className='w-full h-[200px] lg:w-1/3'>
+        <div className='w-full h-[200px] lg:w-[400px]'>
           <div>
             <SkeletonLine className=' !h-8 w-1/3  mb-4' />
             <SkeletonLine className=' !h-8 w-1/2 mb-4' />
@@ -1408,7 +1406,7 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
               whileHover={{ y: 0 }}
               whileTap={{ scale: 0.98 }}
               className={`group cursor-pointer relative text-left rounded-xl border px-3.5 py-3 transition
-                ${active ? 'border-emerald-500 bg-gradient-to-b from-emerald-50 to-white ring-2 ring-emerald-100 shadow-inner' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
+                ${active ? 'border-emerald-500 bg-gradient-to-b from-emerald-50 to-white ring-2 ring-emerald-100 shadow-custom ' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
               {/* decorative halo */}
               <div className='  pointer-events-none absolute -inset-px rounded-xl opacity-0 transition group-hover:opacity-100 bg-gradient-to-r from-emerald-200/20 via-transparent to-sky-200/20' />
 
@@ -1537,7 +1535,7 @@ function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplet
                 <div className='mt-4 space-y-2 text-slate-700'>
                   {summaryItems.map((it, i) => (
                     <div key={i} className='flex items-center gap-2'>
-                      <span className='inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200'>{it.icon}</span>
+                      <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-slate-200'>{it.icon}</span>
                       <span className='text-sm font-medium'>{it.label}</span>
                     </div>
                   ))}
@@ -1560,4 +1558,8 @@ function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplet
       </aside>
     </div>
   );
+}
+
+function BgShapes() {
+  return <div aria-hidden='true' className='pointer-events-none absolute inset-0 rounded-xl' style={{ background: 'radial-gradient(1200px 400px at 0% 0%, rgba(16,185,129,.06), transparent 60%), radial-gradient(1200px 400px at 100% 0%, rgba(59,130,246,.06), transparent 60%)' }} />;
 }

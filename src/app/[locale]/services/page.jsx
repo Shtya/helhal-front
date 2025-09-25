@@ -6,6 +6,9 @@ import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwipe
 import { apiService } from '@/services/GigServices';
 import CardSkeleton from '@/components/skeleton/CardSkeleton';
 import NoResults from '@/components/common/NoResults';
+import Button from '@/components/atoms/Button';
+import { Link } from '@/i18n/navigation';
+import { ChevronRight, ChevronsRight } from 'lucide-react';
 
 export default function ServicesHomePage() {
   const [topServices, setTopServices] = useState([]);
@@ -32,7 +35,7 @@ export default function ServicesHomePage() {
   if (loading) {
     return (
       <main className='container !pb-8'>
-        <HeaderCategoriesSwiper />
+        {/* <HeaderCategoriesSwiper /> */}
         <CardSlider title='Browse Categories' />
         <h1 className='text-3xl max-md:text-xl font-[900] mt-12 mb-4'>Featured</h1>
         <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
@@ -46,10 +49,13 @@ export default function ServicesHomePage() {
 
   return (
     <main className='container !pb-8'>
-      <HeaderCategoriesSwiper />
       <CardSlider title='Browse Categories' />
 
-      <h1 className='text-3xl max-md:text-xl font-[900] mt-12 mb-4'>Featured</h1>
+      <div className='flex items-center justify-between mt-12 mb-4'>
+        <h1 className='text-3xl max-md:text-xl font-[900] '>Featured</h1>
+
+        <Button  href={'/services/all'} className='!w-[35px] !px-2   !h-[35px] !rounded-lg !text-base ' icon={<ChevronsRight   size={22} />} />
+      </div>
 
       {topServices.length === 0 ? (
         <NoResults mainText='No featured services available at the moment.' additionalText='Please check back later or explore other categories.' />

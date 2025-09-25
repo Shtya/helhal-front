@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DropdownWrapper } from '../molecules/Header';
+import { DropdownItem   } from '../molecules/Header';
 import { useTranslations } from 'next-intl';
 import { notificationService } from '@/services/notificationService';
 import { toast } from 'react-hot-toast';
@@ -120,7 +120,7 @@ const NotificationPopup = () => {
         {unreadCount > 9 ? '9+' : unreadCount}
       </motion.span>
 
-      <DropdownWrapper iconSrc='/icons/notification.svg' title={t('notificationsTitle')} setOpen={setIsOpen}>
+      <DropdownItem iconSrc='/icons/notification.svg' title={t('notificationsTitle')} setOpen={setIsOpen}>
         <div className='w-full max-h-96 overflow-y-auto'>
           <div className='flex items-center justify-between py-4 border-b border-gray-200'>
             <h3 className='text-lg font-semibold text-gray-900'>{t('notificationsTitle')}</h3>
@@ -194,7 +194,7 @@ const NotificationPopup = () => {
             </div>
           )}
         </div>
-      </DropdownWrapper>
+      </DropdownItem>
     </div>
   );
 };

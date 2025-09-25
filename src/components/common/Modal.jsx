@@ -14,6 +14,6 @@ export function Modal({ title, children, onClose }) {
         <div className='mt-4'>{children}</div>
       </div>
     </div>,
-    document.body // Renders the modal directly into the body tag
+    document.body  
   );
 }

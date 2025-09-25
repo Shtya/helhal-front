@@ -4,13 +4,7 @@ import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 
-function makeRange(start, end) {
-  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-}
-
-/**
- * tokens: number | 'left-ellipsis' | 'right-ellipsis'
- */
+ 
 function buildPageTokens({ page, totalPages, siblingCount = 1, boundaryCount = 1 }) {
   if (totalPages <= 1) return [1];
 
@@ -80,24 +74,27 @@ export default function Pagination({
   jumpBy = 5, // how many pages to jump when clicking ellipsis
 }) {
   const navRef = useRef(null);
-  if (totalPages <= 1) return null;
 
-  const tokens = useMemo(() => buildPageTokens({ page, totalPages, siblingCount, boundaryCount }), [page, totalPages, siblingCount, boundaryCount]);
+  // hooks always run
+  const tokens = useMemo(
+    () => buildPageTokens({ page, totalPages, siblingCount, boundaryCount }),
+    [page, totalPages, siblingCount, boundaryCount]
+  );
 
   const goTo = useCallback(
-    p => {
+    (p) => {
       const next = Math.min(Math.max(1, p), totalPages);
       setPage(next);
     },
-    [setPage, totalPages],
+    [setPage, totalPages]
   );
 
   const onKey = useCallback(
-    e => {
+    (e) => {
       if (e.key === 'ArrowLeft') goTo(page - 1);
       if (e.key === 'ArrowRight') goTo(page + 1);
     },
-    [page, goTo],
+    [page, goTo]
   );
 
   useEffect(() => {
@@ -107,6 +104,10 @@ export default function Pagination({
     return () => el.removeEventListener('keydown', onKey);
   }, [onKey]);
 
+  // safe conditional render AFTER hooks
+  if (totalPages <= 1) {
+    return null;
+  }
   return (
     <div className={`flex justify-center mt-8 ${className}`}>
       <nav ref={navRef} className='flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm px-2 py-1' aria-label='Pagination' role='navigation' tabIndex={0}>

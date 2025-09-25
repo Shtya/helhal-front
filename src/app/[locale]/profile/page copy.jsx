@@ -9,7 +9,6 @@ import Input from '@/components/atoms/Input';
 import Textarea from '@/components/atoms/Textarea';
 import Select from '@/components/atoms/Select';
 import Button from '@/components/atoms/Button';
-import ImagePicker from '@/components/atoms/ImagePicker';
 import { Modal } from '@/components/common/Modal';
 import AttachFilesButton from '@/components/atoms/AttachFilesButton';
 import { StatCard } from '@/components/dashboard/Ui';
@@ -18,7 +17,7 @@ import { StatCard } from '@/components/dashboard/Ui';
 const Card = ({ className = '', children }) => <div className={`rounded-xl border border-slate-200 bg-white ${className}`}>{children}</div>;
 const Divider = ({ className = '' }) => <div className={`my-6 h-px bg-slate-200 ${className}`} />;
 const Pill = ({ children, className = '' }) => <span className={`inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-sm ${className}`}>{children}</span>;
- 
+
 /* ------------------------------ Skeletons ------------------------------ */
 const shimmer = 'animate-pulse bg-slate-200/70';
 function SkeletonLine({ w = 'w-full', h = 'h-4', className = '' }) {

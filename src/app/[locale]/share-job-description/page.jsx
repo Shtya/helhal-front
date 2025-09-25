@@ -20,8 +20,7 @@ import { toast } from 'react-hot-toast';
 import InputList from '@/components/atoms/InputList';
 import AttachmentList from '@/components/common/AttachmentList';
 import CategorySelect from '@/components/atoms/CategorySelect';
-import BreadcrumbSteps from '@/components/atoms/BreadcrumbSteps';
-
+ 
 const jobValidationSchema = yup.object({
   title: yup.string().required('Title is required'),
   description: yup.string().required('Description is required'),

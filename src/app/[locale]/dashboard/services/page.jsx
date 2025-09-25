@@ -1,10 +1,9 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Search, MoreVertical, Eye, Edit, Trash2, Plus, Folder, FolderOpen, RefreshCw, TrendingUp, BarChart3 } from 'lucide-react';
+ import { Search,   Eye,  Trash2, Plus, Folder  } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
-import api, { baseImg } from '@/lib/axios';
+import api from '@/lib/axios';
 import DashboardLayout from '@/components/dashboard/Layout';
 import { MetricBadge, Modal, KPIGrid, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
@@ -13,6 +12,8 @@ import Button from '@/components/atoms/Button';
 import Img from '@/components/atoms/Img';
 import ImagePicker from '@/components/atoms/ImagePicker';
 import Textarea from '@/components/atoms/Textarea';
+import toast from 'react-hot-toast';
+import { Link } from '@/i18n/navigation';
 
 export default function AdminServicesDashboard() {
   const [activeTab, setActiveTab] = useState('all');
@@ -29,7 +30,8 @@ export default function AdminServicesDashboard() {
     limit: 10,
     sortBy: 'created_at',
     sortOrder: 'DESC',
-    status: 'all'
+    status: 'all',
+    valueSort: 'newest',
   });
 
   const [loading, setLoading] = useState(true);
@@ -62,9 +64,10 @@ export default function AdminServicesDashboard() {
         page: filters.page,
         limit: filters.limit,
         sortBy: filters.sortBy,
+        valueSort: filters.valueSort,
         sortOrder: filters.sortOrder,
         status: activeTab === 'all' ? '' : activeTab,
-        search: debouncedSearch
+        search: debouncedSearch,
       };
 
       const res = await api.get('/services/admin', { params: q });
@@ -92,57 +95,11 @@ export default function AdminServicesDashboard() {
 
   const applySortPreset = opt => {
     const id = opt?.id ?? opt?.target?.value ?? opt;
-    if (id === 'newest') setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'DESC', page: 1 }));
-    if (id === 'oldest') setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'ASC', page: 1 }));
-    if (id === 'az') setFilters(p => ({ ...p, sortBy: 'title', sortOrder: 'ASC', page: 1 }));
-    if (id === 'za') setFilters(p => ({ ...p, sortBy: 'title', sortOrder: 'DESC', page: 1 }));
-    if (id === 'popular') setFilters(p => ({ ...p, sortBy: 'ordersCount', sortOrder: 'DESC', page: 1 }));
-  };
-
-  const openCreate = () => {
-    setMode('create');
-    setCurrent({
-      title: '',
-      slug: '',
-      brief: '',
-      description: '',
-      categoryId: '',
-      subcategoryId: '',
-      status: 'Draft',
-      packages: [
-        {
-          type: 'Basic',
-          title: 'Basic Package',
-          price: 0,
-          description: '',
-          revisions: 1,
-          deliveryTime: 3,
-          features: []
-        }
-      ],
-      searchTags: [],
-      gallery: [],
-      faq: []
-    });
-    setModalOpen(true);
-  };
-
-  const openView = async id => {
-    try {
-      setApiError(null);
-      const res = await api.get(`/services/${id}`);
-      setMode('view');
-      setCurrent(res.data);
-      setModalOpen(true);
-    } catch (e) {
-      setApiError(e?.response?.data?.message || 'Failed to load service.');
-    }
-  };
-
-  const openEdit = row => {
-    setMode('edit');
-    setCurrent(row);
-    setModalOpen(true);
+    if (id === 'newest') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'created_at', sortOrder: 'DESC', page: 1 }));
+    if (id === 'oldest') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'created_at', sortOrder: 'ASC', page: 1 }));
+    if (id === 'az') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'title', sortOrder: 'ASC', page: 1 }));
+    if (id === 'za') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'title', sortOrder: 'DESC', page: 1 }));
+    if (id === 'popular') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'ordersCount', sortOrder: 'DESC', page: 1 }));
   };
 
   const onSubmit = async payload => {
@@ -165,22 +122,16 @@ export default function AdminServicesDashboard() {
     }
   };
 
-  const onDelete = async id => {
-    if (!confirm('Delete this service? This cannot be undone.')) return;
-    try {
-      await api.delete(`/services/${id}`);
-      await fetchServices();
-    } catch (e) {
-      alert(e?.response?.data?.message || 'Error deleting service.');
-    }
-  };
-
   const updateStatus = async (id, status) => {
+    const toastId = toast.loading('Updating service status...');
+
     try {
-      await api.put(`/services/${id}`, { status });
+      await api.put(`/services/${id}`, { status: status.id });
       await fetchServices();
+
+      toast.success('Service status updated successfully!', { id: toastId });
     } catch (e) {
-      alert(e?.response?.data?.message || 'Error updating service status.');
+      toast.error(e?.response?.data?.message || 'Error updating service status.', { id: toastId });
     }
   };
 
@@ -189,13 +140,14 @@ export default function AdminServicesDashboard() {
     {
       key: 'gallery',
       label: 'Image',
-      render: v => (
-        v.gallery && v.gallery.length > 0 ? 
-          <Img src={v.gallery[0]} alt='Service' className='w-10 h-10 rounded-md object-cover' /> : 
+      render: v =>
+        v.gallery && v.gallery.length > 0 ? (
+          <Img src={v.gallery[0].url} alt='Service' className='w-10 h-10 rounded-md object-cover' />
+        ) : (
           <div className='w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center'>
             <Folder size={16} className='text-slate-400' />
           </div>
-      ),
+        ),
     },
     { key: 'title', label: 'Title' },
     { key: 'slug', label: 'Slug' },
@@ -204,11 +156,11 @@ export default function AdminServicesDashboard() {
       label: 'Status',
       render: v => {
         const statusColors = {
-          'Active': 'success',
-          'Draft': 'neutral',
-          'Pending': 'warning',
-          'Paused': 'secondary',
-          'Denied': 'danger'
+          Active: 'success',
+          Draft: 'neutral',
+          Pending: 'warning',
+          Paused: 'secondary',
+          Denied: 'danger',
         };
         return <MetricBadge tone={statusColors[v.status] || 'neutral'}>{v.status}</MetricBadge>;
       },
@@ -216,7 +168,7 @@ export default function AdminServicesDashboard() {
     {
       key: 'seller',
       label: 'Seller',
-      render: v => v.seller?.username || 'N/A'
+      render: v => v.seller?.username || 'N/A',
     },
     {
       key: 'performance',
@@ -237,18 +189,12 @@ export default function AdminServicesDashboard() {
 
   const actions = row => (
     <div className='flex items-center gap-2'>
-      <button onClick={() => openView(row.id)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
+      <Link href={`/services/category/${row.slug}`} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
-      </button>
-      <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title='Edit'>
-        <Edit size={16} />
-      </button>
-      <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title='Delete'>
-        <Trash2 size={16} />
-      </button>
+      </Link>
       <Select
         value={row.status}
-        onChange={e => updateStatus(row.id, e.target.value)}
+        onChange={e => updateStatus(row.id, e)}
         options={[
           { id: 'Active', name: 'Activate' },
           { id: 'Paused', name: 'Pause' },
@@ -266,12 +212,13 @@ export default function AdminServicesDashboard() {
         <GlassCard gradient='from-indigo-400 via-purple-400 to-pink-400' className='mb-6 !overflow-visible'>
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
-            <div className='flex flex-wrap items-center gap-3'>
+            <div className='flex  items-center gap-3'>
               <Input iconLeft={<Search size={16} />} className='!w-fit' value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder='Search services…' />
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}
                 placeholder='Order by'
+                value={filters.valueSort}
                 options={[
                   { id: 'newest', name: 'Newest' },
                   { id: 'oldest', name: 'Oldest' },
@@ -280,7 +227,6 @@ export default function AdminServicesDashboard() {
                   { id: 'popular', name: 'Most Popular' },
                 ]}
               />
-              <Button name='Add Service' onClick={openCreate} className='!w-fit' />
             </div>
           </div>
         </GlassCard>
@@ -288,16 +234,7 @@ export default function AdminServicesDashboard() {
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
         <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
-          <Table 
-            data={rows} 
-            columns={columns} 
-            actions={actions} 
-            loading={loading} 
-            rowsPerPage={filters.limit} 
-            page={filters.page} 
-            totalCount={totalCount} 
-            onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} 
-          />
+          <Table data={rows} columns={columns} actions={actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
         <Modal open={modalOpen} title={mode === 'view' ? 'Service Details' : mode === 'edit' ? 'Edit Service' : 'Create Service'} onClose={() => setModalOpen(false)} size='lg' hideFooter>
@@ -326,8 +263,8 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
         description: '',
         revisions: 1,
         deliveryTime: 3,
-        features: []
-      }
+        features: [],
+      },
     ],
     searchTags: value?.searchTags || [],
     gallery: value?.gallery || [],
@@ -357,8 +294,8 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
           description: '',
           revisions: 1,
           deliveryTime: 3,
-          features: []
-        }
+          features: [],
+        },
       ],
       searchTags: value?.searchTags || [],
       gallery: value?.gallery || [],
@@ -385,8 +322,8 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
     const fetchSubcategories = async () => {
       if (form.categoryId) {
         try {
-          const res = await api.get('/categories', { 
-            params: { type: 'subcategory', parentId: form.categoryId } 
+          const res = await api.get('/categories', {
+            params: { type: 'subcategory', parentId: form.categoryId },
           });
           setSubcategories(res.data.records || []);
         } catch (e) {
@@ -416,15 +353,18 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
   };
 
   const addPackage = () => {
-    const newPackages = [...form.packages, {
-      type: 'Custom',
-      title: 'Custom Package',
-      price: 0,
-      description: '',
-      revisions: 1,
-      deliveryTime: 3,
-      features: []
-    }];
+    const newPackages = [
+      ...form.packages,
+      {
+        type: 'Custom',
+        title: 'Custom Package',
+        price: 0,
+        description: '',
+        revisions: 1,
+        deliveryTime: 3,
+        features: [],
+      },
+    ];
     setField('packages', newPackages);
   };
 
@@ -516,25 +456,12 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Category *</label>
-          <Select
-            disabled={readOnly}
-            value={form.categoryId}
-            onChange={e => setField('categoryId', e.target.value)}
-            options={categories.map(c => ({ id: c.id, name: c.name }))}
-            placeholder='Select category'
-            required
-          />
+          <Select disabled={readOnly} value={form.categoryId} onChange={e => setField('categoryId', e.target.value)} options={categories.map(c => ({ id: c.id, name: c.name }))} placeholder='Select category' required />
         </div>
 
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Subcategory</label>
-          <Select
-            disabled={readOnly || !form.categoryId}
-            value={form.subcategoryId}
-            onChange={e => setField('subcategoryId', e.target.value)}
-            options={subcategories.map(c => ({ id: c.id, name: c.name }))}
-            placeholder={form.categoryId ? 'Select subcategory' : 'Select category first'}
-          />
+          <Select disabled={readOnly || !form.categoryId} value={form.subcategoryId} onChange={e => setField('subcategoryId', e.target.value)} options={subcategories.map(c => ({ id: c.id, name: c.name }))} placeholder={form.categoryId ? 'Select subcategory' : 'Select category first'} />
         </div>
       </div>
 
@@ -608,9 +535,7 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
       <div className='border-t pt-4'>
         <div className='flex justify-between items-center mb-4'>
           <h3 className='text-lg font-medium text-slate-800'>Gallery Images</h3>
-          {!readOnly && (
-            <ImagePicker onSelect={addGalleryImage} multiple={true} />
-          )}
+          {!readOnly && <ImagePicker onSelect={addGalleryImage} multiple={true} />}
         </div>
 
         <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
@@ -618,11 +543,7 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
             <div key={index} className='relative group'>
               <Img src={img} alt={`Gallery ${index + 1}`} className='w-full h-24 object-cover rounded-md' />
               {!readOnly && (
-                <button
-                  type='button'
-                  onClick={() => removeGalleryImage(index)}
-                  className='absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'
-                >
+                <button type='button' onClick={() => removeGalleryImage(index)} className='absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'>
                   <Trash2 size={14} />
                 </button>
               )}
@@ -635,24 +556,12 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
         <h3 className='text-lg font-medium text-slate-800 mb-4'>Additional Options</h3>
         <div className='flex items-center gap-4'>
           <label className='flex items-center gap-2'>
-            <input
-              type='checkbox'
-              disabled={readOnly}
-              checked={form.fastDelivery}
-              onChange={e => setField('fastDelivery', e.target.checked)}
-              className='rounded border-slate-300 text-indigo-600 focus:ring-indigo-500'
-            />
+            <input type='checkbox' disabled={readOnly} checked={form.fastDelivery} onChange={e => setField('fastDelivery', e.target.checked)} className='rounded border-slate-300 text-indigo-600 focus:ring-indigo-500' />
             <span className='text-sm font-medium text-slate-700'>Fast Delivery Available</span>
           </label>
 
           <label className='flex items-center gap-2'>
-            <input
-              type='checkbox'
-              disabled={readOnly}
-              checked={form.additionalRevision}
-              onChange={e => setField('additionalRevision', e.target.checked)}
-              className='rounded border-slate-300 text-indigo-600 focus:ring-indigo-500'
-            />
+            <input type='checkbox' disabled={readOnly} checked={form.additionalRevision} onChange={e => setField('additionalRevision', e.target.checked)} className='rounded border-slate-300 text-indigo-600 focus:ring-indigo-500' />
             <span className='text-sm font-medium text-slate-700'>Additional Revision Available</span>
           </label>
         </div>
@@ -660,11 +569,15 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
 
       {readOnly ? (
         <div className='flex justify-end'>
-          <Button color='white' name='Close' onClick={onCancel} className='!w-fit'>Close</Button>
+          <Button color='white' name='Close' onClick={onCancel} className='!w-fit'>
+            Close
+          </Button>
         </div>
       ) : (
         <div className='flex justify-end gap-3 border-t pt-4'>
-          <Button type='button' color='secondary' name='Cancel' onClick={onCancel} className='!w-fit'>Cancel</Button>
+          <Button type='button' color='secondary' name='Cancel' onClick={onCancel} className='!w-fit'>
+            Cancel
+          </Button>
           <Button type='submit' color='default' name={submitting ? 'Saving…' : mode === 'edit' ? 'Update Service' : 'Create Service'} disabled={!canSubmit || submitting} className='!w-fit'>
             {submitting ? 'Saving…' : mode === 'edit' ? 'Update Service' : 'Create Service'}
           </Button>

@@ -10,10 +10,12 @@ export const swiperSettings = {
   },
   spaceBetween: 20,
   loop: true,  
-  slidesPerView: 2,
-  breakpoints: {
-    940: { slidesPerView: 2 },
-    380: { slidesPerView: 1 },
+  slidesPerView: 3,
+    breakpoints: {
+    380: { slidesPerView: 1 },   // phones
+    640: { slidesPerView: 2 },   // tablets
+    940: { slidesPerView: 3 },   // small laptops
+    1280: { slidesPerView: 4 },  // desktops
   },
 };
 

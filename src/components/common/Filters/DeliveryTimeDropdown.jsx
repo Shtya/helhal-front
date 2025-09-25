@@ -2,11 +2,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, Check, TimerIcon } from 'lucide-react';
+import { ChevronDown, Check, TimerIcon, Eraser } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 
 export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDeliveryTime, customDeliveryTime }) {
-  const BRAND = '#108A00';
+  const BRAND = '#007a55';
   const RING = `${BRAND}66`;
   const tiers = [
     { id: 'u1000', label: 'Express 24 hrs' },
@@ -93,12 +93,12 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
       <button
         type='button'
         onClick={() => onPick(id)}
-        className={`w-full px-3 py-2.5 mx-1 rounded-md flex items-center justify-between text-left transition
-          cursor-pointer ${active ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-50 text-slate-800'}`}>
+        className={`w-full px-3 py-2.5  rounded-md flex items-center justify-between text-left transition
+          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-emerald-100 text-slate-800'}`}>
         <span className='flex items-center gap-3'>
           <span
             className={`w-5 h-5 rounded-full border flex items-center justify-center
-              ${active ? 'border-transparent bg-white/20' : 'border-[#108A0013] bg-[#108A0033]'}`}>
+              ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513]'}`}>
             {active && <Check className='w-3 h-3 text-white' />}
           </span>
           <span className={`text-sm ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
@@ -119,24 +119,28 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
           onClick={() => setOpen(o => !o)}
           className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition
             ${open ? 'ring-2' : ''}`}
-          style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `0 0 0 3px ${RING}` : undefined }}>
+          style={{
+            borderColor: open ? `${BRAND}90` : '#cbd5e1',
+            boxShadow: open ? `0 0 0 3px ${BRAND}66 inset` : undefined,
+          }}>
           <span className='truncate'>{activeLabel()}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
         </button>
 
         {/* Panel */}
         <div
-          className={`absolute left-0 mt-2 w-full rounded-2xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
+          className={`absolute left-0 mt-2 w-full rounded-lg border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
             transition origin-top z-[70]
-            ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
+            ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
+          style={{ border: `1px solid ${BRAND}60` }}>
           <div className='py-4'>
             <div className='px-4'>
               <h4 className='text-lg font-bold text-slate-900 mb-2'>Delivery Time</h4>
             </div>
 
-            <div className='px-4 space-y-2'>
+            <div className=' px-2 '>
               {tiers.map(t => (
-                <RadioRow key={t.id} id={t.id} label={t.label} />
+                <RadioRow className key={t.id} id={t.id} label={t.label} />
               ))}
 
               {/* Custom input */}
@@ -156,9 +160,9 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
             </div>
 
             {/* Footer */}
-            <div className='px-4 mt-2 -mb-2 flex items-center justify-between'>
-              <Button name='Clear All' color='outline' className='!w-fit !h-[35px] ' onClick={clearAll} />
-              {hasChanges && <Button name='Apply' color='default' className='!w-fit !h-[35px]' onClick={applyChanges} />}
+            <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>
+              <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
+              {hasChanges && <Button icon={<Check size={16} />} color='default' className='!w-fit !h-[35px]' onClick={applyChanges} />}
             </div>
           </div>
         </div>

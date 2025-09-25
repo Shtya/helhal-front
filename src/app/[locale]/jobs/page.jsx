@@ -19,6 +19,7 @@ import AdvancedJobsDropdown from '@/components/Filters/AdvancedJobsDropdown';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
 import { Stars } from '@/components/pages/services/ServiceCard';
 import Img from '@/components/atoms/Img';
+import UserAvatar from '@/components/common/UserAvatar';
 
 // -------------------------------------------------
 // Services
@@ -272,19 +273,8 @@ function JobCard({ job, onOpen, index }) {
         </div>
       </div>
 
-      <div className='flex items-center gap-3 mb-2 '>
-        <div className='relative h-9 w-9 overflow-hidden rounded-full ring-1 ring-slate-200'>
-          {/* small avatar */}
-          <Img altSrc={'/no-user.png'} src={buyer?.profileImage} alt={buyer?.username || 'Client'} className='h-full w-full object-cover' />
-        </div>
-        <div className='leading-tight'>
-          <div className='flex items-center gap-2'>
-            <span className='text-sm font-semibold text-slate-900 line-clamp-1'>{buyer?.username || 'Client'}</span>
-          </div>
-          <div className='flex items-center gap-2 text-xs text-slate-500'>{buyer.role}</div>
-        </div>
-      </div>
-
+			<UserAvatar buyer={buyer} />
+ 
       <h2 className='text-lg sm:text-xl font-semibold text-slate-900 leading-snug'>{job.title}</h2>
 
       <div className='mt-1 text-sm text-slate-600'>{budgetLine || 'Fixed-price · Intermediate'}</div>

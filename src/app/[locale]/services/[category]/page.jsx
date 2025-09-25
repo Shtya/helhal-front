@@ -1,6 +1,5 @@
 // File: CategoryPage.jsx
 'use client';
-import Breadcrumbs from '@/components/atoms/Breadcrumbs';
 import Input from '@/components/atoms/Input';
 import Select from '@/components/atoms/Select';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
@@ -15,7 +14,9 @@ import NoResults from '@/components/common/NoResults';
 import SellerDetailsDropdown from '@/components/common/Filters/SellerDetailsDropdown';
 import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdown';
 import DeliveryTimeDropdown from '@/components/common/Filters/DeliveryTimeDropdown';
-
+import Breadcrumbs2 from '@/components/atoms/BreadcrumbSteps';
+import { motion } from 'framer-motion';
+import { SlidersHorizontal } from 'lucide-react';
 export default function CategoryPage({ params }) {
   const t = useTranslations('CategoryPage');
   const { category } = use(params);
@@ -152,20 +153,30 @@ export default function CategoryPage({ params }) {
   return (
     <main className='container !mb-12'>
       <HeaderCategoriesSwiper category={category} />
-      <Breadcrumbs items={[{ label: t('services'), href: '/services' }, { label: categoryData?.name || '' }]} />
+      {/* <Breadcrumbs2 items={[{ label: t('services'), href: '/services' }, { label: categoryData?.name || '' }]} /> */}
 
       {/* ===== Filters ===== */}
-      <div className='mb-8 mt-8'>
-        <div className='bg-slate-50/50 border border-slate-100 rounded-xl p-4'>
+      <div className='mb-8 mt-8 relative z-[30] '>
+        <motion.div className=' rounded-xl border border-slate-200 bg-white/70   p-4 shadow-custom  hover:!shadow-[0_8px_24px_-6px_rgba(16,185,129,0.25),0_2px_6px_rgba(15,23,42,0.08)]  transition-shadow duration-300 md:p-8' initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
           <div className='mb-4'>
-            <h2 className='text-lg font-semibold text-slate-700'>{t('filterTitle')}</h2>
-            <p className='text-sm text-slate-500'>{t('filterSubtitle')}</p>
+            <div className='flex items-center gap-2  w-full '>
+              <div className='flex items-center gap-2 justify-between w-full '>
+                <div className='flex items-center gap-2' >
+                  <SlidersHorizontal className='h-5 w-5 text-emerald-600' aria-hidden='true' />
+                  <h2 className='text-lg font-bold text-slate-800'>{t('filterTitle') || 'Filters'}</h2>
+                </div>
+                <span className='text-slate-500 text-base '>
+                   ({pagination.total}) { pagination?.total?.length >= 2 ? "results" :"result" }
+                </span>
+              </div>
+            </div>
+            <p className='mt-1 text-sm text-slate-500'>{t('filterSubtitle') || 'Refine your search with custom options.'}</p>
           </div>
 
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 items-center'>
+          <div className=' grid grid-cols-1 gap-3 items-center  sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6  '>
             <SellerDetailsDropdown filterOptions={filterOptions} onFilterChange={handleSellerDetailsChange} selectedValues={formData} />
 
-            <SellerBudgetDropdown  onBudgetChange={handleBudgetChange} selectedPriceRange={formData.priceRange} customBudget={formData.customBudget} />
+            <SellerBudgetDropdown onBudgetChange={handleBudgetChange} selectedPriceRange={formData.priceRange} customBudget={formData.customBudget} />
 
             <DeliveryTimeDropdown onDeliveryTimeChange={handleDeliveryTimeChange} selectedDeliveryTime={formData.deliveryTime} customDeliveryTime={formData.customDeliveryTime} />
 
@@ -199,20 +210,12 @@ export default function CategoryPage({ params }) {
 
             <Input placeholder={t('searchPlaceholder')} iconLeft={'/icons/search.svg'} actionIcon={'/icons/send-arrow.svg'} value={formData.search} onAction={() => console.log('Searching...')} onChange={val => handleSelectChange('search', val.target.value)} />
           </div>
-        </div>
+        </motion.div>
       </div>
-
-      <div className='flex items-center gap-2 mb-4'>
-        <h1 className='text-2xl font-semibold'>{categoryData?.name || ''}</h1>
-        <span className='text-slate-500 text-base '>
-          {pagination.total} {t('results')}
-        </span>
-      </div>
-
       <section className=' cards-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>{loading ? Array.from({ length: pagination.limit }).map((_, i) => <CardSkeleton key={i} />) : services.length > 0 ? services.map((service, id) => <ServiceCard key={service.id + id} service={service} />) : <NoResults mainText={t('noServices')} additionalText={t('noServicesDesc')} buttonText={t('resetFilters')} onClick={resetFilters} />}</section>
 
       {/* ===== Pagination ===== */}
-      {!loading &&  services?.length > 0 && <Pagination page={pagination.page} totalPages={pagination.pages} setPage={handlePageChange} />}
+      {!loading && services?.length > 0 && <Pagination page={pagination.page} totalPages={pagination.pages} setPage={handlePageChange} />}
     </main>
   );
 }

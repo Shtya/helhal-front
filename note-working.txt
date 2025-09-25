@@ -8,3 +8,33 @@ buyer
 	* accept proposals
 	* go to create order payment 
 	* and money move to the walet of the platform
+
+
+	
+
+	- after return the accept go it to somepage sumilate the payment fomr this page will make the order, after accept redirect to the payment method to create order and pay the money 
+	- and when click on the name of the user show his profile and his data by redirect to /profile 
+	- loading on button fo the accept 
+	- 
+
+
+
+	flow of the accept proposals
+	- sellers apply on proposal
+	- buyer accept one proposal the all others make cancel for them
+	- when click on accept for one don't make accept until pay via payment when the payment is success make it accept and create order and add this money in the wallet of the platform
+	- in this case the job is make unactive to don't show in the jobs browser page 
+	- and also the seller when work on this job and finish make submitted and the buyer make delivered 
+	- and after this move the money to the seller to his wallet 
+	
+	
+* accept proposal 
+	- after make accept more reject for the all and can make switch to another proposal accept it
+	- after accept redirect to the payment method to create order and pay the money and don't make accept until pay the money 
+	- and show on his orders 
+	- and when click on the name of the user show his profile and his data 
+	- and check the msg 
+	- and show modal when he make accept to ensure 
+	- and for the seller show his proposals and the status
+	- loading on button fo the accept 
+	

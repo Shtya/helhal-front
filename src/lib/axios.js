@@ -1,7 +1,7 @@
 // lib/axios.ts
 import axios from 'axios';
 
-const DASHBOARD_FORCED_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFmYmNhZTgyLTQ5YjgtNGRkNS04NjBlLTJlMDkyNjBlOWRlNSIsInNpZCI6ImJhMmQwYzRlLWFjOGQtNGUwMC05ZjEwLTEzMGRkNzkwNTk0NyIsImlhdCI6MTc1NzQyMDk0NywiZXhwIjoxNzU3NTkzNzQ3fQ.F5UfpNqXY4k1gjIga89ZZePYY7uaZ0jOTVejc_e7Au0';
+const DASHBOARD_FORCED_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRiZGE2YTZiLThkNDUtNGI5Ni1iYTM1LTBkN2I0YTliMDYyNiIsInNpZCI6IjI3ZmVlNzI1LTU2NTgtNGYzYy1hZDUzLTE2ODlkYjc4MTg3NCIsImlhdCI6MTc1ODcxMDczMiwiZXhwIjoxNzU4ODgzNTMyfQ.hHnBgv2MinsOBUjj0mNpm1eTuY0P9TgNWWuEdMAl-K0';
 function isDashboardPath() {
   if (typeof window === 'undefined') return false;
   const p = window.location?.pathname?.split("/")[2] || '';

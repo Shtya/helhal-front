@@ -1,64 +1,337 @@
 'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X, LogOut, ShoppingCart, CompassIcon, StoreIcon, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, Search, ClipboardList, FileText } from 'lucide-react';
+import { usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useTranslations } from 'next-intl';
-import { Divider } from '@/app/[locale]/services/[category]/[service]/page';
-import { FiBell, FiBriefcase, FiSettings, FiShare2, FiShoppingCart, FiTrendingUp, FiUser, FiGrid, FiDollarSign, FiPackage } from 'react-icons/fi';
-import { useRouter } from '@/i18n/navigation';
-import { getUserInfo } from '@/hooks/useUser';
-import NotificationPopup from '../common/NotificationPopup';
-import api from '@/lib/axios';
+import { Mail, Copy, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
-import { ChevronDown } from 'lucide-react';
+import { getUserInfo } from '@/hooks/useUser';
+import api from '@/lib/axios';
 
-const springy = {
-  type: 'spring',
-  stiffness: 500,
-  damping: 30,
-  mass: 0.6,
+/* =========================================================
+   Animations
+   ========================================================= */
+const springy = { type: 'spring', stiffness: 500, damping: 30, mass: 0.6 };
+const fadeDown = { hidden: { opacity: 0, y: -12 }, show: { opacity: 1, y: 0, transition: { ...springy } } };
+const stagger = { hidden: { opacity: 1 }, show: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.04 } } };
+const fadeIn = { hidden: { opacity: 0, x: 12 }, show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 360, damping: 30 } } };
+
+/* =========================================================
+   Lightweight Helpers (inline so this file is standalone)
+   ========================================================= */
+export const Divider = ({ className = '' }) => <div className={`my-1 border-t border-slate-200 ${className}`} />;
+
+const getLocalUser = () => {
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 };
 
-const fadeDown = {
-  hidden: { opacity: 0, y: -12 },
-  show: { opacity: 1, y: 0, transition: { ...springy } },
+// const NotificationPopup = () => {
+//   const [open, setOpen] = useState(false);
+//   const btnRef = useRef(null);
+
+//   useEffect(() => {
+// 		api.get("/notifications" ).then(res => {
+// 			console.log(res.data);
+// 			/** return this data {
+//     "total_records": 1,
+//     "current_page": 1,
+//     "per_page": 10,
+//     "records": [
+//         {
+//             "id": "45395345-943f-4257-a9d4-ebfefa305052",
+//             "created_at": "2025-09-24T09:19:26.030Z",
+//             "updated_at": "2025-09-24T09:19:26.030Z",
+//             "deleted_at": null,
+//             "userId": "707a2de6-b83a-4f2b-b492-cca4cca0ef7f",
+//             "type": "payment",
+//             "title": "Payment Successful",
+//             "message": "Your payment of 200 SAR for “I will build an AR prototype for product visualization” was processed successfully. Transaction: TX-1758705565263.",
+//             "isRead": false,
+//             "relatedEntityType": "order",
+//             "relatedEntityId": "6b041dc4-d4a6-46c7-8372-b46156d822ec"
+//         }
+//     ]
+// } */
+
+// 		// use it in the componennt and enhacne the ui here
+// 		})
+//     const onClick = e => {
+//       if (!btnRef.current) return;
+//       if (!btnRef.current.contains(e.target)) setOpen(false);
+//     };
+//     document.addEventListener('mousedown', onClick);
+//     return () => document.removeEventListener('mousedown', onClick);
+//   }, []);
+
+//   const items = [
+//     { title: 'Order #1452 updated', time: '2m ago' },
+//     { title: 'New message from Sarah', time: '8m ago' },
+//     { title: 'Proposal accepted', time: '1h ago' },
+//   ];
+
+//   return (
+//     <div className='relative' ref={btnRef}>
+//       <motion.button onClick={() => setOpen(v => !v)} className='relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
+//         <Bell className='h-5 w-5 text-slate-700' />
+//         <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center'>3</span>
+//       </motion.button>
+
+//       <AnimatePresence>
+//         {open && (
+//           <motion.div initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden'>
+//             <div className='px-4 py-3 border-b border-slate-200 flex items-center justify-between'>
+//               <div className='font-semibold text-slate-900 text-sm'>Notifications</div>
+//             </div>
+//             <div className='max-h-72 overflow-auto'>
+//               {items.map((it, i) => (
+//                 <div key={i} className='px-4 py-3 hover:bg-slate-50'>
+//                   <div className='text-sm text-slate-800'>{it.title}</div>
+//                   <div className='text-xs text-slate-500'>{it.time}</div>
+//                 </div>
+//               ))}
+//             </div>
+//             <div className='px-4 py-2 border-t border-slate-200 text-center'>
+//               <Link href='/notifications' className='text-sm text-emerald-700 hover:underline'>
+//                 View all
+//               </Link>
+//             </div>
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </div>
+//   );
+// };
+
+const relTime = iso => {
+  if (!iso) return '';
+  const now = Date.now();
+  const t = new Date(iso).getTime();
+  const s = Math.max(1, Math.floor((now - t) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
 };
 
-const stagger = {
-  hidden: { opacity: 1 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+const TypeIcon = ({ type }) => {
+  if (type === 'payment') return <CreditCard className='h-4 w-4 text-emerald-700' />;
+  if (type === 'success') return <CheckCircle2 className='h-4 w-4 text-emerald-700' />;
+  return <AlertCircle className='h-4 w-4 text-slate-600' />;
 };
 
-const fadeIn = {
-  hidden: { opacity: 0, x: 12 },
-  show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 360, damping: 30 } },
+const RowSkeleton = () => (
+  <div className='px-4 py-3 flex items-start gap-3'>
+    <div className='h-8 w-8 rounded-lg bg-slate-200 animate-pulse' />
+    <div className='flex-1 space-y-2'>
+      <div className='h-3 w-3/5 rounded bg-slate-200 animate-pulse' />
+      <div className='h-3 w-2/5 rounded bg-slate-200 animate-pulse' />
+    </div>
+  </div>
+);
+
+const NotificationPopup = () => {
+  const [open, setOpen] = useState(false);
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [badge, setBadge] = useState(0); // unread count from /unread-count
+  const [meta, setMeta] = useState({ total_records: 0, per_page: 10, current_page: 1 });
+  const btnRef = useRef(null);
+
+  // ---- fetch helpers ----
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await api.get('/notifications/unread-count');
+      // endpoint returns CRUD.findAll style payload
+      const count = Number(res?.data?.total_records ?? 0);
+      setBadge(count);
+    } catch {
+      // keep existing badge on error
+    }
+  };
+
+  const fetchList = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/notifications');
+      const { records = [], total_records, per_page, current_page } = res.data || {};
+      setRecords(records);
+      setMeta({ total_records, per_page, current_page });
+    } catch {
+      setRecords([]);
+      setMeta({ total_records: 0, per_page: 10, current_page: 1 });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    // initial fetches
+    (async () => {
+      await Promise.all([fetchUnreadCount(), fetchList()]);
+      if (!mounted) return;
+    })();
+
+    const onClick = e => {
+      if (!btnRef.current) return;
+      if (!btnRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      mounted = false;
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, []);
+
+  // ---- actions ----
+  const markOneAsRead = async id => {
+    // optimistic UI
+    setRecords(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
+    setBadge(b => Math.max(0, b - 1));
+    try {
+      await api.put(`/notifications/read/${id}`);
+    } catch {
+      // revert on error
+      setRecords(prev => prev.map(n => (n.id === id ? { ...n, isRead: false } : n)));
+      setBadge(b => b + 1);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    // optimistic UI
+    const unread = records.some(n => !n.isRead);
+    if (!unread && badge === 0) return;
+    setRecords(prev => prev.map(n => ({ ...n, isRead: true })));
+    const prevBadge = badge;
+    setBadge(0);
+    try {
+      await api.put('/notifications/read-all');
+    } catch {
+      // revert on error
+      setBadge(prevBadge);
+      setRecords(prev => prev); // we can't easily restore previous flags → refetch
+      fetchList();
+      fetchUnreadCount();
+    }
+  };
+
+  const goToTarget = n => (n.relatedEntityType === 'order' ? `/orders/${n.relatedEntityId}` : '/notifications');
+
+  return (
+    <div className='relative' ref={btnRef}>
+      <motion.button onClick={() => setOpen(v => !v)} className='relative inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
+        <Bell className='h-5 w-5 text-slate-700' />
+        {badge > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-emerald-600 px-1 text-[11px] text-white'>{badge > 99 ? '99+' : badge}</span>}
+      </motion.button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl' role='dialog' aria-label='Notifications menu'>
+            {/* Header */}
+            <div className='flex items-center justify-between border-b border-slate-200 px-4 py-3'>
+              <div className='text-sm font-semibold text-slate-900'>Notifications</div>
+              <div className='flex items-center gap-2'>
+                <button onClick={markAllAsRead} className='inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-[11px] text-slate-700 hover:bg-slate-50' title='Mark all as read'>
+                  <Check className='h-3.5 w-3.5' />
+                  Read all
+                </button>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className='max-h-72 overflow-auto'>
+              {loading ? (
+                <>
+                  <RowSkeleton />
+                  <RowSkeleton />
+                  <RowSkeleton />
+                </>
+              ) : records.length === 0 ? (
+                <div className='px-6 py-10 text-center text-slate-500'>
+                  <div className='mx-auto mb-2 grid h-10 w-10 place-items-center rounded-xl bg-slate-100'>
+                    <Bell className='h-5 w-5 text-slate-500' />
+                  </div>
+                  <div className='text-sm'>You’re all caught up!</div>
+                </div>
+              ) : (
+                records.map(n => (
+                  <div key={n.id} className={`px-4 py-3 hover:bg-slate-50 ${!n.isRead ? 'bg-emerald-50/30' : ''}`}>
+                    <div className='flex items-start gap-3'>
+                      <div className='grid h-8 w-8 place-items-center rounded-lg bg-emerald-50'>
+                        <TypeIcon type={n.type} />
+                      </div>
+
+                      <div className='min-w-0 flex-1'>
+                        <div className='flex items-center justify-between gap-2'>
+                          <div className='truncate text-sm font-medium text-slate-900'>{n.title}</div>
+                          <div className='shrink-0 text-[11px] text-slate-500'>{relTime(n.created_at)}</div>
+                        </div>
+
+                        <div className='mt-0.5 line-clamp-2 text-sm text-slate-600'>{n.message}</div>
+
+                        <div className='mt-2 flex items-center gap-2'>
+                          {!n.isRead && (
+                            <span className='inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800'>
+                              New <ChevronRight className='h-3 w-3' />
+                            </span>
+                          )}
+
+                          {/* actions */}
+                          {!n.isRead && (
+                            <button onClick={() => markOneAsRead(n.id)} className='text-[11px] text-slate-600 underline-offset-2 hover:underline'>
+                              Mark as read
+                            </button>
+                          )} 
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className='border-t border-slate-200 px-4 py-2 text-center'>
+              <Link href='/notifications' className='text-sm text-emerald-700 hover:underline' onClick={() => setOpen(false)}>
+                View all
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
 
+/* =========================================================
+   Header
+   ========================================================= */
 export default function Header() {
   const t = useTranslations('layout');
   const pathname = usePathname();
-  const [scrolled, setScrolled] = useState(false);
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const headerRef = useRef(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const userData = getUserInfo();
-    setUser(userData);
-    const handleStorageChange = () => setUser(getUserInfo());
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    setUser(getLocalUser());
+    const onStorage = () => setUser(getLocalUser());
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   useEffect(() => {
@@ -67,10 +340,8 @@ export default function Header() {
 
   const toggleMobileNav = () => setIsMobileNavOpen(s => !s);
 
-  /* ---------------- Primary top-level nav ---------------- */
-
-  const buildNavLinks = user => {
-    const base = [
+  const buildNavLinks = u => {
+    const common = [
       { href: '/explore', label: 'Explore', icon: <Compass className='h-5 w-5' /> },
       {
         label: 'Services',
@@ -81,196 +352,137 @@ export default function Header() {
           { href: '/services/design', label: 'Design', icon: <Palette className='h-4 w-4' /> },
         ],
       },
+    ];
 
+    // Buyer-only
+    const buyer = [
       {
         label: 'Jobs',
         icon: <Briefcase className='h-5 w-5' />,
         children: [
           { href: '/share-job-description', label: 'Create Job', icon: <FilePlus2 className='h-4 w-4' /> },
           { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
-          // { href: '/seller/jobs', label: 'Find Work', icon: <Search className='h-4 w-4' /> },
           { href: '/my-jobs', label: 'My Jobs (Buyer)', icon: <ClipboardList className='h-4 w-4' /> },
+        ],
+      },
+    ];
+
+    // Seller-only
+    const seller = [
+      {
+        label: 'Jobs',
+        icon: <Briefcase className='h-5 w-5' />,
+        children: [
+          { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
           { href: '/jobs/proposals', label: 'My Proposals', icon: <FileText className='h-4 w-4' /> },
         ],
       },
     ];
 
-    const sellerQuick = [{ href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }];
-
-    return [...base, ...sellerQuick];
+    // Conditional + common
+    if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }];
+    if (u?.role === 'seller') return [...common, ...seller];
+    return [...common]; // fallback if no role
   };
-  const navLinks = buildNavLinks(user?.role);
 
-  /* ---------------- Role-based dropdown items ---------------- */
+  const navLinks = buildNavLinks(user);
   const getNavItemsByRole = role => {
-    const commonItems = [
-      {
-        href: '/my-profile',
-        label: 'My Profile',
-        icon: <FiUser size={18} className='text-gray-500' />,
-        active: pathname === '/my-profile',
-      },
-      {
-        href: '/orders',
-        label: 'My Orders',
-        icon: <FiShoppingCart size={18} className='text-gray-500' />,
-        active: pathname.includes('/orders'),
-      },
-      { divider: true },
-      {
-        href: '/activity-log',
-        label: 'Activity Log',
-        icon: <FiBell size={18} className='text-gray-500' />,
-        active: pathname.includes('/activity-log'),
-      },
-      {
-        href: '/settings',
-        label: 'Settings',
-        icon: <FiSettings size={18} className='text-gray-500' />,
-        active: pathname.includes('/settings'),
-      },
-      {
-        href: '/my-billing',
-        label: 'My Billing',
-        icon: <FiSettings size={18} className='text-gray-500' />,
-        active: pathname.includes('/my-billing'),
-      },
-      {
-        href: '/invite',
-        label: 'Invite new user',
-        icon: <FiSettings size={18} className='text-gray-500' />,
-        active: pathname.includes('/invite'),
-      },
-      { divider: true },
+    const byOrder = (a, b) => (a.order ?? 99999) - (b.order ?? 99999);
+    const common = [
+      { href: '/profile', label: 'My Profile', icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
+      { href: '/orders', label: 'My Orders', icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/orders'), order: 2 },
+      { href: '/activity-log', label: 'Activity Log', icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/activity-log'), order: 4 },
+      { href: '/my-billing', label: 'My Billing', icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
+      { href: '/settings', label: 'Settings', icon: <Settings size={18} className='text-gray-500' />, active: pathname.startsWith('/settings'), order: 16 },
+      { href: '/invite', label: 'Invite New User', icon: <UserPlus size={18} className='text-gray-500' />, active: pathname.startsWith('/invite'), order: 17 },
+      { divider: true, order: 8 },
     ];
 
-    const buyerItems = [
-      ...commonItems,
-      {
-        href: '/share-job-description',
-        label: 'Share Your Job',
-        icon: <FiShare2 size={18} className='text-gray-500' />,
-        active: pathname.includes('/share-job-description'),
-      },
-      {
-        href: '/my-jobs',
-        label: 'My Jobs',
-        icon: <FiBriefcase size={18} className='text-gray-500' />,
-        active: pathname.includes('/my-jobs'),
-      },
-      {
-        href: '/become-seller',
-        label: 'Become a Seller',
-        icon: <FiTrendingUp size={18} className='text-gray-500' />,
-        active: pathname.includes('/become-seller'),
-      },
+    const buyer = [
+      { href: '/share-job-description', label: 'Share Your Job', icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/share-job-description'), order: 10 },
+      { href: '/my-jobs', label: 'My Jobs', icon: <Briefcase size={18} className='text-gray-500' />, active: pathname.startsWith('/my-jobs'), order: 11 },
+      { href: '/become-seller', label: 'Become a Seller', icon: <DollarSign size={18} className='text-gray-500' />, active: pathname.startsWith('/become-seller'), order: 12 },
     ];
 
-    const sellerItems = [
-      ...commonItems,
-      {
-        href: '/my-gigs',
-        label: 'My Gigs',
-        icon: <FiGrid size={18} className='text-gray-500' />,
-        active: pathname.includes('/my-gigs'),
-      },
-      {
-        href: '/create-gig',
-        label: 'Create a Gig',
-        icon: <FiGrid size={18} className='text-gray-500' />,
-        active: pathname.includes('/create-gig'),
-      },
-      {
-        href: '/seller/services',
-        label: 'My Services',
-        icon: <FiPackage size={18} className='text-gray-500' />,
-        active: pathname.includes('/seller/services'),
-      },
-      {
-        href: '/seller/earnings',
-        label: 'Earnings',
-        icon: <FiDollarSign size={18} className='text-gray-500' />,
-        active: pathname.includes('/seller/earnings'),
-      },
-      {
-        href: '/seller/orders',
-        label: 'Order Requests',
-        icon: <FiBriefcase size={18} className='text-gray-500' />,
-        active: pathname.includes('/seller/orders'),
-      },
+    const seller = [
+      { href: '/my-gigs', label: 'My Services', icon: <LayoutGrid size={18} className='text-gray-500' />, active: pathname.startsWith('/my-gigs'), order: 14 },
+      { href: '/create-gig', label: 'Create a Service', icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/create-gig'), order: 15 },
     ];
 
-    switch (role) {
-      case 'buyer':
-        return buyerItems;
-      case 'seller':
-        return sellerItems;
-      default:
-        return commonItems;
+    const items = [...common];
+    if (role === 'buyer') items.push(...buyer);
+    if (role === 'seller') items.push(...seller);
+    items.sort(byOrder);
+
+    // tidy dividers
+    const out = [];
+    for (const it of items) {
+      const prev = out[out.length - 1];
+      if (it.divider) {
+        if (!prev || prev.divider) continue;
+        out.push(it);
+      } else out.push(it);
     }
+    if (out[out.length - 1]?.divider) out.pop();
+    return out;
   };
 
   const navItems = user ? getNavItemsByRole(user.role) : [];
 
-  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const handleLogout = async () => {
-    setIsLogoutLoading(true);
-    localStorage.removeItem('user');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('currentDeviceId');
-    router.push('/auth');
-    setIsLogoutLoading(false);
-    await api.post('/auth/logout');
+    try {
+      setIsLogoutLoading(true);
+      // purge local
+      localStorage.removeItem('user');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('currentDeviceId');
+      // optional: hit your API (swap to your endpoint)
+      await fetch('/api/logout', { method: 'POST' }).catch(() => {});
+    } finally {
+      setIsLogoutLoading(false);
+      router.push('/auth');
+    }
   };
 
   return (
-    <header ref={headerRef} className={`sticky  top-0 z-40 transition-all duration-300 ${scrolled ? 'backdrop-blur-md bg-white/70 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]' : 'bg-slate-50/50'}`} data-aos='fade-down' data-aos-duration='500'>
+    <header className='sticky top-0 z-40 transition-all duration-300 backdrop-blur-md bg-white/70 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]'>
       <div className='container h-16 md:h-[88px] flex items-center justify-between gap-3'>
-        {/* Left: Mobile menu + Logo */}
-        <div className='flex items-center gap-2'>
+        {/* Left: Logo + nav */}
+        <div className='flex items-center gap-3'>
           <Link href='/' className='flex items-center group'>
             <motion.div whileHover={{ rotate: -4, scale: 1.05 }} transition={springy}>
-              <Image src='/images/helhal-logo.png' alt='Helhal Logo' width={42} height={42} priority className='rounded-xl shadow-sm' />
+              <Image src='/images/helhal-logo.png' alt='Logo' width={42} height={42} priority className='rounded-xl shadow-sm' />
             </motion.div>
             <span className='ml-2 text-slate-900 hidden sm:block font-semibold tracking-tight'>Helhal</span>
           </Link>
           <NavLinks links={navLinks} />
         </div>
 
+        {/* Middle: Search */}
         <GlobalSearch />
 
         {/* Right: Actions */}
-        <div className='flex items-center gap-2 md:gap-3' data-aos='fade-left' data-aos-delay='100'>
+        <div className='flex items-center gap-2 md:gap-3'>
           {user ? (
             <>
-              <div className='flex items-center space-x-3.5'>
-                <div className='relative'>
-                  <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className='ring-[3px] right-white flex items-center justify-center text-[14px] text-white z-[10] absolute bg-[#D81F22] rounded-full w-5 h-5 top-[-11px] right-[-8px]'>
-                    2
-                  </motion.span>
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Link href='/chat' aria-label={t('ordersLinkAriaLabel')}>
-                      <Image src='/icons/chat.png' className='duration-300' alt='chat' width={33} height={33} priority />
-                    </Link>
-                  </motion.div>
-                </div>
+              <Link href='/chat' aria-label='Go to chat' className='relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
+                <MessageCircle className='h-5 w-5 text-slate-600' />
+                <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center'>2</span>
+              </Link>
 
-                <NotificationPopup />
+              <NotificationPopup />
 
-                <div className='relative'>
-                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                    <Link href='/cart' aria-label={t('ordersLinkAriaLabel')}>
-                      <Image src='/icons/cart.svg' className='duration-300' alt='cart' width={33} height={33} priority />
-                    </Link>
-                  </motion.div>
-                </div>
+              <Link href='/cart' aria-label='Cart' className='relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
+                <ShoppingCart className='h-5 w-5 text-slate-600 ' />
+              </Link>
 
-                <motion.button onClick={toggleMobileNav} className='md:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none mx-0 ' aria-label={t('mobileMenuButtonAriaLabel')} whileTap={{ scale: 0.95 }}>
-                  {isMobileNavOpen ? <X className='w-7 h-7' strokeWidth={1.25} /> : <Menu className='w-7 h-7' />}
-                </motion.button>
-                <AvatarDropdown user={user} navItems={navItems} onLogout={handleLogout} />
-              </div>
+              {/* Mobile toggle */}
+              <motion.button onClick={toggleMobileNav} className='md:hidden p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
+                {isMobileNavOpen ? <X className='w-6 h-6' strokeWidth={1.5} /> : <Menu className='w-6 h-6' />}
+              </motion.button>
+
+              <AvatarDropdown user={user} navItems={navItems} onLogout={handleLogout} />
             </>
           ) : (
             <div className='flex items-center gap-2 md:gap-3'>
@@ -285,141 +497,24 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Navigation Sheet */}
-      <AnimatePresence>
-        {isMobileNavOpen && (
-          <>
-            {/* Overlay */}
-            <motion.button type='button' onClick={() => setIsMobileNavOpen(false)} className='fixed h-screen inset-0 z-30 md:hidden bg-slate-900/60 backdrop-blur-[20px] ' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
-
-            {/* Drawer */}
-            <motion.div key='mobile-nav' role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 md:hidden h-screen'>
-              <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && setIsMobileNavOpen(false)} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/70'>
-                {/* Header */}
-                <div className='relative px-4 pt-4 pb-3'>
-                  <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-50/70 to-transparent pointer-events-none' />
-                  <div className='relative flex items-center justify-between'>
-                    <span className='text-sm font-semibold text-slate-700'>Menu</span>
-                    <button onClick={() => setIsMobileNavOpen(false)} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 active:scale-[0.98] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Close' autoFocus>
-                      <svg viewBox='0 0 24 24' className='h-5 w-5 text-slate-600'>
-                        <path stroke='currentColor' strokeWidth='2' strokeLinecap='round' d='M6 6l12 12M18 6l-12 12' />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Quick profile */}
-                <div className='px-4 pe-6 pb-3 flex items-center gap-3'>
-                  <motion.div whileHover={{ rotate: 4 }} transition={{ type: 'spring', stiffness: 280, damping: 18 }}>
-                    <Image src={user.profilePictureUrl || '/images/placeholder-avatar.png'} alt={t('userAvatarAlt')} width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm' />
-                  </motion.div>
-                  <div className='min-w-0'>
-                    <p className='text-sm text-slate-500 truncate'>{user.email}</p>
-                    <span className='text-[11px] mt-1 inline-block px-2 py-0.5 !bg-emerald-100 card-glow text-emerald-800 rounded-full capitalize'>{user.role}</span>
-                  </div>
-                </div>
-
-                <div className='border-t mt-2 border-slate-200' />
-
-                {/* Primary links */}
-                <motion.nav variants={stagger} initial='hidden' animate='show' className='flex flex-col px-2 py-2 '>
-                  {navLinks.map(link => (
-                    <motion.div key={link.href} variants={fadeIn}>
-                      <Link href={link.href} onClick={() => setIsMobileNavOpen(false)} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium transition  ${pathname.startsWith(link.href) ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-gray-200  active:bg-slate-100'}`}>
-                        {link.icon}
-                        {link.label}
-                      </Link>
-                    </motion.div>
-                  ))}
-                </motion.nav>
-
-                <div className='border-t border-slate-200' />
-
-                {/* Secondary / structured nav */}
-                <nav className='py-1 !mx-2'>
-                  {navItems.map((item, index) => {
-                    if (item.divider) return <Divider key={`divider-${index}`} className='!my-0 ' />;
-                    return (
-                      <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 }}>
-                        <Link href={item.href} onClick={() => setIsMobileNavOpen(false)} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium transition  ${pathname.startsWith(item.href) ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-gray-200  active:bg-slate-100'}`}>
-                          {item.icon}
-                          <span className='truncate'>{item.label}</span>
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
-                </nav>
-
-                <div className='border-t border-slate-200' />
-
-                {/* Logout */}
-                <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-2 mx-2 py-2 text-sm text-slate-800 hover:text-red-600 hover:bg-red-50 transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
-                  <LogOut size={16} className='text-current' />
-                  {isLogoutLoading ? t('loggingOut') : t('logoutLink')}
-                </motion.button>
-
-                {/* Safe-area padding */}
-                <div className='h-[max(12px,env(safe-area-inset-bottom))]' />
-              </motion.div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Mobile Navigation Drawer */}
+      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} />
     </header>
   );
 }
 
-/* ===================== Dropdown Wrapper ===================== */
-export const DropdownWrapper = ({ iconSrc, title, children, setOpen }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    setOpen?.(isOpen);
-  }, [isOpen, setOpen]);
-
-  useEffect(() => {
-    const handleClickOutside = event => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  return (
-    <div className='relative' ref={dropdownRef}>
-      <motion.button onClick={() => setIsOpen(prev => !prev)} className='cursor-pointer transition-transform duration-200' aria-label={title} whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.95 }}>
-        <Image src={iconSrc} alt='' width={30} height={30} priority />
-      </motion.button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }} transition={{ type: 'spring', damping: 20, stiffness: 300 }} className='absolute right-0 mt-3 w-[350px] rounded-2xl shadow-xl bg-white ring-1 ring-black/5 z-50'>
-            <div className='relative px-4 py-4'>
-              <div className='absolute -top-2 right-4 w-4 h-4 rotate-45 bg-white border-t border-l border-gray-200' />
-              {children}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
-/* ===================== Avatar Dropdown ===================== */
+/* =========================================================
+   Avatar Dropdown
+   ========================================================= */
 const AvatarDropdown = ({ user, navItems, onLogout }) => {
   const t = useTranslations('layout');
-  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = e => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setIsOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -434,50 +529,37 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
   return (
     <div className='relative' ref={dropdownRef}>
-      <motion.button onClick={() => setIsOpen(prev => !prev)} className=' flex-none max-md:hidden cursor-pointer m-0 transition-transform duration-200' aria-label={t('userMenuAriaLabel')} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-        <Image src={user.profilePictureUrl || '/images/placeholder-avatar.png'} alt={t('userAvatarAlt')} width={37} height={37} className=' w-[45px] h-[45px] rounded-full overflow-hidden border-2 border-emerald-600 object-cover shadow-sm' />
+      <motion.button onClick={() => setIsOpen(v => !v)} className='hidden md:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} aria-label={t('userMenuAriaLabel') || 'User menu'}>
+        <Image src={user?.profileImage || '/images/placeholder-avatar.png'} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
       </motion.button>
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }} transition={{ type: 'spring', damping: 20, stiffness: 300 }} className='absolute right-0 mt-3 w-64 rounded-2xl shadow-xl bg-white ring-1 ring-black/5 z-50'>
-            <div className='relative'>
-              <div className='absolute -top-2 right-6 w-4 h-4 rotate-45 bg-white border-t border-l border-gray-200' />
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }} transition={{ type: 'spring', damping: 20, stiffness: 300 }} className='absolute right-0 mt-0 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl z-50'>
+            <UserMiniCard user={user} />
 
-              <div className='px-4 pe-6 py-4 flex items-center gap-3'>
-                <motion.div whileHover={{ rotate: 5 }} transition={{ type: 'spring' }}>
-                  <Image src={user.profilePictureUrl || '/images/placeholder-avatar.png'} alt={t('userAvatarAlt')} width={42} height={42} className='rounded-full object-cover border border-gray-200' />
-                </motion.div>
-                <div>
-                  <p className='font-semibold text-gray-900'>{user.username}</p>
-                  <p className='text-sm text-gray-500'>{user.email}</p>
-                  <span className='text-xs px-2 py-1 bg-emerald-100 text-emerald-800 rounded-full capitalize'>{user.role}</span>
-                </div>
-              </div>
+            <Divider className='!my-0' />
 
-              <div className='border-t border-gray-200' />
+            <nav className='py-1'>
+              {navItems.map((item, index) => {
+                if (item.divider) return <Divider key={`div-${index}`} className='!my-0' />;
+                return (
+                  <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.04 }}>
+                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${item.active ? 'text-emerald-700 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setIsOpen(false)}>
+                      {item.icon}
+                      <span className='truncate'>{item.label}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </nav>
 
-              <nav className='py-2'>
-                {navItems.map((item, index) => {
-                  if (item.divider) return <Divider key={`divider-${index}`} className='!my-0' />;
-                  return (
-                    <motion.div onClick={() => setIsOpen(false)} key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 }}>
-                      <Link href={item.href} className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${item.active ? 'text-emerald-700 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`}>
-                        {item.icon}
-                        {item.label}
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </nav>
+            <Divider className='!my-0' />
 
-              <div className='border-t border-gray-200' />
-
-              <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-4 py-3 text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading}>
-                <LogOut size={16} className='text-current' />
-                {isLogoutLoading ? t('loggingOut') : t('logoutLink')}
-              </motion.button>
-            </div>
+            <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-4 py-3 text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors' disabled={isLogoutLoading}>
+              <LogOut size={16} />
+              {isLogoutLoading ? t('loggingOut') || 'Logging out…' : t('logoutLink') || 'Logout'}
+            </motion.button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -485,18 +567,19 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
   );
 };
 
-/* ===================== NavLinks ===================== */
-
+/* =========================================================
+   Top Navbar (Desktop)
+   ========================================================= */
 function NavLinks({ links }) {
   const pathname = usePathname();
 
   return (
-    <motion.ul className='hidden md:flex items-center gap-2 ltr:!ml-8 rtl:mr-8' variants={stagger} initial='hidden' animate='show' data-aos='fade-up'>
+    <motion.ul className='hidden md:flex  items-center gap-1 ltr:ml-6 rtl:mr-6' variants={stagger} initial='hidden' animate='show'>
       {links.map(link => {
         const isActive = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
 
         return (
-          <motion.li key={link.label + (link.href || '')} variants={fadeDown} className=' relative'>
+          <motion.li key={link.label + (link.href || '')} variants={fadeDown} className='relative'>
             {link.children?.length ? (
               <DropdownItem label={link.label} icon={link.icon} active={isActive}>
                 <DropdownPanel items={link.children} />
@@ -513,18 +596,17 @@ function NavLinks({ links }) {
 
 function TopLink({ href, label, icon, active }) {
   return (
-    <Link href={href} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl transition-colors inline-flex items-center gap-2 ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
+    <Link href={href} className={`  relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
       {icon} {label}
       <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
     </Link>
   );
 }
 
-function DropdownItem({ label, icon, active, children }) {
+export function DropdownItem({ label, icon, active, children }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
 
-  // Close on outside / ESC
   useEffect(() => {
     const onDoc = e => !rootRef.current?.contains(e.target) && setOpen(false);
     const onKey = e => e.key === 'Escape' && setOpen(false);
@@ -544,9 +626,7 @@ function DropdownItem({ label, icon, active, children }) {
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
-      {/* Panel */}
-      <span className='w-full h-full inset-0 absolute left-0 top-[30px] pointer-events-auto '></span>
-      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={` absolute left-0 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`absolute left-0 mt-2 w-[240px]   rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         {children}
       </motion.div>
     </div>
@@ -555,15 +635,211 @@ function DropdownItem({ label, icon, active, children }) {
 
 function DropdownPanel({ items = [] }) {
   return (
-    <ul className='py-2'>
+    <ul className='py-2 '>
+      <span className='bg-red-500 opacity-0 w-full  h-[20px] top-[-20px] block absolute inset-0'></span>
       {items.map(it => (
         <li key={it.href}>
           <Link href={it.href} className='flex items-center gap-2 px-3 py-2 text-[14px] text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'>
-            <span className='scale-125   ' > {it?.icon}</span>
+            <span className='scale-125'>{it.icon}</span>
             {it.label}
           </Link>
         </li>
       ))}
     </ul>
+  );
+}
+
+/* =========================================================
+   Mobile Drawer
+   ========================================================= */
+function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLogout, isLogoutLoading }) {
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Overlay */}
+          <motion.button type='button' onClick={onClose} className='fixed inset-0 z-30 md:hidden bg-slate-900/60 backdrop-blur-[12px]' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+
+          {/* Drawer */}
+          <motion.div role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 md:hidden h-screen'>
+            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/70'>
+              {/* Header */}
+              <div className='relative px-4 pt-4 pb-3'>
+                <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-50/70 to-transparent pointer-events-none' />
+                <div className='relative flex items-center justify-between'>
+                  <span className='text-sm font-semibold text-slate-700'>Menu</span>
+                  <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Close' autoFocus>
+                    <X className='h-5 w-5 text-slate-600' />
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick profile */}
+
+              {user && (
+                <div className='px-4 pe-6 pb-3 flex items-center gap-3'>
+                  <motion.div whileHover={{ rotate: 4 }} transition={{ type: 'spring', stiffness: 280, damping: 18 }}>
+                    <Image src={user.profileImage || '/images/placeholder-avatar.png'} alt='Avatar' width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm' />
+                  </motion.div>
+                  <div className='min-w-0'>
+                    <p className='text-sm text-slate-900 font-medium truncate'>{user.username || 'User'}</p>
+                    <p className='text-xs text-slate-500 truncate'>{user.email}</p>
+                    <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full capitalize'>{user.role || 'member'}</span>
+                  </div>
+                </div>
+              )}
+
+              <Divider className='!my-0' />
+
+              {/* Primary links */}
+              <motion.nav variants={stagger} initial='hidden' animate='show' className='flex flex-col px-2 py-2'>
+                {navLinks.map(link => {
+                  const active = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
+                  return (
+                    <motion.div key={link.label + (link.href || '')} variants={fadeIn}>
+                      {link.children?.length ? (
+                        <MobileCollapsible label={link.label} icon={link.icon}>
+                          <div className='py-1'>
+                            {link.children.map(c => (
+                              <Link key={c.href} href={c.href} onClick={onClose} className='flex items-center gap-2 px-3 py-2 rounded-lg text-[15px] text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'>
+                                {c.icon}
+                                {c.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </MobileCollapsible>
+                      ) : (
+                        <Link href={link.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${active ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+                          {link.icon}
+                          {link.label}
+                        </Link>
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </motion.nav>
+
+              <Divider className='!my-0' />
+
+              {/* Secondary (role) */}
+              {user && (
+                <nav className='py-1 mx-2'>
+                  {navItems.map((item, index) => {
+                    if (item.divider) return <Divider key={`divider-${index}`} className='!my-0' />;
+                    return (
+                      <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 }}>
+                        <Link href={item.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${pathname.startsWith(item.href) ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+                          {item.icon}
+                          <span className='truncate'>{item.label}</span>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </nav>
+              )}
+
+              <Divider className='!my-0' />
+
+              {/* Logout */}
+              {user && (
+                <motion.button onClick={onLogout} className='flex items-center gap-2 w-full px-3 mx-2 my-2 py-2 text-sm text-slate-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
+                  <LogOut size={16} />
+                  {isLogoutLoading ? 'Logging out…' : 'Logout'}
+                </motion.button>
+              )}
+
+              <div className='h-[max(12px,env(safe-area-inset-bottom))]' />
+            </motion.div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function MobileCollapsible({ label, icon, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className='px-1'>
+      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+        <span className='inline-flex items-center gap-2'>
+          {icon}
+          {label}
+        </span>
+        <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className='overflow-hidden px-1'>
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+const roleStyles = {
+  seller: { chip: 'bg-amber-100 text-amber-800', dot: 'bg-amber-500' },
+  buyer: { chip: 'bg-emerald-100 text-emerald-800', dot: 'bg-emerald-500' },
+  admin: { chip: 'bg-indigo-100 text-indigo-800', dot: 'bg-indigo-500' },
+  member: { chip: 'bg-slate-100 text-slate-700', dot: 'bg-slate-400' },
+};
+
+export const getInitials = name =>
+  (name || 'User')
+    .split(/\s+/)
+    .slice(0, 2)
+    .map(w => w[0]?.toUpperCase())
+    .join('') || 'U';
+
+function UserMiniCard({ user }) {
+  const [imgErr, setImgErr] = useState(false);
+  const name = user?.username || 'User';
+  const email = user?.email || '';
+  const role = (user?.role || 'member').toLowerCase();
+  const { chip } = roleStyles[role] || roleStyles.member;
+
+  return (
+    <div className='px-2 pe-6 pb-3 pt-3 flex items-center gap-3  '>
+      {/* Avatar + ring */}
+      <motion.div whileHover={{ rotate: 2, scale: 1.02 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} className='relative' aria-label={`${name} avatar`}>
+        <div className='relative'>
+          {/* animated conic ring */}
+          <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30 group-hover:opacity-60 transition' />
+          <div className='relative size-12 rounded-full border border-slate-200 shadow-sm overflow-hidden bg-white flex items-center justify-center'>{imgErr || !user?.profileImage ? <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(name)}</span> : <Image src={user.profileImage} alt={`${name} avatar`} width={48} height={48} onError={() => setImgErr(true)} className='rounded-full object-cover' />}</div>
+        </div>
+      </motion.div>
+
+      {/* Texts */}
+      <div className='min-w-0 flex-1'>
+        <div className='flex items-center gap-1.5'>
+          <p className='text-sm text-slate-900 font-medium truncate' title={name}>
+            {name}
+          </p>
+          {user?.isVerified && <ShieldCheck className='h-4 w-4 shrink-0 text-sky-600' aria-label='Verified' title='Verified' />}
+        </div>
+
+        <div className='flex items-center gap-2'>
+          <p className='text-xs text-slate-500 truncate' title={email} aria-label='Email'>
+            {email || '—'}
+          </p>
+        </div>
+
+        <div className='mt-1 flex items-center gap-2'>
+          <span className={`text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${chip}`} title={`Role: ${role}`}>
+            <UserIcon className='h-3.5 w-3.5' />
+            {role}
+          </span>
+          {/* quick email action */}
+          {email && (
+            <a href={`mailto:${email}`} className='inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition' title='Send email'>
+              <Mail className='h-3.5 w-3.5' />
+              Email
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

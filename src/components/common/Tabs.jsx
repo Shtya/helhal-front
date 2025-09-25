@@ -37,7 +37,7 @@ export default function Tabs({ tabs, activeTab, setActiveTab, className = '', id
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 350, damping: 30 }}>
               {isPreviewed && <motion.span layoutId='tabs-pill' className='absolute inset-0 pointer-events-none rounded-xl bg-second shadow-lg' transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
-              <span className={`relative z-10 flex items-center gap-1.5 ${isPreviewed ? 'text-white drop-shadow-sm' : 'text-slate-700'}`}>
+              <span className={`relative z-10 flex items-center gap-1.5 text-nowrap ${isPreviewed ? 'text-white drop-shadow-sm' : 'text-slate-700'}`}>
                 {t.icon ? <t.icon className='inline-block w-4 h-4 -mt-0.5' /> : null}
                 {t.label}
               </span>

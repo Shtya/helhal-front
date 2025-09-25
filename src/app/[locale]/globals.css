@@ -233,23 +233,7 @@ body {
   animation: shimmerMove 1.3s ease-in-out infinite;
 }
 
- 
-.card-glow {
-  @apply [background:conic-gradient(from_180deg,theme(colors.emerald.200/.35),transparent_30%,theme(colors.sky.200/.35),transparent_70%,theme(colors.emerald.200/.35))] [mask:linear-gradient(#000,#000)_content-box,linear-gradient(#000,#000)] [mask-composite:exclude];
-}
-
-.card-glow::before {
-  content: '';
-  @apply pointer-events-none absolute inset-0 rounded-2xl z-[-1]
-         bg-gradient-to-br from-indigo-500/4 via-emerald-500/4 to-transparent;
-}
-
-.card-glow::after {
-  content: '';
-  @apply pointer-events-none absolute inset-0 rounded-2xl 
-         ring-1 ring-black/5;
-}
-
+  
 
 
 
@@ -339,3 +323,13 @@ body {
 .card{
 	@apply bg-gray-50 rounded-2xl border border-slate-200  p-6 max-md:p-4
 }
+
+
+
+.shadow-custom {
+  @apply shadow-[0_4px_12px_rgba(15,23,42,0.08),0_2px_4px_rgba(15,23,42,0.05)] ;
+	/* @apply !shadow-[0_2px_6px_-1px_rgba(0,0,0,0.08),0_1px_3px_rgba(0,0,0,0.05)]; */
+}
+
+
+

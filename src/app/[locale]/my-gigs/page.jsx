@@ -12,9 +12,9 @@ import { useRouter } from '@/i18n/navigation';
 import { baseImg } from '@/lib/axios';
 import { Modal } from '@/components/common/Modal';
 import toast from 'react-hot-toast';
+import Tabs from '@/components/common/Tabs';
 
 export default function Page() {
-  const allTabs = ['All', 'Active', 'Pending', 'Draft', 'Denied', 'Paused'];
   const [activeTab, setActiveTab] = useState('All');
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -95,51 +95,54 @@ export default function Page() {
     {
       key: 'title',
       label: 'Service',
-    }, 
+    },
     {
       key: 'clicks',
       label: 'Clicks',
-    }, 
+    },
     {
       key: 'impressions',
       label: 'Impressions',
-    }, 
+    },
     {
       key: 'ordersCount',
       label: 'Orders Count',
-    }, 
+    },
     {
       key: 'cancellations',
       label: 'Cancellations',
-    }, 
+    },
     {
-			key: 'packages',
+      key: 'packages',
       label: 'Starting Price',
       type: 'price',
       format: value => (value && value.length > 0 ? Math.min(...value.map(p => p.price)) : 'N/A'),
     },
     {
-			key: 'status',
+      key: 'status',
       label: 'Status',
       status: [
-				['Active', 'text-green-500 bg-green-100 px-2 py-1 rounded'],
+        ['Active', 'text-green-500 bg-green-100 px-2 py-1 rounded'],
         ['Pending', 'text-yellow-500 bg-yellow-100 px-2 py-1 rounded'],
         ['Draft', 'text-gray-500 bg-gray-100 px-2 py-1 rounded'],
         ['Denied', 'text-red-500 bg-red-100 px-2 py-1 rounded'],
         ['Paused', 'text-blue-500 bg-blue-100 px-2 py-1 rounded'],
       ],
     },
-		{
-			key: 'created_at',
-			label: 'Created Date',
-			format: value => new Date(value).toLocaleDateString(),
-		},
+    {
+      key: 'created_at',
+      label: 'Created Date',
+      format: value => new Date(value).toLocaleDateString(),
+    },
   ];
 
   // Format data for the table
   const formatTableData = services => {
     return services.map(service => {
-      const row = {};
+      const row = {
+        id: service.id,
+        slug: service.slug,
+      };
       columns.forEach(column => {
         if (column.format) {
           row[column.key] = column.format(service[column.key]);
@@ -171,11 +174,13 @@ export default function Page() {
     );
   };
 
-  const handleView = index => {
-    router.push(`/services/${services[index].category.slug}/${services[index].id}`);
+  const handleView = row => {
+    const index = services.findIndex(e => e.id == row.id);
+    router.push(`/services/${services[index].category.slug}/${services[index].slug}`);
   };
 
-  const handleEdit = index => {
+  const handleEdit = row => {
+    const index = services.findIndex(e => e.id == row.id);
     router.push(`/create-gig?gigId=${services[index].id}`);
   };
 
@@ -184,7 +189,7 @@ export default function Page() {
 
     try {
       setDeleting(true);
-      await apiService.deleteService(deleteTarget.id); 
+      await apiService.deleteService(deleteTarget.id);
       toast.success('Gig deleted successfully');
       setServices(prev => prev.filter(s => s.id !== deleteTarget.id));
       setDeleteTarget(null);
@@ -196,11 +201,20 @@ export default function Page() {
     }
   };
 
-  const handleDelete = index => {
-    const gig = services[index]
+  const handleDelete = row => {
+    const index = services.findIndex(e => e.id == row.id);
+    const gig = services[index];
     setDeleteTarget(gig);
   };
 
+ 	const tabs = [
+		{ label: "All" , value : "All" },
+		{ label: "Active" , value : "Active" },
+		{ label: "Pending" , value : "Pending" },
+		{ label: "Draft" , value : "Draft" },
+		{ label: "Denied" , value : "Denied" },
+		{ label: "Paused" , value : "Paused" },
+	]
   return (
     <div className='container min-h-screen !py-12 '>
       {/* Header */}
@@ -209,8 +223,8 @@ export default function Page() {
       </div>
 
       {/* Tabs and Create Button */}
-      <div className='flex items-center justify-between gap-3 flex-wrap mb-6 -mt-2 '>
-        <TabList activeTab={activeTab} allTabs={allTabs} setActiveTab={handleTabChange} />
+      <div className=' bg-gray-50 border border-slate-200 rounded-lg p-4  flex items-center justify-between gap-3 flex-wrap !mb-4 mt-2 '>
+        <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
         <Button name={'Create a new Gig'} href={'/create-gig'} className='!w-fit' />
       </div>
 
@@ -227,8 +241,8 @@ export default function Page() {
             Are you sure you want to delete this gig <span className='font-semibold text-black'>{deleteTarget.title}</span>? This action cannot be undone.
           </p>
           <div className='flex justify-end gap-3'>
-            <Button color='secondary' onClick={() => setDeleteTarget(null)} className='!w-fit' name={"Cancel"} />
-						<Button onClick={confirmDelete} disabled={deleting} name={deleting ? 'Deleting...' : 'Delete'}  color='red' className='!w-fit' /> 
+            <Button color='secondary' onClick={() => setDeleteTarget(null)} className='!w-fit' name={'Cancel'} />
+            <Button onClick={confirmDelete} disabled={deleting} name={deleting ? 'Deleting...' : 'Delete'} color='red' className='!w-fit' />
           </div>
         </Modal>
       )}

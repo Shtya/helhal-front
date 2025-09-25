@@ -1,10 +1,10 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, Logs, Trash2, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Pencil, ArrowUp, ArrowDown, Search, Eye, EyeOff, Info, Plus, Minus, Trash2, X, HelpCircle, Logs } from 'lucide-react';
 import ProgressBar from '@/components/pages/gig/ProgressBar';
 import InputList from '@/components/atoms/InputList';
 import Textarea from '@/components/atoms/Textarea';
@@ -14,15 +14,14 @@ import Button from '@/components/atoms/Button';
 import { Switcher } from '@/components/atoms/Switcher';
 import AttachFilesButton, { getFileIcon } from '@/components/atoms/AttachFilesButton';
 import { apiService } from '@/services/GigServices';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { AnimatedCheckbox } from '@/components/atoms/CheckboxAnimation';
-import FAQSection from '@/components/common/Faqs';
 import { baseImg } from '@/lib/axios';
 import toast from 'react-hot-toast';
 import { getUserInfo } from '@/hooks/useUser';
-import { Plus, HelpCircle } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
+import CategorySelect from '@/components/atoms/CategorySelect';
 
 export const useGigCreation = () => {
   const [step, setStep] = useState(1);
@@ -47,9 +46,7 @@ export const useGigCreation = () => {
     images: [],
     video: [],
     documents: [],
-  });
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
+  }); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loadingServices, setLoadingServices] = useState(null);
@@ -101,7 +98,6 @@ export const useGigCreation = () => {
     if (!gigId) {
       loadSavedData();
     }
-    fetchCategories();
   }, []);
 
   const loadSavedData = () => {
@@ -114,43 +110,12 @@ export const useGigCreation = () => {
     if (savedStep) setStep(parseInt(savedStep));
   };
 
-  const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      const data = await apiService.getCategories();
-      setCategories(data);
-    } catch (error) {
-      setError('Failed to load categories');
-      console.error('Error fetching categories:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchSubcategories = async categoryId => {
-    try {
-      const data = await apiService.getCategories('subcategory');
-      const categorySubcategories = data.filter(cat => cat.parentId === categoryId || cat.type === 'subcategory');
-      setSubcategories(categorySubcategories);
-    } catch (error) {
-      console.error('Error fetching subcategories:', error);
-    }
-  };
-
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     sessionStorage.setItem('gigCreationData', JSON.stringify(formData));
     sessionStorage.setItem('gigCreationStep', step.toString());
   }, [formData, step]);
-
-  useEffect(() => {
-    if (formData.category?.id) {
-      fetchSubcategories(formData.category.id);
-    } else {
-      setSubcategories([]);
-    }
-  }, [formData.category]);
 
   const nextStep = () => step < 6 && setStep(step + 1);
   const prevStep = () => step > 1 && setStep(step - 1);
@@ -160,6 +125,7 @@ export const useGigCreation = () => {
 
     try {
       setLoadingServices(true);
+			console.log("here");
 
       const serviceData = {
         title: formData.packages[0]?.title,
@@ -170,11 +136,16 @@ export const useGigCreation = () => {
         status: 'Pending',
         faq: formData.faqs,
         packages: formData.packages,
-        gallery: [...formData.images.map(img => ({ type: 'image', url: img.url, assetId: img.id })), ...formData.video.map(vid => ({ type: 'video', url: vid.url, assetId: vid.id })), ...formData.documents.map(doc => ({ type: 'document', url: doc.url, assetId: doc.id }))],
+        gallery: [
+					...formData.images.map(img => ({ type: 'image', fileName: img.filename, url: img.url, assetId: img.id })), 
+					...formData.video.map(vid => ({ type: 'video', url: vid.url, fileName: vid.filename, assetId: vid.id })), 
+					...formData.documents.map(doc => ({ type: 'document', url: doc.url, fileName: doc.filename, assetId: doc.id }))],
         requirements: formData.questions,
         fastDelivery: formData.extraFastDelivery,
         additionalRevision: formData.additionalRevision,
       };
+
+      console.log(serviceData);
 
       if (gigId) {
         await apiService.updateService(gigId, serviceData);
@@ -192,8 +163,8 @@ export const useGigCreation = () => {
         router.push('/my-gigs');
       }, 500);
     } catch (error) {
-			toast.error('Failed to create gig. Please try again.')
-     } finally {
+      toast.error('Failed to create gig. Please try again.');
+    } finally {
       setLoadingServices(false);
     }
   };
@@ -203,8 +174,6 @@ export const useGigCreation = () => {
     setStep,
     formData,
     setFormData,
-    categories,
-    subcategories,
     loading,
     error,
     nextStep,
@@ -228,12 +197,14 @@ const step2Schema = yup.object({
     .array()
     .of(
       yup.object({
-        title: yup.string().required('Package title is required'),
-        description: yup.string().required('Package description is required'),
-        deliveryTime: yup.number().required('Delivery time is required').min(1, 'Delivery time must be at least 1 day'),
-        revisions: yup.number().required('Revisions is required').min(0, 'Revisions cannot be negative'),
-        price: yup.number().required('Price is required').min(0, 'Price cannot be negative'),
-        test: yup.boolean().required('Test field is required'), // Add validation for the "test" field
+        type: yup.string().oneOf(['basic', 'standard', 'premium']).required(),
+        title: yup.string().required('Package title is required').max(60, 'Max 60 characters'),
+        description: yup.string().required('Package description is required').max(220, 'Max 220 characters'),
+        deliveryTime: yup.number().typeError('Delivery time is required').required().min(1, 'Min 1 day'),
+        revisions: yup.number().typeError('Revisions is required').required().min(0, 'Cannot be negative').max(20, 'Be realistic'),
+        price: yup.number().typeError('Price is required').required().min(0, 'Price cannot be negative').max(100000, 'Too high'),
+        test: yup.boolean().required('Test field is required'),
+        features: yup.array().of(yup.string().trim().required('Feature is required')).min(3, 'At least 3 features').max(5, 'At most 5 features'),
       }),
     )
     .min(1, 'At least one package is required'),
@@ -272,7 +243,7 @@ const step5Schema = yup.object({
 });
 
 export default function GigCreationWizard() {
-  const { step, formData, loadingServices, setFormData, categories, subcategories, loading, error, nextStep, prevStep, handleSubmit } = useGigCreation();
+  const { step, formData, loadingServices, setFormData, loading, error, nextStep, prevStep, handleSubmit } = useGigCreation();
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -284,7 +255,7 @@ export default function GigCreationWizard() {
 
     switch (step) {
       case 1:
-        return <Step1 categories={categories} subcategories={subcategories} formData={formData} setFormData={setFormData} nextStep={nextStep} />;
+        return <Step1 formData={formData} setFormData={setFormData} nextStep={nextStep} />;
       case 2:
         return <Step2 formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
       case 3:
@@ -296,7 +267,7 @@ export default function GigCreationWizard() {
       case 6:
         return <Step6 formData={formData} handleSubmit={handleSubmit} prevStep={prevStep} loading={loadingServices} />;
       default:
-        return <Step1 categories={categories} subcategories={subcategories} formData={formData} setFormData={setFormData} nextStep={nextStep} />;
+        return <Step1 formData={formData} setFormData={setFormData} nextStep={nextStep} />;
     }
   };
 
@@ -320,7 +291,30 @@ export default function GigCreationWizard() {
 }
 
 // --- STEP COMPONENTS ---
-function Step1({ categories, subcategories, formData, setFormData, nextStep }) {
+const Field = ({ title, desc, required, error, hint, className = '', children }) => {
+  return (
+    <div className={`grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-6 ${className}`}>
+      {/* Left label/description panel */}
+      <div className='md:col-span-4'>
+        <label className='block text-lg font-semibold leading-6 text-slate-800'>
+          {title}
+          {required ? <span className='text-rose-600 ml-1'>*</span> : null}
+        </label>
+        {desc ? <p className='mt-1 text-sm text-slate-500'>{desc}</p> : null}
+      </div>
+
+      {/* Right input panel */}
+      <div className='md:col-span-8'>
+        <div className=' bg-white '>{children}</div>
+        {hint ? <p className='mt-1 text-xs text-slate-500'>{hint}</p> : null}
+        {error ? <p className='mt-1 text-xs font-medium text-rose-600'>{error}</p> : null}
+      </div>
+    </div>
+  );
+};
+
+// ---------- Step 1 (refreshed UI) ----------
+function Step1({ formData, setFormData, nextStep }) {
   const {
     register,
     handleSubmit,
@@ -330,43 +324,48 @@ function Step1({ categories, subcategories, formData, setFormData, nextStep }) {
     getValues,
     trigger,
     reset,
+    control,
   } = useForm({
     resolver: yupResolver(step1Schema),
     defaultValues: {
-      title: formData.title,
-      brief: formData.brief,
-      category: formData.category,
-      subcategory: formData.subcategory,
-      tags: formData.tags,
+      title: formData.title || '',
+      brief: formData.brief || '',
+      category: formData.category || null,
+      subcategory: formData.subcategory || null,
+      tags: formData.tags || [],
     },
   });
 
-  // 👇 reinitialize when formData changes
+  // reinitialize when formData changes
   useEffect(() => {
     reset({
-      title: formData.title,
-      brief: formData.brief,
-      category: formData.category,
-      subcategory: formData.subcategory,
+      title: formData.title || '',
+      brief: formData.brief || '',
+      category: formData.category || null,
+      subcategory: formData.subcategory || null,
+      tags: formData.tags || [],
     });
   }, [formData, reset]);
 
+  const titleVal = watch('title') || '';
+  const briefVal = watch('brief') || '';
+
   const onSubmit = async data => {
     const isValid = await trigger();
-    if (isValid) {
-      setFormData({ ...formData, ...data });
-      nextStep();
-    }
+    if (!isValid) return;
+    setFormData({ ...formData, ...data });
+    nextStep();
   };
 
   const handleInputListChange = value => {
-    setValue('tags', [...formData?.tags, ...value]);
-    setFormData({ ...formData, tags: [...formData?.tags, ...value] });
+    const merged = [...(formData?.tags || []), ...(value || [])];
+    setValue('tags', merged);
+    setFormData({ ...formData, tags: merged });
   };
 
   const handleCategoryChange = value => {
     setValue('category', value);
-    setFormData({ ...formData, category: value });
+    setFormData({ ...formData, category: value, subcategory: null }); // clear sub when main changes
   };
 
   const handleSubcategoryChange = value => {
@@ -376,153 +375,342 @@ function Step1({ categories, subcategories, formData, setFormData, nextStep }) {
 
   const handleRemoveInputList = index => {
     setFormData(prev => {
-      const updatedTags = prev.tags.filter((_, i) => i !== index);
+      const updatedTags = (prev.tags || []).filter((_, i) => i !== index);
+      setValue('tags', updatedTags);
       return { ...prev, tags: updatedTags };
     });
   };
 
   return (
-    <form onSubmit={e => e.preventDefault()} className='space-y-6 border border-slate-200 rounded-xl py-16 px-4 '>
-      <div className='max-w-[1000px] w-full mx-auto'>
-        <LabelWithInput title='Gig title' desc='Create a clear, catchy title for your gig. Use relevant keywords to attract buyers and describe your service accurately.'>
-          <Textarea placeholder='Gig title' {...register('title')} error={errors?.title?.message} className='mb-4' rows={3} />
-        </LabelWithInput>
-
-        <LabelWithInput className='mt-5 border-t border-t-slate-200 pt-5' title='Gig brief' desc='Provide a short overview of your gig. Highlight key details and what makes your service unique.'>
-          <Textarea placeholder='Gig brief' {...register('brief')} error={errors?.brief?.message} className='mb-4' rows={3} />
-        </LabelWithInput>
-
-        <LabelWithInput className='mt-5 border-t border-t-slate-200 pt-5' title='Category' desc='Choose the category and sub-category most suitable for your Gig.'>
-          <div className='flex flex-col gap-4 w-full'>
-            <Select label='Category' options={categories} value={formData.category?.id} onChange={handleCategoryChange} error={errors.category?.message} required />
-
-            <Select label='Subcategory' options={subcategories} value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors.subcategory?.message} disabled={!watch('category')} />
-          </div>
-        </LabelWithInput>
-
-        <LabelWithInput className='mt-5 border-t border-t-slate-200 pt-5' title='Search tag' desc='Tag your Gig with buzz words that are relevant to the services you offer. Use all 5 tags to get found.'>
-          <div className='mb-6 w-full'>
-            <InputList onChange={handleInputListChange} onRemoveItemHandler={handleRemoveInputList} label='Enter tags' value={formData.tags} setValue={setValue} getValues={getValues} fieldName='tags' placeholder='Add a tag' errors={errors} validationMessage={errors.tags?.message} />
-            <p className='text-sm text-gray-500 mt-2'>5 tags maximum. Use letters and numbers only.</p>
-          </div>
-        </LabelWithInput>
+    <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 bg-white/60 p-6 md:p-10'>
+      {/* Header */}
+      <div className='mb-8 flex items-start justify-between gap-6'>
+        <div>
+          <h2 className='text-2xl font-semibold text-slate-900'>Basic Details</h2>
+          <p className='mt-1 text-sm text-slate-500'>Set a compelling foundation for your gig.</p>
+        </div>
+        <div className='hidden md:block rounded-xl bg-slate-50 px-4 py-2 text-xs text-slate-600'>Step 1 of 3</div>
       </div>
 
-      <div className='flex justify-end'>
-        <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8 ' />
+      <div className='mx-auto max-w-5xl space-y-8'>
+        {/* Gig Title */}
+        <Field title='Gig title' desc='Clear, searchable, and specific. Include your main keyword.' required error={errors?.title?.message} hint={`${titleVal.length}/80`}>
+          <Textarea placeholder='e.g., I will design a responsive landing page in Next.js' {...register('title')} rows={2} className='resize-none' maxLength={80} />
+        </Field>
+
+        {/* Gig Brief */}
+        <Field className='pt-8 border-t border-slate-200' title='Gig brief' desc='Short value proposition. What problem do you solve and how?' required error={errors?.brief?.message} hint={`${briefVal.length}/300`}>
+          <Textarea placeholder='Briefly describe the outcome, approach, and what sets you apart.' {...register('brief')} rows={4} className='resize-y' maxLength={300} />
+        </Field>
+
+        {/* Category / Subcategory */}
+        <Field className='pt-8 border-t border-slate-200' title='Category' desc='Pick the most accurate category and subcategory.' required error={errors?.category?.message || errors?.subcategory?.message}>
+          <div className='grid gap-4 md:grid-cols-2'>
+            <div className='mb-4'>
+              <Controller name='categoryId' control={control} render={({ field }) => <CategorySelect type='category' label='Category' value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder='Select a category' />} />
+            </div>
+
+            <div className='mb-4'>
+              <Controller name='subcategoryId' control={control} render={({ field }) => <CategorySelect type='subcategory' parentId={watch('category')?.id} label='SubCategory' value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? 'Select a subcategory' : 'Select a category first'} />} />
+            </div>
+
+            {/* <Select label='Category' options={categories} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} required />
+            <Select label='Subcategory'  value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} disabled={!watch('category')} /> */}
+          </div>
+        </Field>
+
+        {/* Tags */}
+        <Field className='pt-8 border-t border-slate-200' title='Search tags' desc='Use up to 5 tags that buyers would actually search.' error={errors?.tags?.message} hint='Letters and numbers only.'>
+          <div>
+            <InputList onChange={handleInputListChange} onRemoveItemHandler={handleRemoveInputList} label='Enter tags' value={formData.tags} setValue={setValue} getValues={getValues} fieldName='tags' placeholder='Add a tag and press Enter' errors={errors} validationMessage={errors?.tags?.message} maxItems={5} />
+            <div className='mt-2 flex items-center justify-between text-xs text-slate-500'>
+              <span>Max 5 tags.</span>
+              <span>{(formData.tags || []).length}/5</span>
+            </div>
+          </div>
+        </Field>
+      </div>
+
+      {/* Footer */}
+      <div className='mt-10 flex justify-end'>
+        <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8' />
       </div>
     </form>
   );
 }
 
+const LABELS = ['Basic', 'Standard', 'Premium'];
+const TYPES = ['basic', 'standard', 'premium'];
 function Step2({ formData, setFormData, nextStep, prevStep }) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    setValue,
+    formState: { errors, isValid },
+    control,
     watch,
     trigger,
+    setValue,
     getValues,
+    reset,
   } = useForm({
     resolver: yupResolver(step2Schema),
-    defaultValues: {
-      packages: formData.packages,
-      extraFastDelivery: formData.extraFastDelivery,
-      additionalRevision: formData.additionalRevision,
-    },
+    mode: 'onChange',
+    defaultValues: normalizeDefaults(formData),
   });
 
+  // Field arrays for features per package
+  const fa0 = useFieldArray({ control, name: 'packages.0.features' });
+  const fa1 = useFieldArray({ control, name: 'packages.1.features' });
+  const fa2 = useFieldArray({ control, name: 'packages.2.features' });
+  const fieldArrays = [fa0, fa1, fa2];
+
+  const values = watch();
+
+  // keep outer wizard state in sync
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, ...values }));
+  }, [values, setFormData]);
+
   const onSubmit = async data => {
-    const isValid = await trigger();
-    if (isValid) {
-      setFormData({ ...formData, ...data });
-      nextStep();
-    }
+    const ok = await trigger();
+    if (!ok) return;
+    setFormData(prev => ({ ...prev, ...data }));
+    nextStep();
   };
 
-  // Function to handle checkbox state change
-  const handleCheckboxChange = (index, field, value) => {
-    setFormData(prev => {
-      const updatedPackages = [...prev.packages];
-      updatedPackages[index][field] = !value;
-      return { ...prev, packages: updatedPackages };
-    });
-  };
-
-  const PackageWatch = watch('packages');
-  useEffect(() => {
-    setFormData(prev => ({ ...prev, packages: PackageWatch }));
-  }, [JSON.stringify(PackageWatch)]);
-
-  useEffect(() => {
-    setFormData(prev => ({ ...prev, additionalRevision: getValues('additionalRevision'), extraFastDelivery: getValues('extraFastDelivery') }));
-  }, [watch('additionalRevision'), watch('extraFastDelivery')]);
+  /* --------------------------------- UI ---------------------------------- */
+  const pkgErrors = errors.packages || [];
 
   return (
-    <form onSubmit={e => e.preventDefault()} className='space-y-6  overflow-x-auto'>
-      <div className='border border-slate-200 rounded-xl '>
-        <h3 className='px-4 py-4 text-2xl font-[600]  '>Packages</h3>
-        <div className='grid grid-cols-4 border-y-slate-200 border-y py-4 px-4 '>
-          <span className='text-xl font-[700]'>#</span>
-          <span className=' text-xl font-[700]'>Basic</span>
-          <span className=' text-xl font-[700]'>Standard</span>
-          <span className=' text-xl font-[700]'>Premium</span>
+    <form onSubmit={e => e.preventDefault()} className='space-y-6'>
+      {/* Matrix (desktop) / Cards (mobile) */}
+      <div className='rounded-xl overflow-hidden border border-slate-200'>
+        {/* Sticky header */}
+        <div className='sticky top-0 z-[1] grid grid-cols-1 border-b border-slate-200 bg-white/80 backdrop-blur sm:grid-cols-4'>
+          <div className='px-4 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500'>Field</div>
+          {LABELS.map((label, idx) => (
+            <div key={label} className='border-l border-l-slate-200 px-4 py-4'>
+              <div className='flex items-center justify-between'>
+                <span className='text-base font-semibold text-slate-900'>{label}</span>
+                {/* Show per-column summary error indicator */}
+                {pkgErrors?.[idx] && <span className='rounded-md bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700'>Check errors</span>}
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className=' px-4 py-4 grid  grid-cols-4 gap-6 mb-8'>
-          <div className='flex flex-col gap-4 '>
-            <span className='flex items-center h-[40px]'>Title</span>
-            <span className='flex items-center h-[90px]'>Description</span>
-            <span className='flex items-center h-[40px]'>Delivery Time (days)</span>
-            <span className='flex items-center h-[40px]'>Revisions</span>
-            <span className='flex items-center h-[40px]'>Price</span>
-            <span className='flex items-center h-[40px]'>Test</span>
-          </div>
-          {formData.packages.map((_, index) => (
-            <div key={index} className='flex flex-col gap-4 '>
-              <Input placeholder='Title' {...register(`packages.${index}.title`)} error={errors.packages?.[index]?.title?.message} />
-              <Textarea placeholder='Description' {...register(`packages.${index}.description`)} error={errors.packages?.[index]?.description?.message} rows={3} />
-              <Input placeholder='Delivery Time (days)' type='number' {...register(`packages.${index}.deliveryTime`, { valueAsNumber: true })} error={errors.packages?.[index]?.deliveryTime?.message} />
-              <Input placeholder='Revisions' type='number' {...register(`packages.${index}.revisions`, { valueAsNumber: true })} error={errors.packages?.[index]?.revisions?.message} />
-              <Input placeholder='Price ($)' type='number' {...register(`packages.${index}.price`, { valueAsNumber: true })} error={errors.packages?.[index]?.price?.message} />
-              <AnimatedCheckbox checked={formData.packages[index]?.test || false} onChange={() => handleCheckboxChange(index, 'test', formData.packages[index]?.test)} />{' '}
-            </div>
+        {/* Rows */}
+        <div className='grid grid-cols-1 sm:grid-cols-4'>
+          {/* Title */}
+          <FieldLabel>Title</FieldLabel>
+          {TYPES.map((_, i) => (
+            <Cell key={`title-${i}`}>
+              <Input placeholder='e.g., Basic Logo' {...register(`packages.${i}.title`)} error={pkgErrors?.[i]?.title?.message} />
+            </Cell>
+          ))}
+
+          {/* Description */}
+          <FieldLabel>Description</FieldLabel>
+          {TYPES.map((_, i) => (
+            <Cell key={`desc-${i}`}>
+              <Textarea rows={3} placeholder='Short description (what’s included?)' {...register(`packages.${i}.description`)} error={pkgErrors?.[i]?.description?.message} />
+            </Cell>
+          ))}
+
+          {/* Delivery Time */}
+          <FieldLabel>Delivery Time (days)</FieldLabel>
+          {TYPES.map((_, i) => (
+            <Cell key={`delivery-${i}`}>
+              <Input type='number' min={1} step={1} placeholder='3' {...register(`packages.${i}.deliveryTime`, { valueAsNumber: true })} error={pkgErrors?.[i]?.deliveryTime?.message} />
+            </Cell>
+          ))}
+
+          {/* Revisions */}
+          <FieldLabel>Revisions</FieldLabel>
+          {TYPES.map((_, i) => (
+            <Cell key={`revisions-${i}`}>
+              <Input type='number' min={0} step={1} placeholder='1' {...register(`packages.${i}.revisions`, { valueAsNumber: true })} error={pkgErrors?.[i]?.revisions?.message} />
+            </Cell>
+          ))}
+
+          {/* Price */}
+          <FieldLabel>Price ($)</FieldLabel>
+          {TYPES.map((_, i) => (
+            <Cell key={`price-${i}`}>
+              <Input type='number' min={0} step={1} placeholder='50' {...register(`packages.${i}.price`, { valueAsNumber: true })} error={pkgErrors?.[i]?.price?.message} />
+            </Cell>
+          ))}
+
+          {/* Test (boolean) */}
+          <FieldLabel>Test (flag)</FieldLabel>
+          {TYPES.map((_, i) => (
+            <Cell key={`test-${i}`} className='flex items-center'>
+              <AnimatedCheckbox
+                checked={!!watch(`packages.${i}.test`)}
+                onChange={() => {
+                  const v = getValues(`packages.${i}.test`);
+                  setValue(`packages.${i}.test`, !v, { shouldDirty: true, shouldValidate: true });
+                }}
+              />
+              {pkgErrors?.[i]?.test?.message && <span className='ml-2 text-xs text-rose-600'>{pkgErrors?.[i]?.test?.message}</span>}
+            </Cell>
+          ))}
+
+          {/* Features editor */}
+          <FieldLabel>Features (3–5)</FieldLabel>
+          {TYPES.map((_, i) => (
+            <Cell key={`features-${i}`}>
+              <FeaturesEditor idx={i} fieldArray={fieldArrays[i]} register={register} errors={pkgErrors?.[i]?.features} />
+            </Cell>
           ))}
         </div>
       </div>
 
-      <div className='bg-gray-50 p-6 rounded-xl'>
-        <h3 className='text-lg font-semibold mb-4'>Extra Services</h3>
+      {/* Extra Services */}
+      <div className='rounded-xl bg-slate-50 p-6'>
+        <h3 className='mb-4 text-lg font-semibold'>Extra Services</h3>
 
-        <div className='flex items-center justify-between py-3 border-b border-gray-200 last:border-b-0'>
-          <div>
-            <h4 className='font-medium text-gray-900'>Extra Fast Delivery</h4>
-            <p className='text-sm text-gray-600'>Complete orders faster for an additional fee</p>
-          </div>
-          <Switcher checked={watch('extraFastDelivery')} onChange={checked => setValue('extraFastDelivery', checked)} />
-        </div>
+        <Row>
+          <ColLeft title='Extra Fast Delivery' desc='Complete orders faster for an additional fee' />
+          <ColRight>
+            <Switcher checked={watch('extraFastDelivery')} onChange={v => setValue('extraFastDelivery', v, { shouldDirty: true })} />
+          </ColRight>
+        </Row>
 
-        <div className='flex items-center justify-between py-3'>
-          <div>
-            <h4 className='font-medium text-gray-900'>Additional Revision</h4>
-            <p className='text-sm text-gray-600'>Offer extra revisions for an additional fee</p>
-          </div>
-          <Switcher checked={watch('additionalRevision')} onChange={checked => setValue('additionalRevision', checked)} />
-        </div>
+        <Row>
+          <ColLeft title='Additional Revision' desc='Offer extra revisions for an additional fee' />
+          <ColRight>
+            <Switcher checked={watch('additionalRevision')} onChange={v => setValue('additionalRevision', v, { shouldDirty: true })} />
+          </ColRight>
+        </Row>
       </div>
 
-      <div className='flex justify-end gap-2 pt-6'>
-        <Button icon={<ChevronLeft />} type='button' name='Back' color='outline' onClick={prevStep} className='!w-fit !pr-8 ' />
-        <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8 ' />
+      {/* Footer actions */}
+      <div className='flex justify-end gap-2 pt-4'>
+        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronLeft className='ltr:scale-x-[-1]' />} className='!w-fit' />
+        <Button type='button' onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8' />
       </div>
     </form>
   );
 }
 
+/* ---------------------------- Helper Components --------------------------- */
+function FieldLabel({ children }) {
+  return <div className='border-t border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 sm:border-r'>{children}</div>;
+}
+function Cell({ children, className = '' }) {
+  return <div className={`border-t border-slate-200 px-4 py-3 sm:border-r ${className}`}>{children}</div>;
+}
+function Row({ children }) {
+  return <div className='flex items-center justify-between border-b border-slate-200 py-3 last:border-b-0'>{children}</div>;
+}
+function ColLeft({ title, desc }) {
+  return (
+    <div>
+      <h4 className='font-medium text-slate-900'>{title}</h4>
+      <p className='text-sm text-slate-600'>{desc}</p>
+    </div>
+  );
+}
+function ColRight({ children }) {
+  return <div className='flex items-center'>{children}</div>;
+}
+
+/* ---------------------------- Features Editor ----------------------------- */
+function FeaturesEditor({ idx, fieldArray, register, errors }) {
+  const { fields, append, remove } = fieldArray;
+
+  const canAdd = fields.length < 5;
+  const canRemove = fields.length > 1;
+
+  return (
+    <div>
+      <div className='space-y-2'>
+        {fields.map((f, i) => (
+          <div key={f.id} className=' relative flex items-start gap-2'>
+            <Input placeholder={`Feature ${i + 1}`} {...register(`packages.${idx}.features.${i}`)} error={errors?.[i]?.message} className='flex-1  ' onAction={() => remove(i)} actionIcon={'/icons/minus.svg'} />
+            {/* <Button className=" absolute top-1/2 rtl:left-2 ltr:right-2 -translate-y-1/2 !w-fit !px-2 " color='outline'  disabled={!canRemove} onClick={() => remove(i)} icon={<Minus className='h-4 !w-4' />}  aria-label='Remove feature'   /> */}
+          </div>
+        ))}
+      </div>
+
+      <div className='mt-2 flex-col flex gap-2 '>
+        {typeof errors?.message === 'string' && <span className='ml-2 text-xs text-rose-600'>{errors?.message}</span>}
+        <Button type='button' color='outline' disabled={!canAdd} onClick={() => append('')} icon={<Plus className='h-4 w-4' />} name='Add feature' className='!w-fit' />
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------- Default Normalizer --------------------------- */
+function normalizeDefaults(formData) {
+  // Ensure three packages with required keys and 3 default features
+  const base = [
+    {
+      type: 'basic',
+      title: 'Basic Logo',
+      description: 'Simple and clean logo suitable for startups.',
+      deliveryTime: 3,
+      revisions: 1,
+      price: 50,
+      test: false,
+      features: ['1 Concept', '1 Revision', 'PNG/JPG format'],
+    },
+    {
+      type: 'standard',
+      title: 'Standard Logo Pack',
+      description: 'Multiple options with vector files and color variations.',
+      deliveryTime: 5,
+      revisions: 3,
+      price: 120,
+      test: false,
+      features: ['3 Concepts', '3 Revisions', 'Vector Files Included'],
+    },
+    {
+      type: 'premium',
+      title: 'Premium Brand Identity',
+      description: 'Complete identity with guide and social kit.',
+      deliveryTime: 7,
+      revisions: 10,
+      price: 250,
+      test: false,
+      features: ['5 Concepts', 'Unlimited Revisions', 'Brand Guide'],
+    },
+  ];
+
+  const incoming = Array.isArray(formData?.packages) ? formData.packages : [];
+  const merged = TYPES.map((t, i) => {
+    const current = incoming[i] || {};
+    return {
+      type: t,
+      title: current.title ?? base[i].title,
+      description: current.description ?? base[i].description,
+      deliveryTime: current.deliveryTime ?? base[i].deliveryTime,
+      revisions: current.revisions ?? base[i].revisions,
+      price: current.price ?? base[i].price,
+      test: typeof current.test === 'boolean' ? current.test : base[i].test,
+      features: Array.isArray(current.features) && current.features.length ? current.features.slice(0, 5) : base[i].features,
+    };
+  });
+
+  return {
+    packages: merged,
+    extraFastDelivery: !!formData?.extraFastDelivery,
+    additionalRevision: !!formData?.additionalRevision,
+  };
+}
+
+const MAX_FAQS = 12;
+
+const PRESET_FAQS = [
+  { question: 'What is included in this service?', answer: 'You get X, Y, and Z deliverables, plus 1 revision within 7 days.' },
+  { question: 'How long does delivery take?', answer: 'Standard delivery is 3 business days. Rush options are available.' },
+  { question: 'What do you need from me to start?', answer: 'Please provide your brief, examples you like, and brand assets if any.' },
+  { question: 'What if I am not satisfied?', answer: 'I offer revisions according to the plan you choose. I’ll work with you until the scope is met.' },
+];
+
 function Step3({ formData, setFormData, nextStep, prevStep }) {
   const {
-    register,
     handleSubmit,
     formState: { errors },
     setValue,
@@ -531,10 +719,18 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
   } = useForm({
     resolver: yupResolver(step3Schema),
     defaultValues: {
-      description: formData.description,
-      faqs: formData.faqs,
+      faqs: formData.faqs || [],
     },
   });
+
+  const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingTemp, setEditingTemp] = useState({ question: '', answer: '' });
+  const [query, setQuery] = useState('');
+
+  const faqs = watch('faqs') || [];
+
+  const filteredFaqs = useMemo(() => (faqs || []).filter(f => (f?.question || '').toLowerCase().includes(query.toLowerCase()) || (f?.answer || '').toLowerCase().includes(query.toLowerCase())), [faqs, query]);
 
   const onSubmit = async data => {
     const isValid = await trigger();
@@ -544,46 +740,156 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
     }
   };
 
-  const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
-
   const addFaq = () => {
-    if (newFaq.question && newFaq.answer) {
-      const currentFaqs = watch('faqs') || [];
-      setValue('faqs', [...currentFaqs, newFaq], { shouldValidate: true });
-      setNewFaq({ question: '', answer: '' });
-    }
+    if (!newFaq.question.trim() || !newFaq.answer.trim()) return;
+    if (faqs.some(f => f.question.trim().toLowerCase() === newFaq.question.trim().toLowerCase())) return;
+    if (faqs.length >= MAX_FAQS) return;
+
+    setValue('faqs', [...faqs, { question: newFaq.question.trim(), answer: newFaq.answer.trim() }], {
+      shouldValidate: true,
+    });
+    setNewFaq({ question: '', answer: '' });
   };
 
   const removeFaq = index => {
-    const currentFaqs = watch('faqs') || [];
     setValue(
       'faqs',
-      currentFaqs.filter((_, i) => i !== index),
+      faqs.filter((_, i) => i !== index),
       { shouldValidate: true },
     );
+    if (editingIndex === index) setEditingIndex(null);
+  };
+
+  const startEdit = index => {
+    setEditingIndex(index);
+    setEditingTemp({ ...faqs[index] });
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null);
+    setEditingTemp({ question: '', answer: '' });
+  };
+
+  const saveEdit = index => {
+    const tempQ = editingTemp.question?.trim();
+    const tempA = editingTemp.answer?.trim();
+    if (!tempQ || !tempA) return;
+    if (faqs.some((f, i) => i !== index && f.question.trim().toLowerCase() === tempQ.toLowerCase())) return;
+
+    const next = [...faqs];
+    next[index] = { question: tempQ, answer: tempA };
+    setValue('faqs', next, { shouldValidate: true });
+    setEditingIndex(null);
+    setEditingTemp({ question: '', answer: '' });
+  };
+
+  const moveFaq = (index, dir) => {
+    const next = [...faqs];
+    const target = index + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    setValue('faqs', next, { shouldValidate: true });
+  };
+
+  const addPreset = preset => {
+    if (faqs.length >= MAX_FAQS) return;
+    if (faqs.some(f => f.question.trim().toLowerCase() === preset.question.trim().toLowerCase())) return;
+    setValue('faqs', [...faqs, preset], { shouldValidate: true });
   };
 
   return (
-    <form onSubmit={e => e.preventDefault()} className='space-y-6 '>
-      {/* FAQ List */}
-      <FAQSection className={' !my-0 !px-0 max-w-full'} removeFaq={removeFaq} showTitle={false} faqs={watch('faqs')} />
+    <form onSubmit={e => e.preventDefault()} className='space-y-6'>
+      {/* FAQ Section */}
+      <section className='rounded-xl border border-slate-200 bg-white/60 backdrop-blur-sm shadow-sm'>
+        <div className='flex flex-col gap-3 border-b border-slate-200 px-4 py-3 md:flex-row md:items-center md:justify-between'>
+          <div className='flex items-center gap-2'>
+            <h3 className='text-base font-semibold text-slate-900'>FAQs</h3>
+            <span className='ml-2 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-600'>
+              {faqs.length}/{MAX_FAQS}
+            </span>
+          </div>
+          <div className='relative'>
+            <Search className='pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder='Search FAQs…' className='w-56 rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30' />
+          </div>
+        </div>
 
-      {/* Add FAQ Section */}
-      <div className='bg-white p-6 rounded-lg shadow-inner border border-slate-200 mt-6'>
-        <h4 className='font-medium text-lg mb-4 text-gray-900'>Add New FAQ</h4>
-        <div className='space-y-4'>
-          <Input label='Question' value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} className='w-full' />
-          <Textarea label='Answer' value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} rows={4} className='w-full' />
+        {/* FAQ list */}
+        <ul className='divide-y divide-slate-200'>
+          {filteredFaqs.length === 0 ? (
+            <li className='p-4 text-sm text-slate-500'>No FAQs yet. Add one below or pick from presets.</li>
+          ) : (
+            filteredFaqs.map((faq, idx) => {
+              const realIndex = faqs.findIndex(f => f.question === faq.question && f.answer === faq.answer);
+              const isEditing = editingIndex === realIndex;
+              return (
+                <li key={`${faq.question}-${realIndex}`} className='group p-4'>
+                  <div className='flex items-start justify-between gap-3'>
+                    <div className='min-w-0'>
+                      {isEditing ? <input value={editingTemp.question} onChange={e => setEditingTemp(s => ({ ...s, question: e.target.value }))} className='w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm' /> : <h4 className='truncate text-sm font-semibold text-slate-900'>{faq.question}</h4>}
+                      <div className='mt-2'>{isEditing ? <textarea value={editingTemp.answer} onChange={e => setEditingTemp(s => ({ ...s, answer: e.target.value }))} rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm' /> : <p className='text-sm text-slate-700'>{faq.answer}</p>}</div>
+                    </div>
+
+                    <div className='shrink-0'>
+                      {isEditing ? (
+                        <div className='flex items-center gap-1'>
+                          <button type='button' onClick={() => saveEdit(realIndex)} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-emerald-50'>
+                            <Check className='h-4 w-4' />
+                          </button>
+                          <button type='button' onClick={cancelEdit} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50'>
+                            <X className='h-4 w-4' />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className='invisible flex items-center gap-1 group-hover:visible'>
+                          <button type='button' onClick={() => moveFaq(realIndex, -1)} className='rounded-lg border border-slate-200 p-1 hover:bg-slate-50'>
+                            <ArrowUp className='h-4 w-4' />
+                          </button>
+                          <button type='button' onClick={() => moveFaq(realIndex, 1)} className='rounded-lg border border-slate-200 p-1 hover:bg-slate-50'>
+                            <ArrowDown className='h-4 w-4' />
+                          </button>
+                          <button type='button' onClick={() => startEdit(realIndex)} className='rounded-lg border border-slate-200 p-1 hover:bg-slate-50'>
+                            <Pencil className='h-4 w-4' />
+                          </button>
+                          <button type='button' onClick={() => removeFaq(realIndex)} className='rounded-lg border border-slate-200 p-1 hover:bg-rose-50'>
+                            <Trash2 className='h-4 w-4 text-rose-600' />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })
+          )}
+        </ul>
+
+        {/* Add new + presets */}
+        <div className='border-t border-slate-200 p-4'>
+          <div className='mb-3 text-sm font-medium text-slate-700'>Add New FAQ</div>
+          <div className='grid gap-3 md:grid-cols-2'>
+            <input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} placeholder='Question' className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm' />
+            <textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} placeholder='Answer' rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
+          </div>
+
+          <div className='mt-3 flex items-center justify-between'>
+            <div className='flex flex-wrap gap-2'>
+              {PRESET_FAQS.map((p, i) => (
+                <button key={i} type='button' onClick={() => addPreset(p)} className='rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-700 hover:bg-slate-50'>
+                  + {p.question}
+                </button>
+              ))}
+            </div>
+
+            <Button name={'Add FAQ'} disabled={!newFaq.question.trim() || !newFaq.answer.trim() || faqs.length >= MAX_FAQS} icon={<Plus className='h-4 w-4' />} onClick={addFaq} className='!w-fit !px-4' />
+          </div>
         </div>
-        <div className='flex justify-end'>
-          <Button type='button' name='Add FAQ' color='green' onClick={addFaq} disabled={!newFaq.question || !newFaq.answer} className=' !w-fit !mx-auto !px-8 mt-4' />
-        </div>
-      </div>
+      </section>
 
       {/* Navigation Buttons */}
-      <div className='flex justify-end gap-2 pt-6'>
-        <Button icon={<ChevronLeft />} type='button' name='Back' color='outline' onClick={prevStep} className='!w-fit !px-6 py-2 text-gray-600 border-2 border-gray-300 rounded-lg hover:bg-gray-200 transition-colors' />
-        <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors' />
+      <div className='flex justify-end gap-2 pt-2'>
+        <Button name={'Back'} onClick={prevStep} className='!w-fit !px-4' color='outline' icon={<ChevronLeft className='h-4 w-4 ltr:scale-x-[-1]  ' />} />
+        <Button name={'Continue'} onClick={handleSubmit(onSubmit)} className='!w-fit !px-4' />
       </div>
     </form>
   );
@@ -841,7 +1147,6 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     }));
   };
 
- 
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Images (up to 3)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>

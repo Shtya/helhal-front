@@ -107,7 +107,8 @@ export default function Page() {
     try {
       const qs = buildQuery();
       const { data } = await api.get(`/orders?${qs}`);
-      const list = data?.records ?? data?.data ?? data?.orders ?? data ?? [];
+      console.log(data);
+      const list = data?.records;
 
       // Client filter for "Active"
       let filtered = list;
@@ -191,10 +192,10 @@ export default function Page() {
 
     return (
       <div className='flex  gap-2  w-fit'>
-        {<Button href={user?.role == 'buyer' ? `/chat?userId=${row?._raw?.sellerId}` : `/chat?userId=${row?._raw?.buyerId}`}  icon={<MessageCircle size={18} />} className='!w-fit h-[35px] ' />}
-        {canBuyerCancel && <Button color='red' name='Cancel' className='!w-fit' onClick={() => cancelOrder(row)} />}
+        {<Button href={user?.role == 'buyer' ? `/chat?userId=${row?._raw?.sellerId}` : `/chat?userId=${row?._raw?.buyerId}`} icon={<MessageCircle size={18} />} className='!w-fit h-[35px] ' />}
+        {/* {canBuyerCancel && <Button color='red' name='Cancel' className='!w-fit' onClick={() => cancelOrder(row)} />} */}
         {canBuyerComplete && <Button color='green' name='Complete' className='!w-fit' onClick={() => completeOrder(row)} />}
-        {canSellerDeliver && <Button color='blue' name='Deliver' className='!w-fit' onClick={() => deliverOrder(row)} />}
+        {canSellerDeliver && <Button color='outline' name='Deliver' className='!w-fit !h-[35px] ' onClick={() => deliverOrder(row)} />}
       </div>
     );
   };

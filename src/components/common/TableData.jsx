@@ -89,7 +89,7 @@ const TableData = ({ data, columns, actions, pagination, onPageChange, onLimitCh
                       )}
                     </td>
                   ))}
-                  {actions && <td className='px-4 py-4 text-sm'>{actions && actions(index)}</td>}
+                  {actions && <td className='px-4 py-4 text-sm'>{actions && actions(row)}</td>}
                 </tr>
               ))
             )}

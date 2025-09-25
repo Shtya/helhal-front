@@ -1,4 +1,64 @@
 {
+  "servicesPage": {
+    "breadcrumbs": {
+      "services": "Services"
+    },
+    "titles": {
+      "explore": "Explore Services"
+    },
+    "subtitles": {
+      "findGreatWork": "Filter to find exactly what you need."
+    },
+    "actions": {
+      "reset": "Reset filters"
+    },
+    "labels": {
+      "rating": "Rating",
+      "sortBy": "Sort by",
+      "sorted": "Sorted",
+      "budget": "Budget",
+      "deliveryWithin": "Delivery in",
+      "days": "days",
+      "revisions": "Revisions",
+      "fastDelivery": "Fast delivery",
+      "additionalRevision": "Additional revision",
+      "level": "Level",
+      "availability": "Availability",
+      "languages": "Languages",
+      "countries": "Countries",
+      "results": "results"
+    },
+    "sort": {
+      "all": "All",
+      "priceLowHigh": "Price: Low to High",
+      "priceHighLow": "Price: High to Low",
+      "rating": "Top Rated",
+      "newest": "Newest"
+    },
+    "price": {
+      "p0_50": "$0–50",
+      "p50_200": "$50–200",
+      "p200_500": "$200–500"
+    },
+    "delivery": {
+      "d1": "24 hours",
+      "d3": "3 days",
+      "d7": "7 days"
+    },
+    "placeholders": {
+      "search": "Search services..."
+    },
+    "headings": {
+      "allServices": "All Services"
+    },
+    "empty": {
+      "title": "No services matched your filters",
+      "description": "Try adjusting your filters or reset them to see more results."
+    },
+    "errors": {
+      "loadFailed": "Failed to load services. Please try again."
+    }
+  },
   "auth": {
     "userType": "User Type",
     "business": "Business",
@@ -184,7 +244,8 @@
     "bikeRepairMaintenance": "Bike Repair & Maintenance",
     "automation": "Automation",
     "mechanic": "Mechanic",
-    "photography": "Photography"
+    "photography": "Photography" 
+		 
   },
 
   "createProject": {
@@ -268,36 +329,51 @@
   },
 
   "home": {
-    "heroTitle": "Discover your potential with Helhal",
-    "heroSubtitle": "The best freelance services in one place!",
-    "heroTagline": "All visual services in one place!",
-    "popularServicesTitle": "Popular Services",
     "iosAppDevelopment": "iOS App Development",
     "wordpressDevelopers": "WordPress Developers",
     "uxpin": "UXPin",
     "invisionStudio": "Invision Studio",
+    "clientsExperiencesTitle": "Our Client's Experiences",
+    "heroBadge": "Hire top freelancers fast",
+    "heroTitle": "Hire talent you can trust.",
+    "heroSubtitle": "Post an order, get tailored proposals, and start in hours—not weeks.",
+    "heroTagline": "Secure payments, transparent pricing, and a curated marketplace that respects your time.",
+    "trust": {
+      "safepay": "Secure Escrow",
+      "rated": "4.9★ average",
+      "talent": "Curated talent"
+    },
+    "popularServicesTitle": "Popular services",
+    "seeAll": "See all",
+    "from": "From",
+    "bookNow": "Book now →",
     "whyChoose": {
-      "title": "Why choose Helhal",
+      "title": "Why choose Helhal?",
       "items": {
         "categories": {
-          "title": "Over 700 Categories",
-          "description": "Discover photography services for every purpose, from personal shoots to corporate needs."
+          "title": "Wide Categories",
+          "description": "From development to design and marketing—everything in one marketplace."
         },
         "pricing": {
-          "title": "Clear Upfront Pricing",
-          "description": "No hidden fees, you know exactly what you’re paying for."
+          "title": "Clear Pricing",
+          "description": "Upfront offers. No hidden fees. Pay safely when milestones are approved."
         },
         "quality": {
-          "title": "Quality Work Done Faster",
-          "description": "High-quality results delivered quickly, so you never miss a deadline."
+          "title": "Verified Quality",
+          "description": "Ratings, portfolios, and vetted profiles to help you hire confidently."
         },
         "support": {
-          "title": "24/7 Award-Winning Support",
-          "description": "We're always here, ready to help, day or night, anytime you need us."
+          "title": "Responsive Support",
+          "description": "We’ve got your back with fast help and dispute resolution."
         }
       }
     },
-    "clientsExperiencesTitle": "Our Client's Experiences"
+    "cta": {
+      "title": "Ready to post your order?",
+      "subtitle": "Describe your project and get proposals within minutes.",
+      "postOrder": "Post an Order",
+      "browse": "Browse Services"
+    }
   },
 
   "layout": {
@@ -309,9 +385,8 @@
     "notificationsButtonAriaLabel": "Notifications",
     "userAvatarAlt": "User Avatar",
     "userMenuAriaLabel": "user Menu Aria Label",
-    "searchPlaceholder": "Find Perfect Freelancer",
+    "searchPlaceholder": "Search services, freelancers, or categories…",
     "searchButtonAriaLabel": "Search",
-
     "profileLink": "Profile",
     "settingsLink": "Settings",
     "logoutLink": "Logout",
@@ -335,39 +410,7 @@
     "copyright": "© 2025 Helhal. All rights reserved.",
     "backButton": "Back"
   },
-  "navigation_sections": {
-    "forClients": {
-      "title": "For Clients",
-      "yourAccount": "Your Account",
-      "careers": "Careers",
-      "pressNews": "Press & News",
-      "partnerships": "Partnerships",
-      "ipClaims": "Intellectual Property Claims"
-    },
-    "company": {
-      "title": "Company",
-      "contact": "Contact",
-      "inviteFriend": "Invite a Friend",
-      "privacyPolicy": "Privacy Policy",
-      "termsOfService": "Terms of Service",
-      "guides": "Helhal Guides",
-      "helpSupport": "Help & Support"
-    },
-    "forFreelancers": {
-      "title": "For Freelancers",
-      "trustSafety": "Trust & Safety",
-      "buying": "Buying on Helhal",
-      "selling": "Selling on Helhal"
-    },
-    "businessSolutions": {
-      "title": "Business Solutions",
-      "events": "Events",
-      "communityStandards": "Community Standards",
-      "podcast": "Podcast"
-    },
-    "socialMediaTitle": "Social Media",
-    "copyright": "© 2025 Helhal. All rights reserved."
-  },
+ 
 
   "referral": {
     "referAFriendTitle": "Refer a Friend",
@@ -516,7 +559,7 @@
     "tabs": {
       "all": "All",
       "favorites": "Favorites",
-			"unread" : "Unread"
+      "unread": "Unread"
     },
     "searching": "Searching...",
     "noUsersFound": "No users found",
@@ -544,7 +587,7 @@
       "responseRate": "Response rate",
       "rating": "Rating"
     },
-		"search": "Search by Client Name",
+    "search": "Search by Client Name",
     "placeholders": {
       "search": "Search by Client Name",
       "message": "Send Message"
@@ -563,7 +606,7 @@
     "categoryNotFoundDesc": "The category you are looking for doesn’t exist or has been removed. Please check the URL or explore other categories.",
     "backToServices": "Back to Services",
     "services": "Services",
-    "filterTitle": "🔎 Search and Filter Services",
+    "filterTitle": " Search and Filter Services",
     "filterSubtitle": "Use the filters below to find exactly what you’re looking for.",
     "category": "Category",
     "serviceType": "Service Type",
@@ -587,5 +630,41 @@
   },
 
   "socialMediaTitle": "Follow Us on Social Media",
-  "copyright": "© 2025 Your Company. All rights reserved."
+ 
+  "navigation_sections": {
+    "forClients": {
+      "title": "For Clients",
+      "yourAccount": "Your Account",
+      "careers": "Careers",
+      "pressNews": "Press & News",
+      "partnerships": "Partnerships",
+      "ipClaims": "IP Claims"
+    },
+    "company": {
+      "title": "Company",
+      "contact": "Contact",
+      "inviteFriend": "Refer a Friend",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "guides": "Guides",
+      "helpSupport": "Help & Support"
+    },
+    "forFreelancers": {
+      "title": "For Freelancers",
+      "trustSafety": "Trust & Safety",
+      "buying": "Buying on Helhal",
+      "selling": "Selling on Helhal"
+    },
+    "businessSolutions": {
+      "title": "Business Solutions",
+      "events": "Events",
+      "communityStandards": "Community Standards",
+      "podcast": "Podcast"
+    }
+  },
+  "footer": {
+    "showMore": "Show more",
+    "showLess": "Show less"
+  },
+  "copyright": "© {{year}} Helhal. All rights reserved."
 }

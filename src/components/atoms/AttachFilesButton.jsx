@@ -8,7 +8,7 @@ import { File, FileText, ImageIcon, Music, Video, Check, Search } from 'lucide-r
 import api, { baseImg } from '@/lib/axios';
 
 // Icon by mime
-const getFileIcon = mimeType => {
+export const getFileIcon = mimeType => {
   if (mimeType?.startsWith('image')) return <ImageIcon className='w-10 h-10 text-blue-500' />;
   if (mimeType?.startsWith('video')) return <Video className='w-10 h-10 text-purple-500' />;
   if (mimeType?.startsWith('audio')) return <Music className='w-10 h-10 text-green-500' />;
