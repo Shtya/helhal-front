@@ -4,10 +4,7 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig = {
   devIndicators: false,
-  reactStrictMode: false,
-  async rewrites() {
-    return [{ source: '/api/:path*', destination: 'http://ec2-98-90-134-187.compute-1.amazonaws.com:8081/:path*' }];
-  },
+  reactStrictMode: false, 
   images: {
     remotePatterns: [
       {
