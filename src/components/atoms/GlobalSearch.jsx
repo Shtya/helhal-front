@@ -28,9 +28,9 @@ export default function GlobalSearch({ className = '' }) {
 
   // ---------- Scopes (select lives **inside** the input)
   const scopes = [
+    { label: 'Services', value: 'services', path: '/services' },
     { label: 'Jobs', value: 'jobs', path: '/seller/jobs' },
     { label: 'Sellers', value: 'sellers', path: '/sellers' },
-    { label: 'Services', value: 'services', path: '/services' },
   ];
   const [scopeIndex, setScopeIndex] = useState(0);
   const scope = scopes[scopeIndex];
@@ -207,8 +207,8 @@ export default function GlobalSearch({ className = '' }) {
   return (
     <div ref={rootRef} className={`relative hidden xl:flex ${className}`}>
       <div className='relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
-        <div className='flex items-center gap-2 rounded-md border bg-white/20 backdrop-blur-3xl px-2 py-2 text-sm shadow-inner transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
-          {/* Inline scope trigger — clicking it should close search */}
+        <div className='flex items-center gap-2 rounded-md border bg-white/20 backdrop-blur-3xl px-2 py-1 text-sm  transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
+
           <button
             ref={scopeBtnRef}
             onClick={() => {

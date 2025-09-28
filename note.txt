@@ -4,43 +4,41 @@
 	✅ all services page 
 	✅ services category 
 	✅ services page dashboard
-	- generate fake for the ( category , services , user account details , jobs , proposals ) 
-	- service details
+	✅ service details
 		- dashboard
 			✅ handle the buy the services move the money to the wallet 
-			* after deliver move the money form the wallet to the seller 
-			*
+			✅ after deliver move the money form the wallet to the seller 
 
+		- buyer
+ 			✅ buy service go to checkout page to buy the money 
+			✅ after buy go the money to the wallet of the platform and send notification to the seller and buyer 
+			✅ check the orders for the seller and the buyer 
+			✅ in case finish the service what will happened and in case there is a problem what will occur 
+			✅ after finished from the two sides take the money form the wallet to the wallet of the seller  
+			✅ msg when click on actions of order
 
-		- buyer '
- 			1 - buy service go to checkout page to buy the money 
-			2 - after buy go the money to the wallet of the platform and send notification to the seller and buyer 
-			3 - check the orders for the seller and the buyer 
-			4 - in case finish the service what will happened and in case there is a problem what will occur 
-			5 - after finished from the two sides take the money form the wallet to the wallet of the seller  
-			* show his invoices his activity log
-			* on the orders ( buyer ) show button ( received , disputes ) and when click on it show popup the seller should click received and if not make this with limit days you can make disputes 
-
-		- seller 
-			* deliver or disputes in the order and when make deliver or disputes send notification
-			* on the orders ( seller ) show button (  deliver , disputes )
-
+ 
 
 	- wallet of the platform when create order and pay
+	- wallet of the client to see his money 
+		✅ transactions
+		- 
 
-	- category page handle it 
+	✅ category page handle it 
+	- chat 
 	- handle the page of the levels based on what
 	- profile page 
-	- chat 
 	- reviews services and also for the user
 	- setting of the website and ( percent , )
+	- invoices
+	- from the dropdown cna contact with the admin
 
 	rating of the service
 
 
 	*important*
 		- check form the percent of the platform in create order in also ( order.services ( const platformPercent))
-		- 
+
 
 */
 

@@ -3,9 +3,9 @@ import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '@/components/dashboard/Layout';
 import DataTable from '@/components/dashboard/ui/DataTable';
 import api from '@/lib/axios';
- import { ArrowDownRight, ArrowUpRight, Wallet, Banknote, Clock } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, Wallet, Banknote, Clock } from 'lucide-react';
 
-const formatMoney = (n , currency = 'SAR') => {
+const formatMoney = (n, currency = 'SAR') => {
   const value = typeof n === 'string' ? Number(n) : n;
 
   if (isNaN(value)) return '—';
@@ -81,8 +81,7 @@ export default function WithdrawManagement() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterKind, range?.from, range?.to]);
 
-
-	const columns = useMemo(
+  const columns = useMemo(
     () => [
       { key: 'id', title: 'ID', render: v => <span className='text-slate-700'>{v.slice(0, 8)}…</span> },
       {
@@ -125,65 +124,25 @@ export default function WithdrawManagement() {
     [],
   );
 
-	console.log(balance);
-
   return (
     <DashboardLayout title='Money & Withdrawals'>
       {/* KPIs */}
       <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-        <KpiCard icon={<Wallet className='h-5 w-5' />} label='Available Balance' value={formatMoney(balance.availableBalance)} hint='Ready to withdraw' />
-        <KpiCard icon={<Banknote className='h-5 w-5' />} label='Credits' value={formatMoney(balance.credits)} hint='Refund credits' />
-        <KpiCard icon={<ArrowUpRight className='h-5 w-5' />} label='Earnings to Date' value={formatMoney(balance.earningsToDate)} hint='Lifetime gross (net of refunds not applied here)' />
-        <KpiCard icon={<Clock className='h-5 w-5' />} label='Cancelled Orders Credit' value={formatMoney(balance.cancelledOrdersCredit)} hint='Holdbacks from cancellations' />
+        <KpiCard icon={Wallet} label='Available Balance' value={formatMoney(balance.availableBalance)} hint='Ready to withdraw' iconBg='bg-emerald-50 text-emerald-600' />
+        <KpiCard icon={Banknote} label='Credits' value={formatMoney(balance.credits)} hint='Refund credits' iconBg='bg-blue-50 text-blue-600' />
+        <KpiCard icon={ArrowUpRight} label='Earnings to Date' value={formatMoney(balance.earningsToDate)} hint='Lifetime gross (net of refunds not applied here)' iconBg='bg-purple-50 text-purple-600' />
+        <KpiCard icon={Clock} label='Cancelled Orders Credit' value={formatMoney(balance.cancelledOrdersCredit)} hint='Holdbacks from cancellations' iconBg='bg-rose-50 text-rose-600' />
       </div>
-
-      {/* Earnings quick range */}
-      {/* <div className='mb-6 rounded-2xl border border-slate-200 bg-white p-4'>
-        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-          <div>
-            <div className='text-sm font-semibold text-slate-900'>Earnings (range)</div>
-            <div className='mt-1 text-xs text-slate-500'>
-              {range?.from?.toLocaleDateString()} – {range?.to?.toLocaleDateString()}
-            </div>
-          </div>
-           <div className='flex gap-2'>
-            <button
-              className='rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50'
-              onClick={() => {
-                const end = new Date();
-                const start = new Date();
-                start.setDate(end.getDate() - 7);
-                setRange({ from: start, to: end });
-              }}>
-              Last 7 days
-            </button>
-            <button
-              className='rounded-lg border border-slate-200 px-3 py-2 text-sm hover:bg-slate-50'
-              onClick={() => {
-                const end = new Date();
-                const start = new Date();
-                start.setDate(end.getDate() - 30);
-                setRange({ from: start, to: end });
-              }}>
-              Last 30 days
-            </button>
-          </div>
-        </div>
-
-        <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3'>
-          <MiniStat label='Total Earnings' value={formatMoney(earningsCard.totalEarnings)} />
-          <MiniStat label='Total Withdrawals' value={formatMoney(earningsCard.totalWithdrawals)} />
-          <MiniStat label='Net' value={formatMoney(earningsCard.netEarnings)} />
-        </div>
-      </div> */}
 
       {/* Filters */}
       <div className='mb-3 flex items-center gap-2'>
         <button onClick={() => setFilterKind('withdrawal')} className={`px-4 py-2 rounded-lg ${filterKind === 'withdrawal' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}>
-          Withdrawals
+          {' '}
+          Withdrawals{' '}
         </button>
         <button onClick={() => setFilterKind('all')} className={`px-4 py-2 rounded-lg ${filterKind === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}>
-          All Transactions
+          {' '}
+          All Transactions{' '}
         </button>
       </div>
 
@@ -205,15 +164,25 @@ export default function WithdrawManagement() {
   );
 }
 
-function KpiCard({ icon, label, value, hint }) {
-   return (
-    <div className='rounded-2xl border border-slate-200 bg-white p-4 shadow-sm'>
-      <div className='flex items-center gap-2 text-slate-600'>
-        {icon}
-        <span className='text-xs'>{label}</span>
+function KpiCard({ icon: Icon, label, value, hint, currency, iconBg = 'bg-emerald-50 text-emerald-600' }) {
+  return (
+    <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
+      {/* Header */}
+      <div className='flex justify-between items-start'>
+        <p className='text-lg text-gray-600 font-medium'>{label}</p>
+        <span className={`w-9 h-9 flex items-center justify-center rounded-full ${iconBg}`}>{Icon && <Icon className='w-5 h-5' />}</span>
       </div>
-      <div className='mt-2 text-2xl font-semibold text-slate-900'>{value}</div>
-      {hint ? <div className='mt-1 text-xs text-slate-500'>{hint}</div> : null}
+
+      {/* Value */}
+      <div className='mt-4'>
+        <p className='text-4xl font-extrabold text-gray-900'>
+          {value}
+          {currency ? <span className='text-xl font-semibold ml-1'>{currency}</span> : null}
+        </p>
+      </div>
+
+      {/* Hint/Description */}
+      {hint ? <p className='mt-2 text-base font-[600] text-gray-700'>{hint}</p> : null}
     </div>
   );
 }

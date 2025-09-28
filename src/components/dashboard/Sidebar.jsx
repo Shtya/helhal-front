@@ -14,6 +14,7 @@ export const menuItems = [
   { name: 'Job', href: '/dashboard/job', icon: ShoppingBag, title: 'Job', desc: 'Add, edit, and publish Job.' },
   { name: 'Orders', href: '/dashboard/orders', icon: Package, title: 'Orders', desc: 'Track, fulfill, and update order statuses and notes.' },
   { name: 'Invoices', href: '/dashboard/invoices', icon: FileText, title: 'Invoices', desc: 'Generate, download, and manage invoices and billing.' },
+  { name: 'Disputes', href: '/dashboard/disputes', icon: Wallet, title: 'Disputes', desc: 'Request payouts, view balances, and payment history.' },
   { name: 'Finance', href: '/dashboard/finance', icon: Wallet, title: 'Finance', desc: 'Request payouts, view balances, and payment history.' },
   { name: 'Level Up', href: '/dashboard/levelup', icon: TrendingUp, title: 'Level Up', desc: 'Growth tools, gamification, and performance boosts.' },
   { name: 'Blogs', href: '/dashboard/blogs', icon: Newspaper, title: 'Blogs', desc: 'Write, schedule, and manage blog posts and drafts.' },

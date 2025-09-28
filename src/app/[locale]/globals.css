@@ -190,20 +190,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #108a00, #007a55);
+  @apply bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-lg transition-all duration-300 ;
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #108a00, #7fbcaa);
-}
-
+ 
 .scroll::-webkit-scrollbar {
   width: 8px;
   height: 2px !important;
 }
 
 .gradient {
-  @apply bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-lg transition-all duration-300;
+  @apply bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-lg  duration-300;
 }
 
 .gradient:hover {

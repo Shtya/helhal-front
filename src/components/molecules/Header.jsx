@@ -6,9 +6,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useTranslations } from 'next-intl';
-import { Mail, Copy, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check } from 'lucide-react';
+import { Mail, Copy, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
-import { getUserInfo } from '@/hooks/useUser';
 import api from '@/lib/axios';
 
 /* =========================================================
@@ -32,83 +31,6 @@ const getLocalUser = () => {
     return null;
   }
 };
-
-// const NotificationPopup = () => {
-//   const [open, setOpen] = useState(false);
-//   const btnRef = useRef(null);
-
-//   useEffect(() => {
-// 		api.get("/notifications" ).then(res => {
-// 			console.log(res.data);
-// 			/** return this data {
-//     "total_records": 1,
-//     "current_page": 1,
-//     "per_page": 10,
-//     "records": [
-//         {
-//             "id": "45395345-943f-4257-a9d4-ebfefa305052",
-//             "created_at": "2025-09-24T09:19:26.030Z",
-//             "updated_at": "2025-09-24T09:19:26.030Z",
-//             "deleted_at": null,
-//             "userId": "707a2de6-b83a-4f2b-b492-cca4cca0ef7f",
-//             "type": "payment",
-//             "title": "Payment Successful",
-//             "message": "Your payment of 200 SAR for “I will build an AR prototype for product visualization” was processed successfully. Transaction: TX-1758705565263.",
-//             "isRead": false,
-//             "relatedEntityType": "order",
-//             "relatedEntityId": "6b041dc4-d4a6-46c7-8372-b46156d822ec"
-//         }
-//     ]
-// } */
-
-// 		// use it in the componennt and enhacne the ui here
-// 		})
-//     const onClick = e => {
-//       if (!btnRef.current) return;
-//       if (!btnRef.current.contains(e.target)) setOpen(false);
-//     };
-//     document.addEventListener('mousedown', onClick);
-//     return () => document.removeEventListener('mousedown', onClick);
-//   }, []);
-
-//   const items = [
-//     { title: 'Order #1452 updated', time: '2m ago' },
-//     { title: 'New message from Sarah', time: '8m ago' },
-//     { title: 'Proposal accepted', time: '1h ago' },
-//   ];
-
-//   return (
-//     <div className='relative' ref={btnRef}>
-//       <motion.button onClick={() => setOpen(v => !v)} className='relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
-//         <Bell className='h-5 w-5 text-slate-700' />
-//         <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center'>3</span>
-//       </motion.button>
-
-//       <AnimatePresence>
-//         {open && (
-//           <motion.div initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden'>
-//             <div className='px-4 py-3 border-b border-slate-200 flex items-center justify-between'>
-//               <div className='font-semibold text-slate-900 text-sm'>Notifications</div>
-//             </div>
-//             <div className='max-h-72 overflow-auto'>
-//               {items.map((it, i) => (
-//                 <div key={i} className='px-4 py-3 hover:bg-slate-50'>
-//                   <div className='text-sm text-slate-800'>{it.title}</div>
-//                   <div className='text-xs text-slate-500'>{it.time}</div>
-//                 </div>
-//               ))}
-//             </div>
-//             <div className='px-4 py-2 border-t border-slate-200 text-center'>
-//               <Link href='/notifications' className='text-sm text-emerald-700 hover:underline'>
-//                 View all
-//               </Link>
-//             </div>
-//           </motion.div>
-//         )}
-//       </AnimatePresence>
-//     </div>
-//   );
-// };
 
 const relTime = iso => {
   if (!iso) return '';
@@ -293,7 +215,7 @@ const NotificationPopup = () => {
                             <button onClick={() => markOneAsRead(n.id)} className='text-[11px] text-slate-600 underline-offset-2 hover:underline'>
                               Mark as read
                             </button>
-                          )} 
+                          )}
                         </div>
                       </div>
                     </div>
@@ -347,9 +269,16 @@ export default function Header() {
         label: 'Services',
         icon: <Briefcase className='h-5 w-5' />,
         children: [
-          { href: '/services', label: 'All Services', icon: <LayoutGrid className='h-4 w-4' /> },
-          { href: '/services/web-development', label: 'Web Development', icon: <Code2 className='h-4 w-4' /> },
-          { href: '/services/design', label: 'Design', icon: <Palette className='h-4 w-4' /> },
+          {
+            href: '/services',
+            label: 'Services',
+            icon: <Briefcase className='h-4 w-4' />,
+          },
+          {
+            href: '/services/all',
+            label: 'All Services',
+            icon: <ListChecks className='h-4 w-4' />,
+          },
         ],
       },
     ];
@@ -391,7 +320,7 @@ export default function Header() {
     const common = [
       { href: '/profile', label: 'My Profile', icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
       { href: '/orders', label: 'My Orders', icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/orders'), order: 2 },
-      { href: '/activity-log', label: 'Activity Log', icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/activity-log'), order: 4 },
+      { href: '/disputes', label: 'My Disputes', icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/disputes'), order: 4 },
       { href: '/my-billing', label: 'My Billing', icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
       { href: '/settings', label: 'Settings', icon: <Settings size={18} className='text-gray-500' />, active: pathname.startsWith('/settings'), order: 16 },
       { href: '/invite', label: 'Invite New User', icon: <UserPlus size={18} className='text-gray-500' />, active: pathname.startsWith('/invite'), order: 17 },
