@@ -18,6 +18,17 @@
 			✅ msg when click on actions of order
 
  
+ - chat
+		- when there is a notificaiotn on chat when open on it remove the count of the notifcation msg buy when reload return again  
+		- i need the count of msgs notifications to show it on the icon of the chat in the header
+		- add button to chat with the admin direct by get the id of the admin form the setting of the platform there is ( platformAccountUserId ) in the setting
+		- handle the popup of the attachment file 
+
+		- check form the upload img and refresh to show it again 
+		- and also when i send msg to chat i open it in another browser the msg doenst' get direct but get after make refresh why the real time doesn't work direct 
+
+
+
 
 	- wallet of the platform when create order and pay
 	- wallet of the client to see his money 
