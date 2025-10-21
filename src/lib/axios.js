@@ -1,13 +1,6 @@
 // lib/axios.ts
 import axios from 'axios';
 
-const DASHBOARD_FORCED_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRiZGE2YTZiLThkNDUtNGI5Ni1iYTM1LTBkN2I0YTliMDYyNiIsInNpZCI6ImIzODNlZDc4LTJlY2EtNDE2OC04MTM0LWY5NGNlMGFlMzE5ZiIsImlhdCI6MTc1ODk0NDkxMywiZXhwIjoxNzU5MTE3NzEzfQ.FhG6Ek35nF3R8za2ohz43bCvKe7KG2Z9E2s3TenFmyw';
-function isDashboardPath() {
-  if (typeof window === 'undefined') return false;
-  const p = window.location?.pathname?.split("/")[2] || '';
-  return p == 'dashboard'
-}
-
 export const baseImg = 'http://localhost:8081/';
 const BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1`;
 
@@ -28,7 +21,7 @@ const AUTH_BLOCKLIST = ['/auth/login', '/auth/register', '/auth/verify-email', '
 // attach access token if present
 api.interceptors.request.use(config => {
   if (typeof window !== 'undefined') {
-     const token = isDashboardPath() ? DASHBOARD_FORCED_TOKEN : localStorage.getItem('accessToken');
+    const token = localStorage.getItem('accessToken');
 
     if (token) {
       config.headers = config.headers ?? {};

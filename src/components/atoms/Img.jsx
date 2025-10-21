@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 
 export default function Img({ src, altSrc, alt = '', className = 'h-full w-full object-cover', fallback = '/icons/no-img.png', loading = 'lazy', decoding = 'async', draggable = false, ...rest }) {
   const resolved = useMemo(() => {
-     if (src === null || src === undefined) return fallback;
+    if (src === null || src === undefined) return fallback;
     if (typeof src !== 'string') return fallback;
 
     const trimmed = src.trim();
