@@ -42,11 +42,12 @@ export default function DiscoverySection() {
       let res;
       try {
         res = await api.get(baseUrl, { params, signal: controller.signal });
-      } catch (e) {}
+      } catch (e) { }
 
       const list = res.data.services.slice(0, 8);
       cacheRef.current.set(tab, { data: list, at: Date.now() });
       setServices(list);
+
     } catch (e) {
       if (e?.name !== 'CanceledError' && e?.message !== 'canceled') {
         setErr(e?.response?.data?.message || e?.message || 'Failed to load services');
@@ -100,7 +101,7 @@ export default function DiscoverySection() {
         ) : (
           services.map(svc => (
             <motion.div key={svc.id || svc.slug} whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-              <ServiceCard service={svc}   />
+              <ServiceCard service={svc} />
             </motion.div>
           ))
         )}
@@ -125,7 +126,7 @@ function EmptyState({ onReset }) {
   return (
     <div className='col-span-full grid place-items-center rounded-2xl border border-slate-200 bg-white p-10 text-slate-600'>
       <NoResults onClick={onReset} buttonText={"Reset filters"} mainText={"No services found."} additionalText={"Try another category or view all services."} />
-			 
+
     </div>
   );
 }

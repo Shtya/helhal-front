@@ -13,12 +13,12 @@ import Button from '@/components/atoms/Button';
 
 const page = () => {
   return (
-    <div className=' container'>
+    <div className='explore container'>
       <HeaderCategoriesSwiper />
       <Hero />
       <DiscoverySection />
 
-      <ServiceSlider   title='Gigs you may like' className='!mt-22' swiperConfig={swiperSettingsExplore} />
+      <ServiceSlider title='Gigs you may like' className='!mt-22' swiperConfig={swiperSettingsExplore} />
 
       <section
         className='relative mt-12 mb-12 h-[400px] md:h-[500px] lg:h-[550px] w-full rounded-3xl overflow-hidden flex items-center justify-center text-center'

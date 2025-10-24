@@ -13,6 +13,11 @@ button {
   cursor: pointer;
 }
 
+.explore .gigs-like .swiper-slide {
+  height: auto !important;
+}
+
+
 body {
   color: black;
 }

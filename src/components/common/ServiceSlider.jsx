@@ -95,23 +95,23 @@ export default function ServiceSlider({ title, className, swiperConfig = swiperS
   );
 
   return (
-    <div className={`relative mt-12 ${className || ''}`}>
+    <div className={`gigs-like relative mt-12 ${className || ''}`}>
       {Header}
 
       {/* 1) Initial mount skeleton (prevents hydration jank) */}
       {!mounted ? (
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>{Array.from({ length: 4 }).map((_, i) => (ServiceCardSkeleton ? <ServiceCardSkeleton key={i} /> : <ServiceCard loading key={i} />))}</div>
-      ) :  loading ? (
-        <Swiper modules={[Navigation, Pagination]} navigation={{ prevEl: '.cards-prev2', nextEl: '.cards-next2' }} pagination={{ clickable: true }} {...swiperConfig}>
+        <div className='grid items-stretch grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>{Array.from({ length: 4 }).map((_, i) => (ServiceCardSkeleton ? <ServiceCardSkeleton key={i} /> : <ServiceCard loading key={i} />))}</div>
+      ) : loading ? (
+        <Swiper className='' modules={[Navigation, Pagination]} navigation={{ prevEl: '.cards-prev2', nextEl: '.cards-next2' }} pagination={{ clickable: true }} {...swiperConfig}>
           {Array.from({ length: 8 }).map((_, i) => (
-            <SwiperSlide key={`sk-${i}`} className='py-4'>
+            <SwiperSlide key={`sk-${i}`} className='py-4 !h-auto  '>
               {ServiceCardSkeleton ? <ServiceCardSkeleton /> : <ServiceCard loading />}
             </SwiperSlide>
           ))}
         </Swiper>
-      ) :  err ? (
+      ) : err ? (
         <ErrorState message={err} onRetry={fetchServices} />
-      ) :  services.length === 0 ? (
+      ) : services.length === 0 ? (
         <EmptyState onReset={fetchServices} />
       ) : (
         /* 5) Data state */
