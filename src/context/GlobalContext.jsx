@@ -15,30 +15,30 @@ export const GlobalProvider = ({ children }) => {
     try {
       setLoadingCategory(true);
       const res = await api.get('categories?filters[type]=category');
-       setCategories(Array.isArray(res?.data?.records) ? res?.data?.records : []);
+      setCategories(Array.isArray(res?.data?.records) ? res?.data?.records : []);
     } catch {
       setCategories([]);
     } finally {
       setLoadingCategory(false);
     }
   };
-	
-		const fetchCart = async () => {
-			try {
-				const res = await api.get("/cart")
-				setCart(res.data)
-			} catch {
-				setCart([])
-			} finally {  }
-		};
+
+  const fetchCart = async () => {
+    try {
+      const res = await api.get("/cart")
+      setCart(res.data)
+    } catch {
+      setCart([])
+    } finally { }
+  };
 
   useEffect(() => {
     fetchCategories();
-		fetchCart()
+    fetchCart()
   }, []);
 
-  
-  return <GlobalContext.Provider value={{ cart , categories , loadingCategory }}>{children}</GlobalContext.Provider>;
+
+  return <GlobalContext.Provider value={{ cart, categories, loadingCategory }}>{children}</GlobalContext.Provider>;
 };
 
 export const useValues = () => {

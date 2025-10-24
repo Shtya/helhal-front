@@ -638,7 +638,6 @@ function Assets({
   }, [initialVideoUrl]);
 
   useEffect(() => {
-    console.log(initialImages);
     setImgs(initialImages.map((u, i) => ({ id: `init-${i}`, url: u, uploading: false })));
   }, [initialImages]);
 
@@ -1117,6 +1116,7 @@ export default function Overview() {
 
         try {
           const s = await api.get('/auth/profile/stats', { params: { id } }).then(r => r.data);
+
           if (!ignore) {
             setStats(s);
             setState(prev => ({ ...prev, topRated: !!s?.topRated }));
@@ -1201,6 +1201,7 @@ export default function Overview() {
         totalSpent: state.totalSpent,
         totalEarned: state.totalEarned,
         reputationPoints: state.reputationPoints,
+        sellerLevel: 'lvl2'
       };
 
       await toast.promise(api.put(`/auth/profile`, payload), {

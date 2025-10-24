@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import Input from '@/components/atoms/Input'; 
+import Input from '@/components/atoms/Input';
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -35,6 +35,7 @@ export default function Invite() {
 
   // ======= Helpers =======
   const parsed = useMemo(() => {
+
     const tokens = rawEmails
       .split(/[\s,;]+/g)
       .map(s => s.trim())
@@ -127,7 +128,7 @@ export default function Invite() {
         <div className='grid grid-cols-1 lg:grid-cols-2 max-w-[1100px] mx-auto gap-8 items-start'>
           {/* Emails */}
           <div className='flex flex-col gap-4' data-aos='fade-right' data-aos-delay='200'>
-            <Input cnInput='!h-[52px] !rounded-xl' label='Invite friends through email' cnLabel='text-base md:text-lg' placeholder='Add emails (separate with commas, spaces, or new lines)' actionIcon='/icons/send-arrow.svg' onAction={handleSendInvites} value={rawEmails} onChange={setRawEmails} className='h-[56px]' disabled={sending} />
+            <Input cnInput='!h-[52px] !rounded-xl' label='Invite friends through email' cnLabel='text-base md:text-lg' placeholder='Add emails (separate with commas, spaces, or new lines)' actionIcon='/icons/send-arrow.svg' onAction={handleSendInvites} value={rawEmails} onChange={(e) => setRawEmails(e.target.value)} className='h-[56px]' disabled={sending} />
 
             {/* Helper + Preview */}
             <div className='flex flex-wrap items-center justify-between mt-5 gap-3 text-sm'>

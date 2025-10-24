@@ -18,7 +18,7 @@ import { SelectInput } from '@/components/pages/auth/SelectInput';
 
 /* ---------- schemas ----------- */
 const loginSchema = z.object({
-  email: z.string().email('invalidEmail'),
+  email: z.email('invalidEmail'),
   password: z.string().min(1, 'passwordRequired'),
 });
 
@@ -31,22 +31,28 @@ const registerSchema = z.object({
     .transform(val => val.trim())
     .refine(val => val.length >= 3, 'usernameMin')
     .refine(val => !val.includes('  '), 'usernameSpaces'),
-  email: z.string().email('invalidEmail'),
-  password: z.string().min(8, 'passwordMin'),
+  email: z.email('invalidEmail'),
+  password: z.string().min(8, 'passwordMin').max(20, 'passwordMax').regex(/^[A-Za-z0-9_@$!%*?&]+$/, 'passwordInvalidChars'),
   role: z.enum(['buyer', 'seller']).default('buyer'),
   type: z.enum(['Business', 'Individual']).default('Individual'),
-  ref: z.string().optional().nullable(),
+  ref: z
+    .string()
+    .max(150, 'refMax')
+    .optional()
+    .nullable(),
+
 });
 
 const forgetPasswordSchema = z.object({
-  email: z.string().email('invalidEmail'),
+  email: z.email('invalidEmail'),
 });
 
 const passwordResetFormSchema = z
   .object({
-    newPassword: z.string().min(8, 'passwordMin'),
+    newPassword: z.string().min(8, 'passwordMin').max(20, 'passwordMax').regex(/^[A-Za-z0-9_@$!%*?&]+$/, 'passwordInvalidChars'),
     confirmNewPassword: z.string(),
-    otp: z.string().min(6, 'otpRequired'),
+    otp: z.string().regex(/^[0-9]+$/, 'otpNumbersOnly').length(6, 'otpLength')
+    ,
   })
   .refine(data => data.newPassword === data.confirmNewPassword, {
     message: 'passwordsMatch',
@@ -112,11 +118,11 @@ function AuthTabs({ setView, activeTab, setActiveTab }) {
 
   return (
     <LayoutGroup id='auth-tabs'>
-      <div className='mb-10 grid grid-cols-3 gap-2 rounded-2xl bg-gray-100/80 pb-[3px] p-1 text-sm font-medium ring-1 ring-black/5'>
+      <div className='mb-10 grid grid-cols-3 gap-1 sm:gap-2 rounded-2xl bg-gray-100/80 pb-[3px] p-1 text-sm font-medium ring-1 ring-black/5'>
         {TABS.map(tab => {
           const isActive = activeTab === tab.key;
           return (
-            <motion.button key={tab.key} role='tab' aria-selected={isActive} onClick={() => handleClick(tab.key)} className='relative rounded-xl px-3 py-2'>
+            <motion.button key={tab.key} role='tab' aria-selected={isActive} onClick={() => handleClick(tab.key)} className='relative rounded-xl px-3 py-2 cursor-pointer'>
               {isActive && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400' />}
               <span className={`relative z-10 ${isActive ? 'text-white' : 'text-gray-700'}`}>{t(tab.label)}</span>
             </motion.button>
@@ -211,7 +217,7 @@ const LoginForm = ({ onLoggedIn }) => {
       if (user?.currentDeviceId) localStorage.setItem('currentDeviceId', user.currentDeviceId);
       localStorage.setItem('user', JSON.stringify(user));
 
-       toast.success(t('success.signedIn'));
+      toast.success(t('success.signedIn'));
       onLoggedIn?.(user);
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.loginFailed');
@@ -224,8 +230,8 @@ const LoginForm = ({ onLoggedIn }) => {
 
   return (
     <motion.form onSubmit={handleSubmit(onSubmit)} className='w-full'>
-      <Input label={t('email')} type='email' placeholder={t('enterEmail')} register={register('email')} error={errors.email?.message && t(errors.email.message)} />
-      <Input label={t('password')} type='password' placeholder={t('enterPassword')} register={register('password')} error={errors.password?.message && t(errors.password.message)} />
+      <Input label={t('email')} type='email' placeholder={t('enterEmail')} register={register('email')} error={errors.email?.message && t(`errors.${errors.email.message}`)} />
+      <Input label={t('password')} type='password' placeholder={t('enterPassword')} register={register('password')} error={errors.password?.message && t(`errors.${errors.password.message}`)} />
       <SubmitButton isLoading={loading}>{t('signInButton')}</SubmitButton>
     </motion.form>
   );
@@ -262,9 +268,9 @@ const RegisterForm = ({ onOtp }) => {
 
   return (
     <motion.form onSubmit={handleSubmit(onSubmit)} className='w-full'>
-      <Input label={t('username')} type='text' placeholder={t('chooseUsername')} register={register('username')} error={errors.username?.message && t(errors.username.message)} />
-      <Input label={t('email')} type='email' placeholder={t('enterEmail')} register={register('email')} error={errors.email?.message && t(errors.email.message)} />
-      <Input label={t('password')} type='password' placeholder={t('enterPassword')} register={register('password')} error={errors.password?.message && t(errors.password.message)} />
+      <Input label={t('username')} type='text' placeholder={t('chooseUsername')} register={register('username')} error={errors.username?.message && t(`errors.${errors.username.message}`)} />
+      <Input label={t('email')} type='email' placeholder={t('enterEmail')} register={register('email')} error={errors.email?.message && t(`errors.${errors.email.message}`)} />
+      <Input label={t('password')} type='password' placeholder={t('enterPassword')} register={register('password')} error={errors.password?.message && t(`errors.${errors.password.message}`)} />
       <SelectInput
         label={t('role.selectRole')}
         register={register('role')}
@@ -281,7 +287,7 @@ const RegisterForm = ({ onOtp }) => {
           { value: 'Individual', label: t('individual') },
         ]}
       />
-      <Input label={t('referralCode')} type='text' placeholder={t('enterReferral')} register={register('ref')} error={errors.ref?.message && t(errors.ref.message)} />
+      <Input label={t('referralCode')} type='text' placeholder={t('enterReferral')} register={register('ref')} error={errors.ref?.message && t(`errors.${errors.ref.message}`)} />
       <SubmitButton isLoading={loading}>{t('createAccountButton')}</SubmitButton>
     </motion.form>
   );
@@ -320,7 +326,7 @@ const ForgotPasswordForm = ({ onOtp }) => {
 
   return (
     <motion.form onSubmit={handleSubmit(onSubmit)} className='w-full'>
-      <Input label={t('email')} type='email' placeholder={t('enterEmail')} register={register('email')} error={errors.email?.message && t(errors.email.message)} />
+      <Input label={t('email')} type='email' placeholder={t('enterEmail')} register={register('email')} error={errors.email?.message && t(`errors.${errors.email.message}`)} />
       <SubmitButton isLoading={loading}>{t('sendOtpButton')}</SubmitButton>
     </motion.form>
   );
@@ -363,9 +369,9 @@ const ResetPasswordForm = ({ email, otp }) => {
   return (
     <motion.form onSubmit={handleSubmit(onSubmit)} className='w-full'>
       <Input label={t('email')} type='text' value={email} disabled cnInput='cursor-not-allowed' />
-      <Input label={t('otpCode')} type='text' placeholder={t('enterOtp')} register={register('otp')} error={errors.otp?.message && t(errors.otp.message)} />
-      <Input label={t('newPassword')} type='password' placeholder={t('enterNewPassword')} register={register('newPassword')} error={errors.newPassword?.message && t(errors.newPassword.message)} />
-      <Input label={t('confirmPassword')} type='password' placeholder={t('confirmNewPassword')} register={register('confirmNewPassword')} error={errors.confirmNewPassword?.message && t(errors.confirmNewPassword.message)} />
+      <Input label={t('otpCode')} type='text' placeholder={t('enterOtp')} register={register('otp')} error={errors.otp?.message && t(`errors.${errors.otp.message}`)} />
+      <Input label={t('newPassword')} type='password' placeholder={t('enterNewPassword')} register={register('newPassword')} error={errors.newPassword?.message && t(`errors.${errors.newPassword.message}`)} />
+      <Input label={t('confirmPassword')} type='password' placeholder={t('confirmNewPassword')} register={register('confirmNewPassword')} error={errors.confirmNewPassword?.message && t(`errors.${errors.confirmNewPassword.message}`)} />
       <SubmitButton isLoading={loading}>{t('resetPasswordButton')}</SubmitButton>
     </motion.form>
   );
@@ -389,7 +395,7 @@ const OTPForm = ({ email, onVerified, purpose = 'verify' }) => {
     setLoading(true);
     setError(null);
     try {
-      if (otp.length !== 6) throw new Error('otpLength');
+      if (otp.length !== 6) throw new Error('errors.otpLength');
       if (purpose === 'verify') {
         await api.post('/auth/verify-email', { email, code: otp });
         toast.success(t('success.emailVerified'));
@@ -427,7 +433,7 @@ const OTPForm = ({ email, onVerified, purpose = 'verify' }) => {
       <form onSubmit={onSubmit}>
         <div className='mb-6'>
           <label className='block text-sm font-medium text-gray-700 mb-2'>{t('otpCode')}</label>
-          <OtpInput value={otp} onChange={setOtp} numInputs={6} renderSeparator={<span className='mx-1'>-</span>} renderInput={props => <input {...props} className='!w-10 h-10 border rounded-lg text-center text-xl' />} containerStyle='flex justify-center' />
+          <OtpInput value={otp} onChange={setOtp} numInputs={6} renderSeparator={<span className='mx-1'>-</span>} renderInput={props => <input {...props} className='!w-10 h-10 border rounded-lg text-center text-xl' />} containerStyle='flex justify-center flex-wrap gap-y-2' />
         </div>
         <SubmitButton isLoading={loading}>{t('verifyCodeButton')}</SubmitButton>
       </form>
@@ -461,6 +467,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
 export default function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('auth');
 
   const tabParam = searchParams?.get('tab') || 'login';
   const accessTokenFromUrl = searchParams?.get('accessToken');
@@ -469,11 +476,11 @@ export default function AuthPage() {
   const referralCode = searchParams?.get('ref');
 
   const [activeTab, setActiveTab] = useState(tabParam);
-  const [view, setView] = useState('options');
+  const [view, setView] = useState('options');//options
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [emailForOTP, setEmailForOTP] = useState('');
+  const [emailForOTP, setEmailForOTP] = useState('am259@gmail.com');
   const [otpForReset, setOtpForReset] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [needsUserTypeSelection, setNeedsUserTypeSelection] = useState(false);
@@ -539,7 +546,7 @@ export default function AuthPage() {
         setCurrentUser(userData);
         if (userData && window.location.pathname === '/auth') router.push('/explore');
       }
-    } catch {}
+    } catch { }
   }, [router]);
 
   const handleEmailClick = () => setView('email');
@@ -565,6 +572,7 @@ export default function AuthPage() {
     if (needsUserTypeSelection) return <UserTypeSelection onSelect={handleUserTypeSelect} loading={loading} />;
     if (activeTab === 'forgot-password' && view === 'reset') return <ResetPasswordForm email={emailForOTP} otp={otpForReset} />;
 
+
     switch (view) {
       case 'email':
         if (activeTab === 'login') return <LoginForm onLoggedIn={handleLoggedIn} />;
@@ -579,7 +587,8 @@ export default function AuthPage() {
         return <AuthOptions onEmailClick={handleEmailClick} onPhoneClick={handlePhoneClick} referralCode={referralCode} />;
     }
   };
-
+  const rawFeatures = t.raw('features');
+  const features = Array.isArray(rawFeatures) ? rawFeatures : [];
   return (
     <AuthContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess }}>
       <div className='min-h-screen container !px-0 flex max-lg:flex-col'>
@@ -588,10 +597,10 @@ export default function AuthPage() {
           <div className='absolute inset-0 z-[10]' style={{ background: 'linear-gradient(269.99deg, rgba(0,0,0,0) 15.21%, rgba(0,0,0,0.48) 33.9%, rgba(0,0,0,0.8) 132.88%)' }} />
           <img src='/images/auth.jpeg' alt='' className='absolute inset-0 object-cover w-full h-full object-right' />
           <div className='relative z-10 max-w-2xl mx-auto my-auto'>
-            <motion.h1 className='text-4xl font-extrabold mb-3'>Start your success now!</motion.h1>
-            <motion.p className='text-2xl font-normal mb-6'>Talented freelancers for any project…</motion.p>
-            <div className='space-y-2 text-lg'>
-              {['Fast, delightful onboarding', 'Secure, privacy-friendly sessions', 'Beautiful, accessible UI', 'Reliable authentication flow'].map((text, i) => (
+            <motion.h1 className='text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3'>  {t('heroTitle')}</motion.h1>
+            <motion.p className='text-base sm:text-lg md:text-2xl    font-normal mb-6'>{t('heroSubtitle')}</motion.p>
+            <div className='space-y-2 sm:text-base md:text-lg lg:text-lg'>
+              {features?.map((text, i) => (
                 <p key={i} className='flex gap-2 items-center'>
                   <span className='w-6 h-6 bg-white/20 rounded-full flex items-center justify-center'>✓</span>
                   {text}
@@ -602,7 +611,7 @@ export default function AuthPage() {
         </div>
 
         {/* right panel: forms */}
-        <div className='w-full max-w-[500px] flex items-center justify-center lg:px-10 p-6'>
+        <div className='w-full lg:max-w-[500px] flex items-center justify-center lg:px-10 p-6'>
           <motion.div className='w-full max-lg:bg-slate-50 max-lg:border max-lg:rounded-2xl max-lg:p-8'>
             <TitleByTab view={view} activeTab={activeTab} />
             <AuthTabs setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -677,7 +686,7 @@ const PhoneLoginForm = () => {
 
   return (
     <motion.form onSubmit={handleSubmit(onSubmit)} className='w-full'>
-      <Input label={t('phoneNumber')} type='tel' placeholder={t('enterPhone')} register={register('phone')} error={errors.phone?.message && t(errors.phone.message)} />
+      <Input label={t('phoneNumber')} type='tel' placeholder={t('enterPhone')} register={register('phone')} error={errors.phone?.message && t(`errors.${errors.phone.message}`)} />
       <SubmitButton isLoading={loading}>{t('sendCodeButton')}</SubmitButton>
     </motion.form>
   );

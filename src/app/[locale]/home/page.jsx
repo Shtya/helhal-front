@@ -13,6 +13,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ArrowRight, Search } from 'lucide-react';
 
 import ReactPlayer from 'react-player';
+import { localImageLoader } from '@/utils/helper';
 
 const page = () => {
   return (
@@ -93,7 +94,7 @@ export function CategorySwiper() {
           <SwiperSlide key={category.key} className=' py-[40px]'>
             <Link href={category.href} className='group flex flex-col bg-white lg:hover:bg-accent transition px-4 py-10 md:py-6 rounded-md lg:rounded-xl h-full shadow-[0_0_10px_rgba(0,0,0,0.1)] lg:hover:shadow-[0_4px_20px_rgba(14,138,0,0.3)] lg:hover:scale-[1.01]'>
               <div className='w-8 h-8 md:w-12 md:h-12 mb-3 transition-colors duration-200'>
-                <Image src={category.icon} alt={t(category.key)} width={56} height={56} className='lg:group-hover:invert lg:group-hover:brightness-0 lg:group-hover:contrast-200' />
+                <Image src={category.icon} loader={localImageLoader} alt={t(category.key)} width={56} height={56} className='lg:group-hover:invert lg:group-hover:brightness-0 lg:group-hover:contrast-200' />
               </div>
               <span className='text-sm font-medium group-hover:text-white transition'>{t(category.key)}</span>
             </Link>
@@ -191,7 +192,7 @@ export function ClientsExperiences() {
           <SwiperSlide key={item.id}>
             <div className='bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.08)] p-3 h-full flex flex-col gap-6'>
               <div className='relative w-full rounded-md overflow-hidden aspect-[16/10]'>
-                <Image src={item.image} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover' />
+                <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover' />
               </div>
 
               <blockquote className={`${locale === 'ar' ? 'text-lg leading-8' : 'text-md leading-6'} text-gray-900`}>
@@ -306,7 +307,7 @@ export function PopularServicesSwiper() {
           <SwiperSlide key={service.key}>
             <Link href={service.href} className='group flex flex-col items-center text-center bg-white transition-all duration-200 px-4 py-10 rounded-xl h-full shadow-[0_0_10px_rgba(0,0,0,0.1)] lg:hover:bg-gray-50 lg:hover:scale-[1.03] lg:hover:shadow-[0_0_12px_rgba(0,0,0,0.15)]'>
               <div className='w-14 h-14 mb-3 relative'>
-                <Image src={service.icon} alt={t(service.key)} fill={true} className='h-14 w-auto mx-auto' />
+                <Image src={service.icon} loader={localImageLoader} alt={t(service.key)} fill={true} className='h-14 w-auto mx-auto' />
               </div>
               <span className='text-sm font-medium transition'>{t(service.key)}</span>
             </Link>
@@ -434,7 +435,7 @@ export function WhyChoose() {
         {WHY_CHOOSE_ITEMS.map(item => (
           <div key={item.key} className='flex flex-col bg-white px-6 py-8 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.08)] hover:shadow-[0_0_12px_rgba(0,0,0,0.12)] transition'>
             <div className='w-12 h-12 mb-4'>
-              <Image src={item.icon} alt={t(`whyChoose.items.${item.key}.title`)} width={56} height={56} className='mx-auto' />
+              <Image src={item.icon} loader={localImageLoader} alt={t(`whyChoose.items.${item.key}.title`)} width={56} height={56} className='mx-auto' />
             </div>
             <h3 className='text-lg font-medium mb-2'>{t(`whyChoose.items.${item.key}.title`)}</h3>
             <p className='text-base text-gray-800'>{t(`whyChoose.items.${item.key}.description`)}</p>

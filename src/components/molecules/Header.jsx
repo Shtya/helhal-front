@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { Mail, Copy, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
 import api from '@/lib/axios';
+import { localImageLoader } from '@/utils/helper';
 
 /* =========================================================
    Animations
@@ -367,7 +368,7 @@ export default function Header() {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('currentDeviceId');
       // optional: hit your API (swap to your endpoint)
-      await fetch('/api/logout', { method: 'POST' }).catch(() => {});
+      await fetch('/api/logout', { method: 'POST' }).catch(() => { });
     } finally {
       setIsLogoutLoading(false);
       router.push('/auth');
@@ -456,10 +457,13 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
     setIsOpen(false);
   };
 
+
+
   return (
     <div className='relative' ref={dropdownRef}>
       <motion.button onClick={() => setIsOpen(v => !v)} className='hidden md:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} aria-label={t('userMenuAriaLabel') || 'User menu'}>
-        <Image src={user?.profileImage || '/images/placeholder-avatar.png'} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
+
+        <Image src={user?.profileImage || '/images/placeholder-avatar.png'} loader={localImageLoader} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
       </motion.button>
 
       <AnimatePresence>
@@ -608,7 +612,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               {user && (
                 <div className='px-4 pe-6 pb-3 flex items-center gap-3'>
                   <motion.div whileHover={{ rotate: 4 }} transition={{ type: 'spring', stiffness: 280, damping: 18 }}>
-                    <Image src={user.profileImage || '/images/placeholder-avatar.png'} alt='Avatar' width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm' />
+                    <Image src={user.profileImage || '/images/placeholder-avatar.png'} loader={localImageLoader} alt='Avatar' width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm' />
                   </motion.div>
                   <div className='min-w-0'>
                     <p className='text-sm text-slate-900 font-medium truncate'>{user.username || 'User'}</p>
@@ -736,7 +740,7 @@ function UserMiniCard({ user }) {
         <div className='relative'>
           {/* animated conic ring */}
           <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30 group-hover:opacity-60 transition' />
-          <div className='relative size-12 rounded-full border border-slate-200 shadow-sm overflow-hidden bg-white flex items-center justify-center'>{imgErr || !user?.profileImage ? <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(name)}</span> : <Image src={user.profileImage} alt={`${name} avatar`} width={48} height={48} onError={() => setImgErr(true)} className='rounded-full object-cover' />}</div>
+          <div className='relative size-12 rounded-full border border-slate-200 shadow-sm overflow-hidden bg-white flex items-center justify-center'>{imgErr || !user?.profileImage ? <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(name)}</span> : <Image src={user.profileImage} loader={localImageLoader} alt={`${name} avatar`} width={48} height={48} onError={() => setImgErr(true)} className='rounded-full object-cover' />}</div>
         </div>
       </motion.div>
 

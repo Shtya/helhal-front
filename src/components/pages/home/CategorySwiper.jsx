@@ -1,11 +1,12 @@
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination  } from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 import { Link } from '../../../i18n/navigation';
- 
+
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { useTranslations } from 'next-intl';
+import { localImageLoader } from '@/utils/helper';
 
 
 const CATEGORY_SWIPER_ITEMS = [
@@ -72,7 +73,7 @@ export function CategorySwiper() {
           <SwiperSlide key={category.key} className=' py-[40px]'>
             <Link href={category.href} className='group flex flex-col bg-white lg:hover:bg-accent transition px-4 py-10 md:py-6 rounded-md lg:rounded-xl h-full shadow-[0_0_10px_rgba(0,0,0,0.1)] lg:hover:shadow-[0_4px_20px_rgba(14,138,0,0.3)] lg:hover:scale-[1.01]'>
               <div className='w-8 h-8 md:w-12 md:h-12 mb-3 transition-colors duration-200'>
-                <Image src={category.icon} alt={t(category.key)} width={56} height={56} className='lg:group-hover:invert lg:group-hover:brightness-0 lg:group-hover:contrast-200' />
+                <Image src={category.icon} loader={localImageLoader} alt={t(category.key)} width={56} height={56} className='lg:group-hover:invert lg:group-hover:brightness-0 lg:group-hover:contrast-200' />
               </div>
               <span className='text-sm font-medium group-hover:text-white transition'>{t(category.key)}</span>
             </Link>

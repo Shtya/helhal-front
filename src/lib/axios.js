@@ -35,6 +35,7 @@ api.interceptors.request.use(config => {
 let refreshPromise = null;
 
 function isAuthBlocked(url) {
+  console.log(url, BASE_URL)
   if (!url) return false;
   try {
     // url may already be absolute or relative – normalize the path part only

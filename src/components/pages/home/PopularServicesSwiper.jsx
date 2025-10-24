@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination   } from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 import { Link } from '../../../i18n/navigation';
- 
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import { useTranslations } from 'next-intl';
- 
+import { localImageLoader } from '@/utils/helper';
+
 
 const POPULAR_SERVICES = [
   {
@@ -64,7 +65,7 @@ export function PopularServicesSwiper() {
           <SwiperSlide key={service.key}>
             <Link href={service.href} className='group flex flex-col items-center text-center bg-white transition-all duration-200 px-4 py-10 rounded-xl h-full shadow-[0_0_10px_rgba(0,0,0,0.1)] lg:hover:bg-gray-50 lg:hover:scale-[1.03] lg:hover:shadow-[0_0_12px_rgba(0,0,0,0.15)]'>
               <div className='w-14 h-14 mb-3 relative'>
-                <Image src={service.icon} alt={t(service.key)} fill={true} className='h-14 w-auto mx-auto' />
+                <Image src={service.icon} loader={localImageLoader} alt={t(service.key)} fill={true} className='h-14 w-auto mx-auto' />
               </div>
               <span className='text-sm font-medium transition'>{t(service.key)}</span>
             </Link>

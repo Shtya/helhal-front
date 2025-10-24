@@ -13,6 +13,7 @@ import 'swiper/css/pagination';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users } from 'lucide-react';
 import ReactPlayer from 'react-player';
+import { localImageLoader } from '@/utils/helper';
 
 // ========================= PAGE =========================
 export default function ExplorePage() {
@@ -195,7 +196,7 @@ export function CategorySwiper() {
                 <Link href={category.href} className={['group relative flex flex-col items-center justify-center h-full', 'rounded-xl border border-emerald-100/70 bg-white', 'px-5 py-8 transition-all duration-200', 'shadow-sm hover:shadow-emerald-200/60 hover:shadow-lg', 'hover:-translate-y-0.5'].join(' ')}>
                   <span className='absolute inset-0 rounded-xl bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity' />
                   <div className='relative w-12 h-12 mb-3'>
-                    <Image src={category.icon} alt={t(category.key)} fill sizes='48px' className='object-contain' />
+                    <Image src={category.icon} loader={localImageLoader} alt={t(category.key)} fill sizes='48px' className='object-contain' />
                   </div>
                   <span className=' text-nowrap truncate relative text-sm font-semibold text-gray-900 group-hover:text-emerald-700'>{t(category.key)}</span>
                 </Link>
@@ -235,7 +236,7 @@ export function PopularServicesSwiper() {
             <Link href={service.href} className={['group relative flex flex-col items-center text-center', 'bg-white rounded-2xl border border-emerald-100/70', 'px-6 py-10 h-full', 'shadow-[0_6px_24px_rgba(16,185,129,0.06)] hover:shadow-[0_16px_40px_rgba(16,185,129,0.15)]', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>
               <span className='absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full'>{t('from', { default: 'From' })} $25</span>
               <div className='relative w-14 h-14 mb-4'>
-                <Image src={service.icon} alt={t(service.key)} fill sizes='56px' className='object-contain' />
+                <Image src={service.icon} loader={localImageLoader} alt={t(service.key)} fill sizes='56px' className='object-contain' />
               </div>
               <span className='text-sm font-semibold text-gray-900 group-hover:text-emerald-700'>{t(service.key)}</span>
               <span className='mt-2 text-xs text-emerald-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity'>{t('bookNow', { default: 'Book now →' })}</span>
@@ -265,7 +266,7 @@ export function WhyChoose() {
           {items.map(item => (
             <div key={item.key} className={['flex flex-col rounded-2xl bg-white border border-emerald-100/70', 'px-6 py-8 shadow-sm hover:shadow-emerald-200/50 hover:shadow-lg', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>
               <div className='w-12 h-12 mb-4 relative'>
-                <Image src={item.icon} alt={t(`whyChoose.items.${item.key}.title`)} fill sizes='48px' className='object-contain' />
+                <Image src={item.icon} loader={localImageLoader} alt={t(`whyChoose.items.${item.key}.title`)} fill sizes='48px' className='object-contain' />
               </div>
               <h3 className='text-lg font-semibold mb-1'>{t(`whyChoose.items.${item.key}.title`)}</h3>
               <p className='text-sm text-gray-700'>{t(`whyChoose.items.${item.key}.description`)}</p>
@@ -299,7 +300,7 @@ export function ClientsExperiences() {
           <SwiperSlide key={item.id}>
             <article className={['bg-white rounded-2xl border border-emerald-100/70', 'p-4 h-full flex flex-col gap-5', 'shadow-[0_6px_24px_rgba(16,185,129,0.06)]'].join(' ')}>
               <div className='relative w-full rounded-xl overflow-hidden aspect-[16/10]'>
-                <Image src={item.image} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover' />
+                <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover' />
               </div>
 
               <blockquote className='text-gray-900 text-base leading-7'>

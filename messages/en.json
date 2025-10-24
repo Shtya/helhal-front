@@ -60,6 +60,14 @@
     }
   },
   "auth": {
+    "heroTitle": "Start your success now!",
+    "heroSubtitle": "Talented freelancers for any project…",
+    "features": [
+      "Fast, delightful onboarding",
+      "Secure, privacy-friendly sessions",
+      "Beautiful, accessible UI",
+      "Reliable authentication flow"
+    ],
     "userType": "User Type",
     "business": "Business",
     "individual": "Individual",
@@ -87,7 +95,6 @@
     "enterOtp": "Enter verification code",
     "referralCode": "Referral Code (optional)",
     "enterReferral": "Enter referral code",
-
     "role": {
       "selectRole": "Select Role",
       "buyer": "Buyer",
@@ -96,6 +103,7 @@
     "success": {
       "signedIn": "Successfully signed in!",
       "otpSent": "Verification code sent to your email!",
+      "codeSent": "Verification code sented Successfully!",
       "emailVerified": "Email verified successfully!",
       "passwordReset": "Password reset successfully!",
       "codeResent": "Verification code resent!"
@@ -108,9 +116,14 @@
       "usernameInvalid": "Username can only contain letters, numbers, and spaces",
       "usernameSpaces": "Username cannot contain consecutive spaces",
       "passwordMin": "Password must be at least 8 characters",
+      "passwordMax": "Password must be at most 20 characters",
+      "passwordInvalidChars": "Password contains invalid characters. Only letters, numbers, and _ @ $ ! % * ? & are allowed",
+      "refMax": "Referral code must be at most 150 characters",
       "phoneMin": "Please enter a valid phone number",
       "passwordsMatch": "Passwords do not match",
       "otpRequired": "Verification code is required",
+      "otpMax": "OTP must be at most 10 digits",
+      "otpNumbersOnly": "OTP must contain only numbers",
       "otpLength": "Verification code must be 6 digits",
       "otpInvalid": "Invalid verification code",
       "loginFailed": "Login failed. Please check your credentials.",
@@ -127,7 +140,6 @@
     "confirmNewPassword": "Confirm your new password",
     "sendCodeButton": "Send Verification Code",
     "terms": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
-
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "forgotPassword": "Forgot?",
@@ -189,21 +201,21 @@
     "successPasswordReset": "Password has been reset successfully!",
     "errorInvalidOtp": "Invalid verification code. Please try again.",
     "errorGeneral": "Something went wrong. Please try again.",
-
     "title": "Start your success now!",
-    "taglines": ["Talented freelancers for any project", "Best freelancers for every project High-quality services for every budget", "Trusted by 4+ million clients worldwide"],
-
+    "taglines": [
+      "Talented freelancers for any project",
+      "Best freelancers for every project High-quality services for every budget",
+      "Trusted by 4+ million clients worldwide"
+    ],
     "signInToYourAccount": "Sign in to your account",
     "dontHaveAnAccount": "Don't have an account?",
     "authConsentNotice": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
     "back": "Back",
     "continueWithYourEmail": "Continue with your email",
-
     "forgotPasswordLink": "Forgot password?",
     "loginButton": "Login",
     "registerYourAccount": "Register your account",
     "alreadyHaveAnAccount": "Already have an account?",
-
     "registerButton": "Register",
     "verifyYourEmail": "Verify your email",
     "otpSentTo": "A 6-digit code has been sent to",
@@ -244,10 +256,8 @@
     "bikeRepairMaintenance": "Bike Repair & Maintenance",
     "automation": "Automation",
     "mechanic": "Mechanic",
-    "photography": "Photography" 
-		 
+    "photography": "Photography"
   },
-
   "createProject": {
     "crumb": {
       "share": "Share Job Description",
@@ -315,7 +325,6 @@
       "reviewCta": "Review Your Project"
     }
   },
-
   "common": {
     "loading": "Loading...",
     "back": "Back",
@@ -327,7 +336,6 @@
     "copyFailed": "Failed to copy. Please try manually.",
     "unknownError": "An unknown error occurred."
   },
-
   "home": {
     "iosAppDevelopment": "iOS App Development",
     "wordpressDevelopers": "WordPress Developers",
@@ -375,7 +383,6 @@
       "browse": "Browse Services"
     }
   },
-
   "layout": {
     "joinButton": "Join",
     "mobileMenuButtonAriaLabel": "Open mobile menu",
@@ -399,19 +406,15 @@
     "referFriendLink": "Refer a Friend",
     "becomeSellerLink": "Become a Seller",
     "billingPaymentsLink": "Billing & Payments",
-
     "notificationsTitle": "Notifications",
     "notificationsPlaceholder": "Notifications will be here.",
     "messagesTitle": "Messages",
     "messagesPlaceholder": "Messages will be here.",
-
     "menuTitle": "Menu",
     "socialMediaTitle": "Social Media",
     "copyright": "© 2025 Helhal. All rights reserved.",
     "backButton": "Back"
   },
- 
-
   "referral": {
     "referAFriendTitle": "Refer a Friend",
     "placeholderContent": "This is where you'll find your referral information and invite friends!",
@@ -552,7 +555,6 @@
     "unknownError": "An unknown validation error occurred.",
     "errorSendingInvitation": "Failed to send invitation. Please try again."
   },
-
   "Chat": {
     "removeFavorite": "Remove from favorites",
     "addFavorite": "Add to favorites",
@@ -600,7 +602,6 @@
       "delete": "Delete chat"
     }
   },
-
   "CategoryPage": {
     "categoryNotFound": "Category Not Found",
     "categoryNotFoundDesc": "The category you are looking for doesn’t exist or has been removed. Please check the URL or explore other categories.",
@@ -628,9 +629,7 @@
     "prev": "Prev",
     "next": "Next"
   },
-
   "socialMediaTitle": "Follow Us on Social Media",
- 
   "navigation_sections": {
     "forClients": {
       "title": "For Clients",

@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import {  Navigation } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { localImageLoader } from '@/utils/helper';
 
 
 const CLIENT_EXPERIENCES = {
@@ -94,7 +95,7 @@ export function ClientsExperiences() {
           <SwiperSlide key={item.id}>
             <div className='bg-white rounded-md shadow-[0_0_10px_rgba(0,0,0,0.08)] p-3 h-full flex flex-col gap-6'>
               <div className='relative w-full rounded-md overflow-hidden aspect-[16/10]'>
-                <Image src={item.image} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover' />
+                <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover' />
               </div>
 
               <blockquote className={`${locale === 'ar' ? 'text-lg leading-8' : 'text-md leading-6'} text-gray-900`}>

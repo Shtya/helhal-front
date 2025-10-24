@@ -6,6 +6,7 @@ import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { ChevronDown, ChevronUp, Globe2, BadgeCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { localImageLoader } from '@/utils/helper';
 
 /* ===================== DATA ===================== */
 export const CATEGORY_LINKS = [
@@ -227,7 +228,7 @@ export function Footer() {
               <div className='flex gap-4'>
                 {SOCIAL_LINKS.map(item => (
                   <Link key={item.name} href={item.href} aria-label={item.name}>
-                    <Image src={item.icon} alt={item.name} width={36} height={36} className='transition-transform hover:-translate-y-0.5 hover:opacity-90' />
+                    <Image src={item.icon} loader={localImageLoader} alt={item.name} width={36} height={36} className='transition-transform hover:-translate-y-0.5 hover:opacity-90' />
                   </Link>
                 ))}
               </div>
