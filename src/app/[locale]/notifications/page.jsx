@@ -24,7 +24,7 @@ const NotificationsPage = () => {
   const loadNotifications = async () => {
     try {
       setLoading(true);
-      const response = await notificationService.getNotifications(pagination.page , pagination.limit);
+      const response = await notificationService.getNotifications(pagination.page, pagination.limit);
       setNotifications(response.data.records || []);
       setPagination({
         page: response.data.current_page,
@@ -171,11 +171,11 @@ const NotificationsPage = () => {
                     <img src={getNotificationIcon(notification.type)} alt={notification.type} className='w-5 h-5' />
                   </div>
                   <div className='flex-1 min-w-0'>
-                    <div className='flex items-start justify-between'>
+                    <div className='flex flex-col xs:flex-row items-start justify-between'>
                       <h3 className='text-sm font-medium text-gray-900'>{notification.title}</h3>
-                      <span className='text-xs text-gray-500 whitespace-nowrap ml-2'>{formatDate(notification.created_at)}</span>
+                      <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2'>{formatDate(notification.created_at)}</span>
                     </div>
-                    <p className='text-sm text-gray-600 mt-1'>{notification.message}</p>
+                    <p className='text-sm text-gray-600 mt-2'>{notification.message}</p>
                     {getLink(notification.relatedEntityType, notification.relatedEntityId) && (
                       <div className='mt-3'>
                         <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>

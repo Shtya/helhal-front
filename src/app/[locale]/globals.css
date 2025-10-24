@@ -9,6 +9,10 @@
   --breakpoint-xs: 480px;
 }
 
+button {
+  cursor: pointer;
+}
+
 body {
   color: black;
 }
