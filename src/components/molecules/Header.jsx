@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -70,6 +70,39 @@ const NotificationPopup = () => {
   const [badge, setBadge] = useState(0); // unread count from /unread-count
   const [meta, setMeta] = useState({ total_records: 0, per_page: 10, current_page: 1 });
   const btnRef = useRef(null);
+  const menuRef = useRef(null);
+  const [menuStyle, setMenuStyle] = useState({});
+
+  useLayoutEffect(() => {
+    function updateMenuPosition() {
+      if (open && btnRef.current) {
+        const rect = btnRef.current.getBoundingClientRect();
+        const vw = window.innerWidth;
+        const menuWidth = 330;
+
+        if (rect.right < menuWidth + 5) {
+          setMenuStyle({
+            left: 5,
+            right: 'auto',
+            maxWidth: '100%',
+          });
+        } else {
+          setMenuStyle({
+            right: vw - rect.right,
+            left: 'auto',
+            maxWidth: '20rem', // matches w-80
+          });
+        }
+      }
+    }
+
+    // Run immediately when open changes
+    updateMenuPosition();
+
+    // Re-run on resize
+    window.addEventListener('resize', updateMenuPosition);
+    return () => window.removeEventListener('resize', updateMenuPosition);
+  }, [open]);
 
   // ---- fetch helpers ----
   const fetchUnreadCount = async () => {
@@ -153,7 +186,7 @@ const NotificationPopup = () => {
   const goToTarget = n => (n.relatedEntityType === 'order' ? `/orders/${n.relatedEntityId}` : '/notifications');
 
   return (
-    <div className='relative' ref={btnRef}>
+    <div className='' ref={btnRef}>
       <motion.button onClick={() => setOpen(v => !v)} className='relative inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
         <Bell className='h-5 w-5 text-slate-700' />
         {badge > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-emerald-600 px-1 text-[11px] text-white'>{badge > 99 ? '99+' : badge}</span>}
@@ -161,7 +194,7 @@ const NotificationPopup = () => {
 
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl' role='dialog' aria-label='Notifications menu'>
+          <motion.div ref={menuRef} style={menuStyle} initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl' role='dialog' aria-label='Notifications menu'>
             {/* Header */}
             <div className='flex items-center justify-between border-b border-slate-200 px-4 py-3'>
               <div className='text-sm font-semibold text-slate-900'>Notifications</div>
@@ -393,7 +426,7 @@ export default function Header() {
         <GlobalSearch />
 
         {/* Right: Actions */}
-        <div className='flex items-center gap-2 md:gap-3'>
+        <div className='flex items-center gap-1.5 lg:gap-2 md:gap-3'>
           {user ? (
             <>
               <Link href='/chat' aria-label='Go to chat' className='relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
@@ -507,7 +540,7 @@ function NavLinks({ links }) {
   const pathname = usePathname();
 
   return (
-    <motion.ul className='hidden md:flex  items-center gap-1 ltr:ml-6 rtl:mr-6' variants={stagger} initial='hidden' animate='show'>
+    <motion.ul className='hidden md:flex  items-center gap-1 ltr:ml-4 lg:ltr:ml-6  rtl:mr-4 lg:rtl:mr-6' variants={stagger} initial='hidden' animate='show'>
       {links.map(link => {
         const isActive = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
 
@@ -553,7 +586,7 @@ export function DropdownItem({ label, icon, active, children }) {
 
   return (
     <div ref={rootRef} className='relative' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
+      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
         {icon} {label}
         <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
@@ -595,7 +628,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
 
           {/* Drawer */}
           <motion.div role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 md:hidden h-screen'>
-            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/70'>
+            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/90'>
               {/* Header */}
               <div className='relative px-4 pt-4 pb-3'>
                 <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-50/70 to-transparent pointer-events-none' />

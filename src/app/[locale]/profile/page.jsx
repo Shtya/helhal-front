@@ -151,28 +151,28 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
           </div>
         ) : (
           <ul className='space-y-4 text-[#292D32] text-sm sm:text-base'>
-            <li className='flex items-center justify-between'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280]'>
+            <li className='flex items-center justify-between gap-2'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
                 <MapPin className='h-4 w-4' /> From
               </span>
-              <span className='font-semibold'>{state.country || '—'}</span>
+              <span className='font-semibold break-words max-lg:break-all'>{state.country || '—'}</span>
             </li>
-            <li className='flex items-center justify-between'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280]'>
+            <li className='flex items-center justify-between gap-2'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
                 <CalendarDays className='h-4 w-4' /> Member Since
               </span>
-              <span className='font-semibold'>{meta.memberSince || '—'}</span>
+              <span className='font-semibold break-words max-lg:break-all'>{meta.memberSince || '—'}</span>
             </li>
-            <li className='flex items-center justify-between'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280]'>
+            <li className='flex items-center justify-between gap-2'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
                 <Info className='h-4 w-4' /> Last Login
               </span>
-              <span className='font-semibold'>{meta.lastLogin || '—'}</span>
+              <span className='font-semibold break-words max-lg:break-all'>{meta.lastLogin || '—'}</span>
             </li>
-            <li className='flex items-center justify-between'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280]'>Referral Code</span>
+            <li className='flex items-center justify-between gap-2'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>Referral Code</span>
               <span className='inline-flex items-center gap-2'>
-                <span className='font-semibold'>{meta.referralCode || '—'}</span>
+                <span className='font-semibold break-words max-lg:break-all'>{meta.referralCode || '—'}</span>
                 {meta.referralCode ? (
                   <button onClick={onCopyReferral} className='cursor-pointer hover:scale-[1.1] duration-300 hover:bg-gray-100 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[#EDEDED]'>
                     <Copy className='  h-4 w-4' />
@@ -180,16 +180,16 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                 ) : null}
               </span>
             </li>
-            <li className='flex items-center justify-between'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280]'>Referral Stats</span>
-              <span className='font-semibold'>
+            <li className='flex items-center justify-between gap-2'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>Referral Stats</span>
+              <span className='font-semibold break-words max-lg:break-all'>
                 {meta.referralCount ?? 0} referrals · {meta.referralRewardsCount ?? 0} rewards
               </span>
             </li>
             {meta.referredBy ? (
-              <li className='flex items-center justify-between'>
-                <span className='inline-flex items-center gap-2 text-[#6B7280]'>Referred By</span>
-                <span className='font-semibold'>@{meta.referredBy.username}</span>
+              <li className='flex items-center justify-between gap-2'>
+                <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>Referred By</span>
+                <span className='font-semibold break-words max-lg:break-all'>@{meta.referredBy.username}</span>
               </li>
             ) : null}
           </ul>
@@ -379,7 +379,7 @@ function InfoCard({ loading, about, setAbout, onAddEducation, onAddCertification
           <div className='flex items-center gap-2'>
             <input
               type='text'
-              className='flex-1 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500'
+              className='flex-1 min-w-0  rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500'
               placeholder='e.g., English - Fluent'
               value={newLang}
               onChange={e => setNewLang(e.target.value)}
@@ -584,7 +584,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
             }}
             autoFocus
             placeholder={placeholder || 'Add item'}
-            className='flex-1 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500'
+            className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500'
           />
           <button
             onClick={() => {
@@ -761,13 +761,13 @@ function Assets({
     <div className=' '>
       {/* Intro video card */}
       <Card className='relative p-4 sm:p-5 '>
-        <div className='flex items-center justify-between gap-4'>
+        <div className='flex  flex-col sm:flex-row sm:items-center justify-between gap-4'>
           <div>
             <h2 className='text-2xl font-semibold text-black'>Intro video</h2>
-            <p className='mt-2 text-lg text-black/70'>Stand out with a short introduction video.</p>
+            <p className='mt-2 text-lg text-black/70 break-words'>Stand out with a short introduction video.</p>
           </div>
 
-          <Button className='!w-fit' loading={videoUploading} name={videoUploading ? 'Uploading…' : videoUrl ? 'Replace Video' : 'Upload Video'} icon={<Plus size={18} />} onClick={handlePickVideo} disabled={videoUploading} />
+          <Button className='sm:!w-fit' loading={videoUploading} name={videoUploading ? 'Uploading…' : videoUrl ? 'Replace Video' : 'Upload Video'} icon={<Plus size={18} />} onClick={handlePickVideo} disabled={videoUploading} />
         </div>
 
         {/* Video preview / skeleton */}
@@ -793,13 +793,13 @@ function Assets({
       </Card>
 
       <Card className=' p-4 sm:p-5 mt-8 '>
-        <div className='flex items-center justify-between'>
+        <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
           <div>
             <h3 className='text-xl font-semibold text-black'>Portfolio</h3>
             <p className='text-sm text-slate-600'>Add up to 6 images.</p>
           </div>
 
-          <Button className='!w-fit' name='Add Images' icon={<Plus size={18} />} onClick={handlePickImages} disabled={imgs.length >= 6} />
+          <Button className='sm:!w-fit' name='Add Images' icon={<Plus size={18} />} onClick={handlePickImages} disabled={imgs.length >= 6} />
         </div>
 
         <input ref={imgInputRef} type='file' accept='image/*' multiple className='hidden' onChange={handleImagesSelected} />
@@ -921,13 +921,14 @@ function PortfolioFileBox({
 
   return (
     <Card className='p-4 sm:p-5 mt-8'>
-      <div className='flex items-center justify-between gap-4'>
+      <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
         <div>
           <h3 className='text-xl font-semibold text-black'>Portfolio file</h3>
           <p className='text-sm text-slate-600'>PDF/Doc/PPT/XLS (max ~25MB). One file at a time.</p>
         </div>
 
-        <Button className='!w-fit' name={uploading ? 'Uploading…' : hasFile ? 'Replace file' : 'Upload file'} icon={uploading ? <Loader2 className='h-4 w-4 animate-spin' /> : hasFile ? <UploadCloud className='h-4 w-4' /> : <UploadCloud className='h-4 w-4' />} onClick={pickFile} disabled={uploading || deleting} loading={uploading || deleting} />
+        <Button className='sm:!w-fit' name={uploading ? 'Uploading…' : hasFile ? 'Replace file' : 'Upload file'}
+          icon={uploading ? <Loader2 className='h-4 w-4 animate-spin' /> : hasFile ? <UploadCloud className='h-4 w-4' /> : <UploadCloud className='h-4 w-4' />} onClick={pickFile} disabled={uploading || deleting} loading={uploading || deleting} />
 
         <input ref={inputRef} type='file' accept='.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt' className='hidden' onChange={handleSelected} />
       </div>
@@ -938,9 +939,9 @@ function PortfolioFileBox({
           <div className='h-14 w-full rounded-xl bg-slate-200 animate-pulse' />
         ) : hasFile ? (
           <div className='relative flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3'>
-            <a href={resolveUrl(fileUrl)} target='_blank' rel='noreferrer' className='inline-flex items-center gap-3 text-slate-800 hover:underline' title='Open file'>
+            <a href={resolveUrl(fileUrl)} target='_blank' rel='noreferrer' className='flex items-center  gap-3 text-slate-800 hover:underline  flex-1 min-w-0' title={filenameFromUrl(fileUrl)}>
               <FileText className='h-5 w-5' />
-              <span className='truncate max-w-[60ch]'>{filenameFromUrl(fileUrl)}</span>
+              <span className='truncate text-ellipsis flex-1 min-w-0'>{filenameFromUrl(fileUrl)}</span>
             </a>
 
             <Button className='!w-fit' color='red' name={deleting ? 'Deleting…' : 'Delete'} icon={deleting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Trash2 className='h-4 w-4' />} onClick={handleDelete} loading={deleting || uploading} />
@@ -1238,8 +1239,8 @@ export default function Overview() {
 
   return (
     <div className='container !py-8'>
-      <div className='grid grid-cols-1 gap-6 lg:grid-cols-12'>
-        <div className='space-y-6 lg:col-span-3  '>
+      <div className='gap-6 flex flex-col lg:flex-row'>
+        <div className='space-y-6 w-full lg:w-[350px] xl:w-[400px]'>
           <ProfileCard
             loading={loading}
             editing={editing}
@@ -1313,7 +1314,7 @@ export default function Overview() {
           )} */}
         </div>
 
-        <div className='space-y-6 lg:col-span-9 lg:sticky lg:top-30 h-fit'>
+        <div className='space-y-6 flex-1 lg:sticky lg:top-30 h-fit'>
           <KPICard
             loading={loading}
             stats={{

@@ -91,7 +91,8 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
     const rect = btn.getBoundingClientRect();
     const margin = 8; // gap between button & menu
     // const menuHeight = menurect. 303; // matches Tailwind max-h
-    const menuHeight = menuRef?.current?.getBoundingClientRect()?.height ?? 303;
+    const rawMenuHeight = menuRef?.current?.getBoundingClientRect()?.height;
+    const menuHeight = rawMenuHeight ? rawMenuHeight + 10 : 303;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
