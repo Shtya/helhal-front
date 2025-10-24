@@ -150,7 +150,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
             </div>
           </div>
         ) : (
-          <ul className='space-y-4 text-[#292D32]'>
+          <ul className='space-y-4 text-[#292D32] text-sm sm:text-base'>
             <li className='flex items-center justify-between'>
               <span className='inline-flex items-center gap-2 text-[#6B7280]'>
                 <MapPin className='h-4 w-4' /> From

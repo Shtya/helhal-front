@@ -1,4 +1,4 @@
- 'use client';
+'use client';
 
 import { useEffect, useLayoutEffect, useRef, useState, forwardRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -90,7 +90,8 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
     if (!btn) return;
     const rect = btn.getBoundingClientRect();
     const margin = 8; // gap between button & menu
-    const menuHeight = 303; // matches Tailwind max-h
+    // const menuHeight = menurect. 303; // matches Tailwind max-h
+    const menuHeight = menuRef?.current?.getBoundingClientRect()?.height ?? 303;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
@@ -134,32 +135,32 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
   // The dropdown menu rendered in a portal to escape overflow clipping
   const menu = open
     ? createPortal(
+      <div
+        ref={menuRef}
+        style={{
+          position: 'absolute',
+          top: menuStyle.top,
+          left: menuStyle.left,
+          minWidth: menuStyle.minWidth,
+          zIndex: 9999,
+        }}>
         <div
-          ref={menuRef}
+          className={`overflow-auto rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-150 ease-out origin-top-left`}
           style={{
-            position: 'absolute',
-            top: menuStyle.top,
-            left: menuStyle.left,
-            minWidth: menuStyle.minWidth,
-            zIndex: 9999,
+            transformOrigin: menuStyle.transformOrigin,
+            maxHeight: menuStyle.maxHeight,
           }}>
-          <div
-            className={`overflow-auto rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-150 ease-out origin-top-left`}
-            style={{
-              transformOrigin: menuStyle.transformOrigin,
-              maxHeight: menuStyle.maxHeight,
-            }}>
-            <ul className='divide-y divide-gray-100'>
-              {options.map(opt => (
-                <li key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected === opt.name ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white'}`}>
-                  {opt.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>,
-        document.body,
-      )
+          <ul className='divide-y divide-gray-100'>
+            {options.map(opt => (
+              <li key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected === opt.name ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white'}`}>
+                {opt.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>,
+      document.body,
+    )
     : null;
 
   return (
