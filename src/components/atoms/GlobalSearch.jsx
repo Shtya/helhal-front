@@ -29,7 +29,7 @@ export default function GlobalSearch({ className = '' }) {
   // ---------- Scopes (select lives **inside** the input)
   const scopes = [
     { label: 'Services', value: 'services', path: '/services' },
-    { label: 'Jobs', value: 'jobs', path: '/seller/jobs' },
+    { label: 'Jobs', value: 'jobs', path: '/jobs' },
     { label: 'Sellers', value: 'sellers', path: '/sellers' },
   ];
   const [scopeIndex, setScopeIndex] = useState(0);
@@ -45,7 +45,7 @@ export default function GlobalSearch({ className = '' }) {
     try {
       const raw = localStorage.getItem('globalSearchRecent');
       if (raw) setRecent(JSON.parse(raw));
-    } catch {}
+    } catch { }
   }, []);
 
   const pushRecent = term => {
@@ -55,7 +55,7 @@ export default function GlobalSearch({ className = '' }) {
       const next = [val, ...recent.filter(r => r.toLowerCase() !== val.toLowerCase())].slice(0, 8);
       setRecent(next);
       localStorage.setItem('globalSearchRecent', JSON.stringify(next));
-    } catch {}
+    } catch { }
   };
 
   // ---------- Debounced jobs fetch (lightweight)

@@ -11,6 +11,7 @@ import api, { baseImg } from '@/lib/axios';
 import { AllMessagesPanel } from '@/components/pages/chat/AllMessagesPanel';
 import { ChatThread } from '@/components/pages/chat/ChatThread';
 import { getUserInfo } from '@/hooks/useUser';
+import { useDebounce } from '@/hooks/useDebounce';
 
 /** ───────────────────────────────── SOCKET REF ───────────────────────────────── */
 let socket;
@@ -24,16 +25,17 @@ export const Shimmer = ({ className = '' }) => (
 
 export const MessageSkeletonBubble = ({ me = false }) => (
   <div className={`flex gap-4 ${me ? 'flex-row-reverse' : ''}`}>
-    <Shimmer className='h-10 w-10 rounded-full' />
-    <div className='max-w-[70%]'>
-      <Shimmer className='h-3 w-24 mb-2' />
+    <Shimmer className="h-10 w-10 rounded-full flex-shrink-0" />
+    <div className="flex flex-col gap-2 w-full max-w-[calc(100%-3.5rem)]">
+      <Shimmer className="h-3 w-[40%] sm:w-24" />
       <div className={`${me ? 'bg-emerald-500/30' : 'bg-slate-200/70'} rounded-2xl p-3`}>
-        <Shimmer className='h-4 w-56 mb-2' />
-        <Shimmer className='h-4 w-40' />
+        <Shimmer className="h-4 w-full max-w-[80%] mb-2" />
+        <Shimmer className="h-4 w-full max-w-[60%]" />
       </div>
     </div>
   </div>
 );
+
 
 /* ------------------------------ NOTIFICATION FUNCTION ------------------------------ */
 const showNotification = (message, type = 'success') => {
@@ -212,10 +214,10 @@ const useChat = () => {
           const updated = prev.map(t =>
             t.id === cid
               ? {
-                  ...t,
-                  unreadCount: (t.unreadCount || 0) + 1,
-                  lastMessageAt: new Date().toISOString(),
-                }
+                ...t,
+                unreadCount: (t.unreadCount || 0) + 1,
+                lastMessageAt: new Date().toISOString(),
+              }
               : t,
           );
           return sortThreads(updated);
@@ -329,6 +331,7 @@ const useChat = () => {
   );
 
   const fetchConversations = async (page = 1) => {
+
     const meId = user.id;
 
     try {
@@ -426,9 +429,18 @@ const useChat = () => {
     }
   };
 
+  const debouncedQuery = useDebounce(query)
+  useEffect(() => {
+    if (query.trim()) {
+      searchUsers(query);
+    } else {
+      setSearchResults([]);
+      setShowSearchResults(false);
+    }
+  }, [debouncedQuery]);
+
   const handleSearch = q => {
     setQuery(q);
-    searchUsers(q);
   };
 
   const handleSearchResultClick = async user => {
@@ -675,14 +687,14 @@ const ChatApp = () => {
 
   return (
     <div className='divider'>
-      <div className='container grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)_300px] md:grid-cols-1'>
+      <div className='container  grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)_300px] md:grid-cols-1'>
         {/* Left Panel - Conversations List */}
         <div className=' '>
           <Panel>
             {/* Example: unread badge spot if you want it in your UI header
             {totalUnreadCount > 0 && <span>{totalUnreadCount > 99 ? '99+' : totalUnreadCount}</span>}
             */}
-            <AllMessagesPanel items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={fetchConversations} onContactAdmin={contactAdmin} />
+            <AllMessagesPanel items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={() => fetchConversations()} onContactAdmin={contactAdmin} />
           </Panel>
         </div>
 

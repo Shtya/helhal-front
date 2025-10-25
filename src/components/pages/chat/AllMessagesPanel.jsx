@@ -1,13 +1,10 @@
 import Tabs from '@/components/common/Tabs';
- import { AccessibleButton } from './ChatThread';
-import { AnimatePresence , motion } from 'framer-motion';
+import { AccessibleButton } from './ChatThread';
+import { AnimatePresence, motion } from 'framer-motion';
 import Img from '@/components/atoms/Img';
 import { Shimmer } from '@/app/[locale]/chat/page';
+import { X, Star, Pin, Search, Archive, LifeBuoy } from 'lucide-react';
 
-
-
- import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy } from 'lucide-react';
-   
 export function AllMessagesPanel({ items, onSearch, query, onSelect, t, searchResults, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
   return (
     <div className='w-full relative  '>

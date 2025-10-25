@@ -175,7 +175,7 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
           <input ref={inputRef} type='text' placeholder={t('placeholders.message')} aria-label={t('placeholders.message')} className='w-full bg-transparent text-[14px] placeholder:text-slate-400 focus:outline-none' value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown} disabled={sending} />
 
           {/* Attach */}
-          <AttachFilesButton onChange={selectedAssets => setAssets(selectedAssets)} className='!m-0' />
+          <AttachFilesButton hiddenFiles={true} onChange={selectedAssets => setAssets(selectedAssets)} className='!m-0' />
 
           {/* Emoji */}
           <div className='relative' ref={emojiRef}>
@@ -247,12 +247,12 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
         <div className={`mt-1 text-xs text-slate-400 ${me ? 'text-right' : 'text-left'}`}>
           {createdAt
             ? new Date(createdAt).toLocaleString('en-US', {
-                month: 'numeric',
-                day: 'numeric',
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true,
-              })
+              month: 'numeric',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            })
             : ''}
         </div>
       </div>

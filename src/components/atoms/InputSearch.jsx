@@ -2,8 +2,8 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, actionIcon, onSearch, onChange }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, actionIcon, onSearch, value, onChange }) => {
+  const [searchTerm, setSearchTerm] = useState(value || '');
 
   const handleSearch = e => {
     e.preventDefault();

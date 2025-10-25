@@ -5,20 +5,16 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import api from '@/lib/axios';
-import Button from '@/components/atoms/Button';
 import InputSearch from '@/components/atoms/InputSearch';
 import Select from '@/components/atoms/Select';
 import AttachmentList from '@/components/common/AttachmentList';
 import NoResults from '@/components/common/NoResults';
 import TabsPagination from '@/components/common/TabsPagination';
-import { Switcher } from '@/components/atoms/Switcher';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, Banknote, CalendarDays, CheckCircle2, Clock, FolderOpen, MapPin, Star, X, Save, Flag } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdvancedJobsDropdown from '@/components/Filters/AdvancedJobsDropdown';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
-import { Stars } from '@/components/pages/services/ServiceCard';
-import Img from '@/components/atoms/Img';
 import UserAvatar from '@/components/common/UserAvatar';
 import { useDebounce } from '@/hooks/useDebounce';
 
@@ -96,6 +92,7 @@ export default function SellerJobsPage() {
   const [limit, setLimit] = useState(12);
 
   // Filters
+
   const [q, setQ] = useState(searchParams.get('q') || '');
   const debouncedQ = useDebounce(q)
   const [budgetType, setBudgetType] = useState(searchParams.get('budgetType') || '');
