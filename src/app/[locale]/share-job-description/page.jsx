@@ -20,7 +20,7 @@ import { toast } from 'react-hot-toast';
 import InputList from '@/components/atoms/InputList';
 import AttachmentList from '@/components/common/AttachmentList';
 import CategorySelect from '@/components/atoms/CategorySelect';
- 
+
 const jobValidationSchema = yup.object({
   title: yup.string().required('Title is required'),
   description: yup.string().required('Description is required'),
@@ -335,7 +335,7 @@ export default function CreateJobPage() {
   return (
     <div className='container mx-auto px-4 py-6'>
       <HeaderCategoriesSwiper />
- 
+
 
       <div className='mt-6 mb-8 max-lg:hidden' data-aos='fade-down'>
         <StepBreadcrumbs items={steps} activeIndex={currentStep} onItemClick={handleToStep} onReset={handleReset} resetLabel={t('crumb.reset')} />
@@ -511,7 +511,8 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
       <AttachFilesButton onChange={handleFileSelection} />
 
       <div className='flex items-center justify-between gap-4 mt-6'>
-        <Button className='!max-w-fit' name={'Back'} onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))} color='secondary' />
+        {/* <Button className='!max-w-fit' name={'Back'} onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))} color='secondary' /> */}
+        <div></div>
         <Button className='!max-w-fit' name={'Next'} onClick={handleNext} color='green' />
       </div>
     </div>
@@ -615,18 +616,33 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
         </div>
       </section>
 
-      <div className='flex items-center justify-between gap-4 mt-8'>
-        <div className='flex items-center gap-2'>
-          <span className='text-sm text-gray-600'>Save as Draft</span>
+      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Switcher Row */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm text-gray-600">Save as Draft</span>
           <Switcher checked={isPublishing} onChange={onPublishToggle} />
-          <span className='text-sm text-gray-600'>Publish</span>
+          <span className="text-sm text-gray-600">Publish</span>
         </div>
 
-        <div className='flex gap-2'>
-          <Button className='!max-w-fit' name={'Back'} onClick={onBack} color='secondary' />
-          <Button className='!max-w-fit' name={isPublishing ? 'Publish Job' : 'Save Draft'} onClick={onSubmit} color='green' loading={isSubmitting} disabled={isSubmitting} />
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-2 justify-end sm:justify-start">
+          <Button
+            className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
+            name="Back"
+            onClick={onBack}
+            color="secondary"
+          />
+          <Button
+            className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
+            name={isPublishing ? 'Publish Job' : 'Save Draft'}
+            onClick={onSubmit}
+            color="green"
+            loading={isSubmitting}
+            disabled={isSubmitting}
+          />
         </div>
       </div>
+
     </div>
   );
 }

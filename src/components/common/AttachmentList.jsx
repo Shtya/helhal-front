@@ -3,7 +3,7 @@ import { Paperclip } from 'lucide-react';
 import { Modal } from './Modal';
 import { baseImg } from '@/lib/axios';
 
-const AttachmentList = ({ attachments , className }) => {
+const AttachmentList = ({ attachments, className }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -27,16 +27,16 @@ const AttachmentList = ({ attachments , className }) => {
   };
 
   return (
-    <div className={`mt-3 grid grid-cols-2 w-full  items-center gap-2 xl:gap-4 ${className} `}>
+    <div className={`mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 xl:gap-4 ${className}`}>
       {attachments?.length > 0 &&
         attachments.map((f, i) => (
           <div key={i} className='flex items-center  w-full gap-3 rounded-xl border border-gray-200 p-3 cursor-pointer hover:bg-gray-100' onClick={() => handleAttachmentClick(f)}>
-            <div className='w-12 h-12 flex-none rounded-lg bg-gradient-to-br from-pink-500 via-purple-500 to-yellow-500 flex items-center justify-center'>
-              <Paperclip className='w-6 h-6 text-white' />
+            <div className="w-12 h-12 flex-shrink-0 rounded-lg bg-gradient-to-br from-pink-500 via-purple-500 to-yellow-500 flex items-center justify-center">
+              <Paperclip className="w-6 h-6 text-white" />
             </div>
-            <div className='min-w-0'>
-              <div className='truncate text-sm font-medium text-gray-900'>{f.name}</div>
-              <div className='text-xs text-gray-500'>{f.type}</div>
+            <div className="min-w-0">
+              <div className="truncate text-sm font-medium text-gray-900 max-w-[160px] sm:max-w-none">{f.name}</div>
+              <div className="text-xs text-gray-500 truncate">{f.type}</div>
             </div>
           </div>
         ))}

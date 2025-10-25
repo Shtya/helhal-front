@@ -154,9 +154,9 @@ export default function SellerJobsPage() {
 
       {/* Filters Panel */}
       <motion.section variants={fadeItem} initial='hidden' animate='show' transition={spring} className='card'>
-        <div className='flex flex-col-reverse sm:flex-row md:items-center justify-between gap-3'>
+        <div className='flex flex-col sm:flex-row md:items-center justify-between gap-3'>
           <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={e => setQ(e)} placeholder='Search by title, description, or skills' className='max-sm:max-w-full' />
-          <div className='flex items-center gap-2'>
+          <div className='flex max-sm:flex-wrap items-center gap-2'>
             <Select
               value={budgetType}
               onChange={opt => setBudgetType(opt?.id ?? '')}
@@ -165,7 +165,7 @@ export default function SellerJobsPage() {
                 { id: 'fixed', name: 'Fixed' },
                 { id: 'hourly', name: 'Hourly' },
               ]}
-              className='sm:!w-40 !text-xs min-w-0 truncate'
+              className='!w-40 !text-xs min-w-0 truncate'
               variant='minimal'
             />
             <div className='justify-self-end'>

@@ -245,7 +245,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
   return (
     <div className={className || ''}>
       {/* Trigger + selected chips */}
-      <div className='flex items-center gap-4 mt-6 mb-6'>
+      <div className='flex flex-col md:flex-row  md:items-center gap-4 mt-6 mb-6'>
         <button onClick={openModal} className={[iconOnly ? '!w-fit !px-2 !rounded-md' : 'px-10', 'flex-none flex items-center gap-2 py-2 rounded-lg border border-emerald-500 text-emerald-500 cursor-pointer hover:bg-emerald-50'].join(' ')}>
           <img src='/icons/attachment-green.svg' alt='' className='w-5 h-5' />
           <span className={iconOnly ? 'hidden' : 'font-medium'}>Attach Files</span>

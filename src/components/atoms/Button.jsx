@@ -7,26 +7,26 @@ export default function Button({ name, disabled, icon, srcImg, onClick, href, cl
     // default: 'gradient',
     // red: 'bg-red-600 hover:bg-red-700',
     // green: 'gradient',
-    // secondary: 'bg-slate-100 border border-slate-200 !text-slate-700 hover:bg-slate-200',
+    secondary: 'bg-slate-100 border border-slate-200 !text-slate-700 hover:bg-slate-200',
     // outline: 'border-[2px] border-emerald-500 !text-emerald-500 hover:bg-emerald-500 hover:!text-white',  
-		primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-400/50',
-  blue:    'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-400/50',
-  green:   'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-400/50',
-  success: 'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-400/50',
-  red:     'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-400/50',
-  danger:  'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-400/50',
-  yellow:  'bg-amber-500 text-white hover:bg-amber-600 focus-visible:ring-amber-400/50',
-  warning: 'bg-amber-500 text-white hover:bg-amber-600 focus-visible:ring-amber-400/50',
-  black:   'bg-black text-white hover:bg-black/90 focus-visible:ring-black/40',
-  gray:    'bg-gray-800 text-white hover:bg-gray-900 focus-visible:ring-gray-400/40',
-  neutral: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-300',
+    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-400/50',
+    blue: 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-400/50',
+    green: 'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-400/50',
+    success: 'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-400/50',
+    red: 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-400/50',
+    danger: 'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-400/50',
+    yellow: 'bg-amber-500 text-white hover:bg-amber-600 focus-visible:ring-amber-400/50',
+    warning: 'bg-amber-500 text-white hover:bg-amber-600 focus-visible:ring-amber-400/50',
+    black: 'bg-black text-white hover:bg-black/90 focus-visible:ring-black/40',
+    gray: 'bg-gray-800 text-white hover:bg-gray-900 focus-visible:ring-gray-400/40',
+    neutral: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-300',
 
-  // outlines / subtle
-  outline: 'bg-transparent !text-gray-800 border border-gray-300 hover:bg-gray-50 focus-visible:ring-gray-300',
-  ghost:   'bg-transparent text-gray-800 hover:bg-gray-100 focus-visible:ring-gray-200',
-  subtle:  'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-300',
+    // outlines / subtle
+    outline: 'bg-transparent !text-gray-800 border border-gray-300 hover:bg-gray-50 focus-visible:ring-gray-300',
+    ghost: 'bg-transparent text-gray-800 hover:bg-gray-100 focus-visible:ring-gray-200',
+    subtle: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus-visible:ring-gray-300',
   };
- 
+
   const baseClass = `cursor-pointer w-full inline-flex items-center justify-center gap-2 rounded-lg text-lg max-md:text-base text-white px-4 !py-[5px] transition-all duration-300`;
 
   const finalClass = `${baseClass} ${colorClasses[color]} ${disabled ? '!opacity-50 !cursor-not-allowed !pointer-events-none' : ''} ${className} 

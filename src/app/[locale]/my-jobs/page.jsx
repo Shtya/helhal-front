@@ -84,7 +84,7 @@ const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
   const buyerInitials = useMemo(() => initials(job?.buyer?.username), [job?.buyer?.username]);
 
   return (
-    <article className={cardBase}>
+    <article className={`${cardBase} flex flex-col justify-between `} >
       <div className={ribbonBar} />
 
       {/* Top Content */}
@@ -121,38 +121,42 @@ const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
         <Divider className='!my-6' />
 
         {/* Buyer & Publish Toggle */}
-        <section className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex items-center gap-3'>
-            <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200'>
-              <span className='text-sm font-semibold'>{buyerInitials}</span>
+        <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:flex-wrap">
+          {/* Buyer Info */}
+          <div className="flex flex-wrap items-center gap-3 min-w-0">
+            <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200">
+              <span className="text-sm font-semibold">{buyerInitials}</span>
             </div>
-            <div className='min-w-0'>
-              <div className='flex items-center gap-2 text-sm font-semibold text-slate-900'>
-                <User2 className='h-4 w-4 opacity-70' /> {job?.buyer?.username}
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 truncate">
+                <User2 className="h-4 w-4 opacity-70 flex-shrink-0" />
+                <span className="truncate max-w-[140px] sm:max-w-none">{job?.buyer?.username}</span>
               </div>
-              <div className='mt-0.5 flex items-center gap-2 truncate text-sm text-slate-600'>
-                <Mail className='h-4 w-4 opacity-70' />
-                <span className='truncate'>{job?.buyer?.email}</span>
+              <div className="mt-0.5 flex items-center gap-2 text-sm text-slate-600 truncate">
+                <Mail className="h-4 w-4 opacity-70 flex-shrink-0" />
+                <span className="truncate max-w-[180px] sm:max-w-none">{job?.buyer?.email}</span>
               </div>
             </div>
           </div>
 
-          <div className='flex items-center gap-3'>
+          {/* Status Switcher */}
+          <div className="flex items-center gap-3 sm:flex-shrink-0">
             {(job.status === 'draft' || job.status === 'published') && (
-              <div className={chip + ' !py-[6px] !pr-4'}>
-                <span className='text-xs text-slate-500'>Draft</span>
+              <div className={`${chip} !py-[6px] !pr-4 flex items-center gap-2 flex-wrap`}>
+                <span className="text-xs text-slate-500">Draft</span>
                 <Switcher checked={job.status === 'published'} onChange={() => onPublishToggle(job.id, job.status)} />
-                <span className='text-xs text-slate-500'>Publish</span>
+                <span className="text-xs text-slate-500">Publish</span>
               </div>
             )}
           </div>
         </section>
 
+
         {/* Attachments */}
         {Array.isArray(job?.attachments) && job.attachments.length > 0 && (
           <div className='mt-5 rounded-xl border border-slate-200 p-3'>
             <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-              <FolderOpen className='h-4 w-4' /> Attachments
+              <FolderOpen className='shrink-0 h-4 w-4' /> Attachments
             </div>
             <AttachmentList attachments={job.attachments} />
           </div>
@@ -160,7 +164,7 @@ const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
       </div>
 
       {/* Footer Actions (pinned) */}
-      <footer className='absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200'>
+      <footer className=' m-3 bottom-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200'>
         <Button href={`/my-jobs/${job.id}/proposals`} name={`View Proposals (${job.proposals?.length || 0})`} className='min-w-[170px]' />
         <div className='flex items-center gap-2'>
           {/* <Button variant='ghost' className='!px-3' href={`/my-jobs/${job.id}`} name='Details' rightIcon={<ChevronRight className='h-4 w-4' />} /> */}
@@ -272,6 +276,7 @@ export default function MyJobsPage() {
         ]}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        className='max-w-full'
       />
 
       <div className='mt-6 grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3'>
