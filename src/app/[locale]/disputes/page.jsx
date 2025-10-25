@@ -334,7 +334,7 @@ export default function MyDisputesPage() {
   };
 
   return (
-    <div className='container !my-6 h-dvh overflow-hidden flex flex-col'>
+    <div className='container !my-6 max-lg:min-h-dvh lg:h-dvh  flex flex-col'>
       {/* Page header */}
       <div className='flex items-center justify-between gap-2 flex-wrap'>
         <div className='flex items-center gap-3'>
@@ -347,9 +347,9 @@ export default function MyDisputesPage() {
         </div>
       </div>
 
-      <div className='mt-3 grid grid-cols-12 gap-6 flex-1 min-h-0 overflow-hidden'>
-        <aside className='col-span-12 lg:col-span-4 flex flex-col min-h-0'>
-          <div className='rounded-2xl border border-slate-200 bg-white flex-1 flex flex-col overflow-hidden'>
+      <div className='mt-3 grid grid-cols-12 gap-6 flex-1 min-h-0 '>
+        <aside className='col-span-12 lg:col-span-4 min-h-0'>
+          <div className='rounded-2xl border border-slate-200 bg-white flex-1 h-full flex flex-col '>
             {/* List header with search */}
             <div className='p-3 border-b border-gray-100 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60'>
               <div className='relative'>
@@ -366,7 +366,7 @@ export default function MyDisputesPage() {
                   ))}
                 </div>
               ) : filtered.length ? (
-                <ul className='divide-y divide-gray-100'>
+                <ul className='divide-y divide-gray-100 overflow-y-auto h-full max-h-dvh'>
                   {filtered.map(d => {
                     const isActive = selected?.id === d.id;
                     return (
@@ -488,11 +488,11 @@ export default function MyDisputesPage() {
                     </div>
 
                     {/* Scrollable list */}
-                    <div ref={scrollRef} className='flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-2 space-y-3 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]'>
+                    <div ref={scrollRef} className='flex-1 min-h-[300px] max-h-[485px] overflow-y-auto px-4 pt-3 pb-2 space-y-3 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]'>
                       {threaded.length ? (
                         threaded.map(n => <MessageNode key={n.id} node={n} onReply={setReplyTo} messageById={messageById} meId={me?.id} />)
                       ) : (
-                        <div className='mx-2 my-4 flex flex-col items-center justify-center py-8 text-center text-gray-500 border border-dashed border-gray-200 rounded-xl bg-gray-50'>
+                        <div className='mx-2 flex flex-col items-center justify-center py-8 text-center text-gray-500 border border-dashed border-gray-200 rounded-xl bg-gray-50 h-full'>
                           <MessageSquare className='h-6 w-6 mb-2 text-gray-400' />
                           <p className='text-sm font-medium'>No messages yet</p>
                           <p className='text-xs text-gray-400 mt-1'>Start the conversation by sending the first message.</p>
@@ -516,7 +516,7 @@ export default function MyDisputesPage() {
 
                     {/* Composer */}
                     <div className='border-t border-gray-100 bg-white px-4 py-3'>
-                      <div className='flex items-end gap-2 max-w-[720px] w-full mx-auto'>
+                      <div className='flex items-end gap-2  w-full '>
                         <Input
                           name='thread-message'
                           placeholder='Write a message…'
@@ -528,6 +528,7 @@ export default function MyDisputesPage() {
                               if (!sending && (msg || '').trim()) sendMessage();
                             }
                           }}
+                          className="w-full"
                         />
                         <Button icon={<Send size={18} />} color='black' onClick={sendMessage} loading={sending} disabled={sending || !msg.trim()} className='!h-[39px] !w-auto px-4' name='Send' />
                       </div>
