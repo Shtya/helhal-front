@@ -142,8 +142,8 @@ export default function ServiceDetailsPage({ params }) {
     try {
       setLoadingSubmit(true);
       const res = await api.post('/orders/checkout', { ...orderData });
-       router.push(res.data.paymentUrl+ `?orderId:${res.data.order.id}`);
-     } catch (e) {
+      router.push(res.data.paymentUrl + `?orderId:${res.data.order.id}`);
+    } catch (e) {
       console.error('Error creating order:', e);
     } finally {
       setLoadingSubmit(false);
@@ -188,7 +188,7 @@ export default function ServiceDetailsPage({ params }) {
 
       {selectedPackage && (
         <div className='lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 z-50'>
-          <div className='container mx-auto flex items-center justify-between'>
+          <div className='container mx-auto flex flex-col sm:flex-row gap-2 items-center justify-between'>
             <div>
               <PriceTag price={selectedPackage.price} className='text-lg font-bold' />
               <p className='text-xs text-gray-500'>{selectedPackage.name} Package</p>
@@ -625,51 +625,62 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
   return (
     <section className='rounded-xl border border-slate-200 bg-white p-6 shadow-sm mb-6' aria-labelledby='packages-title'>
       {/* Header */}
-      <div className='mb-5 flex items-center justify-between gap-3'>
-        <div className='flex items-center gap-2'>
-          <div className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-slate-100'>
-            <Table2 className='h-4 w-4 text-slate-700' />
+      <div className="mb-5 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
+        {/* Title */}
+        <div className="flex items-center gap-2">
+          <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-slate-100">
+            <Table2 className="h-4 w-4 text-slate-700" />
           </div>
-          <h2 id='packages-title' className='text-lg md:text-xl font-semibold text-slate-900'>
+          <h2 id="packages-title" className="text-lg md:text-xl font-semibold text-slate-900">
             Packages
           </h2>
         </div>
 
         {/* View toggle */}
-        <div className='inline-flex rounded-xl border border-slate-200 bg-white p-1'>
+        <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 self-start sm:self-auto">
           <button
-            type='button'
+            type="button"
             onClick={() => setView('cards')}
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
-              ${view === 'cards' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+        ${view === 'cards' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
             aria-pressed={view === 'cards'}
-            aria-label='Cards view'>
-            <LayoutGrid className='h-4 w-4' /> Cards
+            aria-label="Cards view"
+          >
+            <LayoutGrid className="h-4 w-4" /> Cards
           </button>
           <button
-            type='button'
+            type="button"
             onClick={() => setView('compare')}
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
-              ${view === 'compare' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+        ${view === 'compare' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
             aria-pressed={view === 'compare'}
-            aria-label='Compare view'>
-            <Table2 className='h-4 w-4' /> Compare
+            aria-label="Compare view"
+          >
+            <Table2 className="h-4 w-4" /> Compare
           </button>
         </div>
       </div>
+
 
       {/* Content */}
       <div ref={containerRef} tabIndex={0} onKeyDown={onKeyDown} className='outline-none '  >
         <AnimatePresence mode='wait'>
           {view === 'cards' ? (
-            <motion.div key='cards' initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className='relative grid h-full  gap-5 grid-cols-3  overflow-auto  '>
+            <motion.div
+              key="cards"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-cols-fr gap-5 w-full min-w-0"
+            >
+
               {list.map((pkg, index) => {
                 const active = selectedName === pkg.type;
                 const recommended = index === recommendedIndex;
                 return (
                   <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} onClick={() => setSelectedPackage(pkg)} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-emerald-300 bg-emerald-50/30 ring-1 ring-emerald-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
                     <div className='mb-2 flex flex-wrap w-full items-start justify-between gap-1'>
-                      <div className='flex items-center gap-2'>
+                      <div className='flex items-center flex-wrap gap-2'>
                         <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type}</h3>
                         {recommended && (
                           <span className='inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800'>
@@ -684,7 +695,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                     {pkg.description && <p className='mb-4 line-clamp-2 text-sm leading-6 text-slate-600'>{pkg.description}</p>}
 
                     {/* Meta */}
-                    <div className='mb-4 flex w-full items-center justify-between text-sm text-slate-700'>
+                    <div className='mb-4 flex w-full items-center justify-between flex-wrap text-sm text-slate-700'>
                       <span className='inline-flex items-center gap-1.5'>
                         <Clock className='h-4 w-4 text-slate-600' />
                         <span className='font-medium text-slate-900'>{pkg.deliveryTime}</span>
@@ -1493,7 +1504,7 @@ function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplet
       {isSidebarOpen && <div className='fixed inset-0 z-[90] bg-black/50 backdrop-blur-sm transition-opacity' onClick={toggleSidebar} aria-hidden='true' />}
 
       {/* Drawer */}
-      <aside ref={drawerRef} role='dialog' aria-modal='true' aria-labelledby='order-options-title' className={`overflow-y-auto !h-screen fixed right-0 top-0 z-[100] w-[360px] sm:w-[420px] bg-white border-l shadow-2xl transition-transform duration-300 ease-out will-change-transform ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <aside ref={drawerRef} role='dialog' aria-modal='true' aria-labelledby='order-options-title' className={`overflow-y-auto !h-screen fixed right-0 top-0 z-[100] w-[360px] max-w-full sm:w-[420px] bg-white border-l shadow-2xl transition-transform duration-300 ease-out will-change-transform ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className='pointer-events-none absolute left-0 top-0 h-full w-2 bg-gradient-to-b from-emerald-200/50 via-transparent to-emerald-200/50' />
 
         {/* Header */}

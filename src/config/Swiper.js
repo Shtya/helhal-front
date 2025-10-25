@@ -9,10 +9,10 @@ export const swiperSettings = {
       `<span class="${className}"><span class="inner"></span></span>`,
   },
   spaceBetween: 20,
-  loop: true,  
+  loop: true,
   slidesPerView: 3,
-    breakpoints: {
-    380: { slidesPerView: 1 },   // phones
+  breakpoints: {
+    0: { slidesPerView: 1 },   // phones
     640: { slidesPerView: 2 },   // tablets
     940: { slidesPerView: 3 },   // small laptops
     1280: { slidesPerView: 4 },  // desktops
@@ -30,12 +30,12 @@ export const swiperSettingsExplore = {
     renderBullet: (_i, className) =>
       `<span class="${className}"><span class="inner"></span></span>`,
   },
-    loop: true,  
+  loop: true,
 
   spaceBetween: 10,
-  slidesPerView: "auto",  
+  slidesPerView: "auto",
   breakpoints: {
-    380: { slidesPerView: 1 },   // phones
+    0: { slidesPerView: 1 },   // phones
     640: { slidesPerView: 2 },   // tablets
     940: { slidesPerView: 3 },   // small laptops
     1280: { slidesPerView: 4 },  // desktops

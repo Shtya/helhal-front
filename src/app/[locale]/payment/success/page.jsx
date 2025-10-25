@@ -19,6 +19,7 @@ export default function PaymentSuccessPage() {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     if (!orderId) return;
     (async () => {
@@ -54,7 +55,7 @@ export default function PaymentSuccessPage() {
         <Link href="/my-orders" className="text-emerald-700 underline">
           Go to My Orders
         </Link>
-      </div>
+      </div >
     );
   }
 
@@ -81,7 +82,7 @@ export default function PaymentSuccessPage() {
       </div>
 
       {/* Actions */}
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="mt-8 flex flex-col  sm:flex-row justify-center gap-4">
         <Link href="/orders">
           <Button name="Go to My Orders" color="green" />
         </Link>

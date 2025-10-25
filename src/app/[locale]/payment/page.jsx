@@ -146,32 +146,42 @@ export default function PaymentPage() {
               </p>
 
               {/* Details */}
-              <div className='grid grid-cols-2 gap-2 text-sm text-slate-700 sm:grid-cols-3'>
-                <div className='flex items-center justify-between rounded-xl bg-white p-3 shadow-custom'>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-slate-700">
+                <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>Subtotal</span>
-                  <span className='font-medium'>{formatMoney(Number(invoice.subtotal), currency)}</span>
+                  <span className="font-medium">{formatMoney(Number(invoice.subtotal), currency)}</span>
                 </div>
-                <div className='flex items-center justify-between rounded-xl bg-white p-3 shadow-custom'>
+                <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>Service Fee</span>
-                  <span className='font-medium'>{formatMoney(Number(invoice.serviceFee), currency)}</span>
+                  <span className="font-medium">{formatMoney(Number(invoice.serviceFee), currency)}</span>
                 </div>
-                <div className='flex items-center justify-between rounded-xl bg-white p-3 shadow-custom'>
+                <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>Platform %</span>
-                  <span className='font-medium'>{invoice.platformPercent}%</span>
+                  <span className="font-medium">{invoice.platformPercent}%</span>
                 </div>
-                <div className='flex items-center justify-between rounded-xl bg-white p-3 shadow-custom'>
+                <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>Issued At</span>
-                  <span className='font-medium'>{new Date(invoice.issuedAt).toLocaleDateString()}</span>
+                  <span className="font-medium">{new Date(invoice.issuedAt).toLocaleDateString()}</span>
                 </div>
-                <div className='flex items-center justify-between rounded-xl bg-white p-3 shadow-custom'>
+                <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>Status</span>
-                  <span className={`font-medium capitalize ${invoice.paymentStatus === 'pending' ? 'text-amber-600' : invoice.paymentStatus === 'paid' ? 'text-emerald-600' : 'text-slate-600'}`}>{invoice.paymentStatus}</span>
+                  <span
+                    className={`font-medium capitalize ${invoice.paymentStatus === 'pending'
+                        ? 'text-amber-600'
+                        : invoice.paymentStatus === 'paid'
+                          ? 'text-emerald-600'
+                          : 'text-slate-600'
+                      }`}
+                  >
+                    {invoice.paymentStatus}
+                  </span>
                 </div>
-                <div className='col-span-2 flex items-center justify-between rounded-xl bg-white p-3 shadow-custom sm:col-span-1'>
-                  <span className='font-semibold text-slate-900'>Total</span>
-                  <span className='font-semibold text-slate-900'>{formatMoney(Number(invoice.totalAmount), currency)}</span>
+                <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom lg:col-span-3">
+                  <span className="font-semibold text-slate-900">Total</span>
+                  <span className="font-semibold text-slate-900">{formatMoney(Number(invoice.totalAmount), currency)}</span>
                 </div>
               </div>
+
             </div>
           ) : null}
 
