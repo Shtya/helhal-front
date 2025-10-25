@@ -18,6 +18,9 @@ button {
   height: auto !important;
 }
 
+[disabled] {
+  pointer-events: none;
+}
 
 body {
   color: black;

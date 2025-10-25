@@ -1,18 +1,17 @@
 // pages/my-gigs.jsx
 'use client';
-import { act, useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { tabAnimation } from '../orders/page';
-import TabList from '@/components/atoms/TabList';
 import { apiService } from '@/services/GigServices';
 import Button from '@/components/atoms/Button';
-import TableData from '@/components/common/TableData';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { baseImg } from '@/lib/axios';
 import { Modal } from '@/components/common/Modal';
 import toast from 'react-hot-toast';
 import Tabs from '@/components/common/Tabs';
+import Table from '@/components/common/Table';
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState('All');
@@ -154,7 +153,7 @@ export default function Page() {
     });
   };
 
-  const handleAction = row => {
+  const renderActions = row => {
     const baseStyle = 'w-8 h-8 flex items-center justify-center rounded-md border transition cursor-pointer';
 
     return (
@@ -207,14 +206,14 @@ export default function Page() {
     setDeleteTarget(gig);
   };
 
- 	const tabs = [
-		{ label: "All" , value : "All" },
-		{ label: "Active" , value : "Active" },
-		{ label: "Pending" , value : "Pending" },
-		{ label: "Draft" , value : "Draft" },
-		{ label: "Denied" , value : "Denied" },
-		{ label: "Paused" , value : "Paused" },
-	]
+  const tabs = [
+    { label: "All", value: "All" },
+    { label: "Active", value: "Active" },
+    { label: "Pending", value: "Pending" },
+    { label: "Draft", value: "Draft" },
+    { label: "Denied", value: "Denied" },
+    { label: "Paused", value: "Paused" },
+  ]
   return (
     <div className='container min-h-screen !py-12 '>
       {/* Header */}
@@ -231,7 +230,8 @@ export default function Page() {
       {/* Table */}
       <AnimatePresence exitBeforeEnter>
         <motion.div key={activeTab} {...tabAnimation}>
-          <TableData data={formatTableData(services)} columns={columns} actions={handleAction} pagination={pagination} onPageChange={handlePageChange} onLimitChange={handleLimitChange} loading={loading} />
+          {/* <TableData data={formatTableData(services)} columns={columns} actions={renderActions} onPageChange={handlePageChange} onLimitChange={handleLimitChange} loading={loading} pagination={pagination} /> */}
+          <Table loading={loading} data={formatTableData(services)} columns={columns} actions={renderActions} />
         </motion.div>
       </AnimatePresence>
 

@@ -4,7 +4,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, ChevronRight, Pencil, ArrowUp, ArrowDown, Search, Eye, EyeOff, Info, Plus, Minus, Trash2, X, HelpCircle, Logs } from 'lucide-react';
+import { Check, ChevronLeft, Pencil, ArrowUp, ArrowDown, Search, Plus, Trash2, X, HelpCircle } from 'lucide-react';
 import ProgressBar from '@/components/pages/gig/ProgressBar';
 import InputList from '@/components/atoms/InputList';
 import Textarea from '@/components/atoms/Textarea';
@@ -14,11 +14,10 @@ import Button from '@/components/atoms/Button';
 import { Switcher } from '@/components/atoms/Switcher';
 import AttachFilesButton, { getFileIcon } from '@/components/atoms/AttachFilesButton';
 import { apiService } from '@/services/GigServices';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { AnimatedCheckbox } from '@/components/atoms/CheckboxAnimation';
 import { baseImg } from '@/lib/axios';
 import toast from 'react-hot-toast';
-import { getUserInfo } from '@/hooks/useUser';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import CategorySelect from '@/components/atoms/CategorySelect';
@@ -46,7 +45,7 @@ export const useGigCreation = () => {
     images: [],
     video: [],
     documents: [],
-  }); 
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [loadingServices, setLoadingServices] = useState(null);
@@ -125,7 +124,7 @@ export const useGigCreation = () => {
 
     try {
       setLoadingServices(true);
-			console.log("here");
+      console.log("here");
 
       const serviceData = {
         title: formData.packages[0]?.title,
@@ -137,9 +136,9 @@ export const useGigCreation = () => {
         faq: formData.faqs,
         packages: formData.packages,
         gallery: [
-					...formData.images.map(img => ({ type: 'image', fileName: img.filename, url: img.url, assetId: img.id })), 
-					...formData.video.map(vid => ({ type: 'video', url: vid.url, fileName: vid.filename, assetId: vid.id })), 
-					...formData.documents.map(doc => ({ type: 'document', url: doc.url, fileName: doc.filename, assetId: doc.id }))],
+          ...formData.images.map(img => ({ type: 'image', fileName: img.filename, url: img.url, assetId: img.id })),
+          ...formData.video.map(vid => ({ type: 'video', url: vid.url, fileName: vid.filename, assetId: vid.id })),
+          ...formData.documents.map(doc => ({ type: 'document', url: doc.url, fileName: doc.filename, assetId: doc.id }))],
         requirements: formData.questions,
         fastDelivery: formData.extraFastDelivery,
         additionalRevision: formData.additionalRevision,
@@ -333,7 +332,7 @@ function Step1({ formData, setFormData, nextStep }) {
       category: formData.category || null,
       subcategory: formData.subcategory || null,
       tags: formData.tags || [],
-    },
+    }
   });
 
   // reinitialize when formData changes
@@ -353,29 +352,31 @@ function Step1({ formData, setFormData, nextStep }) {
   const onSubmit = async data => {
     const isValid = await trigger();
     if (!isValid) return;
-    setFormData({ ...formData, ...data });
+    setFormData({ ...formData, title: titleVal, brief: briefVal, ...data });
     nextStep();
   };
 
   const handleInputListChange = value => {
-    const merged = [...(formData?.tags || []), ...(value || [])];
+    // const merged = [...(formData?.tags || []), ...(value || [])];
+    const merged = [...value || []];
     setValue('tags', merged);
-    setFormData({ ...formData, tags: merged });
+    setFormData({ ...formData, title: titleVal, brief: briefVal, tags: merged });
   };
 
   const handleCategoryChange = value => {
     setValue('category', value);
-    setFormData({ ...formData, category: value, subcategory: null }); // clear sub when main changes
+    console.log(formData)
+    setFormData({ ...formData, title: titleVal, brief: briefVal, category: value, subcategory: null }); // clear sub when main changes
   };
 
   const handleSubcategoryChange = value => {
     setValue('subcategory', value);
-    setFormData({ ...formData, subcategory: value });
+    setFormData({ ...formData, title: titleVal, brief: briefVal, subcategory: value });
   };
 
-  const handleRemoveInputList = index => {
+  const handleRemoveInputList = value => {
     setFormData(prev => {
-      const updatedTags = (prev.tags || []).filter((_, i) => i !== index);
+      const updatedTags = (prev.tags || []).filter((val) => val !== value);
       setValue('tags', updatedTags);
       return { ...prev, tags: updatedTags };
     });
@@ -787,9 +788,19 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
     const next = [...faqs];
     const target = index + dir;
     if (target < 0 || target >= next.length) return;
+
+    // Swap items
     [next[index], next[target]] = [next[target], next[index]];
     setValue('faqs', next, { shouldValidate: true });
+
+    // If editing, update editingIndex to follow the moved item
+    if (editingIndex === index) {
+      setEditingIndex(target);
+    } else if (editingIndex === target) {
+      setEditingIndex(index);
+    }
   };
+
 
   const addPreset = preset => {
     if (faqs.length >= MAX_FAQS) return;
@@ -824,8 +835,8 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
               const isEditing = editingIndex === realIndex;
               return (
                 <li key={`${faq.question}-${realIndex}`} className='group p-4'>
-                  <div className='flex items-start justify-between gap-3'>
-                    <div className='min-w-0'>
+                  <div className={`flex items-start justify-between gap-3 ${isEditing ? "flex-col sm  :flex-row" : ""}`}>
+                    <div className='w-full'>
                       {isEditing ? <input value={editingTemp.question} onChange={e => setEditingTemp(s => ({ ...s, question: e.target.value }))} className='w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm' /> : <h4 className='truncate text-sm font-semibold text-slate-900'>{faq.question}</h4>}
                       <div className='mt-2'>{isEditing ? <textarea value={editingTemp.answer} onChange={e => setEditingTemp(s => ({ ...s, answer: e.target.value }))} rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm' /> : <p className='text-sm text-slate-700'>{faq.answer}</p>}</div>
                     </div>
@@ -841,7 +852,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
                           </button>
                         </div>
                       ) : (
-                        <div className='invisible flex items-center gap-1 group-hover:visible'>
+                        <div className='flex flex-col sm:flex-row items-center gap-1'>
                           <button type='button' onClick={() => moveFaq(realIndex, -1)} className='rounded-lg border border-slate-200 p-1 hover:bg-slate-50'>
                             <ArrowUp className='h-4 w-4' />
                           </button>
@@ -872,7 +883,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
             <textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} placeholder='Answer' rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
           </div>
 
-          <div className='mt-3 flex items-center justify-between'>
+          <div className='mt-3 flex flex-col sm :flex-row gap-4 items-center justify-between'>
             <div className='flex flex-wrap gap-2'>
               {PRESET_FAQS.map((p, i) => (
                 <button key={i} type='button' onClick={() => addPreset(p)} className='rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-700 hover:bg-slate-50'>
@@ -909,7 +920,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
       questions: formData?.questions || [],
     },
   });
-
+  const multiInputRef = useRef()
   const questions = watch('questions') || [];
 
   const [newQuestion, setNewQuestion] = useState({
@@ -946,11 +957,15 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
   const addOption = value => {
     const v = (value || '').trim();
     if (!v) return;
-    setNewQuestion(q => ({ ...q, options: [...q.options, v] }));
+
+    setNewQuestion(q => {
+      if (q.options.includes(v)) return q; // Skip if already exists
+      return { ...q, options: [...q.options, v] };
+    });
   };
 
-  const removeOption = i => {
-    setNewQuestion(q => ({ ...q, options: q.options.filter((_, idx) => idx !== i) }));
+  const removeOption = op => {
+    setNewQuestion(q => ({ ...q, options: q.options.filter((val) => val !== op) }));
   };
 
   return (
@@ -1061,13 +1076,14 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
                     }
                   }}
                   className='flex-1'
+                  ref={multiInputRef}
                 />
                 <Button
                   type='button'
                   color='green'
                   icon={<Plus className='w-4 h-4' />}
                   onClick={() => {
-                    const el = document.activeElement;
+                    const el = multiInputRef.current;
                     if (el && 'value' in el) {
                       addOption(el.value);
                       el.value = '';
@@ -1081,7 +1097,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
                 {newQuestion.options.map((opt, i) => (
                   <span key={i} className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[12px] text-emerald-800'>
                     {opt}
-                    <button type='button' onClick={() => removeOption(i)} className='ml-1 rounded p-0.5 hover:bg-emerald-100' aria-label={`Remove option ${opt}`}>
+                    <button type='button' onClick={() => removeOption(opt)} className='ml-1 rounded p-0.5 hover:bg-emerald-100' aria-label={`Remove option ${opt}`}>
                       <X size={14} />
                     </button>
                   </span>
@@ -1150,7 +1166,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Images (up to 3)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
-        <div className='flex flex-wrap gap-3'>
+        <div className='flex flex-wrap gap-3 justify-end'>
           {formData?.images?.map((e, i) => (
             <div className='  flex items-center justify-center flex-col w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
               {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
@@ -1167,7 +1183,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
       </LabelWithInput>
 
       <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Video (One Only)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
-        <div className='flex flex-wrap gap-3'>
+        <div className='flex flex-wrap gap-3 justify-end'>
           {formData?.video?.map((e, i) => (
             <div className='  flex items-center justify-center flex-col w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
               {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
@@ -1184,7 +1200,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
       </LabelWithInput>
 
       <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Document (up to 2)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
-        <div className='flex flex-wrap gap-3'>
+        <div className='flex flex-wrap gap-3 justify-end'>
           {formData?.documents?.map((e, i) => (
             <div className='  flex items-center justify-center flex-col w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
               {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
@@ -1230,9 +1246,9 @@ function Step6({ formData, handleSubmit, prevStep, loading }) {
         )}
       </div>
 
-      <div className='flex flex-col sm:flex-row justify-center gap-4 pt-4'>
-        <Button type='button' icon={<ChevronLeft />} name='Back to Edit' color='secondary' onClick={prevStep} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors' />
-        <Button type='button' name={isUpdate ? 'Update Gig' : 'Publish Gig'} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors' />
+      <div className='flex flex-col xs:flex-row justify-center gap-4 pt-4'>
+        <Button type='button' icon={<ChevronLeft />} name='Back to Edit' color='secondary' onClick={prevStep} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
+        <Button type='button' name={isUpdate ? 'Update Gig' : 'Publish Gig'} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
       </div>
     </div>
   );
@@ -1266,12 +1282,13 @@ function SkeletonLoading() {
 
 const LabelWithInput = ({ children, title, desc, className }) => {
   return (
-    <div className={`flex ${className} gap-4`}>
-      <div className='max-w-[300px] w-full shrink-0 '>
-        <label className='text-[22px] font-[600] '>{title}</label>
-        {desc && <p className='text-sm font-[400] '>{desc}</p>}
+    <div className={`flex flex-col md:flex-row ${className} gap-6`}>
+      <div className="w-full md:max-w-[300px] shrink-0">
+        <label className="text-[22px] font-semibold text-slate-900">{title}</label>
+        {desc && <p className="text-sm text-slate-600 mt-1">{desc}</p>}
       </div>
-      {children}
+      <div className="flex-1">{children}</div>
     </div>
   );
 };
+

@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
 import ActivityTab from '@/components/pages/ActivityLogs/ActivityTab';
 import DetialsTab from '@/components/pages/ActivityLogs/DetialsTab';
@@ -17,21 +16,21 @@ export default function Page() {
   ];
   const [activeTab, setActiveTab] = useState('activity');
 
-  
+
   return (
     <div className=' container  min-h-screen !py-12 '>
       {/* Tabs */}
       <div className='flex items-center justify-between gap-2 flex-wrap'>
         <h1 className='text-3xl font-bold text-center mb-4'> Activity Logs </h1>
-       </div>
+      </div>
 
       <Tabs setActiveTab={setActiveTab} activeTab={activeTab} tabs={tabs} />
 
-      <AnimatePresence exitBeforeEnter>
+      <AnimatePresence exitBeforeEnter >
         {tabs
           .filter(tab => tab.value === activeTab)
           .map(tab => (
-            <motion.div key={tab.value} {...tabAnimation}>
+            <motion.div key={tab.value} {...tabAnimation} className='mt-6'>
               {tab.element}
             </motion.div>
           ))}

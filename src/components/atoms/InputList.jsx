@@ -76,8 +76,10 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
   const inputRef = useRef(null);
 
   const tags = useMemo(() => {
+
     if (Array.isArray(value)) return value;
     const current = getValues(fieldName);
+
     return Array.isArray(current) ? current : [];
   }, [value, getValues, fieldName]);
 
@@ -112,16 +114,16 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
 
   const handleAddClick = () => {
     if (!canAddMore) return;
-    commit(inputValue);
+    commit(inputValue, tags, maxTags);
     setInputValue('');
     inputRef.current?.focus();
   };
 
-  const handleRemove = idx => {
-    const next = tags.filter((_, i) => i !== idx);
+  const handleRemove = value => {
+    const next = tags.filter((val) => val !== value);
     setValue(fieldName, next, { shouldValidate: true, shouldDirty: true });
     onChange?.(next);
-    onRemoveItemHandler?.(idx);
+    onRemoveItemHandler?.(value);
     inputRef.current?.focus();
   };
 
@@ -134,7 +136,7 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
     if (e.key === 'Backspace' && !inputValue && tags.length > 0) {
       // backspace removes last tag
       e.preventDefault();
-      handleRemove(tags.length - 1);
+      handleRemove(tags[tags.length - 1]);
       return;
     }
   };
@@ -169,7 +171,7 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
         {tags.map((t, i) => (
           <span key={`${t}-${i}`} className=' border border-slate-200 group inline-flex items-center gap-1 rounded-xl bg-emerald-100  text-emerald-800 px-2.5 py-1 text-sm'>
             {t}
-            <button type='button' data-chip onClick={() => handleRemove(i)} title='Remove' className='cursor-pointer  text-emerald-600 hover:text-emerald-800 transition'>
+            <button type='button' data-chip onClick={() => handleRemove(t)} title='Remove' className='cursor-pointer  text-emerald-600 hover:text-emerald-800 transition'>
               <X size={13} />
             </button>
           </span>
@@ -184,7 +186,8 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
             onKeyDown={onKeyDown}
             onPaste={onPaste}
             onBlur={() => {
-              // optionally commit on blur
+
+              // optionally commit on blur  
               if (inputValue.trim()) {
                 commit(inputValue);
                 setInputValue('');
@@ -194,7 +197,7 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
             className='w-full border-0 outline-none focus:ring-0 text-sm text-gray-900 placeholder:text-gray-400 pr-8'
             disabled={!canAddMore}
           />
-          <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md    disabled:opacity-40' disabled={!canAddMore || !inputValue.trim()}>
+          <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md  disabled:opacity-40' disabled={!canAddMore || !inputValue.trim()}>
             <Plus size={16} />
           </button>
         </div>
