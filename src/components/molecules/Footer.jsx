@@ -99,7 +99,7 @@ function LinksSection({ titleKey, links }) {
   const visibleLinks = showMore ? links : links.slice(0, 5);
 
   return (
-    <div className='w-full md:w-auto flex-1 min-w-[220px]'>
+    <div className='w-full md:w-auto flex-1 min-w-[200px]'>
       {/* Header */}
       <button type='button' onClick={() => setExpanded(p => !p)} className='w-full py-4 md:py-2 flex items-center justify-between text-start md:cursor-default group' aria-expanded={expanded}>
         <h3 className='font-extrabold text-lg md:text-xl text-gray-900 group-hover:text-emerald-700 transition'>{t(titleKey)}</h3>

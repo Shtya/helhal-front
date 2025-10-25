@@ -1,9 +1,10 @@
 // File: Filters/AdvancedJobsDropdown.jsx
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import Button from '@/components/atoms/Button';
+import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 
 export default function AdvancedJobsDropdown({
   value = {
@@ -18,16 +19,19 @@ export default function AdvancedJobsDropdown({
   const BRAND = '#108A00';
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+  const menuStyle = useDropdownPosition(open, rootRef);
 
   // local copy so user can cancel
   const [selected, setSelected] = useState(value);
-  useEffect(() => setSelected(value), [JSON.stringify(value)]); // sync when parent changes
+  useEffect(() => setSelected(value), [JSON.stringify()]); // sync when parent changes
 
   // outside click + ESC
   useEffect(() => {
     if (!open) return;
     const onDoc = e => {
-      if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false);
+      if ((rootRef.current && !rootRef.current.contains(e.target)) && (menuRef.current && !menuRef.current.contains(e.target))
+      ) setOpen(false);
     };
     const onKey = e => e.key === 'Escape' && setOpen(false);
     document.addEventListener('mousedown', onDoc);
@@ -92,44 +96,46 @@ export default function AdvancedJobsDropdown({
           <span className='truncate'>{totalSelected > 0 ? `${totalSelected} filter${totalSelected > 1 ? 's' : ''} applied` : 'Advanced'}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
         </button>
+      </div>
+      {/* Panel */}
+      <div
+        ref={menuRef}
+        style={menuStyle}
+        className={`absolute right-0 mt-2 w-[380px] rounded-2xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
+          ${open ? 'scale-100 opacity-100 z-[110]' : 'scale-95 opacity-0 pointer-events-none'}`}>
+        <div className='py-4 max-h-[70vh] overflow-auto'>
+          {/* Sort by */}
+          <Section title='Sort by'>
+            <OptionRow label='Newest' active={selected.sortBy === 'newest'} onClick={() => setSelected(s => ({ ...s, sortBy: 'newest' }))} />
+            <OptionRow label='Budget ↑' active={selected.sortBy === 'budgetAsc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetAsc' }))} />
+            <OptionRow label='Budget ↓' active={selected.sortBy === 'budgetDesc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetDesc' }))} />
+          </Section>
 
-        {/* Panel */}
-        <div
-          className={`absolute right-0 mt-2 w-[380px] rounded-2xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
-          ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
-          <div className='py-4 max-h-[70vh] overflow-auto'>
-            {/* Sort by */}
-            <Section title='Sort by'>
-              <OptionRow label='Newest' active={selected.sortBy === 'newest'} onClick={() => setSelected(s => ({ ...s, sortBy: 'newest' }))} />
-              <OptionRow label='Budget ↑' active={selected.sortBy === 'budgetAsc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetAsc' }))} />
-              <OptionRow label='Budget ↓' active={selected.sortBy === 'budgetDesc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetDesc' }))} />
-            </Section>
+          {/* Quick toggles */}
+          <Section title='Quick toggles' subtitle='Client-side filters'>
+            <OptionRow label='≤ 7 days' active={!!selected.max7days} onClick={() => setSelected(s => ({ ...s, max7days: !s.max7days }))} />
+            <OptionRow label='With attachments' active={!!selected.withAttachments} onClick={() => setSelected(s => ({ ...s, withAttachments: !s.withAttachments }))} />
+            <OptionRow label='Hourly' active={!!selected.hourly} onClick={() => setSelected(s => ({ ...s, hourly: !s.hourly }))} />
+          </Section>
 
-            {/* Quick toggles */}
-            <Section title='Quick toggles' subtitle='Client-side filters'>
-              <OptionRow label='≤ 7 days' active={!!selected.max7days} onClick={() => setSelected(s => ({ ...s, max7days: !s.max7days }))} />
-              <OptionRow label='With attachments' active={!!selected.withAttachments} onClick={() => setSelected(s => ({ ...s, withAttachments: !s.withAttachments }))} />
-              <OptionRow label='Hourly' active={!!selected.hourly} onClick={() => setSelected(s => ({ ...s, hourly: !s.hourly }))} />
-            </Section>
-
-            {/* Footer */}
-            <div className='px-4 -mb-2 flex items-center justify-between gap-2'>
-              <Button name='Clear All' color='outline' className='!w-fit !h-[35px]' onClick={() => setSelected({ sortBy: 'newest', max7days: false, withAttachments: false, hourly: false })} />
-              {hasChanges && (
-                <Button
-                  name='Apply'
-                  color='default'
-                  className='!w-fit !h-[35px]'
-                  onClick={() => {
-                    onApply?.(selected);
-                    setOpen(false);
-                  }}
-                />
-              )}
-            </div>
+          {/* Footer */}
+          <div className='px-4 -mb-2 flex items-center justify-between gap-2'>
+            <Button name='Clear All' color='outline' className='!w-fit !h-[35px]' onClick={() => setSelected({ sortBy: 'newest', max7days: false, withAttachments: false, hourly: false })} />
+            {hasChanges && (
+              <Button
+                name='Apply'
+                color='default'
+                className='!w-fit !h-[35px]'
+                onClick={() => {
+                  onApply?.(selected);
+                  setOpen(false);
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
+
 
       {/* tiny fade-in animation (same as your pattern) */}
       <style jsx>{`

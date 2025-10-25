@@ -10,6 +10,7 @@ import { Mail, Copy, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, 
 import GlobalSearch from '../atoms/GlobalSearch';
 import api from '@/lib/axios';
 import { localImageLoader } from '@/utils/helper';
+import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 
 /* =========================================================
    Animations
@@ -71,38 +72,7 @@ const NotificationPopup = () => {
   const [meta, setMeta] = useState({ total_records: 0, per_page: 10, current_page: 1 });
   const btnRef = useRef(null);
   const menuRef = useRef(null);
-  const [menuStyle, setMenuStyle] = useState({});
-
-  useLayoutEffect(() => {
-    function updateMenuPosition() {
-      if (open && btnRef.current) {
-        const rect = btnRef.current.getBoundingClientRect();
-        const vw = window.innerWidth;
-        const menuWidth = 330;
-
-        if (rect.right < menuWidth + 5) {
-          setMenuStyle({
-            left: 5,
-            right: 'auto',
-            maxWidth: '100%',
-          });
-        } else {
-          setMenuStyle({
-            right: vw - rect.right,
-            left: 'auto',
-            maxWidth: '20rem', // matches w-80
-          });
-        }
-      }
-    }
-
-    // Run immediately when open changes
-    updateMenuPosition();
-
-    // Re-run on resize
-    window.addEventListener('resize', updateMenuPosition);
-    return () => window.removeEventListener('resize', updateMenuPosition);
-  }, [open]);
+  const menuStyle = useDropdownPosition(open, btnRef);
 
   // ---- fetch helpers ----
   const fetchUnreadCount = async () => {

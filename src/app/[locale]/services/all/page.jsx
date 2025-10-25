@@ -16,6 +16,7 @@ import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdo
 import DeliveryTimeDropdown from '@/components/common/Filters/DeliveryTimeDropdown';
 import { motion } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
+import TabsPagination from '@/components/common/TabsPagination';
 
 const defaultFilters = {
   search: '',
@@ -85,7 +86,7 @@ export default function AllServicesPage() {
           if (mounted && res?.filterOptions) setFilterOptions(res.filterOptions);
         }
       } catch (e) {
-       }
+      }
     })();
     return () => {
       mounted = false;
@@ -123,6 +124,7 @@ export default function AllServicesPage() {
   const handleBudgetChange = (priceRange, customBudget = '') => setFormData(prev => ({ ...prev, priceRange, customBudget: priceRange === 'custom' ? customBudget : '' }));
   const handleDeliveryTimeChange = (deliveryTime, customDeliveryTime = '') => setFormData(prev => ({ ...prev, deliveryTime, customDeliveryTime: deliveryTime === 'custom' ? customDeliveryTime : '' }));
   const handlePageChange = newPage => setPagination(prev => ({ ...prev, page: newPage }));
+
   const resetFilters = () => setFormData(defaultFilters);
 
   return (
@@ -199,7 +201,16 @@ export default function AllServicesPage() {
       <section className='cards-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>{loading ? Array.from({ length: pagination.limit }).map((_, i) => <CardSkeleton key={i} />) : services.length > 0 ? services.map((service, idx) => <ServiceCard key={(service.id ?? idx) + '-svc'} service={service} />) : <NoResults mainText={t('noServices')} additionalText={t('noServicesDesc')} buttonText={t('resetFilters')} onClick={resetFilters} />}</section>
 
       {/* ==== Pagination ==== */}
-      {!loading && services?.length > 0 && <Pagination page={pagination.page} totalPages={pagination.pages} setPage={handlePageChange} />}
+      {!loading && services?.length > 0 &&
+        <>
+          <div className='hidden md:block'>
+            <Pagination page={10} totalPages={700} setPage={handlePageChange} />
+          </div>
+          <div className='md:hidden'>
+            <TabsPagination currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} itemsPerPage={pagination.limit} />
+          </div>
+
+        </>}
     </main>
   );
 }

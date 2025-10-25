@@ -4,7 +4,7 @@ import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 
- 
+
 function buildPageTokens({ page, totalPages, siblingCount = 1, boundaryCount = 1 }) {
   if (totalPages <= 1) return [1];
 
@@ -56,7 +56,7 @@ function buildPageTokens({ page, totalPages, siblingCount = 1, boundaryCount = 1
 const btnVariants = {
   initial: { y: 0, scale: 1, opacity: 0, yOffset: 8 },
   in: { opacity: 1, y: 0, transition: { duration: 0.18, ease: 'easeOut' } },
-  hover: {  scale: 1.02, transition: { type: 'spring', stiffness: 300, damping: 18 } },
+  hover: { scale: 1.02, transition: { type: 'spring', stiffness: 300, damping: 18 } },
   tap: { scale: 0.98 },
 };
 
@@ -110,7 +110,7 @@ export default function Pagination({
   }
   return (
     <div className={`flex justify-center mt-8 ${className}`}>
-      <nav ref={navRef} className='flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm px-2 py-1' aria-label='Pagination' role='navigation' tabIndex={0}>
+      <nav ref={navRef} className='flex items-center flex-wrap sm:flex-nowrap gap-1 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm px-2 py-1' aria-label='Pagination' role='navigation' tabIndex={0}>
         {/* Prev */}
         <motion.button variants={btnVariants} initial='initial' animate='in' whileHover='hover' whileTap='tap' type='button' onClick={() => goTo(page - 1)} disabled={page === 1} aria-label='Previous page' className=' cursor-pointer h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50'>
           <ChevronLeft className='h-4 w-4' />

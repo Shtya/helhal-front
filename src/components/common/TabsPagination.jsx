@@ -30,7 +30,7 @@ const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageC
         </div>
 
         {/* Items per page selector */}
-        <Select
+        {onItemsPerPageChange && <Select
           options={[
             { id: 1, name: '5' },
             { id: 2, name: '10' },
@@ -43,7 +43,7 @@ const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageC
           cnLabel="text-sm text-gray-600"
           cnSelect="text-sm text-gray-700"
           className="!w-fit xs:ml-auto"
-        />
+        />}
       </div>
 
     )

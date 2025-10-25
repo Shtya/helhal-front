@@ -20,6 +20,7 @@ import FavoriteButton from '@/components/atoms/FavoriteButton';
 import { Stars } from '@/components/pages/services/ServiceCard';
 import Img from '@/components/atoms/Img';
 import UserAvatar from '@/components/common/UserAvatar';
+import { useDebounce } from '@/hooks/useDebounce';
 
 // -------------------------------------------------
 // Services
@@ -42,9 +43,9 @@ async function listPublishedJobs({ page = 1, limit = 12, q = '', category, subca
   return res.data?.jobs
     ? res.data
     : {
-        jobs: res.data?.records ?? [],
-        pagination: { page, limit, total: res.data?.total_records ?? 0, pages: res.data?.pages ?? 1 },
-      };
+      jobs: res.data?.records ?? [],
+      pagination: { page, limit, total: res.data?.total_records ?? 0, pages: res.data?.pages ?? 1 },
+    };
 }
 
 async function submitProposal(jobId, payload) {
@@ -96,6 +97,7 @@ export default function SellerJobsPage() {
 
   // Filters
   const [q, setQ] = useState(searchParams.get('q') || '');
+  const debouncedQ = useDebounce(q)
   const [budgetType, setBudgetType] = useState(searchParams.get('budgetType') || '');
   const [minBudget, setMinBudget] = useState(searchParams.get('min') || '');
   const [maxBudget, setMaxBudget] = useState(searchParams.get('max') || '');
@@ -112,7 +114,7 @@ export default function SellerJobsPage() {
         const res = await listPublishedJobs({
           page,
           limit,
-          q,
+          debouncedQ,
           budgetType,
           minBudget: minBudget || undefined,
           maxBudget: maxBudget || undefined,
@@ -130,7 +132,7 @@ export default function SellerJobsPage() {
     return () => {
       isMounted = false;
     };
-  }, [page, limit, q, budgetType, minBudget, maxBudget]);
+  }, [page, limit, debouncedQ, budgetType, minBudget, maxBudget]);
 
   const openDrawerForJob = async job => {
     try {
@@ -152,8 +154,8 @@ export default function SellerJobsPage() {
 
       {/* Filters Panel */}
       <motion.section variants={fadeItem} initial='hidden' animate='show' transition={spring} className='card'>
-        <div className='flex items-center justify-between gap-3'>
-          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={e => setQ(e)} placeholder='Search by title, description, or skills' />
+        <div className='flex flex-col-reverse sm:flex-row md:items-center justify-between gap-3'>
+          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={e => setQ(e)} placeholder='Search by title, description, or skills' className='max-sm:max-w-full' />
           <div className='flex items-center gap-2'>
             <Select
               value={budgetType}
@@ -163,7 +165,7 @@ export default function SellerJobsPage() {
                 { id: 'fixed', name: 'Fixed' },
                 { id: 'hourly', name: 'Hourly' },
               ]}
-              className='!w-40 !text-xs'
+              className='sm:!w-40 !text-xs min-w-0 truncate'
               variant='minimal'
             />
             <div className='justify-self-end'>
@@ -220,7 +222,7 @@ export default function SellerJobsPage() {
             bidType: selectedJob.budgetType === 'hourly' ? 'hourly' : 'fixed',
             estimatedTimeDays: +values.deliveryDays,
             status: 'submitted',
-            portfolio: values.portfolioUrls ?? undefined,  
+            portfolio: values.portfolioUrls ?? undefined,
           };
           await toast.promise(submitProposal(selectedJob.id, payload), {
             loading: 'Submitting…',
@@ -273,8 +275,8 @@ function JobCard({ job, onOpen, index }) {
         </div>
       </div>
 
-			<UserAvatar buyer={buyer} />
- 
+      <UserAvatar buyer={buyer} />
+
       <h2 className='text-lg sm:text-xl font-semibold text-slate-900 leading-snug'>{job.title}</h2>
 
       <div className='mt-1 text-sm text-slate-600'>{budgetLine || 'Fixed-price · Intermediate'}</div>
