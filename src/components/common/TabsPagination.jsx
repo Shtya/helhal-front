@@ -2,16 +2,16 @@
 import React, { useEffect } from 'react';
 import Select from '../atoms/Select';
 
-const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage }) => {
+const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage, className }) => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage])
   return (
     totalPages > 1 && ( // Only show pagination if there is more than one page
-      <div className="flex flex-col xs:flex-row items-center xs:justify-between w-full gap-4 mt-6">
+      <div className={`flex flex-col xs:flex-row items-center xs:justify-between w-full gap-4 mt-6` + (className ? ` ${className}` : '')}>
         {/* Prev / Next */}
-        <div className="flex items-center space-x-1 xs:space-x-2 justify-center xs:justify-start">
+        <div className={`flex items-center space-x-1 xs:space-x-2  ${onItemsPerPageChange ? 'justify-center xs:justify-start' : 'flex-1 justify-between'}`}>
           <button
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage <= 1}

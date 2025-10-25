@@ -5,6 +5,7 @@ import { Eye, FilterX, RefreshCw, SearchX, X } from 'lucide-react';
 import PriceTag from '../atoms/priceTag';
 import { motion } from 'framer-motion';
 import Img from '../atoms/Img';
+import TabsPagination from './TabsPagination';
 
 /** Tiny skeleton block */
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
@@ -193,20 +194,26 @@ const Table = ({ data, columns, actions, loading = false }) => {
         </table>
       </div>
 
-      <div className='flex justify-between items-center mt-8 py-4 px-4 border-t border-t-slate-200'>
-        <span className='text-sm text-gray-500'>
-          {loading ? (
-            <Skeleton className='h-4 w-56' />
-          ) : (
-            <>
-              Showing {showingFrom}-{showingTo} of {data.length}
-            </>
-          )}
-        </span>
+      <div className=' mt-8 py-4 px-4 border-t border-t-slate-200'>
 
-        {/* Pagination */}
-        <div className={loading ? 'opacity-60 pointer-events-none' : ''}>
-          <Pagination className='!mt-0' page={currentPage} totalPages={totalPages} setPage={handlePageChange} />
+        <div className='md:hidden'>
+          <TabsPagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} className="max-md:flex-1" />
+        </div>
+        <div className='hidden md:flex justify-between items-center'>
+          <span className='text-sm text-gray-500'>
+            {loading ? (
+              <Skeleton className='h-4 w-56' />
+            ) : (
+              <>
+                Showing {showingFrom}-{showingTo} of {data.length}
+              </>
+            )}
+          </span>
+
+          {/* Pagination */}
+          <div className={loading ? 'opacity-60 pointer-events-none' : ''}>
+            <Pagination className='!mt-0' page={currentPage} totalPages={totalPages} setPage={handlePageChange} />
+          </div>
         </div>
       </div>
 

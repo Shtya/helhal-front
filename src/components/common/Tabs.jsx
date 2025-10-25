@@ -14,7 +14,7 @@ export default function Tabs({ tabs, activeTab, setActiveTab, className = '', id
       <div
         role='tablist'
         aria-orientation='horizontal'
-        className={`inline-flex p-1 overflow-x-auto overflow-y-hidden rounded-xl bg-slate-100/80 ring-1 ring-black/5 shadow-sm ${className}`}
+        className={`inline-flex p-1 max-w-full overflow-x-auto overflow-y-hidden rounded-xl bg-slate-100/80 ring-1 ring-black/5 shadow-sm ${className}`}
         onMouseLeave={() => setHoveredTab(null)} // snap back when leaving the whole group
       >
         {tabs.map(t => {

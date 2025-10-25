@@ -202,15 +202,9 @@ export default function AllServicesPage() {
 
       {/* ==== Pagination ==== */}
       {!loading && services?.length > 0 &&
-        <>
-          <div className='hidden md:block'>
-            <Pagination page={10} totalPages={700} setPage={handlePageChange} />
-          </div>
-          <div className='md:hidden'>
-            <TabsPagination currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} itemsPerPage={pagination.limit} />
-          </div>
 
-        </>}
+        <Pagination page={10} totalPages={700} setPage={handlePageChange} />
+      }
     </main>
   );
 }
