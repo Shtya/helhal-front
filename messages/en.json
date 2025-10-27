@@ -111,7 +111,7 @@
     "errors": {
       "invalidEmail": "Please enter a valid email address",
       "passwordRequired": "Password is required",
-      "usernameMin": "Username must be at least 3 characters",
+      "usernameMin": "Username must be at least 2 characters",
       "usernameMax": "Username must be less than 30 characters",
       "usernameInvalid": "Username can only contain letters, numbers, and spaces",
       "usernameSpaces": "Username cannot contain consecutive spaces",

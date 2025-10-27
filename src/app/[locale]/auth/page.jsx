@@ -2,7 +2,7 @@
 
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import OtpInput from 'react-otp-input';
@@ -15,6 +15,7 @@ import { SocialButton } from '@/components/pages/auth/SocialButton';
 import { SubmitButton } from '@/components/pages/auth/SubmitButton';
 import { Input } from '@/components/pages/auth/Input';
 import { SelectInput } from '@/components/pages/auth/SelectInput';
+import { usernameSchema } from '@/utils/profile';
 
 /* ---------- schemas ----------- */
 const loginSchema = z.object({
@@ -23,14 +24,7 @@ const loginSchema = z.object({
 });
 
 const registerSchema = z.object({
-  username: z
-    .string()
-    .min(3, 'usernameMin')
-    .max(30, 'usernameMax')
-    .regex(/^[a-zA-Z0-9_ ]+$/, 'usernameInvalid')
-    .transform(val => val.trim())
-    .refine(val => val.length >= 3, 'usernameMin')
-    .refine(val => !val.includes('  '), 'usernameSpaces'),
+  username: usernameSchema,
   email: z.email('invalidEmail'),
   password: z.string().min(8, 'passwordMin').max(20, 'passwordMax').regex(/^[A-Za-z0-9_@$!%*?&]+$/, 'passwordInvalidChars'),
   role: z.enum(['buyer', 'seller']).default('buyer'),
@@ -243,6 +237,7 @@ const RegisterForm = ({ onOtp }) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerSchema),
@@ -253,6 +248,7 @@ const RegisterForm = ({ onOtp }) => {
     setLoading(true);
     setError(null);
     try {
+
       await api.post('/auth/register', data);
       sessionStorage.setItem('registerEmail', data.email);
       toast.success(t('success.otpSent'));
@@ -271,22 +267,40 @@ const RegisterForm = ({ onOtp }) => {
       <Input label={t('username')} type='text' placeholder={t('chooseUsername')} register={register('username')} error={errors.username?.message && t(`errors.${errors.username.message}`)} />
       <Input label={t('email')} type='email' placeholder={t('enterEmail')} register={register('email')} error={errors.email?.message && t(`errors.${errors.email.message}`)} />
       <Input label={t('password')} type='password' placeholder={t('enterPassword')} register={register('password')} error={errors.password?.message && t(`errors.${errors.password.message}`)} />
-      <SelectInput
-        label={t('role.selectRole')}
-        register={register('role')}
-        options={[
-          { value: 'buyer', label: t('role.buyer') },
-          { value: 'seller', label: t('role.seller') },
-        ]}
+      <Controller
+        name="role"
+        control={control}
+        render={({ field, fieldState }) => (
+          <SelectInput
+            label={t('role.selectRole')}
+            value={field.value}
+            onChange={field.onChange}
+            error={fieldState.error?.message && t(`errors.${fieldState.error.message}`)}
+            options={[
+              { value: 'buyer', label: t('role.buyer') },
+              { value: 'seller', label: t('role.seller') },
+            ]}
+          />
+        )}
       />
-      <SelectInput
-        label={t('userType')}
-        register={register('type')}
-        options={[
-          { value: 'Business', label: t('business') },
-          { value: 'Individual', label: t('individual') },
-        ]}
+
+      <Controller
+        name="type"
+        control={control}
+        render={({ field, fieldState }) => (
+          <SelectInput
+            label={t('userType')}
+            value={field.value}
+            onChange={field.onChange}
+            error={fieldState.error?.message && t(`errors.${fieldState.error.message}`)}
+            options={[
+              { value: 'Business', label: t('business') },
+              { value: 'Individual', label: t('individual') },
+            ]}
+          />
+        )}
       />
+
       <Input label={t('referralCode')} type='text' placeholder={t('enterReferral')} register={register('ref')} error={errors.ref?.message && t(`errors.${errors.ref.message}`)} />
       <SubmitButton isLoading={loading}>{t('createAccountButton')}</SubmitButton>
     </motion.form>

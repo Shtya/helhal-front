@@ -25,6 +25,8 @@ import Image from 'next/image';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { resolveUrl } from '@/utils/helper';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
+import { validateUsername } from '@/utils/profile';
+import { useTranslations } from 'next-intl';
 
 /* -------------------------------- Utilities -------------------------------- */
 const toDate = iso => (iso ? new Date(iso).toLocaleString() : '—');
@@ -156,19 +158,12 @@ function CertificationForm({ onSubmit }) {
 /* -------------------------------- Profile Card ------------------------------ */
 function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCopyReferral, onError }) {
   const [usernameError, setUsernameError] = useState('');
+  const t = useTranslations('auth');
 
-  const validateUsername = (value) => {
-    let msg = '';
+  const handleChangeUsername = (value) => {
     const trimmed = value.trim();
 
-    if (!trimmed) {
-      msg = 'Username is required';
-    } else if (trimmed.length < 2) {
-      msg = 'Username must be at least 2 characters';
-    } else if (value.length > 50) {
-      msg = 'Username must be 50 characters or less';
-    }
-
+    const msg = validateUsername(trimmed);
     setUsernameError(msg);
     onError?.(!!msg);
   };
@@ -238,11 +233,11 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                 onChange={e => {
                   const value = e.target.value.slice(0, 50);
                   setState(s => ({ ...s, username: value }));
-                  validateUsername(value);
+                  handleChangeUsername(value);
                 }}
-                onBlur={e => validateUsername(e.target.value)}
+                onBlur={e => handleChangeUsername(e.target.value)}
               />
-              <FormErrorMessage message={usernameError} />
+              {usernameError && <FormErrorMessage message={t(`errors.${usernameError}`)} />}
               {/* <Input label='Email' value={state.email} onChange={e => setState(s => ({ ...s, email: e.target.value }))} /> */}
               <PhoneInputWithCountry
                 value={{ countryCode: state.countryCode, phone: state.phone }}
@@ -1433,7 +1428,7 @@ export default function Overview() {
         const user = await api.get(`/auth/user/${id}`).then(r => r.data);
         if (ignore) return;
 
-        console.log("user.topRated", user.topRated)
+
         // map API → editable state
         setState(s => ({
           ...s,
