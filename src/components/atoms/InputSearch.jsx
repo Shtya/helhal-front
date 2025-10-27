@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
-const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, actionIcon, onSearch, value, onChange }) => {
+const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, showAction = true, actionIcon, onSearch, value, onChange }) => {
   const [searchTerm, setSearchTerm] = useState(value || '');
 
   const handleSearch = e => {
@@ -20,7 +20,7 @@ const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, acti
   return (
     <div className={`relative w-full ${className} max-w-[350px] `}>
       <div
-        className={`relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1
+        className={`search-parnet relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1
         transition border ${searchTerm ? 'border-emerald-600' : 'border-gray-300'} focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20`}>
         {/* Left icon */}
         {iconLeft && (
@@ -33,14 +33,14 @@ const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, acti
         <input type='text' placeholder={placeholder} value={searchTerm} onChange={handleChange} className={`w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400 ${actionIcon && 'w-[calc(100%-50px)]'}`} />
 
         {/* Action button */}
-        {actionIcon && (
+        {actionIcon && showAction && (
           <button onClick={handleSearch} className='absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition'>
             <img src={actionIcon} alt='action icon' className='w-full' />
           </button>
         )}
       </div>
 
-      {!actionIcon && (
+      {!actionIcon && showAction && (
         <button onClick={handleSearch} className='absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md  bg-second  text-white hover:opacity-90 duration-300 hover:scale-[1.05] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 cursor-pointer'>
           <ArrowRight className='w-5 h-5' />
         </button>

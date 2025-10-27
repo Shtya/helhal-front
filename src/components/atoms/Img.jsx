@@ -4,12 +4,13 @@ import { baseImg } from '@/lib/axios';
 import { useMemo } from 'react';
 
 export default function Img({ src, altSrc, alt = '', className = 'h-full w-full object-cover', fallback = '/icons/no-img.png', loading = 'lazy', decoding = 'async', draggable = false, ...rest }) {
+  const altSrcFinal = altSrc || fallback;
   const resolved = useMemo(() => {
-    if (src === null || src === undefined) return fallback;
-    if (typeof src !== 'string') return fallback;
+    if (src === null || src === undefined) return altSrcFinal;
+    if (typeof src !== 'string') return altSrcFinal;
 
     const trimmed = src.trim();
-    if (!trimmed) return fallback;
+    if (!trimmed) return altSrcFinal;
 
     // absolute / data / blob → keep as is
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
@@ -22,19 +23,19 @@ export default function Img({ src, altSrc, alt = '', className = 'h-full w-full 
       const rel = trimmed.replace(/^\/+/, '');
       return `${base}/${rel}`;
     } catch {
-      return fallback;
+      return altSrcFinal;
     }
-  }, [src, fallback]);
+  }, [src, altSrcFinal]);
 
   const handleError = e => {
-    // show contained fallback to avoid ugly stretch
+    // show contained altSrcFinal to avoid ugly stretch
     e.currentTarget.classList.add('!object-contain', 'bg-slate-50');
-    e.currentTarget.src = altSrc || fallback;
+    e.currentTarget.src = altSrcFinal;
   };
 
   const handleLoad = e => {
     // if it successfully loads something that isn’t the fallback, keep object-cover
-    if (e.currentTarget.src.includes(fallback)) {
+    if (e.currentTarget.src.includes(altSrcFinal)) {
       e.currentTarget.classList.add('!object-contain');
     } else {
       e.currentTarget.classList.remove('!object-contain');

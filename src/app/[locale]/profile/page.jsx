@@ -17,6 +17,14 @@ import { Card, Divider, Pill, SkeletonLine, SkeletonAvatar, BlockSkeleton } from
 import { getUserInfo } from '@/hooks/useUser';
 import Img from '@/components/atoms/Img';
 import toast from 'react-hot-toast';
+import z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Form, useForm } from 'react-hook-form';
+import { showWarningToast } from '@/utils/notifications';
+import Image from 'next/image';
+import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+import { resolveUrl } from '@/utils/helper';
+import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 
 /* -------------------------------- Utilities -------------------------------- */
 const toDate = iso => (iso ? new Date(iso).toLocaleString() : '—');
@@ -24,32 +32,147 @@ const toDateShort = iso => (iso ? new Intl.DateTimeFormat(undefined, { year: 'nu
 const letterFromName = s => (s && String(s).trim() ? String(s).trim()[0].toUpperCase() : '?');
 
 /* ------------------------------ Small sub-forms ----------------------------- */
+const DATE_AVARAGE = 100; //years
+const MAX_DEGREE_LENGTH = 150;
+const MAX_INSTITUTION_LENGTH = 200;
+const currentYear = new Date().getFullYear();
+const minYear = currentYear - DATE_AVARAGE;
+
+const educationSchema = z.object({
+  degree: z
+    .string()
+    .min(1, 'Degree is required')
+    .max(MAX_DEGREE_LENGTH, `Degree must be ${MAX_DEGREE_LENGTH} characters or less`),
+  institution: z
+    .string()
+    .min(1, 'Institution is required')
+    .max(MAX_INSTITUTION_LENGTH, `Institution must be ${MAX_INSTITUTION_LENGTH} characters or less`),
+  year: z
+    .number({ invalid_type_error: 'Year is required' })
+    .min(minYear, `Year must be between ${minYear} and ${currentYear}`)
+    .max(currentYear, `Year must be between ${minYear} and ${currentYear}`),
+});
+
+
 function EducationForm({ onSubmit }) {
-  const [form, setForm] = useState({ degree: '', institution: '', year: new Date().getFullYear() });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(educationSchema),
+    defaultValues: {
+      degree: '',
+      institution: '',
+      year: currentYear,
+    },
+  });
+
   return (
-    <div className='grid grid-cols-1 gap-3'>
-      <Input required label='Degree' value={form.degree} onChange={e => setForm({ ...form, degree: e.target.value })} />
-      <Input required label='Institution' value={form.institution} onChange={e => setForm({ ...form, institution: e.target.value })} />
-      <Input required label='Year' type='number' value={form.year} onChange={e => setForm({ ...form, year: Number(e.target.value) || '' })} />
-      <Button name='Save item' color='green' onClick={() => onSubmit(form)} />
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 gap-3'>
+      <div>
+        <Input label='Degree' required {...register('degree')} />
+        <FormErrorMessage message={errors.degree?.message} />
+      </div>
+
+      <div>
+        <Input label='Institution' required {...register('institution')} />
+        <FormErrorMessage message={errors.institution?.message} />
+      </div>
+
+      <div>
+        <Input
+          label='Year'
+          type='number'
+          required
+          {...register('year', { valueAsNumber: true })}
+        />
+        <FormErrorMessage message={errors.year?.message} />
+      </div>
+
+      <Button type='submit' name='Save item' color='green' />
+    </form>
   );
 }
+
+const MAX_NAME_LENGTH = 250;
+const MAX_ISSUER_LENGTH = 250;
+
+const certificationSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(MAX_NAME_LENGTH, `Name must be ${MAX_NAME_LENGTH} characters or less`),
+  issuingOrganization: z
+    .string()
+    .min(1, 'Issuing Organization is required')
+    .max(MAX_ISSUER_LENGTH, `Issuing Organization must be ${MAX_ISSUER_LENGTH} characters or less`),
+  year: z
+    .number({ invalid_type_error: 'Year is required' })
+    .min(minYear, `Year must be between ${minYear} and ${currentYear}`)
+    .max(currentYear, `Year must be between ${minYear} and ${currentYear}`),
+});
+
 
 function CertificationForm({ onSubmit }) {
-  const [form, setForm] = useState({ name: '', issuingOrganization: '', year: new Date().getFullYear() });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(certificationSchema),
+    defaultValues: {
+      name: '',
+      issuingOrganization: '',
+      year: currentYear,
+    },
+  });
+
   return (
-    <div className='grid grid-cols-1 gap-3'>
-      <Input label='Name' value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-      <Input label='Issuing Organization' value={form.issuingOrganization} onChange={e => setForm({ ...form, issuingOrganization: e.target.value })} />
-      <Input label='Year' type='number' value={form.year} onChange={e => setForm({ ...form, year: Number(e.target.value) || '' })} />
-      <Button name='Save item' color='green' onClick={() => onSubmit(form)} />
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 gap-3'>
+      <div>
+        <Input label='Name' required {...register('name')} />
+        <FormErrorMessage message={errors.name?.message} />
+      </div>
+
+      <div>
+        <Input label='Issuing Organization' required {...register('issuingOrganization')} />
+        <FormErrorMessage message={errors.issuingOrganization?.message} />
+      </div>
+
+      <div>
+        <Input label='Year' type='number' required {...register('year', { valueAsNumber: true })} />
+        <FormErrorMessage message={errors.year?.message} />
+      </div>
+
+      <Button type='submit' name='Save item' color='green' />
+    </form>
   );
 }
 
+
+
+
 /* -------------------------------- Profile Card ------------------------------ */
-function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCopyReferral }) {
+function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCopyReferral, onError }) {
+  const [usernameError, setUsernameError] = useState('');
+
+  const validateUsername = (value) => {
+    let msg = '';
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      msg = 'Username is required';
+    } else if (trimmed.length < 2) {
+      msg = 'Username must be at least 2 characters';
+    } else if (value.length > 50) {
+      msg = 'Username must be 50 characters or less';
+    }
+
+    setUsernameError(msg);
+    onError?.(!!msg);
+  };
+
   return (
     <Card>
       <div className='rounded-t-2xl px-6 py-7' style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0) 100%)' }}>
@@ -108,9 +231,24 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
             </>
           ) : editing ? (
             <div className='w-full max-w-xs space-y-2'>
-              <Input label='Username' value={state.username} onChange={e => setState(s => ({ ...s, username: e.target.value }))} />
-              <Input label='Email' value={state.email} onChange={e => setState(s => ({ ...s, email: e.target.value }))} />
-              <Input label='Phone' value={state.phone} onChange={e => setState(s => ({ ...s, phone: e.target.value }))} />
+              <Input
+                required
+                label="Username"
+                value={state.username}
+                onChange={e => {
+                  const value = e.target.value.slice(0, 50);
+                  setState(s => ({ ...s, username: value }));
+                  validateUsername(value);
+                }}
+                onBlur={e => validateUsername(e.target.value)}
+              />
+              <FormErrorMessage message={usernameError} />
+              {/* <Input label='Email' value={state.email} onChange={e => setState(s => ({ ...s, email: e.target.value }))} /> */}
+              <PhoneInputWithCountry
+                value={{ countryCode: state.countryCode, phone: state.phone }}
+                onChange={val => setState(s => ({ ...s, ...val }))}
+              />
+
             </div>
           ) : (
             <>
@@ -122,7 +260,8 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                 </Pill>
                 {state.phone && (
                   <Pill className='text-[#6B7280]'>
-                    <Phone className='mr-1 h-4 w-4' /> {state.phone}
+                    <Phone className='mr-1 h-4 w-4' />
+                    <span> {state.countryCode.dial_code} {state.phone.replace(/^\+/, '')}</span>
                   </Pill>
                 )}
               </div>
@@ -328,103 +467,268 @@ function KPICard({ loading, stats }) {
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' />
         <StatCard title='Repeat Buyers' value={Number(stats.repeatBuyers || 0)} hint='Unique customers' icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
-        <StatCard title='Avg. Rating' value={Number(stats.averageRating || 0)} hint={`${(stats.averageRating ?? 0).toFixed(1)} / 5`} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' />
-        <StatCard title='Top Rated' value={stats.topRated ? 1 : 0} hint={stats.topRated ? 'Yes' : 'No'} icon={Award} gradient='from-fuchsia-500 via-rose-500 to-orange-400' />
+        <StatCard title='Avg. Rating' value={stats.averageRating ? Number(stats.averageRating) : '—'}
+          hint={stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} / 5` : 'Not yet calculated'} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' />
+        <StatCard title='Response Time' value={typeof stats.responseTime === 'number' ? `${stats.responseTime} hours` : '—'} hint={stats.responseTime ? 'Average time' : 'Not yet calculated'} icon={Award} gradient='from-fuchsia-500 via-rose-500 to-orange-400' />
       </div>
     </>
   );
 }
 
-function InfoCard({ loading, about, setAbout, onAddEducation, onAddCertification, onRemoveEducation, onRemoveCertification, countryOptions = [], onCountryChange, accountTypeOptions = [], onTypeChange }) {
-  if (loading) return <SkeletonInfoCard />;
+
+
+function LanguageSelector({ value = [], setValue }) {
+  const [languageOptions, setLanguageOptions] = useState([]);
+  const [langLoading, setLangLoading] = useState(false);
+  const [langError, setLangError] = useState(null);
+  const [selectedLang, setSelectedLang] = useState(null);
+  const [showLangInput, setShowLangInput] = useState(false);
+
+  const filteredLanguageOptions = useMemo(() => {
+    return languageOptions.filter(opt => !value.includes(opt.name));
+  }, [languageOptions, value]);
+
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      setLangLoading(true);
+      setLangError(null);
+      try {
+        const res = await api.get(`/languages?${params.toString()}`);
+        const data = res?.data?.records || [];
+        setLanguageOptions(data.map(lang => ({ id: lang.id, name: lang.name })));
+      } catch (err) {
+        //set temp for development
+        if (process.env.NODE_ENV === 'development') {
+
+          setLanguageOptions([
+            { id: 'en', name: 'English' },
+            { id: 'ar', name: 'Arabic' },
+            { id: 'fr', name: 'French' },
+            { id: 'de', name: 'German' },
+            { id: 'es', name: 'Spanish' },
+          ]);
+        }
+        // setLangError('Failed to load languages');
+      } finally {
+        setLangLoading(false);
+      }
+    };
+
+    fetchLanguages();
+  }, []);
+
+  return (
+    <>
+      <SectionHeader title='Languages' iconSrc='/icons/add-green.svg' actionAria='Add language' onAction={() => setShowLangInput(true)} />
+      <div className='mt-1 flex flex-wrap items-center gap-2'>
+        {value.map((lang, idx) => (
+          <div key={idx} className='group relative inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] border border-[#EDEDED] shadow'>
+            <span>{lang}</span>
+            <button
+              onClick={() => setValue(value.filter((_, i) => i !== idx))}
+              className='absolute inset-0 flex items-center justify-center bg-red-500/70 opacity-0 group-hover:opacity-100 transition-opacity'
+              aria-label='Remove language'>
+              <X size={20} className='text-white' />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {showLangInput && (
+        <div>
+
+          <div className='mt-3 flex items-end gap-2'>
+            <Select
+              label='Select Language'
+              isLoading={langLoading}
+              options={filteredLanguageOptions}
+              placeholder='Choose a language'
+              onChange={opt => setSelectedLang(opt)}
+              name='languageSelect'
+            />
+            <button
+              onClick={() => {
+                if (!selectedLang?.name) return;
+                setValue([...value, selectedLang.name]);
+                setSelectedLang(null);
+                setShowLangInput(false);
+              }}
+              disabled={!selectedLang}
+              className={`rounded-xl border px-3 py-2 text-sm border-emerald-500 text-emerald-600 hover:bg-emerald-50`}>
+              Add
+            </button>
+          </div>
+          <FormErrorMessage message={langError} />
+        </div>
+      )}
+
+    </>
+  );
+}
+
+const aboutSchema = z.object({
+  description: z.string().max(1000, 'Max 1000 characters'),
+  username: z.string().max(50, 'Max 50 characters'),
+  languages: z.array(z.string()).optional(),
+  skills: z.array(z.string().max(50, 'Skill name must be 50 characters or fewer')).optional(),
+  education: z.array(
+    z.object({
+      degree: z.string(),
+      institution: z.string(),
+      year: z.string(),
+    })
+  ).optional(),
+  certifications: z.array(
+    z.object({
+      name: z.string(),
+      issuingOrganization: z.string().optional(),
+      year: z.string().optional(),
+    })
+  ).optional(),
+  country: z.string().optional(),
+  type: z.string().optional(),
+});
+
+function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertification, onCountryChange, accountTypeOptions = [], onTypeChange }) {
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(aboutSchema),
+    defaultValues: about,
+  });
+
+  // Sync form when about changes
+  useEffect(() => {
+    if (about) {
+      reset(about);
+    }
+  }, [about, reset]);
+
+  const [countriesOptions, setCountriesOptions] = useState([]);
+  const [countryLoading, setCountryLoading] = useState(false);
+  const [countryError, setCountryError] = useState(null);
+
+  //load countries
+  useEffect(() => {
+    const fetchCountries = async () => {
+      setCountryLoading(true);
+      setCountryError(null);
+      try {
+        const res = await api.get(`/countries?${params.toString()}`);
+        const data = res?.data?.records || [];
+        setCountriesOptions(data.map(country => ({ id: country.id, name: country.name })));
+      } catch (err) {
+        //set temp for development
+        if (process.env.NODE_ENV === 'development') {
+          setCountriesOptions([
+            { id: 'US', name: 'United States' },
+            { id: 'UK', name: 'United Kingdom' },
+            { id: 'CA', name: 'Canada' },
+            { id: 'AU', name: 'Australia' },
+            { id: 'DE', name: 'Germany' },
+            { id: 'FR', name: 'France' },
+            { id: 'IN', name: 'India' },
+            { id: 'BR', name: 'Brazil' },
+            { id: 'NG', name: 'Nigeria' },
+            { id: 'ZA', name: 'South Africa' },
+            { id: 'EG', name: 'Egypt' },
+            { id: 'SA', name: 'Saudi Arabia' },
+            { id: 'AE', name: 'United Arab Emirates' },
+          ]);
+
+        }
+        // setCountryError('Failed to load languages');
+      } finally {
+        setCountryLoading(false);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
+  // Sync about when form changes
+  useEffect(() => {
+    const subscription = watch((values) => {
+      setAbout(prev => ({ ...prev, ...values }));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setAbout]);
 
   const [editingDesc, setEditingDesc] = useState(false);
-  const [showLangInput, setShowLangInput] = useState(false);
-  const [newLang, setNewLang] = useState('');
   const [showSkillInput, setShowSkillInput] = useState(false);
+  const [eduOpen, setEduOpen] = useState(false);
+  const [certOpen, setCertOpen] = useState(false);
+
+  if (loading) return <SkeletonInfoCard />;
+
   return (
     <Card className=' p-4 sm:p-5'>
       <SectionHeader title='Description' iconSrc={'/icons/edit-green.svg'} actionAria={editingDesc ? 'Finish editing description' : 'Edit description'} onAction={() => setEditingDesc(v => !v)} />
       <Divider className='!my-2' />
       {editingDesc ? (
         <>
-          <Textarea value={about?.description || ''} onChange={e => setAbout(a => ({ ...a, description: e.target.value }))} rows={4} placeholder='Tell buyers about yourself…' />
-          <p className='mt-1 text-xs text-[#6B7280]'>Use a clear, professional summary. Ctrl/Cmd+Enter to save.</p>
+          <Textarea  {...register('description')} onChange={e => {
+            const val = e.target.value.slice(0, 1000);
+            setValue('description', val);
+          }} rows={4} placeholder='Tell buyers about yourself…' />
+          <div className='flex justify-between items-center'>
+            <p className='mt-1 text-xs text-[#6B7280]'>Use a clear, professional summary. Ctrl/Cmd+Enter to save.</p>
+            <p className='mt-1 text-xs text-[#6B7280]'>{watch('description')?.length}/1000 characters</p>
+          </div>
+          {errors.description && <p className='text-red-500 text-xs'>{errors.description.message}</p>}
         </>
       ) : (
-        <p className='mt-1 text-sm leading-7 text-[#292D32]/80'>{about?.description?.trim() || '—'}</p>
+        <p className='mt-1 text-sm leading-7 text-[#292D32]/80'>{watch('description')?.trim() || '—'}</p>
       )}
 
       <Divider className='!mt-6 !mb-2 ' />
 
       {/* Languages */}
-      <SectionHeader title='Languages' iconSrc='/icons/add-green.svg' actionAria='Add language' onAction={() => setShowLangInput(true)} />
-
-      <div className='mt-1 space-y-2'>
-        {(about?.languages || []).length > 0 ? (
-          about.languages.map((lang, idx) => (
-            <div key={idx} className='group relative ltr:mr-2 rtl:ml-2 overflow-hidden inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] shadow-[0_4px_14px_rgba(0,0,0,0.04)] border border-[#EDEDED]'>
-              <span className='truncate'>{lang || '—'}</span>
-              <button onClick={() => setAbout(a => ({ ...a, languages: a.languages.filter((_, i) => i !== idx) }))} className=' cursor-pointer absolute inset-0 flex items-center justify-center bg-red-500/70 opacity-0 group-hover:opacity-100 transition-opacity' aria-label='Remove language'>
-                <X size={20} className=' mx-auto text-white ' />
-              </button>
-            </div>
-          ))
-        ) : (
-          <div className='text-sm text-[#6B7280]'>No languages added</div>
-        )}
-
-        {/* Input appears here when adding */}
-        {showLangInput && (
-          <div className='flex items-center gap-2'>
-            <input
-              type='text'
-              className='flex-1 min-w-0  rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500'
-              placeholder='e.g., English - Fluent'
-              value={newLang}
-              onChange={e => setNewLang(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && newLang.trim()) {
-                  setAbout(a => ({
-                    ...a,
-                    languages: [...(a.languages || []), newLang.trim()],
-                  }));
-                  setNewLang('');
-                  setShowLangInput(false);
-                }
-              }}
-            />
-            <button
-              onClick={() => {
-                if (!newLang.trim()) return;
-                setAbout(a => ({
-                  ...a,
-                  languages: [...(a.languages || []), newLang.trim()],
-                }));
-                setNewLang('');
-                setShowLangInput(false);
-              }}
-              className='rounded-xl border border-emerald-500 px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50'>
-              Add
-            </button>
-          </div>
-        )}
-      </div>
+      <LanguageSelector value={watch('languages') || []} setValue={val => setValue('languages', val)} />
 
       <Divider className='!mt-6 !mb-2 ' />
 
       {/* Skills */}
       <SectionHeader title='Skills' iconSrc='/icons/add-green.svg' actionAria='Add skill' onAction={() => setShowSkillInput(true)} />
 
-      <PillEditor items={about?.skills || []} placeholder='e.g., React' showInput={showSkillInput} setShowInput={setShowSkillInput} onAdd={val => setAbout(a => ({ ...a, skills: [...(a.skills || []), val] }))} onRemove={i => setAbout(a => ({ ...a, skills: a.skills.filter((_, idx) => idx !== i) }))} />
+      <PillEditor
+        items={watch('skills') || []}
+        placeholder='e.g., React'
+        showInput={showSkillInput}
+        setShowInput={setShowSkillInput}
+        onAdd={val => {
+          const current = watch('skills') || [];
+          const normalized = val.trim().toLowerCase();
+          const alreadyExists = current.some(skill => skill.trim().toLowerCase() === normalized);
+
+          if (alreadyExists) {
+            showWarningToast('Skill already added');
+            return;
+          }
+
+          setValue('skills', [...current, val]);
+        }}
+
+        onRemove={i => {
+          const current = watch('skills') || [];
+          setValue('skills', current.filter((_, idx) => idx !== i));
+        }}
+      />
+
 
       <Divider className='!mt-6 !mb-2 ' />
 
       {/* Education */}
-      <SectionHeader title='Education' iconSrc='/icons/add-green.svg' actionAria='Add education' onAction={onAddEducation} />
+      <SectionHeader title='Education' iconSrc='/icons/add-green.svg' actionAria='Add education' onAction={() => setEduOpen(true)} />
       <div className='mt-2 space-y-2'>
-        {(about?.education || []).length > 0 ? (
-          about.education.map((e, idx) => (
+        {(watch('education') || []).length > 0 ? (
+          watch('education').map((e, idx) => (
             <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-3 text-sm'>
               <div className='min-w-0'>
                 <div className='font-semibold truncate'>
@@ -442,13 +746,28 @@ function InfoCard({ loading, about, setAbout, onAddEducation, onAddCertification
         )}
       </div>
 
+      {/* Add Education */}
+      {eduOpen && (
+        <Modal title='Add Education' onClose={() => setEduOpen(false)}>
+          <EducationForm
+            onSubmit={item => {
+              const current = watch('education') || [];
+              setValue('education', [...current, item]);
+
+              setEduOpen(false);
+            }}
+          />
+        </Modal>
+      )}
+
+
       <Divider />
 
       {/* Certifications */}
-      <SectionHeader title='Certification' iconSrc='/icons/add-green.svg' actionAria='Add certification' onAction={onAddCertification} />
+      <SectionHeader title='Certification' iconSrc='/icons/add-green.svg' actionAria='Add certification' onAction={() => setCertOpen(true)} />
       <div className='mt-2 space-y-2'>
-        {(about?.certifications || []).length > 0 ? (
-          about.certifications.map((c, idx) => (
+        {(watch('certifications') || []).length > 0 ? (
+          watch('certifications').map((c, idx) => (
             <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-3 text-sm'>
               <div className='min-w-0'>
                 <div className='font-semibold truncate'>{c?.name || '—'}</div>
@@ -465,10 +784,24 @@ function InfoCard({ loading, about, setAbout, onAddEducation, onAddCertification
           <div className='text-sm text-[#6B7280]'>No certifications added</div>
         )}
       </div>
+
+      {/* Add Certification */}
+      {certOpen && (
+        <Modal title='Add Certification' onClose={() => setCertOpen(false)}>
+          <CertificationForm
+            onSubmit={item => {
+              const current = watch('certifications') || [];
+              setValue('certifications', [...current, item]);
+
+              setCertOpen(false);
+            }}
+          />
+        </Modal>
+      )}
       <Divider />
       {/* Top selects row */}
       <div className=' mt-4 grid grid-cols-1 gap-3 md:grid-cols-2'>
-        <Select label='Country (ISO)' options={countryOptions} value={about?.country} onChange={opt => onCountryChange?.(opt?.id)} placeholder='Select country' />
+        <Select label='Country' options={countriesOptions} value={about?.country} onChange={opt => onCountryChange?.(opt?.id)} placeholder='Select country' isLoading={countryLoading} />
         <Select label='Account Type' options={accountTypeOptions} value={about?.type} onChange={opt => onTypeChange?.(opt?.id)} placeholder='Select type' />
       </div>
     </Card>
@@ -540,8 +873,11 @@ function SectionHeader({ title, iconSrc, actionAria, onAction }) {
     <div className='mt-1 flex items-center justify-between'>
       <h3 className='text-[20px] font-semibold tracking-tight text-[#111827]'>{title}</h3>
       {iconSrc && (
-        <button onClick={onAction} aria-label={actionAria} title={actionAria} className=' cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-xl  hover:scale-[1.1] active:scale-95 transition'>
-          <img src={iconSrc} />
+        <button onClick={() => {
+          console.log('Button clicked');
+          onAction?.();
+        }} aria-label={actionAria} title={actionAria} className='cursor-pointer  h-9 w-9 items-center justify-center rounded-xl  hover:scale-[1.1] active:scale-95 transition'>
+          <Image src={iconSrc} alt={title} width={36} height={36} />
         </button>
       )}
     </div>
@@ -557,9 +893,11 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
       <div className='mt-2 flex flex-wrap gap-2'>
         {items.length > 0 ? (
           items.map((t, i) => (
-            <span key={`${t}-${i}`} className='group overflow-hidden  relative inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] shadow-[0_4px_14px_rgba(0,0,0,0.04)] border border-[#EDEDED]'>
+            <span key={`${t}-${i}`} className='group overflow-hidden relative inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] shadow-[0_4px_14px_rgba(0,0,0,0.04)] border border-[#EDEDED]'>
               {t || '—'}
-              <button onClick={() => onRemove?.(i)} className='cursor-pointer absolute inset-0 flex items-center justify-center bg-red-500/70 opacity-0 group-hover:opacity-100 transition-opacity'>
+              <button
+                onClick={() => onRemove?.(i)}
+                className='cursor-pointer absolute inset-0 flex items-center justify-center bg-red-500/70 opacity-0 group-hover:opacity-100 transition-opacity'>
                 <X size={18} className='text-white' />
               </button>
             </span>
@@ -574,7 +912,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
         <div className='mt-3 flex items-center gap-2'>
           <input
             value={input}
-            onChange={e => setInput(e.target.value)}
+            onChange={e => setInput(e.target.value.slice(0, 200))}
             onKeyDown={e => {
               if (e.key === 'Enter' && input.trim()) {
                 onAdd?.(input.trim());
@@ -593,7 +931,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
               setInput('');
               setShowInput(false);
             }}
-            className='rounded-xl border border-emerald-500 px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50'>
+            className='rounded-xl border border-emerald-500 px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50' disabled={!input}>
             Save
           </button>
         </div>
@@ -601,6 +939,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
     </>
   );
 }
+
 
 /* ---- Skeleton atoms ---- */
 
@@ -613,6 +952,8 @@ function SkeletonCircle({ className = '' }) {
 function SkeletonPill() {
   return <div className='h-8 w-28 rounded-full bg-slate-200 shadow' />;
 }
+
+const MAX_IMAGE_SIZE_MB = 10;
 
 function Assets({
   initialVideoUrl = '',
@@ -643,10 +984,22 @@ function Assets({
 
   // ---------- Video handlers ----------
   const handlePickVideo = () => videoInputRef.current?.click();
+  const MAX_VIDEO_SIZE_MB = 100;
 
   const handleVideoSelected = async e => {
     const file = e.target.files?.[0];
+
     if (!file) return;
+
+    if (!file.type.startsWith('video/')) {
+      toast.error('Only video files are allowed.');
+      return;
+    }
+
+    if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) {
+      toast.error(`Video must be under ${MAX_VIDEO_SIZE_MB}MB.`);
+      return;
+    }
     setVideoUploading(true);
     try {
       const form = new FormData();
@@ -654,14 +1007,16 @@ function Assets({
       const { data } = await api.post('/auth/video', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: ev => {
+          console.log('Video upload progress:', ev);
           // optional: show progress
           // const pct = Math.round((ev.loaded / (ev.total || 1)) * 100);
+
         },
       });
       setVideoUrl(data.url);
     } catch (err) {
       console.error(err);
-      // toast.error('Failed to upload video');
+      toast.error('Failed to upload video');
     } finally {
       setVideoUploading(false);
       e.target.value = '';
@@ -676,6 +1031,18 @@ function Assets({
   const handleImagesSelected = async e => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
+
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) {
+        toast.error('Only image files are allowed.');
+        return;
+      }
+
+      if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+        toast.error(`Each image must be under ${MAX_IMAGE_SIZE_MB}MB.`);
+        return;
+      }
+    }
 
     const remainingSlots = Math.max(0, 6 - imgs.length);
     const toUpload = files.slice(0, remainingSlots);
@@ -776,16 +1143,23 @@ function Assets({
             <div className='aspect-video w-full rounded-2xl bg-slate-200 animate-pulse' />
           ) : videoUrl ? (
             <div className='relative'>
-              <video src={baseImg + videoUrl} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />
+              <video src={resolveUrl(videoUrl)} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />
               <button onClick={removeVideo} className='absolute top-2 right-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/75' aria-label='Remove video'>
                 <Trash2 className='h-4 w-4' />
               </button>
             </div>
           ) : (
-            <button type='button' onClick={handlePickVideo} className='group flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-slate-600 hover:bg-slate-100'>
-              <Video className='h-5 w-5' />
-              <span className='font-medium'>Upload intro video</span>
-            </button>
+            <div>
+
+
+              <button type='button' onClick={handlePickVideo} className='group flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-slate-600 hover:bg-slate-100'>
+                <Video className='h-5 w-5' />
+                <span className='font-medium'>Upload intro video</span>
+              </button>
+              <div className='mt-3 text-xs text-slate-500'>
+                Max size: {MAX_VIDEO_SIZE_MB}MB.
+              </div>
+            </div>
           )}
         </div>
 
@@ -814,7 +1188,7 @@ function Assets({
                   <div className='aspect-[16/11] w-full animate-pulse bg-slate-200' />
                 ) : (
                   <>
-                    <img src={baseImg + item.url} alt='Portfolio' className='aspect-[16/11] w-full object-cover' />
+                    <img src={resolveUrl(item.url)} alt='Portfolio' className='aspect-[16/11] w-full object-cover' />
 
                     <button onClick={() => removeImage(item.id)} disabled={isRemoving} className='absolute right-2 top-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition group-hover:opacity-100 disabled:opacity-60' aria-label='Remove image'>
                       <X className='h-4 w-4' />
@@ -851,11 +1225,7 @@ function Assets({
   );
 }
 
-function resolveUrl(u) {
-  if (!u) return '';
-  if (/^(https?:|blob:|data:)/i.test(u)) return u;
-  return (baseImg || '') + u.replace(/^\/+/, '');
-}
+
 
 function filenameFromUrl(u) {
   try {
@@ -865,6 +1235,19 @@ function filenameFromUrl(u) {
     return 'file';
   }
 }
+
+const MAX_PORTFOLIO_SIZE_MB = 25;
+const ALLOWED_PORTFOLIO_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/plain',
+];
+
 
 function PortfolioFileBox({
   initialUrl = '',
@@ -886,6 +1269,19 @@ function PortfolioFileBox({
   const handleSelected = async e => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const isAllowedType = ALLOWED_PORTFOLIO_TYPES.includes(file.type);
+    const isTooLarge = file.size > MAX_PORTFOLIO_SIZE_MB * 1024 * 1024;
+
+    if (!isAllowedType) {
+      toast.error('Unsupported file type. Please upload a PDF, DOC, PPT, XLS, or TXT file.');
+      return;
+    }
+
+    if (isTooLarge) {
+      toast.error(`File size must be under ${MAX_PORTFOLIO_SIZE_MB}MB.`);
+      return;
+    }
     setUploading(true);
     try {
       const form = new FormData();
@@ -924,11 +1320,11 @@ function PortfolioFileBox({
       <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
         <div>
           <h3 className='text-xl font-semibold text-black'>Portfolio file</h3>
-          <p className='text-sm text-slate-600'>PDF/Doc/PPT/XLS (max ~25MB). One file at a time.</p>
+          <p className='text-sm text-slate-600'>PDF/DOC/PPT/XLS/TXT (max ~25MB). One file at a time.</p>
         </div>
 
         <Button className='sm:!w-fit' name={uploading ? 'Uploading…' : hasFile ? 'Replace file' : 'Upload file'}
-          icon={uploading ? <Loader2 className='h-4 w-4 animate-spin' /> : hasFile ? <UploadCloud className='h-4 w-4' /> : <UploadCloud className='h-4 w-4' />} onClick={pickFile} disabled={uploading || deleting} loading={uploading || deleting} />
+          icon={uploading ? <Loader2 className='h-4 w-4 animate-spin' /> : hasFile ? <UploadCloud className='h-4 w-4' /> : <UploadCloud className='h-4 w-4' />} onClick={pickFile} disabled={uploading || deleting} loading={uploading} />
 
         <input ref={inputRef} type='file' accept='.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt' className='hidden' onChange={handleSelected} />
       </div>
@@ -950,13 +1346,14 @@ function PortfolioFileBox({
             {deleting && <div className='absolute inset-0 grid place-items-center rounded-xl bg-black/10 pointer-events-none' />}
           </div>
         ) : (
-          <div className='rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-slate-500'>No file uploaded yet.</div>
+          <div onClick={pickFile} className='cursor-pointer rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-slate-500'>No file uploaded yet.</div>
         )}
       </div>
     </Card>
   );
 }
 
+const defaultCountryCode = { code: 'SA', dial_code: '+966' };
 /* ------------------------------------ Page ---------------------------------- */
 export default function Overview() {
   const [dirty, setDirty] = useState(false);
@@ -966,6 +1363,7 @@ export default function Overview() {
   const id = getUserInfo()?.id;
 
   const [loading, setLoading] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
   const [saving, setSaving] = useState(false);
 
   // unified editable state per your requested shape
@@ -974,6 +1372,7 @@ export default function Overview() {
     email: '',
     password: '', // optional new field for changing password
     type: '', // 'Business' | 'Individual'
+    countryCode: defaultCountryCode,
     phone: '',
     profileImage: '',
     role: '',
@@ -1013,10 +1412,8 @@ export default function Overview() {
   const [devices, setDevices] = useState([]);
   const [stats, setStats] = useState(null);
   const [editing, setEditing] = useState(false);
-  const [eduOpen, setEduOpen] = useState(false);
-  const [certOpen, setCertOpen] = useState(false);
 
-  const countryOptions = useMemo(() => ['US', 'UK', 'CA', 'AU', 'DE', 'FR', 'IN', 'BR', 'NG', 'ZA', 'EG', 'SA', 'AE'].map(c => ({ id: c, name: c })), []);
+
   const accountTypeOptions = useMemo(
     () => [
       { id: 'Business', name: 'Business' },
@@ -1028,20 +1425,22 @@ export default function Overview() {
   /* ------------------------------- Load data -------------------------------- */
   useEffect(() => {
     let ignore = false;
-    async function load() {
+    async function fetchUser() {
       if (!id) return;
       setLoading(true);
       try {
-        const user = await api.get(`/auth/user/${id}`).then(r => r.data);
 
+        const user = await api.get(`/auth/user/${id}`).then(r => r.data);
         if (ignore) return;
 
+        console.log("user.topRated", user.topRated)
         // map API → editable state
         setState(s => ({
           ...s,
           username: user.username || '',
           email: user.email || '',
           type: user.type || '',
+          countryCode: user.countryCode || defaultCountryCode,
           phone: user.phone || '',
           profileImage: user.profileImage || '',
           role: user.role || '',
@@ -1067,7 +1466,6 @@ export default function Overview() {
           totalSpent: Number(user.totalSpent ?? 0),
           totalEarned: Number(user.totalEarned ?? 0),
           reputationPoints: Number(user.reputationPoints ?? 0),
-          topRated: !!user.topRated,
         }));
 
         setMeta({
@@ -1087,6 +1485,7 @@ export default function Overview() {
           email: user.email || '',
           password: '', // never baseline a password
           type: user.type || '',
+          countryCode: user.countryCode || defaultCountryCode,
           phone: user.phone || '',
           profileImage: user.profileImage || '',
           role: user.role || '',
@@ -1112,26 +1511,37 @@ export default function Overview() {
           totalEarned: Number(user.totalEarned ?? 0),
           reputationPoints: Number(user.reputationPoints ?? 0),
         });
+
         baselineRef.current = stableStringify(nextEditable);
         setDirty(false);
 
-        try {
-          const s = await api.get('/auth/profile/stats', { params: { id } }).then(r => r.data);
-
-          if (!ignore) {
-            setStats(s);
-            setState(prev => ({ ...prev, topRated: !!s?.topRated }));
-          }
-        } catch {
-          // ignore missing stats
-        }
       } catch (err) {
         console.error(err);
       } finally {
         if (!ignore) setLoading(false);
       }
     }
-    load();
+
+    async function fetchStats() {
+      setLoadingStats(true);
+      try {
+        const userStats = await api.get('/auth/profile/stats', { params: { id } }).then(r => r.data);
+        if (ignore) return;
+
+        setStats(userStats);
+        setState(prev => ({ ...prev, topRated: !!userStats?.topRated }));
+
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!ignore) setLoadingStats(false);
+      }
+    }
+
+    if (id) {
+      fetchUser();
+      fetchStats();
+    }
     return () => {
       ignore = true;
     };
@@ -1171,6 +1581,7 @@ export default function Overview() {
 
   /* ------------------------------- Save handler ----------------------------- */
   async function saveAuthProfile() {
+    if (hasError) return;
     setSaving(true);
     try {
       const payload = {
@@ -1178,6 +1589,7 @@ export default function Overview() {
         email: state.email,
         password: state.password || undefined, // optional
         type: state.type,
+        countryCode: state.countryCode,
         phone: state.phone,
         profileImage: state.profileImage,
         role: state.role, // if editable in your backend
@@ -1232,11 +1644,9 @@ export default function Overview() {
   }
 
   /* --------------------------- Education/Cert modals ------------------------ */
-  const onAddEducation = () => setEduOpen(true);
-  const onAddCertification = () => setCertOpen(true);
   const onRemoveEducation = idx => setState(a => ({ ...a, education: a.education.filter((_, i) => i !== idx) }));
   const onRemoveCertification = idx => setState(a => ({ ...a, certifications: a.certifications.filter((_, i) => i !== idx) }));
-
+  const [hasError, setHasError] = useState(false);
   return (
     <div className='container !py-8'>
       <div className='gap-6 flex flex-col lg:flex-row'>
@@ -1247,6 +1657,7 @@ export default function Overview() {
             setEditing={setEditing}
             state={state}
             setState={setState}
+            onError={setHasError}
             meta={{
               role: state.role,
               status: state.status,
@@ -1296,11 +1707,8 @@ export default function Overview() {
             setAbout={updater => {
               setState(prev => ({ ...prev, ...(typeof updater === 'function' ? updater(prev) : updater) }));
             }}
-            onAddEducation={onAddEducation}
-            onAddCertification={onAddCertification}
             onRemoveEducation={onRemoveEducation}
             onRemoveCertification={onRemoveCertification}
-            countryOptions={countryOptions}
             onCountryChange={code => setState(s => ({ ...s, country: code }))}
             accountTypeOptions={accountTypeOptions}
             onTypeChange={t => setState(s => ({ ...s, type: t }))}
@@ -1316,12 +1724,12 @@ export default function Overview() {
 
         <div className='space-y-6 flex-1 lg:sticky lg:top-30 h-fit'>
           <KPICard
-            loading={loading}
+            loading={loadingStats}
             stats={{
-              ordersCompleted: 0,
-              repeatBuyers: state?.repeatBuyers || 0,
-              averageRating: 0,
-              topRated: state.topRated,
+              ordersCompleted: stats?.ordersCompleted || 0,
+              repeatBuyers: stats?.repeatBuyers || 0,
+              averageRating: stats?.averageRating || 0,
+              responseTime: stats?.responseTime,
             }}
           />
 
@@ -1362,36 +1770,14 @@ export default function Overview() {
                   }}
                   className='!w-auto !px-4'
                 />
-                <Button color='green' name={saving ? '' : 'Save changes'} loading={saving} onClick={saveAuthProfile} className='!w-auto !px-5' />
+                <Button color='green' name={saving ? '' : 'Save changes'} loading={saving} onClick={saveAuthProfile} className='!w-auto !px-5' disabled={hasError} />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Add Education */}
-      {eduOpen && (
-        <Modal title='Add Education' onClose={() => setEduOpen(false)}>
-          <EducationForm
-            onSubmit={item => {
-              setState(a => ({ ...a, education: [...(a.education || []), item] }));
-              setEduOpen(false);
-            }}
-          />
-        </Modal>
-      )}
 
-      {/* Add Certification */}
-      {certOpen && (
-        <Modal title='Add Certification' onClose={() => setCertOpen(false)}>
-          <CertificationForm
-            onSubmit={item => {
-              setState(a => ({ ...a, certifications: [...(a.certifications || []), item] }));
-              setCertOpen(false);
-            }}
-          />
-        </Modal>
-      )}
     </div>
   );
 }

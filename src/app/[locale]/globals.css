@@ -19,7 +19,9 @@ button {
 }
 
 [disabled] {
+  opacity: 0.6;
   pointer-events: none;
+
 }
 
 body {
@@ -462,4 +464,22 @@ body {
 ::-ms-reveal,
 ::-ms-clear {
   display: none;
+}
+
+@media (width < 40rem
+  /* 640px */
+) {
+  .select-virtualized-container {
+    width: 100% !important;
+  }
+}
+
+.menu-search {
+  max-width: 100% !important;
+}
+
+.menu-search>.search-parnet {
+  border-radius: 0 !important;
+  border-top-left-radius: 6px !important;
+  border-top-right-radius: 6px !important;
 }

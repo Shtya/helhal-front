@@ -1,13 +1,17 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState, forwardRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, forwardRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
+import { List } from "react-virtualized";
+import InputSearch from './InputSearch';
 
-const Select = forwardRef(({ options = [], placeholder = 'Select an option', label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, ...props }, ref) => {
+//options = [{ id: '1', name: 'Option 1' }, { id: '2', name: 'Option 2' }]
+const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder = 'Select an option', label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [touched, setTouched] = useState(false);
+  const [internalOptions, setOptions] = useState(options);
 
   const rootRef = useRef(null);
   const buttonRef = useRef(null);
@@ -27,7 +31,8 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
       return;
     }
     const found = options.find(o => String(o.id) === String(value));
-    setSelected(found ? found.name : null);
+
+    setSelected(found ? found : null);
   }, [value, options]);
 
   // Close on outside click / ESC, and mark touched once
@@ -36,14 +41,20 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
       if (buttonRef.current?.contains(e.target) || menuRef.current?.contains(e.target)) {
         return;
       }
-      if (open) setOpen(false);
+      if (open) {
+        setOptions(options);
+        setOpen(false)
+      };
       if (!touched) {
         setTouched(true);
         onBlur?.();
       }
     };
     const onKey = e => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOptions(options);
+        setOpen(false)
+      };
     };
     document.addEventListener('mousedown', onDocClick);
     document.addEventListener('keydown', onKey);
@@ -54,8 +65,9 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
   }, [open, touched, onBlur]);
 
   const handleSelect = option => {
-    setSelected(option.name);
+    setSelected(option);
     setOpen(false);
+    setOptions(options);
     setTouched(true);
     onChange?.(option);
     onBlur?.();
@@ -116,9 +128,11 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
       left: Math.max(8, left) + window.scrollX,
       minWidth,
       transformOrigin,
-      maxHeight: Math.min(menuHeight, vh - 24), // prevent giant menu off-screen
+      // maxHeight: Math.min(menuHeight, vh - 24), // prevent giant menu off-screen
     });
   };
+
+
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -131,8 +145,30 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
       window.removeEventListener('resize', onScrollOrResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, options?.length]);
+  }, [open, internalOptions?.length]);
 
+  const rowRenderer = ({ index, key, style }) => {
+    const opt = internalOptions[index];
+    return (
+      <li style={style} key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white'}`}>
+        {opt.name}
+      </li>
+    )
+  };
+
+
+  function onFilter(term) {
+    if (!term) {
+      setOptions(options);
+      return
+    }
+
+    const filtered = customSearch ? customSearch(term) : options.filter(opt => opt.name.toLowerCase().includes(term.toLowerCase()));
+
+    setOptions(filtered);
+
+
+  }
   // The dropdown menu rendered in a portal to escape overflow clipping
   const menu = open
     ? createPortal(
@@ -145,24 +181,51 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
           minWidth: menuStyle.minWidth,
           zIndex: 9999,
         }}>
+        {showSearch && <InputSearch showAction={false} className='menu-search' onChange={onFilter} />}
         <div
-          className={`overflow-auto rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-150 ease-out origin-top-left`}
+          className={`${cnMenu || ''} overflow-auto ${showSearch ? 'rounded-b-md' : 'rounded-md'} border border-gray-200 bg-white shadow-lg transition-all duration-150 ease-out origin-top-left max-h-[350px]`}
           style={{
             transformOrigin: menuStyle.transformOrigin,
             maxHeight: menuStyle.maxHeight,
           }}>
-          <ul className='divide-y divide-gray-100'>
-            {options.map(opt => (
-              <li key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected === opt.name ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white'}`}>
-                {opt.name}
-              </li>
-            ))}
-          </ul>
+          {isLoading ? (
+            <div className='p-3 space-y-2'>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className='h-4 bg-slate-200 rounded animate-pulse w-3/4' />
+              ))}
+            </div>)
+            : internalOptions.length === 0 ? (
+              <div className='p-4 text-sm text-gray-500 text-center'>
+                No options available.
+              </div>
+            )
+              : isVirtualized ? (
+
+                <List
+                  width={VirtualizeWidth || 300}
+                  className={cnVirtualize || ''}
+                  height={Math.min(internalOptions.length * 37, 303)}
+                  rowCount={internalOptions.length}
+                  rowHeight={37}
+                  rowRenderer={rowRenderer}
+                />
+
+              )
+                : (
+                  <ul className='divide-y divide-gray-100'>
+                    {internalOptions.map(opt => (
+                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white'}`}>
+                        {opt.name}
+                      </li>
+                    ))}
+                  </ul>)}
         </div>
       </div>,
       document.body,
     )
     : null;
+
+  const formated = useMemo(() => formatSelected && selected ? formatSelected(selected) : selected?.name, [selected, formatSelected]);
 
   return (
     <div className={`${className || ''} w-full`} ref={rootRef}>
@@ -186,7 +249,7 @@ const Select = forwardRef(({ options = [], placeholder = 'Select an option', lab
           aria-expanded={open}
           name={name}
           {...props}>
-          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{selected || placeholder}</span>
+          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated || placeholder}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
         </button>
       </div>

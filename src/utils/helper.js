@@ -1,3 +1,4 @@
+import { baseImg } from "@/lib/axios";
 
 
 
@@ -8,3 +9,10 @@ export function localImageLoader({ src, width, quality }) {
     return src;
 }
 
+
+
+export function resolveUrl(u) {
+    if (!u) return '';
+    if (/^(https?:|blob:|data:)/i.test(u)) return u;
+    return (baseImg || '') + u.replace(/^\/+/, '');
+}
