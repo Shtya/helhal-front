@@ -16,3 +16,9 @@ export function resolveUrl(u) {
     if (/^(https?:|blob:|data:)/i.test(u)) return u;
     return (baseImg || '') + u.replace(/^\/+/, '');
 }
+
+export function maskEmail(email) {
+    const [user, domain] = email.split('@');
+    const maskedUser = user.length <= 3 ? user[0] + '*'.repeat(user.length - 1) : user.slice(0, 2) + '*'.repeat(user.length - 3) + user.slice(-1);
+    return `${maskedUser}@${domain}`;
+}

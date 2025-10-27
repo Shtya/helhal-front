@@ -10,6 +10,14 @@ import { AnimatedCheckbox } from '@/components/atoms/CheckboxAnimation';
 import { Divider } from '@/app/[locale]/services/[category]/[service]/page';
 import React, { useEffect, useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
+import { Modal } from '@/components/common/Modal';
+import { maskEmail } from '@/utils/helper';
+import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+import { usernameSchema } from '@/utils/profile';
+import { useForm } from 'react-hook-form';
+import z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState('account');
@@ -33,6 +41,12 @@ export default function Page() {
   );
 }
 
+const formSchema = z.object({
+  username: usernameSchema,
+  email: z.string().email('Invalid email address'),
+});
+
+
 function AccountSettings() {
   const reasons = [
     { id: 'platform', name: 'I found another platform' },
@@ -40,46 +54,146 @@ function AccountSettings() {
     { id: 'features', name: 'Not satisfied with features' },
     { id: 'other', name: 'Other' },
   ];
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isDirty },
+  } = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+    },
+  });
+  const t = useTranslations('auth');
+
   const [me, setMe] = useState(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [saving, setSaving] = useState(false);
   const [reason, setReason] = useState(null);
+  const [customReason, setCustomReason] = useState('');
+
+  const [pendingEmail, setPendingEmail] = useState(null);
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
+
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  function startResendCooldown() {
+    setResendCooldown(30);
+    const interval = setInterval(() => {
+      setResendCooldown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  useEffect(() => {
+    (async () => {
+      const pending = await api.get('/auth/pending-email').then(r => r.data?.pendingEmail);
+      if (pending) {
+        setPendingEmail(pending);
+      }
+    })();
+  }, []);
+
 
   useEffect(() => {
     (async () => {
       const u = await api.get('/auth/me').then(r => r.data);
       setMe(u);
-      setName(u?.username || '');
-      setEmail(u?.email || '');
+      console.log(watch(), u)
+      setValue('username', u?.username || '');
+      setValue('email', u?.email || '');
+
+      console.log(watch())
     })();
   }, []);
 
-  async function saveProfile() {
-    const data = {};
-    if (email) data['email'] = email;
-    if (name) data['username'] = name;
-
+  const saveProfile = handleSubmit(async ({ username, email }) => {
     setSaving(true);
-    await api
-      .put('/auth/profile', data)
-      .then(res => {
-        toast.success('✅ Your profile has been updated successfully!');
-      })
-      .catch(err => {
-        toast.error('⚠️' + err.response.data.message);
-      })
-      .finally(() => {
-        setSaving(false);
-      });
+
+
+    try {
+      const updates = [];
+
+      if (username && username !== me?.username) {
+        updates.push(
+          api.put('/auth/profile', { username }).then(res => {
+            const updatedUsername = res.data?.username;
+            if (updatedUsername) {
+              setValue('username', updatedUsername);
+              setMe(prev => ({ ...prev, username: updatedUsername }));
+            }
+          })
+        );
+      }
+
+      if (email && email !== me?.email && resendCooldown <= 0) {
+        // updates.push(
+        //   api.post('/auth/request-email-change', { newEmail: email }).then(() => {
+        //     setPendingEmail(email);
+        //   })
+        // );
+
+        //for testing without backend
+        updates.push(
+          new Promise(resolve => {
+            setTimeout(() => {
+              setPendingEmail(email);
+              startResendCooldown();
+              resolve(); // simulate success
+            }, 500); // simulate network delay
+          })
+        );
+      }
+
+
+      if (updates.length === 0) return;
+
+      await Promise.all(updates);
+
+      toast.success('Changes saved successfully!');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to save changes');
+    } finally {
+      setSaving(false);
+    }
+  })
+
+  async function resendEmail() {
+    try {
+      await api.post('/auth/resend-email-confirmation');
+      toast.success('Confirmation email resent!');
+      startResendCooldown(); // trigger cooldown
+    } catch (err) {
+      toast.error('Failed to resend email');
+    }
+  }
+
+  async function cancelEmailChange() {
+    try {
+      await api.post('/auth/cancel-email-change');
+      setPendingEmail(null);
+      toast.success('Email change request canceled');
+    } catch (err) {
+      toast.error('Failed to cancel email change');
+    }
   }
 
   async function deactivate() {
-    if (!reason) return;
+    const finalReason = reason === 'other' ? customReason : reason;
+    if (!finalReason) return;
     setDeactivating(true);
     try {
-      await api.post('/auth/account-deactivation', { reason });
+
+      await api.post('/auth/account-deactivation', { reason: finalReason });
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
@@ -92,12 +206,59 @@ function AccountSettings() {
 
   return (
     <div>
+      {pendingEmail && (
+        <div className=' max-w-[450px] mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>
+          <p>
+            A confirmation link has been sent to <strong>{maskEmail(pendingEmail)}</strong>.
+            Please check your inbox to confirm the change.
+          </p>
+          <div className='grid items-center grid-cols-1 xs:grid-cols-2 gap-2'>
+
+            <Button
+              name='Cancel request'
+              color='gray'
+              className='mt-2 text-base !text-red-600 !bg-transparent'
+              onClick={cancelEmailChange}
+            />
+
+            {resendCooldown > 0 ? (
+              <span className='mt-2 text-blue-600 text-nowrap text-center'>Resend in {resendCooldown}s</span>
+            ) : (
+              <Button
+                name='Resend Email'
+                color='green'
+                className='mt-2 text-base'
+                onClick={resendEmail}
+              />
+            )}
+
+          </div>
+        </div>
+      )}
+
       <h2 className='text-xl font-semibold text-gray-800'>Need to update your public profile?</h2>
 
-      <Input label='Full Name' placeholder='Your name' className='mt-6 max-w-[450px] w-full' value={name} onChange={e => setName(e.target.value)} />
-      <Input label='Email' placeholder='you@example.com' type='email' className='mt-6 max-w-[450px] w-full' value={email} onChange={e => setEmail(e.target.value)} />
+      <Input
+        label='Username'
+        placeholder='Enter Text'
+        className='mt-6 max-w-[450px] w-full'
+        error={errors.username?.message && t(`errors.${errors.username?.message}`)}
+        {...register('username')}
+      />
 
-      <Button name={saving ? '' : 'Save Changes'} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md' onClick={saveProfile} />
+
+      <Input
+        label='Email'
+        placeholder='you@example.com'
+        type='email'
+        className='mt-6 max-w-[450px] w-full'
+        error={errors.email?.message}
+        {...register('email')}
+      />
+
+
+
+      <Button name={saving ? '' : 'Save Changes'} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md ' onClick={saveProfile} />
 
       <Divider className='!my-8' />
 
@@ -109,8 +270,42 @@ function AccountSettings() {
       </div>
 
       <Select className='mt-6 max-w-[450px] w-full' cnLabel='!text-sm opacity-90 mt-2' label='I’m leaving because' placeholder='Choose a Reason' value={reason} onChange={opt => setReason(opt?.id)} options={reasons} />
+      {reason === 'other' && (
+        <Input
+          label='Please tell us why'
+          placeholder='Your reason for leaving'
+          className='mt-4 max-w-[450px] w-full'
+          value={customReason}
+          onChange={e => setCustomReason(e.target.value)}
+        />
+      )}
 
-      <Button name='Deactivate Account' color='red' loading={deactivating} className='mt-6 max-w-[450px] w-full !rounded-md' onClick={deactivate} />
+      <Button name='Deactivate Account' color='red' loading={deactivating} className='mt-6 max-w-[450px] w-full !rounded-md' onClick={() => {
+        const finalReason = reason === 'other' ? customReason : reason;
+        if (!finalReason) return;
+        setConfirmOpen(true)
+      }} />
+      {confirmOpen && (
+        <Modal title='Confirm Deactivation' onClose={() => setConfirmOpen(false)}>
+          <p className='text-sm text-gray-700 mb-4'>
+            Are you sure you want to deactivate your account?
+          </p>
+          <div className='flex justify-end gap-3'>
+            <Button
+              name='Cancel'
+              variant='ghost'
+              onClick={() => setConfirmOpen(false)}
+            />
+            <Button
+              name='Yes, Deactivate'
+              color='red'
+              loading={deactivating}
+              onClick={deactivate}
+            />
+          </div>
+        </Modal>
+      )}
+
     </div>
   );
 }
@@ -143,15 +338,15 @@ function SecuritySettings() {
 
   async function changePassword() {
     if (!curPwd) {
-      toast.error('⚠️ Please enter your current password.');
+      toast.error('Please enter your current password.');
       return;
     }
     if (!newPwd) {
-      toast.error('⚠️ Please enter a new password.');
+      toast.error('Please enter a new password.');
       return;
     }
     if (newPwd !== newPwd2) {
-      toast.error('⚠️ New password and confirmation do not match.');
+      toast.error('New password and confirmation do not match.');
       return;
     }
 
