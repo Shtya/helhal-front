@@ -16,7 +16,7 @@ import { SubmitButton } from '@/components/pages/auth/SubmitButton';
 import { Input } from '@/components/pages/auth/Input';
 import { SelectInput } from '@/components/pages/auth/SelectInput';
 import { usernameSchema } from '@/utils/profile';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 /* ---------- schemas ----------- */
 const loginSchema = z.object({
@@ -59,7 +59,7 @@ const phoneLoginSchema = z.object({
 });
 
 /* ---------- context ---------- */
-const AuthContext = createContext(null);
+const AuthFormContext = createContext(null);
 
 /* ---------- small UI bits (titles/tabs) unchanged from your file ---------- */
 function TitleByTab({ activeTab, view }) {
@@ -191,8 +191,9 @@ export const ContinueWithPhoneButton = ({ onClick }) => {
 /* ---------- forms (switched to api from lib/axios) ---------- */
 const LoginForm = ({ onLoggedIn }) => {
   const t = useTranslations('auth');
-  const { setCurrentUser } = useValues();
-  const { setLoading, setError, loading } = useContext(AuthContext);
+  const { login } = useAuth();
+
+  const { setLoading, setError, loading } = useContext(AuthFormContext);
   const {
     register,
     handleSubmit,
@@ -206,11 +207,7 @@ const LoginForm = ({ onLoggedIn }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.post('/auth/login', data);
-      const { accessToken, refreshToken, user } = res.data;
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      setCurrentUser(user);
+      await login(data);
 
       toast.success(t('success.signedIn'));
       onLoggedIn?.(user);
@@ -234,7 +231,7 @@ const LoginForm = ({ onLoggedIn }) => {
 
 const RegisterForm = ({ onOtp }) => {
   const t = useTranslations('auth');
-  const { setLoading, setError, loading } = useContext(AuthContext);
+  const { setLoading, setError, loading } = useContext(AuthFormContext);
   const {
     register,
     handleSubmit,
@@ -310,7 +307,7 @@ const RegisterForm = ({ onOtp }) => {
 
 const ForgotPasswordForm = ({ onOtp }) => {
   const t = useTranslations('auth');
-  const { setLoading, setSuccess, setError, loading } = useContext(AuthContext);
+  const { setLoading, setSuccess, setError, loading } = useContext(AuthFormContext);
   const {
     register,
     handleSubmit,
@@ -349,7 +346,7 @@ const ForgotPasswordForm = ({ onOtp }) => {
 
 const ResetPasswordForm = ({ email, otp }) => {
   const t = useTranslations('auth');
-  const { setLoading, setSuccess, setError, loading } = useContext(AuthContext);
+  const { setLoading, setSuccess, setError, loading } = useContext(AuthFormContext);
   const {
     register,
     handleSubmit,
@@ -394,7 +391,7 @@ const ResetPasswordForm = ({ email, otp }) => {
 
 const OTPForm = ({ email, onVerified, purpose = 'verify' }) => {
   const t = useTranslations('auth');
-  const { setLoading, setError, loading } = useContext(AuthContext);
+  const { setLoading, setError, loading } = useContext(AuthFormContext);
   const [otp, setOtp] = useState('');
   const [resending, setResending] = useState(false);
   const [seconds, setSeconds] = useState(30);
@@ -481,7 +478,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
 /* ---------- main ---------- */
 export default function AuthPage() {
   const router = useRouter();
-  const { user: me, setCurrentUser, refetchUser } = useValues();
+  const { user: me, setCurrentUser, refetchUser, updateTokens } = useAuth();
   const searchParams = useSearchParams();
   const t = useTranslations('auth');
 
@@ -507,8 +504,8 @@ export default function AuthPage() {
     const run = async () => {
       if (!accessTokenFromUrl) return;
       try {
-        localStorage.setItem('accessToken', accessTokenFromUrl);
-        if (refreshTokenFromUrl) localStorage.setItem('refreshToken', refreshTokenFromUrl);
+
+        updateTokens({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl });
 
         refetchUser();
 
@@ -597,7 +594,7 @@ export default function AuthPage() {
   const rawFeatures = t.raw('features');
   const features = Array.isArray(rawFeatures) ? rawFeatures : [];
   return (
-    <AuthContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess }}>
+    <AuthFormContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess }}>
       <div className='min-h-screen container !px-0 flex max-lg:flex-col'>
         {/* left hero */}
         <div className='w-full flex p-12 text-white relative overflow-hidden'>
@@ -630,7 +627,7 @@ export default function AuthPage() {
           </motion.div>
         </div>
       </div>
-    </AuthContext.Provider>
+    </AuthFormContext.Provider>
   );
 }
 
@@ -667,7 +664,7 @@ const UserTypeSelection = ({ onSelect, loading }) => {
 
 const PhoneLoginForm = () => {
   const t = useTranslations('auth');
-  const { setLoading, setError, loading } = useContext(AuthContext);
+  const { setLoading, setError, loading } = useContext(AuthFormContext);
   const {
     register,
     handleSubmit,

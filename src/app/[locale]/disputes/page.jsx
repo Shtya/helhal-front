@@ -9,7 +9,7 @@ import api from '@/lib/axios';
 import { MessageSquare, RefreshCw, Reply, ArrowDown, Send, Search } from 'lucide-react';
 import NoResults from '@/components/common/NoResults';
 import { Notification } from '@/config/Notification';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 const tabAnimation = {
   initial: { opacity: 0, y: 8, scale: 0.985 },
@@ -131,7 +131,7 @@ function MessageNode({ node, onReply, level = 0, messageById, meId }) {
 }
 
 export default function MyDisputesPage() {
-  const { user } = useValues();
+  const { user } = useAuth();
 
   const [search, setSearch] = useState('');
   const [disputes, setDisputes] = useState([]);

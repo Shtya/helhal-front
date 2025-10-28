@@ -18,10 +18,12 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Page() {
+
   const [activeTab, setActiveTab] = useState('account');
+
   const tabs = [
     { label: 'Account', value: 'account' },
     { label: 'Security', value: 'security' },
@@ -71,7 +73,7 @@ function AccountSettings() {
   const t = useTranslations('auth');
 
 
-  const { user: me, setCurrentUser, logout } = useValues();
+  const { user: me, setCurrentUser, logout } = useAuth();
   const [saving, setSaving] = useState(false);
   const [reason, setReason] = useState(null);
   const [customReason, setCustomReason] = useState('');
@@ -190,8 +192,6 @@ function AccountSettings() {
 
       await api.post('/auth/account-deactivation', { reason: finalReason });
       logout();
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
       window.location.href = '/';
     } finally {
       setDeactivating(false);
@@ -304,16 +304,33 @@ function AccountSettings() {
   );
 }
 
+
+const securitySchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+  confirmPassword: z.string().min(8, 'Please confirm your new password'),
+}).refine(data => data.newPassword === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ['confirmPassword'],
+});
+
+
 function SecuritySettings() {
+  const { user: me, loadingUser, logout } = useAuth();
   const [sessions, setSessions] = useState([]);
-  const { user: me, loadingUser } = useValues();
   const [loadingSessions, setLoadingSessions] = useState(true);
   const [revoking, setRevoking] = useState(null);
 
-  const [newPwd, setNewPwd] = useState('');
-  const [newPwd2, setNewPwd2] = useState('');
-  const [curPwd, setCurPwd] = useState('');
-  const [pwdSaving, setPwdSaving] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm({
+    resolver: zodResolver(securitySchema),
+  });
+
+
   const loading = loadingSessions || loadingUser;
 
   async function load() {
@@ -330,39 +347,29 @@ function SecuritySettings() {
     load();
   }, []);
 
-  async function changePassword() {
-    if (!curPwd) {
-      toast.error('Please enter your current password.');
-      return;
-    }
-    if (!newPwd) {
-      toast.error('Please enter a new password.');
-      return;
-    }
-    if (newPwd !== newPwd2) {
-      toast.error('New password and confirmation do not match.');
-      return;
-    }
-
-    if (!curPwd || !newPwd || newPwd !== newPwd2) return;
-    setPwdSaving(true);
+  async function onSubmit(data) {
     try {
-      await api.put('/auth/password', { currentPassword: curPwd, newPassword: newPwd });
+      await api.put('/auth/password', {
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      });
       toast.success('✅ Your password has been updated successfully.');
-      setCurPwd('');
-      setNewPwd('');
-      setNewPwd2('');
+      reset();
     } catch (err) {
-      toast.error(err.response.data.message);
-    } finally {
-      setPwdSaving(false);
+      toast.error(err.response?.data?.message || 'Failed to update password');
     }
   }
+
 
   async function revoke(id) {
     setRevoking(id);
     try {
       await api.delete(`/auth/sessions/${id}`);
+      if (me?.currentDeviceId === id) {
+        // if current session is revoked, log out
+        logout();
+        window.location.href = '/';
+      }
       setSessions(prev => prev.map(s => (s.id === id ? { ...s, revokedAt: new Date().toISOString() } : s)));
     } finally {
       setRevoking(null);
@@ -377,10 +384,37 @@ function SecuritySettings() {
   return (
     <div>
       <h2 className='text-xl font-semibold text-gray-800'>Change Password</h2>
-      <Input label='Current Password' placeholder='********' type='password' className='mt-6 max-w-[450px] w-full' value={curPwd} onChange={e => setCurPwd(e.target.value)} />
-      <Input label='New Password' placeholder='********' type='password' className='mt-3 max-w-[450px] w-full' value={newPwd} onChange={e => setNewPwd(e.target.value)} />
-      <Input label='Confirm Password' placeholder='********' type='password' className='mt-3 max-w-[450px] w-full' value={newPwd2} onChange={e => setNewPwd2(e.target.value)} />
-      <Button name={pwdSaving ? '' : 'Save Changes'} loading={pwdSaving} className='mt-6 max-w-[450px] w-full !rounded-md' color='green' onClick={changePassword} />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          label='Current Password'
+          type='password'
+          className='mt-6 max-w-[450px] w-full'
+          {...register('currentPassword')}
+          error={errors.currentPassword?.message}
+        />
+        <Input
+          label='New Password'
+          type='password'
+          className='mt-3 max-w-[450px] w-full'
+          {...register('newPassword')}
+          error={errors.newPassword?.message}
+        />
+        <Input
+          label='Confirm Password'
+          type='password'
+          className='mt-3 max-w-[450px] w-full'
+          {...register('confirmPassword')}
+          error={errors.confirmPassword?.message}
+        />
+        <Button
+          name='Save Changes'
+          loading={isSubmitting}
+          className='mt-6 max-w-[450px] w-full !rounded-md'
+          color='green'
+          type='submit'
+        />
+      </form>
+
 
       <Divider className='!my-8' />
 

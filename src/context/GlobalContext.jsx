@@ -9,8 +9,7 @@ export const GlobalProvider = ({ children }) => {
   const [categories, setCategories] = useState();
   const [cart, setCart] = useState();
   const [loadingCategory, setLoadingCategory] = useState(true);
-  const [user, setUser] = useState();
-  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingCart, setLoadingCart] = useState(true);
 
   const fetchCategories = async () => {
     try {
@@ -26,22 +25,13 @@ export const GlobalProvider = ({ children }) => {
 
   const fetchCart = async () => {
     try {
+      setLoadingCart(true);
       const res = await api.get("/cart")
       setCart(res.data)
     } catch {
       setCart([])
-    } finally { }
-  };
-
-  const fetchUser = async () => {
-    try {
-      setLoadingUser(true);
-      const res = await api.get("/auth/me");
-      setUser(res.data);
-    } catch {
-      setUser(null);
     } finally {
-      setLoadingUser(false);
+      setLoadingCart(false);
     }
   };
 
@@ -49,31 +39,14 @@ export const GlobalProvider = ({ children }) => {
   useEffect(() => {
     fetchCategories();
     fetchCart()
-    fetchUser();
   }, []);
 
-  const setCurrentUser = (input) => {
-    try {
-      const user = typeof input === 'string' ? JSON.parse(input) : input;
-      setUser(user);
-    } catch (err) {
-      console.error("Invalid user input:", err);
-      setUser(null); // or keep previous state
-    }
-  };
 
-  function logout() {
-    setUser(null);
-  }
   return <GlobalContext.Provider value={{
     cart,
     categories,
-    user,
     loadingCategory,
-    loadingUser,
-    setCurrentUser,
-    refetchUser: fetchUser,
-    logout
+    loadingCart
   }}>{children}</GlobalContext.Provider>;
 };
 

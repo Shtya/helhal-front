@@ -6,6 +6,7 @@ import { usePathname } from '../../i18n/navigation';
 import { Footer } from './Footer';
 import ConfigAos from '@/config/Aos';
 import { ProgressProvider } from '@bprogress/next/app';
+import { AuthProvider } from '@/context/AuthContext';
 
 export default function Layout({ children, params }) {
   const pathname = usePathname();
@@ -14,18 +15,20 @@ export default function Layout({ children, params }) {
 
   return (
     <GlobalProvider>
-      <ProgressProvider
-        height="2px"
-        color="#0070f3"
-        options={{ showSpinner: false }}
-        shallowRouting
-      >
-        {!isAuthRoute && <Header />}
-        <div className='  ' >{children}</div>
-        {!isAuthRoute && <Footer />}
-        <ConfigAos />
-        <Toaster position='top-center' />
-      </ProgressProvider>
+      <AuthProvider>
+        <ProgressProvider
+          height="2px"
+          color="#0070f3"
+          options={{ showSpinner: false }}
+          shallowRouting
+        >
+          {!isAuthRoute && <Header />}
+          <div className='  ' >{children}</div>
+          {!isAuthRoute && <Footer />}
+          <ConfigAos />
+          <Toaster position='top-center' />
+        </ProgressProvider>
+      </AuthProvider>
     </GlobalProvider>
   );
 }

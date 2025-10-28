@@ -26,7 +26,7 @@ import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy, Shield
 import api from '@/lib/axios';
 import Img from '@/components/atoms/Img';
 import Tabs from '@/components/common/Tabs';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 let socket;
 
@@ -79,7 +79,7 @@ function useAdminChat() {
   const [showResults, setShowResults] = useState(false);
   const [searching, setSearching] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const { user: me } = useValues();
+  const { user: me } = useAuth();
 
   const [favoriteIds, setFavoriteIds] = useState(new Set());
   const [pinnedIds, setPinnedIds] = useState(new Set());

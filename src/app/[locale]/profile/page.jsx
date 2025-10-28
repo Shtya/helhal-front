@@ -26,7 +26,7 @@ import { resolveUrl } from '@/utils/helper';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import { validateUsername } from '@/utils/profile';
 import { useTranslations } from 'next-intl';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 /* -------------------------------- Utilities -------------------------------- */
 const toDate = iso => (iso ? new Date(iso).toLocaleString() : '—');
@@ -1354,7 +1354,7 @@ export default function Overview() {
   const [dirty, setDirty] = useState(false);
   const baselineRef = useRef(null); // holds the "last saved" snapshot
   const [reverting, setReverting] = useState(false); // optional spinner on revert
-  const { user, setCurrentUser, loadingUser: loading } = useValues();
+  const { user, setCurrentUser, loadingUser: loading } = useAuth();
   const id = user?.id;
   const [saving, setSaving] = useState(false);
 

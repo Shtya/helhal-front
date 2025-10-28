@@ -13,7 +13,7 @@ import { createPortal } from 'react-dom';
 import ActionsMenu from '@/components/common/ActionsMenu';
 import Input from '@/components/atoms/Input';;
 import { InputRadio } from '@/components/atoms/InputRadio';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 const DisputeStatus = {
   OPEN: 'open',
   IN_REVIEW: 'in_review',
@@ -52,7 +52,7 @@ function nestMessages(list) {
 }
 
 function MessageNode({ node, onReply, level = 0 }) {
-  const { user } = useValues();
+  const { user } = useAuth();
 
   const isMine = node?.sender?.id === me?.id;
 

@@ -14,7 +14,7 @@ import Button from '@/components/atoms/Button';
 import api, { baseImg } from '@/lib/axios';
 import { MessageCircle } from 'lucide-react';
 import { Modal } from '@/components/common/Modal';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 // Animation
 export const tabAnimation = {
@@ -88,7 +88,7 @@ export default function Page() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
-  const { user } = useValues();
+  const { user } = useAuth();
   const [actionLoading, setActionLoading] = useState({});
 
   function setRowLoading(id, actionOrNull) {

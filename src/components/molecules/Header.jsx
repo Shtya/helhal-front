@@ -11,7 +11,7 @@ import GlobalSearch from '../atoms/GlobalSearch';
 import api from '@/lib/axios';
 import { localImageLoader } from '@/utils/helper';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 /* =========================================================
    Animations
@@ -243,7 +243,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const { user, logout } = useValues();
+  const { user, logout } = useAuth();
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
   useEffect(() => {
@@ -353,8 +353,6 @@ export default function Header() {
       setIsLogoutLoading(true);
       // purge local
       logout();
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('accessToken');
       // optional: hit your API (swap to your endpoint)
       await fetch('/api/logout', { method: 'POST' }).catch(() => { });
     } finally {
