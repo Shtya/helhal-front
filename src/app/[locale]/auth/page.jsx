@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, createContext, useContext, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,6 +17,8 @@ import { Input } from '@/components/pages/auth/Input';
 import { SelectInput } from '@/components/pages/auth/SelectInput';
 import { usernameSchema } from '@/utils/profile';
 import { useAuth } from '@/context/AuthContext';
+import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
+
 
 /* ---------- schemas ----------- */
 const loginSchema = z.object({
@@ -55,7 +57,7 @@ const passwordResetFormSchema = z
   });
 
 const phoneLoginSchema = z.object({
-  phone: z.string().min(10, 'phoneMin'),
+  phone: z.string().min(6, 'phoneMin'),
 });
 
 /* ---------- context ---------- */
@@ -103,6 +105,8 @@ const TABS = [
 function AuthTabs({ setView, activeTab, setActiveTab }) {
   const t = useTranslations('auth');
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleClick = key => {
     setActiveTab(key);
@@ -212,7 +216,6 @@ const LoginForm = ({ onLoggedIn }) => {
     setError(null);
     try {
       await login(data);
-
       toast.success(t('success.signedIn'));
       onLoggedIn?.(user);
     } catch (err) {
@@ -350,9 +353,10 @@ const ForgotPasswordForm = ({ onOtp }) => {
   );
 };
 
-const ResetPasswordForm = ({ email, otp }) => {
+const ResetPasswordForm = ({ email, otp, onReset }) => {
   const t = useTranslations('auth');
   const { setLoading, setSuccess, setError, loading } = useContext(AuthFormContext);
+
   const {
     register,
     handleSubmit,
@@ -374,6 +378,7 @@ const ResetPasswordForm = ({ email, otp }) => {
     try {
       await api.post('/auth/reset-password', { email, newPassword: data.newPassword, otp: data.otp });
       setSuccess(true);
+      onReset?.()
       toast.success(t('success.passwordReset'));
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.passwordResetFailed');
@@ -395,7 +400,9 @@ const ResetPasswordForm = ({ email, otp }) => {
   );
 };
 
-const OTPForm = ({ email, onVerified, purpose = 'verify' }) => {
+//purpose = 'verify-email' | 'verify-phone' | 'reset'
+const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
+
   const t = useTranslations('auth');
   const { setLoading, setError, loading } = useContext(AuthFormContext);
   const [otp, setOtp] = useState('');
@@ -414,12 +421,18 @@ const OTPForm = ({ email, onVerified, purpose = 'verify' }) => {
     setError(null);
     try {
       if (otp.length !== 6) throw new Error('errors.otpLength');
-      if (purpose === 'verify') {
-        await api.post('/auth/verify-email', { email, code: otp });
+      if (purpose === 'verify-email') {
+        await api.post('/auth/verify-email', { email: value, code: otp });
         toast.success(t('success.emailVerified'));
         onVerified?.();
+      } else if (purpose === 'verify-phone') {
+        const res = await api.post('/auth/verify-phone', { phone: value, code: otp });
+        const data = res.data;
+        toast.success(t('success.phoneVerified'));
+        onVerified?.(data);
+
       } else {
-        onVerified?.(otp);
+        onVerified?.(otp); // for reset or other custom flows
       }
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.otpInvalid');
@@ -433,8 +446,13 @@ const OTPForm = ({ email, onVerified, purpose = 'verify' }) => {
   const resend = async () => {
     try {
       setResending(true);
-      if (purpose === 'verify') await api.post('/auth/resend-verification-email', { email });
-      else await api.post('/auth/forgot-password', { email });
+      if (purpose === 'verify-email') {
+        await api.post('/auth/resend-verification-email', { email: value });
+      } else if (purpose === 'verify-phone') {
+        await api.post('/auth/resend-verification-sms', { phone: value });
+      } else {
+        await api.post('/auth/forgot-password', { email: value });
+      }
       setSeconds(30);
       toast.success(t('success.codeResent'));
     } catch {
@@ -447,7 +465,13 @@ const OTPForm = ({ email, onVerified, purpose = 'verify' }) => {
   return (
     <motion.div className='w-full'>
       <p className='text-gray-600 mb-6'>{t('otpSentTo')}</p>
-      <Input label={t('email')} type='text' value={email} disabled cnInput='cursor-not-allowed' />
+      <Input
+        label={purpose === 'verify-phone' ? t('phoneNumber') : t('email')}
+        type='text'
+        value={purpose === 'verify-phone' ? `${value.countryCode.dial_code} ${value.phone}` : value}
+        disabled
+        cnInput='cursor-not-allowed'
+      />
       <form onSubmit={onSubmit}>
         <div className='mb-6'>
           <label className='block text-sm font-medium text-gray-700 mb-2'>{t('otpCode')}</label>
@@ -499,7 +523,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [emailForOTP, setEmailForOTP] = useState('am259@gmail.com');
+  const [OTPValue, setOTPValue] = useState('am259@gmail.com');
   const [otpForReset, setOtpForReset] = useState('');
 
   const [needsUserTypeSelection, setNeedsUserTypeSelection] = useState(false);
@@ -563,9 +587,15 @@ export default function AuthPage() {
   const handleEmailClick = () => setView('email');
   const handlePhoneClick = () => setView('phone');
   const handleOTPRequest = email => {
-    setEmailForOTP(email);
+    setOTPValue(email);
     setView('otp');
   };
+
+  const handleOTPRequestPhone = phone => {
+    setOTPValue(phone);
+    setView('otp-phone');
+  };
+
   const handleResetOTP = otp => {
     setOtpForReset(otp);
     setView('reset');
@@ -578,9 +608,22 @@ export default function AuthPage() {
     router.push('/explore');
   };
 
+  const handlePhoneLoggedIn = ({ accessToken, refreshToken, user }) => {
+    updateTokens({ accessToken, refreshToken });
+    setCurrentUser(user);
+    router.push('/explore');
+  };
+
+
+  function handleGoToLogin() {
+    setActiveTab('login');
+    setView('email');
+  }
+
+
   const renderContent = () => {
     if (needsUserTypeSelection) return <UserTypeSelection onSelect={handleUserTypeSelect} loading={loading} />;
-    if (activeTab === 'forgot-password' && view === 'reset') return <ResetPasswordForm email={emailForOTP} otp={otpForReset} />;
+    if (activeTab === 'forgot-password' && view === 'reset') return <ResetPasswordForm email={OTPValue} otp={otpForReset} onReset={handleGoToLogin} />;
 
 
     switch (view) {
@@ -589,10 +632,12 @@ export default function AuthPage() {
         if (activeTab === 'register') return <RegisterForm onOtp={handleOTPRequest} />;
         return <ForgotPasswordForm onOtp={handleOTPRequest} />;
       case 'phone':
-        return <PhoneLoginForm />;
+        return <PhoneLoginForm onOtp={handleOTPRequestPhone} />;
       case 'otp':
-        if (activeTab === 'forgot-password') return <OTPForm email={emailForOTP} onVerified={handleResetOTP} purpose='reset' />;
-        return <OTPForm email={emailForOTP} onVerified={onOtpVerifiedGoToLogin} purpose='verify' />;
+        if (activeTab === 'forgot-password') return <OTPForm value={OTPValue} onVerified={handleResetOTP} purpose='reset' />;
+        return <OTPForm value={OTPValue} onVerified={onOtpVerifiedGoToLogin} purpose='verify-email' />;
+      case 'otp-phone':
+        return <OTPForm value={OTPValue} onVerified={handlePhoneLoggedIn} purpose='verify-phone' />
       default:
         return <AuthOptions onEmailClick={handleEmailClick} onPhoneClick={handlePhoneClick} referralCode={referralCode} />;
     }
@@ -668,35 +713,59 @@ const UserTypeSelection = ({ onSelect, loading }) => {
   );
 };
 
-const PhoneLoginForm = () => {
+const PhoneLoginForm = ({ onOtp }) => {
   const t = useTranslations('auth');
   const { setLoading, setError, loading } = useContext(AuthFormContext);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: zodResolver(phoneLoginSchema),
-    defaultValues: { phone: '' },
+
+  const [state, setState] = useState({
+    countryCode: { code: 'SA', dial_code: '+966' },
+    phone: '',
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async e => {
+    e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const trimmedPhone = state.phone.trim();
+    const isValid = trimmedPhone.length >= 6 && /^\d+$/.test(trimmedPhone);
+
+    if (!isValid) {
+      const msg = t('errors.phoneMin') || 'Please enter a valid phone number with at least 6 digits.';
+      setError(msg);
+      setLoading(false);
+      return;
+    }
+
     try {
-      await new Promise(r => setTimeout(r, 600));
+      const res = await api.post('/auth/phone', {
+        countryCode: state.countryCode,
+        phone: trimmedPhone,
+      });
+
+
+      onOtp?.({
+        countryCode: state.countryCode,
+        phone: trimmedPhone,
+      });
       toast.success(t('success.codeSent'));
     } catch {
-      setError(t('errors.codeSendFailed'));
-      toast.error(t('errors.codeSendFailed'));
+      const msg = t('errors.codeSendFailed');
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.form onSubmit={handleSubmit(onSubmit)} className='w-full'>
-      <Input label={t('phoneNumber')} type='tel' placeholder={t('enterPhone')} register={register('phone')} error={errors.phone?.message && t(`errors.${errors.phone.message}`)} />
+    <motion.form onSubmit={onSubmit} className='w-full'>
+      <div className='mb-4'>
+        <PhoneInputWithCountry value={state} onChange={setState} />
+        {state.phone && state.phone.length < 6 && (
+          <p className='text-red-500 text-sm mt-2'>{t('errors.phoneMin')}</p>
+        )}
+      </div>
       <SubmitButton isLoading={loading}>{t('sendCodeButton')}</SubmitButton>
     </motion.form>
   );

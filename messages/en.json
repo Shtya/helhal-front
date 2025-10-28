@@ -105,6 +105,7 @@
       "otpSent": "Verification code sent to your email!",
       "codeSent": "Verification code sented Successfully!",
       "emailVerified": "Email verified successfully!",
+      "phoneVerified": "Phone verified successfully!",
       "passwordReset": "Password reset successfully!",
       "codeResent": "Verification code resent!"
     },
@@ -119,7 +120,7 @@
       "passwordMax": "Password must be at most 20 characters",
       "passwordInvalidChars": "Password contains invalid characters. Only letters, numbers, and _ @ $ ! % * ? & are allowed",
       "refMax": "Referral code must be at most 150 characters",
-      "phoneMin": "Please enter a valid phone number",
+      "phoneMin": "Phone number must be at least 6 digits long.",
       "passwordsMatch": "Passwords do not match",
       "otpRequired": "Verification code is required",
       "otpMax": "OTP must be at most 10 digits",

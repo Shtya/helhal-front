@@ -726,7 +726,11 @@ function UserMiniCard({ user }) {
         <div className='relative'>
           {/* animated conic ring */}
           <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30 group-hover:opacity-60 transition' />
-          <div className='relative size-12 rounded-full border border-slate-200 shadow-sm overflow-hidden bg-white flex items-center justify-center'>{imgErr || !user?.profileImage ? <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(name)}</span> : <Image src={user.profileImage} loader={localImageLoader} alt={`${name} avatar`} width={48} height={48} onError={() => setImgErr(true)} className='rounded-full object-cover' />}</div>
+          <div className='relative size-12 rounded-full border border-slate-200 shadow-sm overflow-hidden bg-white flex items-center justify-center'>
+            {imgErr || !user?.profileImage
+              ? <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(name)}</span>
+              : <Image src={user.profileImage} loader={localImageLoader} alt={`${name} avatar`} width={48} height={48} onError={() => setImgErr(true)} className='rounded-full object-cover size-12' />}
+          </div>
         </div>
       </motion.div>
 
