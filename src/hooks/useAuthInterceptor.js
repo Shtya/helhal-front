@@ -3,7 +3,7 @@ import api, { BASE_URL, refreshClient } from "@/lib/axios";
 import { useEffect } from "react";
 
 // mark routes that should never trigger refresh
-const AUTH_BLOCKLIST = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-verification-email', '/auth/forgot-password', '/auth/reset-password', '/auth/refresh'];
+const AUTH_BLOCKLIST = ['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-verification-email', '/auth/forgot-password', '/auth/reset-password', '/auth/refresh', '/auth/phone', '/auth/verify-phone', '/auth/resend-verification-sms'];
 
 export const useAuthInterceptor = function () {
     const { logout } = useAuth();
