@@ -26,6 +26,7 @@ import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy, Shield
 import api from '@/lib/axios';
 import Img from '@/components/atoms/Img';
 import Tabs from '@/components/common/Tabs';
+import { useValues } from '@/context/GlobalContext';
 
 let socket;
 
@@ -78,7 +79,7 @@ function useAdminChat() {
   const [showResults, setShowResults] = useState(false);
   const [searching, setSearching] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [me, setMe] = useState(null);
+  const { user: me } = useValues();
 
   const [favoriteIds, setFavoriteIds] = useState(new Set());
   const [pinnedIds, setPinnedIds] = useState(new Set());
@@ -125,9 +126,8 @@ function useAdminChat() {
 
   // init socket & auth (same stable deps style you liked)
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (!user) { router.push('/auth'); return; }
-    const token = JSON.parse(user)?.accessToken;
+    if (!me) { router.push('/auth'); return; }
+    const token = JSON.parse(me)?.accessToken;
 
     socket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001', { auth: { token } });
     socket.on('connect', () => setIsConnected(true));
@@ -162,16 +162,6 @@ function useAdminChat() {
     return () => { if (socket) socket.disconnect(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router, normalizeMessage, me?.id]);
-
-  const fetchMe = async () => {
-    try {
-      const { data } = await api.get('/auth/me');
-      setMe(data);
-    } catch (e) {
-      localStorage.removeItem('user');
-      router.push('/auth');
-    }
-  };
 
   const fetchAdminConversations = async (page = 1) => {
     setLoading(true);
@@ -228,14 +218,14 @@ function useAdminChat() {
       }
       const msgs = (res.data.messages || []).map(m => normalizeMessage(m, me?.id));
       setMessagesByConv(prev => ({ ...prev, [convId]: msgs }));
-    } catch {}
+    } catch { }
   };
 
   const markAsRead = async (convId) => {
     try {
       await api.post(`/conversations/${convId}/read`);
       setConversations(prev => prev.map(c => c.id === convId ? { ...c, unreadCount: 0 } : c));
-    } catch {}
+    } catch { }
   };
 
   const selectConv = (id) => {
@@ -266,7 +256,7 @@ function useAdminChat() {
       await fetchAdminConversations();
       if (data?.id) selectConv(data.id);
       setQuery(''); setShowResults(false); setSearchResults([]);
-    } catch {}
+    } catch { }
   };
 
   const sendMessage = (convId, msg, files) => {
@@ -326,7 +316,7 @@ function useAdminChat() {
         return next;
       });
       setConversations(prev => prev.map(c => c.id === id ? { ...c, isFavorite: data.isFavorite } : c));
-    } catch {}
+    } catch { }
   };
   const togglePin = (id) => {
     setPinnedIds(prev => {
@@ -830,7 +820,7 @@ function AdminThread({ conv, messages, onSend, isConnected, me }) {
               <AnimatePresence>
                 {showEmoji && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }} className='absolute w-[200px] right-0 bottom-9 z-50 grid grid-cols-6 gap-2 rounded-xl border border-slate-200 bg-white p-2 shadow-lg'>
-                    {['😀','😁','😂','🤣','😊','😍','😅','🤩','🤔','👍','👏','🙏','🔥','🚀','✅','❗','💡','📎'].map(e => (
+                    {['😀', '😁', '😂', '🤣', '😊', '😍', '😅', '🤩', '🤔', '👍', '👏', '🙏', '🔥', '🚀', '✅', '❗', '💡', '📎'].map(e => (
                       <AccessibleButton key={e} type='button' className='text-xl hover:scale-110 transition' onClick={() => addEmoji(e)} ariaLabel={`Emoji: ${e}`}>
                         {e}
                       </AccessibleButton>
@@ -857,7 +847,7 @@ function AdminThread({ conv, messages, onSend, isConnected, me }) {
                   </div>
                 )}
                 <button onClick={() => {
-                  const next = [...files]; next.splice(i,1); setFiles(next);
+                  const next = [...files]; next.splice(i, 1); setFiles(next);
                 }} className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors' aria-label='Remove attachment'>
                   <X size={14} />
                 </button>

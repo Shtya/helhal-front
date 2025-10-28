@@ -1,6 +1,6 @@
 /* 
-	here i need i he the owner of this service show in the action button deliver if (service.sellerId == user.id )
-	if not show received
+  here i need i he the owner of this service show in the action button deliver if (service.sellerId == user.id )
+  if not show received
 */
 
 'use client';
@@ -13,8 +13,8 @@ import Table from '@/components/common/Table';
 import Button from '@/components/atoms/Button';
 import api, { baseImg } from '@/lib/axios';
 import { MessageCircle } from 'lucide-react';
-import { getUserInfo } from '@/hooks/useUser';
 import { Modal } from '@/components/common/Modal';
+import { useValues } from '@/context/GlobalContext';
 
 // Animation
 export const tabAnimation = {
@@ -88,7 +88,7 @@ export default function Page() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
-  const user = getUserInfo();
+  const { user } = useValues();
   const [actionLoading, setActionLoading] = useState({});
 
   function setRowLoading(id, actionOrNull) {

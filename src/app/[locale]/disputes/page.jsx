@@ -6,10 +6,10 @@ import Button from '@/components/atoms/Button';
 import Input from '@/components/atoms/Input';
 import { Modal } from '@/components/common/Modal';
 import api from '@/lib/axios';
-import { getUserInfo } from '@/hooks/useUser';
 import { MessageSquare, RefreshCw, Reply, ArrowDown, Send, Search } from 'lucide-react';
 import NoResults from '@/components/common/NoResults';
 import { Notification } from '@/config/Notification';
+import { useValues } from '@/context/GlobalContext';
 
 const tabAnimation = {
   initial: { opacity: 0, y: 8, scale: 0.985 },
@@ -131,7 +131,7 @@ function MessageNode({ node, onReply, level = 0, messageById, meId }) {
 }
 
 export default function MyDisputesPage() {
-  const me = getUserInfo();
+  const { user } = useValues();
 
   const [search, setSearch] = useState('');
   const [disputes, setDisputes] = useState([]);

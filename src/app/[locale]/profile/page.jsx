@@ -14,7 +14,6 @@ import AttachFilesButton from '@/components/atoms/AttachFilesButton';
 import { StatCard } from '@/components/dashboard/Ui';
 
 import { Card, Divider, Pill, SkeletonLine, SkeletonAvatar, BlockSkeleton } from '@/components/UI/ui';
-import { getUserInfo } from '@/hooks/useUser';
 import Img from '@/components/atoms/Img';
 import toast from 'react-hot-toast';
 import z from 'zod';
@@ -27,6 +26,7 @@ import { resolveUrl } from '@/utils/helper';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import { validateUsername } from '@/utils/profile';
 import { useTranslations } from 'next-intl';
+import { useValues } from '@/context/GlobalContext';
 
 /* -------------------------------- Utilities -------------------------------- */
 const toDate = iso => (iso ? new Date(iso).toLocaleString() : '—');
@@ -1354,11 +1354,8 @@ export default function Overview() {
   const [dirty, setDirty] = useState(false);
   const baselineRef = useRef(null); // holds the "last saved" snapshot
   const [reverting, setReverting] = useState(false); // optional spinner on revert
-
-  const id = getUserInfo()?.id;
-
-  const [loading, setLoading] = useState(true);
-  const [loadingStats, setLoadingStats] = useState(true);
+  const { user, setCurrentUser, loadingUser: loading } = useValues();
+  const id = user?.id;
   const [saving, setSaving] = useState(false);
 
   // unified editable state per your requested shape
@@ -1405,7 +1402,7 @@ export default function Overview() {
   });
 
   const [devices, setDevices] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [stats] = useState(null);
   const [editing, setEditing] = useState(false);
 
 
@@ -1422,12 +1419,8 @@ export default function Overview() {
     let ignore = false;
     async function fetchUser() {
       if (!id) return;
-      setLoading(true);
+
       try {
-
-        const user = await api.get(`/auth/user/${id}`).then(r => r.data);
-        if (ignore) return;
-
 
         // map API → editable state
         setState(s => ({
@@ -1512,30 +1505,12 @@ export default function Overview() {
 
       } catch (err) {
         console.error(err);
-      } finally {
-        if (!ignore) setLoading(false);
       }
     }
 
-    async function fetchStats() {
-      setLoadingStats(true);
-      try {
-        const userStats = await api.get('/auth/profile/stats', { params: { id } }).then(r => r.data);
-        if (ignore) return;
-
-        setStats(userStats);
-        setState(prev => ({ ...prev, topRated: !!userStats?.topRated }));
-
-      } catch (err) {
-        console.error(err);
-      } finally {
-        if (!ignore) setLoadingStats(false);
-      }
-    }
 
     if (id) {
       fetchUser();
-      fetchStats();
     }
     return () => {
       ignore = true;
@@ -1612,22 +1587,28 @@ export default function Overview() {
         sellerLevel: 'lvl2'
       };
 
-      await toast.promise(api.put(`/auth/profile`, payload), {
-        loading: 'Saving profile...',
-        success: 'Profile updated successfully ✅',
-        error: 'Failed to update profile ❌',
-      });
+      const res = await toast.promise(
+        api.put('/auth/profile', payload),
+        {
+          loading: 'Saving profile...',
+          success: 'Profile updated successfully ✅',
+          error: 'Failed to update profile ❌',
+        }
+      );
+
+      setCurrentUser(res.data); // 👈 directly update global user state
+
 
       // refresh minimal meta from server if you want
-      const refreshed = await api.get(`/auth/user/${id}`).then(r => r.data);
-      setMeta(m => ({
-        ...m,
-        memberSince: refreshed.memberSince ? toDateShort(refreshed.memberSince) : m.memberSince,
-        referralCode: refreshed.referralCode || m.referralCode,
-        referralCount: refreshed.referralCount ?? m.referralCount,
-        referralRewardsCount: refreshed.referralRewardsCount ?? m.referralRewardsCount,
-        referredBy: refreshed.referredBy || m.referredBy,
-      }));
+      // const refreshed = await api.get(`/auth/user/${id}`).then(r => r.data);
+      // setMeta(m => ({
+      //   ...m,
+      //   memberSince: refreshed.memberSince ? toDateShort(refreshed.memberSince) : m.memberSince,
+      //   referralCode: refreshed.referralCode || m.referralCode,
+      //   referralCount: refreshed.referralCount ?? m.referralCount,
+      //   referralRewardsCount: refreshed.referralRewardsCount ?? m.referralRewardsCount,
+      //   referredBy: refreshed.referredBy || m.referredBy,
+      // }));
 
       baselineRef.current = stableStringify(pickEditable(state));
       setDirty(false);
@@ -1719,12 +1700,12 @@ export default function Overview() {
 
         <div className='space-y-6 flex-1 lg:sticky lg:top-30 h-fit'>
           <KPICard
-            loading={loadingStats}
+            loading={loading}
             stats={{
-              ordersCompleted: stats?.ordersCompleted || 0,
-              repeatBuyers: stats?.repeatBuyers || 0,
-              averageRating: stats?.averageRating || 0,
-              responseTime: stats?.responseTime,
+              ordersCompleted: state?.ordersCompleted || 0,
+              repeatBuyers: state?.repeatBuyers || 0,
+              averageRating: state?.averageRating || 0,
+              responseTime: state?.responseTime,
             }}
           />
 

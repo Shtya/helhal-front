@@ -4,10 +4,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Button from '@/components/atoms/Button';
 import { MailPlus, UserRoundCog, UserIcon, ArrowRight } from 'lucide-react';
-import { getUserInfo } from '@/hooks/useUser';
+import { useValues } from '@/context/GlobalContext';
 
 function HeroAnother() {
-  const user = getUserInfo();
+  const { user } = useValues();
 
   const cards = [
     {
@@ -102,7 +102,7 @@ const item = {
 };
 
 export default function Hero() {
-  const user = getUserInfo();
+  const { user } = useValues();
 
   const cards = [
     {

@@ -1,7 +1,6 @@
 'use client';
 
 import api from '@/lib/axios';
-import { apiService } from '@/services/GigServices';
 import { createContext, useContext, useEffect, useState } from 'react';
 const GlobalContext = createContext();
 
@@ -10,6 +9,8 @@ export const GlobalProvider = ({ children }) => {
   const [categories, setCategories] = useState();
   const [cart, setCart] = useState();
   const [loadingCategory, setLoadingCategory] = useState(true);
+  const [user, setUser] = useState();
+  const [loadingUser, setLoadingUser] = useState(true);
 
   const fetchCategories = async () => {
     try {
@@ -32,13 +33,48 @@ export const GlobalProvider = ({ children }) => {
     } finally { }
   };
 
+  const fetchUser = async () => {
+    try {
+      setLoadingUser(true);
+      const res = await api.get("/auth/me");
+      setUser(res.data);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+
   useEffect(() => {
     fetchCategories();
     fetchCart()
+    fetchUser();
   }, []);
 
+  const setCurrentUser = (input) => {
+    try {
+      const user = typeof input === 'string' ? JSON.parse(input) : input;
+      setUser(user);
+    } catch (err) {
+      console.error("Invalid user input:", err);
+      setUser(null); // or keep previous state
+    }
+  };
 
-  return <GlobalContext.Provider value={{ cart, categories, loadingCategory }}>{children}</GlobalContext.Provider>;
+  function logout() {
+    setUser(null);
+  }
+  return <GlobalContext.Provider value={{
+    cart,
+    categories,
+    user,
+    loadingCategory,
+    loadingUser,
+    setCurrentUser,
+    refetchUser: fetchUser,
+    logout
+  }}>{children}</GlobalContext.Provider>;
 };
 
 export const useValues = () => {

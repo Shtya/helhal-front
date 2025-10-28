@@ -11,9 +11,9 @@ import { Modal } from '@/components/common/Modal';
 import { Eye, Activity, FilePlus, CheckCircle, XCircle, Search, MoreHorizontal, MessageSquare, Send } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import ActionsMenu from '@/components/common/ActionsMenu';
-import Input from '@/components/atoms/Input';
-import { getUserInfo } from '@/hooks/useUser';
+import Input from '@/components/atoms/Input';;
 import { InputRadio } from '@/components/atoms/InputRadio';
+import { useValues } from '@/context/GlobalContext';
 const DisputeStatus = {
   OPEN: 'open',
   IN_REVIEW: 'in_review',
@@ -52,7 +52,7 @@ function nestMessages(list) {
 }
 
 function MessageNode({ node, onReply, level = 0 }) {
-  const me = getUserInfo();
+  const { user } = useValues();
 
   const isMine = node?.sender?.id === me?.id;
 
@@ -408,17 +408,17 @@ export default function DisputesPage() {
       // Build a safe fallback if server doesn't return a message
       const finalized = serverMsg
         ? {
-            id: serverMsg.id || optimistic.id, // keep id if not provided
-            parentId: serverMsg.parentId ?? parentId ?? null,
-            system: !!serverMsg.system,
-            sender: serverMsg.sender || optimistic.sender,
-            message: serverMsg.message ?? text,
-            created_at: serverMsg.created_at || nowISO(),
-          }
+          id: serverMsg.id || optimistic.id, // keep id if not provided
+          parentId: serverMsg.parentId ?? parentId ?? null,
+          system: !!serverMsg.system,
+          sender: serverMsg.sender || optimistic.sender,
+          message: serverMsg.message ?? text,
+          created_at: serverMsg.created_at || nowISO(),
+        }
         : {
-            ...optimistic,
-            _optimistic: false, // commit
-          };
+          ...optimistic,
+          _optimistic: false, // commit
+        };
 
       // 3) replace optimistic with server version (or commit optimistic)
       setActivity(prev => (prev ? { ...prev, messages: replaceMessageById(prev.messages || [], optimistic.id, finalized) } : prev));
@@ -601,11 +601,11 @@ export default function DisputesPage() {
                 <InputRadio name='closeAs' value='completed' label='Completed' checked={closeAs === 'completed'} onChange={setCloseAs} />
                 <InputRadio name='closeAs' value='cancelled' label='Cancelled' checked={closeAs === 'cancelled'} onChange={setCloseAs} />
               </div>
-            </div> 
+            </div>
             {resError ? <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{resError}</div> : null}
 
             <div className='flex items-center justify-end gap-2'>
-							<Button name={resSubmitting ? 'Processing…' : 'Resolve & Payout'} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'}`} loading={resSubmitting || !orderDetail} /> 
+              <Button name={resSubmitting ? 'Processing…' : 'Resolve & Payout'} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'}`} loading={resSubmitting || !orderDetail} />
             </div>
           </div>
         </Modal>

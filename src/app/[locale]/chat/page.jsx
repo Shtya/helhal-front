@@ -10,8 +10,8 @@ import api, { baseImg } from '@/lib/axios';
 
 import { AllMessagesPanel } from '@/components/pages/chat/AllMessagesPanel';
 import { ChatThread } from '@/components/pages/chat/ChatThread';
-import { getUserInfo } from '@/hooks/useUser';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useValues } from '@/context/GlobalContext';
 
 /** ───────────────────────────────── SOCKET REF ───────────────────────────────── */
 let socket;
@@ -96,7 +96,7 @@ const useChat = () => {
   const currentUserIdRef = useRef(null);
   const messagesByThreadRef = useRef({});
   const threadsRef = useRef([]);
-  const user = getUserInfo();
+  const { user } = useValues();
 
   useEffect(() => {
     activeThreadIdRef.current = activeThreadId;

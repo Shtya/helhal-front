@@ -16,6 +16,7 @@ import { SubmitButton } from '@/components/pages/auth/SubmitButton';
 import { Input } from '@/components/pages/auth/Input';
 import { SelectInput } from '@/components/pages/auth/SelectInput';
 import { usernameSchema } from '@/utils/profile';
+import { useValues } from '@/context/GlobalContext';
 
 /* ---------- schemas ----------- */
 const loginSchema = z.object({
@@ -190,6 +191,7 @@ export const ContinueWithPhoneButton = ({ onClick }) => {
 /* ---------- forms (switched to api from lib/axios) ---------- */
 const LoginForm = ({ onLoggedIn }) => {
   const t = useTranslations('auth');
+  const { setCurrentUser } = useValues();
   const { setLoading, setError, loading } = useContext(AuthContext);
   const {
     register,
@@ -208,8 +210,7 @@ const LoginForm = ({ onLoggedIn }) => {
       const { accessToken, refreshToken, user } = res.data;
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
-      if (user?.currentDeviceId) localStorage.setItem('currentDeviceId', user.currentDeviceId);
-      localStorage.setItem('user', JSON.stringify(user));
+      setCurrentUser(user);
 
       toast.success(t('success.signedIn'));
       onLoggedIn?.(user);
@@ -480,6 +481,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
 /* ---------- main ---------- */
 export default function AuthPage() {
   const router = useRouter();
+  const { user: me, setCurrentUser, refetchUser } = useValues();
   const searchParams = useSearchParams();
   const t = useTranslations('auth');
 
@@ -496,7 +498,7 @@ export default function AuthPage() {
   const [success, setSuccess] = useState(false);
   const [emailForOTP, setEmailForOTP] = useState('am259@gmail.com');
   const [otpForReset, setOtpForReset] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
+
   const [needsUserTypeSelection, setNeedsUserTypeSelection] = useState(false);
   const [oauthUser, setOauthUser] = useState(null);
 
@@ -508,10 +510,7 @@ export default function AuthPage() {
         localStorage.setItem('accessToken', accessTokenFromUrl);
         if (refreshTokenFromUrl) localStorage.setItem('refreshToken', refreshTokenFromUrl);
 
-        const me = await api.get('/auth/me').then(r => r.data);
-        if (me?.currentDeviceId) localStorage.setItem('currentDeviceId', me.currentDeviceId);
-        localStorage.setItem('user', JSON.stringify(me || {}));
-        setCurrentUser(me);
+        refetchUser();
 
         if (!me?.type) {
           setOauthUser(me);
@@ -531,9 +530,7 @@ export default function AuthPage() {
   const handleUserTypeSelect = async userType => {
     setLoading(true);
     try {
-      await api.put('/auth/profile', { type: userType }); // backend must allow 'type'
-      const me = await api.get('/auth/me').then(r => r.data);
-      localStorage.setItem('user', JSON.stringify(me || {}));
+      const me = await api.put('/auth/profile', { type: userType }).then(r => r.data);
       setCurrentUser(me);
       toast.success('User type updated successfully!');
       router.push(redirectUrl);
@@ -554,14 +551,11 @@ export default function AuthPage() {
 
   useEffect(() => {
     try {
-      const u = localStorage.getItem('user');
-      if (u) {
-        const userData = JSON.parse(u);
-        setCurrentUser(userData);
+      if (me) {
         if (userData && window.location.pathname === '/auth') router.push('/explore');
       }
     } catch { }
-  }, [router]);
+  }, [router, me]);
 
   const handleEmailClick = () => setView('email');
   const handlePhoneClick = () => setView('phone');
@@ -578,7 +572,6 @@ export default function AuthPage() {
     setView('email');
   };
   const handleLoggedIn = user => {
-    setCurrentUser(user);
     router.push('/explore');
   };
 

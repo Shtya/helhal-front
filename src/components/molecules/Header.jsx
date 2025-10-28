@@ -11,6 +11,7 @@ import GlobalSearch from '../atoms/GlobalSearch';
 import api from '@/lib/axios';
 import { localImageLoader } from '@/utils/helper';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
+import { useValues } from '@/context/GlobalContext';
 
 /* =========================================================
    Animations
@@ -25,14 +26,7 @@ const fadeIn = { hidden: { opacity: 0, x: 12 }, show: { opacity: 1, x: 0, transi
    ========================================================= */
 export const Divider = ({ className = '' }) => <div className={`my-1 border-t border-slate-200 ${className}`} />;
 
-const getLocalUser = () => {
-  try {
-    const raw = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-};
+
 
 const relTime = iso => {
   if (!iso) return '';
@@ -248,17 +242,9 @@ export default function Header() {
   const t = useTranslations('layout');
   const pathname = usePathname();
   const router = useRouter();
-
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, logout } = useValues();
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-
-  useEffect(() => {
-    setUser(getLocalUser());
-    const onStorage = () => setUser(getLocalUser());
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
 
   useEffect(() => {
     setIsMobileNavOpen(false);
@@ -366,10 +352,9 @@ export default function Header() {
     try {
       setIsLogoutLoading(true);
       // purge local
-      localStorage.removeItem('user');
+      logout();
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('accessToken');
-      localStorage.removeItem('currentDeviceId');
       // optional: hit your API (swap to your endpoint)
       await fetch('/api/logout', { method: 'POST' }).catch(() => { });
     } finally {

@@ -18,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { useValues } from '@/context/GlobalContext';
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState('account');
@@ -69,7 +70,8 @@ function AccountSettings() {
   });
   const t = useTranslations('auth');
 
-  const [me, setMe] = useState(null);
+
+  const { user: me, setCurrentUser, logout } = useValues();
   const [saving, setSaving] = useState(false);
   const [reason, setReason] = useState(null);
   const [customReason, setCustomReason] = useState('');
@@ -105,16 +107,9 @@ function AccountSettings() {
 
 
   useEffect(() => {
-    (async () => {
-      const u = await api.get('/auth/me').then(r => r.data);
-      setMe(u);
-      console.log(watch(), u)
-      setValue('username', u?.username || '');
-      setValue('email', u?.email || '');
-
-      console.log(watch())
-    })();
-  }, []);
+    setValue('username', me?.username || '');
+    setValue('email', me?.email || '');
+  }, [me]);
 
   const saveProfile = handleSubmit(async ({ username, email }) => {
     setSaving(true);
@@ -129,7 +124,7 @@ function AccountSettings() {
             const updatedUsername = res.data?.username;
             if (updatedUsername) {
               setValue('username', updatedUsername);
-              setMe(prev => ({ ...prev, username: updatedUsername }));
+              setCurrentUser(prev => ({ ...prev, username: updatedUsername }));
             }
           })
         );
@@ -194,10 +189,9 @@ function AccountSettings() {
     try {
 
       await api.post('/auth/account-deactivation', { reason: finalReason });
+      logout();
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      localStorage.removeItem('currentDeviceId');
       window.location.href = '/';
     } finally {
       setDeactivating(false);
@@ -217,17 +211,17 @@ function AccountSettings() {
             <Button
               name='Cancel request'
               color='gray'
-              className='mt-2 text-base !text-red-600 !bg-transparent'
+              className='mt-2 text-sm !text-red-600 !bg-transparent'
               onClick={cancelEmailChange}
             />
 
             {resendCooldown > 0 ? (
-              <span className='mt-2 text-blue-600 text-nowrap text-center'>Resend in {resendCooldown}s</span>
+              <span className='mt-2 text-sm text-blue-600 text-nowrap text-center'>Resend in {resendCooldown}s</span>
             ) : (
               <Button
                 name='Resend Email'
                 color='green'
-                className='mt-2 text-base'
+                className='mt-2 text-sm'
                 onClick={resendEmail}
               />
             )}
@@ -312,23 +306,23 @@ function AccountSettings() {
 
 function SecuritySettings() {
   const [sessions, setSessions] = useState([]);
-  const [me, setMe] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user: me, loadingUser } = useValues();
+  const [loadingSessions, setLoadingSessions] = useState(true);
   const [revoking, setRevoking] = useState(null);
 
   const [newPwd, setNewPwd] = useState('');
   const [newPwd2, setNewPwd2] = useState('');
   const [curPwd, setCurPwd] = useState('');
   const [pwdSaving, setPwdSaving] = useState(false);
+  const loading = loadingSessions || loadingUser;
 
   async function load() {
-    setLoading(true);
+    setLoadingSessions(true);
     try {
-      const [meRes, sesRes] = await Promise.all([api.get('/auth/me').then(r => r.data), api.get('/auth/sessions').then(r => r.data)]);
-      setMe(meRes);
+      const sesRes = await api.get('/auth/sessions').then(r => r.data);
       setSessions(sesRes);
     } finally {
-      setLoading(false);
+      setLoadingSessions(false);
     }
   }
 
@@ -412,7 +406,7 @@ function SecuritySettings() {
             {sessions.length === 0 && <p className='text-sm text-gray-600'>No active sessions.</p>}
             {sessions.map((s, i) => {
               // ✅ compare current session id with row id
-              const isThisDevice = !!(me?.currentDeviceId && s.id && me.currentDeviceId === s.id);
+              const isThisDevice = !!(me?.currentDeviceId && s.id && me?.currentDeviceId === s.id);
               const killed = !!s.revokedAt;
               const meta = `${s.browser || 'Unknown'}${s.os ? `, ${s.os}` : ''}${s.deviceType ? ` (${s.deviceType})` : ''}`;
               return (
