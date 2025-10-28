@@ -49,6 +49,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    console.log('Logging out user...');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setUser(null);

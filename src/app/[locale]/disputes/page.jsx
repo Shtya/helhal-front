@@ -131,7 +131,7 @@ function MessageNode({ node, onReply, level = 0, messageById, meId }) {
 }
 
 export default function MyDisputesPage() {
-  const { user } = useAuth();
+  const { user: me } = useAuth();
 
   const [search, setSearch] = useState('');
   const [disputes, setDisputes] = useState([]);

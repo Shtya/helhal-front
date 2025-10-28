@@ -179,7 +179,7 @@ function useAdminChat() {
       const list = convs.map(c => {
         const other =
           me && c.buyer && c.seller
-            ? (me.id === c.buyer.id ? c.seller : c.buyer)
+            ? (me?.id === c.buyer.id ? c.seller : c.buyer)
             : (c.buyer || c.seller || { username: 'Unknown', profileImage: '/default-avatar.png' });
 
         return {

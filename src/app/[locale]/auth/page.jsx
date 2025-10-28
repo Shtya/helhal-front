@@ -191,7 +191,7 @@ export const ContinueWithPhoneButton = ({ onClick }) => {
 /* ---------- forms (switched to api from lib/axios) ---------- */
 const LoginForm = ({ onLoggedIn }) => {
   const t = useTranslations('auth');
-  const { login } = useAuth();
+  const { login, user } = useAuth();
 
   const { setLoading, setError, loading } = useContext(AuthFormContext);
   const {
