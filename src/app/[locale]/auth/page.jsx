@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, createContext, useContext, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -103,6 +103,8 @@ const TABS = [
 function AuthTabs({ setView, activeTab, setActiveTab }) {
   const t = useTranslations('auth');
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleClick = key => {
     setActiveTab(key);
