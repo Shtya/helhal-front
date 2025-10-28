@@ -121,6 +121,7 @@
       "passwordInvalidChars": "Password contains invalid characters. Only letters, numbers, and _ @ $ ! % * ? & are allowed",
       "refMax": "Referral code must be at most 150 characters",
       "phoneMin": "Phone number must be at least 6 digits long.",
+      "inValidOptionalPhone": "Phone number must be at least 6 digits if provided",
       "passwordsMatch": "Passwords do not match",
       "otpRequired": "Verification code is required",
       "otpMax": "OTP must be at most 10 digits",

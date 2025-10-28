@@ -168,6 +168,18 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
     onError?.(!!msg);
   };
 
+  const [phoneError, setPhoneError] = useState('');
+
+  const handleChangePhone = (val) => {
+    const trimmed = val.phone.trim();
+    const isInvalid = trimmed && (trimmed.length < 6 || !/^\d+$/.test(trimmed));
+
+    setPhoneError(isInvalid ? 'inValidOptionalPhone' : '');
+    onError?.(isInvalid);
+    setState(s => ({ ...s, ...val }));
+  };
+
+
   return (
     <Card>
       <div className='rounded-t-2xl px-6 py-7' style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0) 100%)' }}>
@@ -241,8 +253,10 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
               {/* <Input label='Email' value={state.email} onChange={e => setState(s => ({ ...s, email: e.target.value }))} /> */}
               <PhoneInputWithCountry
                 value={{ countryCode: state.countryCode, phone: state.phone }}
-                onChange={val => setState(s => ({ ...s, ...val }))}
+                onChange={handleChangePhone}
               />
+              {phoneError && <FormErrorMessage message={t(`errors.${phoneError}`)} />}
+
 
             </div>
           ) : (
