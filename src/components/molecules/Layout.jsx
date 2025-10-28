@@ -1,5 +1,5 @@
 'use client';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster, useToasterStore } from 'react-hot-toast';
 import { GlobalProvider } from '../../context/GlobalContext';
 import Header from './Header';
 import { usePathname } from '../../i18n/navigation';
@@ -8,12 +8,23 @@ import ConfigAos from '@/config/Aos';
 import { ProgressProvider } from '@bprogress/next/app';
 import { AuthProvider } from '@/context/AuthContext';
 import { useAuthInterceptor } from '@/hooks/useAuthInterceptor';
+import { useEffect } from 'react';
 
 export default function Layout({ children, params }) {
 
   const pathname = usePathname();
   const isAuthRoute = pathname.startsWith('/auth') || pathname.startsWith('/dashboard');
 
+  // Enforce toast limit
+  const { toasts } = useToasterStore()
+  const TOAST_LIMIT = 5
+
+  useEffect(() => {
+    toasts
+      .filter(t => t.visible) // Only consider visible toasts
+      .filter((_, i) => i >= TOAST_LIMIT) // Is toast index over limit
+      .forEach(t => toast.dismiss(t.id)) // Dismiss – Use toast.remove(t.id) removal without animation
+  }, [toasts])
 
   return (
     <GlobalProvider>

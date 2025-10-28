@@ -102,11 +102,15 @@ const TABS = [
 
 function AuthTabs({ setView, activeTab, setActiveTab }) {
   const t = useTranslations('auth');
-  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleClick = key => {
     setActiveTab(key);
-    router.push(`/auth?tab=${key}`);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', key);
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+
     if (key === 'login' || key === 'register') setView('options');
     if (key === 'forgot-password') setView('email');
   };
@@ -231,6 +235,8 @@ const LoginForm = ({ onLoggedIn }) => {
 
 const RegisterForm = ({ onOtp }) => {
   const t = useTranslations('auth');
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref') || '';
   const { setLoading, setError, loading } = useContext(AuthFormContext);
   const {
     register,
@@ -239,7 +245,7 @@ const RegisterForm = ({ onOtp }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { username: '', email: '', password: '', role: 'buyer', type: 'Individual', ref: '' },
+    defaultValues: { username: '', email: '', password: '', role: 'buyer', type: 'Individual', ref: referralCode },
   });
 
   const onSubmit = async data => {

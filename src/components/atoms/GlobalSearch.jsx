@@ -102,11 +102,11 @@ export default function GlobalSearch({ className = '' }) {
         setOpen(false);
         setScopeOpen(false);
       }
-      const mod = e.ctrlKey || e.metaKey;
-      if (mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
-        e.preventDefault();
-        cycleScope(e.key === 'ArrowRight' ? +1 : -1);
-      }
+      // const mod = e.ctrlKey || e.metaKey;
+      // if (mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+      //   e.preventDefault();
+      //   cycleScope(e.key === 'ArrowRight' ? +1 : -1);
+      // }
     };
     document.addEventListener('mousedown', onDoc);
     document.addEventListener('keydown', onKey);

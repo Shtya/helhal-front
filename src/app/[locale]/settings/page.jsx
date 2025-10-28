@@ -521,6 +521,9 @@ function NotificationSettings() {
     setSaving(true);
     try {
       await api.put('/notifications/settings/user', settings);
+      toast.success('Settings saved successfully'); // ✅ success toast
+    } catch (err) {
+      toast.error('Failed to save settings'); // ✅ error toast
     } finally {
       setSaving(false);
     }

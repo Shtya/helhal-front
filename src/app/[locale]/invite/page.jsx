@@ -7,27 +7,58 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Textarea from '@/components/atoms/Textarea';
 import { Pencil, Plus, X } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { showWarningToast } from '@/utils/notifications';
+import z from 'zod';
+import toast from 'react-hot-toast';
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+const emailSchema = z.string().email();
 
 export default function Invite() {
   // ======= State =======
+  const { user } = useAuth();
   const [rawEmails, setRawEmails] = useState('');
   const [validEmails, setValidEmails] = useState([]);
   const [invalidEmails, setInvalidEmails] = useState([]);
 
-  const [link, setLink] = useState('https://helhal.page.link/ojYG');
-  const [copied, setCopied] = useState(false);
+  const [link, setLink] = useState('');
 
-  const [subject, setSubject] = useState('Join me on UpPhoto');
-  const [senderName, setSenderName] = useState(''); // اختياري لتخصيص الرسالة
-  const [message, setMessage] = useState('Hey! I’m using UpPhoto and I think you’ll love it.');
+  const [copied, setCopied] = useState(false);
+  const [subject, setSubject] = useState('Join me on Helhal');
+  const [senderName, setSenderName] = useState(user?.username || ''); // اختياري لتخصيص الرسالة
+
+  useEffect(() => {
+    setSenderName(user?.username || '');
+  }, [user])
+
+  const [message, setMessage] = useState(
+    `Hi there,
+
+I’ve been using Helhal, a secure and transparent freelance platform where clients and professionals connect with confidence. It offers clear pricing, curated talent, and escrow protection for every project.
+
+I think you’d find it valuable—whether you're hiring or offering services.
+
+👉 {link}
+
+Let me know if you sign up—I’d love to collaborate or help you get started.`
+  );
+
 
   const [sending, setSending] = useState(false);
   const [sentCount, setSentCount] = useState(0);
 
   const [showPreview, setShowPreview] = useState(false);
 
+  //init link with referral code
+  useEffect(() => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://helhal.page.link';
+
+    if (user?.referralCode) {
+      setLink(`${origin}/en/auth?tab=register&ref=${user.referralCode}`);
+    } else {
+      setLink(origin); // fallback to main domain
+    }
+  }, [user]);
   // ======= AOS =======
   useEffect(() => {
     AOS.init({ duration: 700, once: true, offset: 80, easing: 'ease-out' });
@@ -42,8 +73,8 @@ export default function Invite() {
       .filter(Boolean);
 
     const uniq = Array.from(new Set(tokens));
-    const good = uniq.filter(e => EMAIL_RE.test(e));
-    const bad = uniq.filter(e => !EMAIL_RE.test(e));
+    const good = uniq.filter(e => emailSchema.safeParse(e).success);
+    const bad = uniq.filter(e => !emailSchema.safeParse(e).success);
     return { good, bad };
   }, [rawEmails]);
 
@@ -52,7 +83,9 @@ export default function Invite() {
     setInvalidEmails(parsed.bad);
   }, [parsed]);
 
-  const canSend = validEmails.length > 0 && !sending;
+  const canSend =
+    validEmails.length > 0 &&
+    !sending;
 
   const inviteBodyResolved = useMemo(() => {
     const base = message.replace('{link}', link).trim();
@@ -60,15 +93,30 @@ export default function Invite() {
     return withName;
   }, [message, link, senderName]);
 
+
+  function sanitizeText(text) {
+    return text
+      .replace(/[“”‘’–—]/g, "'") // replace smart quotes/dashes with plain ones
+      .replace(/\n/g, '\r\n'); // proper line breaks for email clients
+  }
+
   const gmailHref = useMemo(() => {
-    return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(inviteBodyResolved)}`;
-  }, [subject, inviteBodyResolved]);
+    const recipients = validEmails.join(',');
+    const subjectEncoded = encodeURIComponent(sanitizeText(subject.trim()));
+    const bodyEncoded = encodeURIComponent(sanitizeText(inviteBodyResolved));
+
+    return `mailto:${recipients}?subject=${subjectEncoded}&body=${bodyEncoded}`;
+  }, [validEmails, subject, inviteBodyResolved]);
+
+
+
 
   const shareLinks = useMemo(
     () => ({
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`,
       pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(link)}&description=${encodeURIComponent(subject)}`,
+      twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(link)}&text=${encodeURIComponent(subject)}&hashtags=Helhal,Freelance`,
       gmail: gmailHref,
     }),
     [link, subject, gmailHref],
@@ -87,13 +135,38 @@ export default function Invite() {
 
   const handleSendInvites = async () => {
     if (!canSend) return;
+
+    if (subject.trim().length < 5) {
+      toast.error('Subject must be at least 5 characters.');
+      return;
+    }
+
+    if (message.trim().length < 7) {
+      toast.error('Message must be at least 7 characters.');
+      return;
+    }
+
     setSending(true);
-    // 👇 هنا تتصل بالباك-إند الفعلي. حاليا محاكاة:
-    await new Promise(r => setTimeout(r, 900));
-    setSending(false);
-    setSentCount(validEmails.length);
-    setRawEmails('');
+
+    try {
+      const res = await api.post('/invite/send', {
+        emails: validEmails,
+        subject: subject.trim(),
+        senderName: senderName.trim(),
+        message: message.trim(),
+        referralLink: link,
+      });
+
+      toast.success(`Successfully sent to ${validEmails.length} ${validEmails.length === 1 ? 'email' : 'emails'}.`);
+      setSentCount(validEmails.length);
+      setRawEmails('');
+    } catch (e) {
+      toast.error('Failed to send invites. Please try again.');
+    } finally {
+      setSending(false);
+    }
   };
+
 
   const handleTikTok = async e => {
     e.preventDefault();
@@ -196,10 +269,14 @@ export default function Invite() {
 
             <div className='rounded-xl border border-slate-200 p-4 bg-slate-50/50' data-aos='fade-up' data-aos-delay='50'>
               <div className='grid grid-cols-1 md:grid-cols-2 mb-3 gap-3'>
-                <Input label='Email subject' placeholder='Subject…' value={subject} onChange={setSubject} />
-                <Input label='Your name (optional)' placeholder='e.g., Mohamed' value={senderName} onChange={setSenderName} />
+                <Input label='Email subject' placeholder='Subject…' value={subject} onChange={e => setSubject(e.target.value)} />
+                <Input label='Your name (optional)' placeholder='e.g., Mohamed' value={senderName} onChange={e => setSenderName(e.target.value)} />
               </div>
-              <Textarea placeholder='Write your invite message…' value={message} onChange={e => setMessage(e.target.value)} rows={4} label={`Message`} />
+              <Textarea placeholder='Write your invite message…' value={message} onChange={e => setMessage(e.target.value)} rows={6} label={`Message`} />
+              <p className='mt-1 text-xs text-[#6B7280]'>
+                You can use <code>{'{link}'}</code> in your message—it will be replaced with your unique invite URL.
+              </p>
+
             </div>
           </div>
         </div>
@@ -208,7 +285,7 @@ export default function Invite() {
         <div className='mt-12 flex flex-wrap items-center justify-center gap-6 md:gap-10' data-aos='zoom-in-up' data-aos-delay='150'>
           <IconLink href={shareLinks.linkedin} src='/social/linkedin.png' alt='LinkedIn' />
           <IconLink href={shareLinks.gmail} src='/social/google.png' alt='Gmail' />
-          <IconLink href='#' onClick={handleTikTok} src='/social/tiktok.png' alt='TikTok (copy link)' />
+          <IconLink href={shareLinks.twitter} src='/social/twitter.png' alt='twitter' />
           <IconLink href={shareLinks.pinterest} src='/social/pinterist.png' alt='Pinterest' />
           <IconLink href={shareLinks.facebook} src='/social/facebook.png' alt='Facebook' />
         </div>
