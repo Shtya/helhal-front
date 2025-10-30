@@ -22,3 +22,10 @@ export function maskEmail(email) {
     const maskedUser = user.length <= 3 ? user[0] + '*'.repeat(user.length - 1) : user.slice(0, 2) + '*'.repeat(user.length - 3) + user.slice(-1);
     return `${maskedUser}@${domain}`;
 }
+
+
+//pathname: string, params: URLSearchParams
+export function updateUrlParams(pathname, params) {
+    const newUrl = `${pathname}?${params.toString()}`;
+    window.history.replaceState(null, '', newUrl);
+}

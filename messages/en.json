@@ -619,6 +619,7 @@
     "serviceType": "Service Type",
     "priceRange": "Price Range",
     "rating": "Rating",
+    "revisions": "Revisions",
     "sortBy": "Sort By",
     "sort": {
       "all": "All",

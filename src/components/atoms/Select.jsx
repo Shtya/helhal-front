@@ -214,7 +214,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
                 : (
                   <ul className='divide-y divide-gray-100'>
                     {internalOptions.map(opt => (
-                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white'}`}>
+                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white option-selected'}`}>
                         {opt.name}
                       </li>
                     ))}
