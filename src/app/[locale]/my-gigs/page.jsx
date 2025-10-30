@@ -36,7 +36,7 @@ export default function Page() {
         status: activeTab === 'All' ? '' : activeTab,
       };
 
-      const response = await apiService.getServices(params);
+      const response = await apiService.getMyServices(params);
 
       setServices(response.services);
 

@@ -17,7 +17,7 @@ export default function HeaderCategoriesSwiper({ category }) {
   const [isEnd, setIsEnd] = useState(false);
 
   const hasData = categories && categories.length > 0;
-  const isAllActive = !category; // active when no category selected
+  const isAllActive = category == 'all'; // active when no category selected
 
   return (
     <div className='relative mb-6 border-y border-y-slate-200 '>
@@ -83,7 +83,7 @@ export default function HeaderCategoriesSwiper({ category }) {
           }}
           className='!px-2'>
           <SwiperSlide className='!w-auto py-2 '>
-            <Link href='/services' aria-current={isAllActive ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ' + (isAllActive ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-emerald-500 from-emerald-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-emerald-400/60 hover:text-emerald-700')} title='All services'>
+            <Link href='/services/all' aria-current={isAllActive ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ' + (isAllActive ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-emerald-500 from-emerald-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-emerald-400/60 hover:text-emerald-700')} title='All services'>
               All
             </Link>
           </SwiperSlide>

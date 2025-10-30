@@ -61,7 +61,7 @@ class ApiService {
     });
   }
 
-  getCategoryServicesFilter(category, queryParams) {
+  getCategoryServicesFilter(category, queryParams, extra = {}) {
     const processedParams = { ...queryParams };
 
     if (Array.isArray(processedParams.sellerLevel)) processedParams.sellerLevel = processedParams.sellerLevel.join(',');
@@ -73,7 +73,22 @@ class ApiService {
     return this.request({
       method: 'GET',
       url: `/services/category/${category}?${queryString}`,
+      extra
     });
+  }
+
+  getServicesPublic(query = {}, extra = {}) {
+    const params = this.normalizeParams(query);
+    return this.request({
+      method: 'GET',
+      url: '/services/all',
+      params,
+      ...extra,
+    });
+  }
+
+  getServices(category, query = {}, extra = {}) {
+    return category === 'all' ? this.getServicesPublic(query, extra) : this.getCategoryServicesFilter(category, query, extra)
   }
 
   getServicesFilterOptions(category) {
@@ -82,14 +97,20 @@ class ApiService {
       url: `/services/category/${category}/filter-options`,
     });
   }
+
   getAllFilterOptions() {
     return this.request({
       method: 'GET',
       url: `/services/filter-options`,
     });
   }
+
+
+  getFilterOptions(category = 'all') {
+    return category === 'all' ? this.getAllFilterOptions() : this.getServicesFilterOptions(category);
+  }
   // ========== Services ==========
-  getServices(query = {}, extra = {}) {
+  getMyServices(query = {}, extra = {}) {
     return this.request({
       method: 'GET',
       url: '/services/me',
@@ -160,15 +181,6 @@ class ApiService {
     });
   }
 
-  getServicesPublic(query = {}, extra = {}) {
-    const params = this.normalizeParams(query);
-    return this.request({
-      method: 'GET',
-      url: '/services/all',
-      params,
-      ...extra,
-    });
-  }
 
   getMyServices(query = {}, extra = {}) {
     const params = this.normalizeParams(query);
