@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper/modules';
@@ -14,6 +14,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users } from 'lucide-react';
 import ReactPlayer from 'react-player';
 import { localImageLoader } from '@/utils/helper';
+import api from '@/lib/axios';
+
 
 // ========================= PAGE =========================
 export default function ExplorePage() {
@@ -31,21 +33,58 @@ export default function ExplorePage() {
 }
 
 // ========================= DATA =========================
-const CATEGORY_SWIPER_ITEMS = [
-  { key: 'appDevelopment', href: '/', icon: '/icons/categories/app-development.svg' },
-  { key: 'programmingTech', href: '/', icon: '/icons/categories/programming-tech.svg' },
-  { key: 'uiDesign', href: '/', icon: '/icons/categories/ui-design.svg' },
-  { key: 'videoAnimation', href: '/', icon: '/icons/categories/video-animation.svg' },
-  { key: 'writingTranslation', href: '/', icon: '/icons/categories/writing-translation.svg' },
-  { key: 'musicAudio', href: '/', icon: '/icons/categories/music-audio.svg' },
+
+const CATEGORIES_FALLBACK = [
+  { id: 'dev-1', slug: 'app-development', name: 'App Development', iconUrl: '/icons/categories/app-development.svg' },
+  { id: 'dev-2', slug: 'programming-tech', name: 'Programming & Tech', iconUrl: '/icons/categories/programming-tech.svg' },
+  { id: 'dev-3', slug: 'ui-design', name: 'UI Design', iconUrl: '/icons/categories/ui-design.svg' },
+  { id: 'dev-4', slug: 'video-animation', name: 'Video & Animation', iconUrl: '/icons/categories/video-animation.svg' },
+  { id: 'dev-5', slug: 'writing-translation', name: 'Writing & Translation', iconUrl: '/icons/categories/writing-translation.svg' },
+  { id: 'dev-6', slug: 'music-audio', name: 'Music & Audio', iconUrl: '/icons/categories/music-audio.svg' },
 ];
 
-const POPULAR_SERVICES = [
-  { key: 'iosAppDevelopment', icon: '/icons/services/ios-app-development.svg', href: '/' },
-  { key: 'wordpressDevelopers', icon: '/icons/services/wordpress-developers.svg', href: '/' },
-  { key: 'uxpin', icon: '/icons/services/uxpin.svg', href: '/' },
-  { key: 'invisionStudio', icon: '/icons/services/invision-studio.svg', href: '/' },
+export const POPULAR_SERVICES = [
+  {
+    id: '23654d6f54d545df45d',
+    slug: 'ios-app-development',
+    categorySlug: 'mobile-development',
+    categoryIconUrl: '/icons/services/ios-app-development.svg',
+    title: 'iOS App Development',
+    startingPrice: 50,
+  },
+  {
+    id: '156123dsfsdfsdf',
+    slug: 'wordpress-developers',
+    categorySlug: 'web-development',
+    categoryIconUrl: '/icons/services/wordpress-developers.svg',
+    title: 'WordPress Developers',
+    startingPrice: 30,
+  },
+  {
+    id: '1564dsfsfsf',
+    slug: 'uxpin-experts',
+    categorySlug: 'ux-design',
+    categoryIconUrl: '/icons/services/uxpin.svg',
+    title: 'UXPin',
+    startingPrice: 27,
+  },
+  {
+    id: '135d4g65df46g5df',
+    slug: 'invision-studio',
+    categorySlug: 'ui-design',
+    categoryIconUrl: '/icons/services/invision-studio.svg',
+    title: 'Invision Studio',
+    startingPrice: 50,
+  },
 ];
+
+const WHY_CHOOSE_ITEMS = [
+  { key: 'categories', icon: '/icons/why-choose/categories.svg' },
+  { key: 'pricing', icon: '/icons/why-choose/pricing.svg' },
+  { key: 'quality', icon: '/icons/why-choose/quality.svg' },
+  { key: 'support', icon: '/icons/why-choose/support.svg' },
+];
+
 
 const VIDEO_SLIDER_ITEMS = [
   { id: 'video-3', url: 'https://res.cloudinary.com/drru4lsys/video/upload/v1752490550/video-3.mp4' },
@@ -175,12 +214,53 @@ function Badge({ icon, label }) {
 }
 
 export function CategorySwiper() {
-  const t = useTranslations('categories');
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await api.get(`/categories/top`);
+        const data = res?.data?.records || [];
+        setItems(data);
+      } catch (err) {
+        // development fallback dataset
+        if (process.env.NODE_ENV === 'development') {
+          setItems(CATEGORIES_FALLBACK);
+        } else {
+          setError('Failed to load categories');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (error) {
+    return (
+      <section className="relative -mt-6 pb-4">
+        <div className="container !px-4 sm:!px-6 lg:!px-8">
+          <div className="mt-8">
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              Unable to load popular categories. Please try again later.
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+
 
   return (
-    <section className='relative -mt-6 pb-4'>
-      <div className='container !px-4 sm:!px-6 lg:!px-8'>
-        <div className='   mt-8 '>
+    <section className="relative -mt-6 pb-4">
+      <div className="container !px-4 sm:!px-6 lg:!px-8">
+        <div className="mt-8">
           <Swiper
             breakpoints={{
               1199: { slidesPerView: 6, spaceBetween: 24 },
@@ -190,18 +270,51 @@ export function CategorySwiper() {
             }}
             pagination={{ clickable: true }}
             modules={[Pagination]}
-            className='category-swiper !px-4 !py-8'>
-            {CATEGORY_SWIPER_ITEMS.map(category => (
-              <SwiperSlide key={category.key} className='py-2'>
-                <Link href={category.href} className={['group relative flex flex-col items-center justify-center h-full', 'rounded-xl border border-emerald-100/70 bg-white', 'px-5 py-8 transition-all duration-200', 'shadow-sm hover:shadow-emerald-200/60 hover:shadow-lg', 'hover:-translate-y-0.5'].join(' ')}>
-                  <span className='absolute inset-0 rounded-xl bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity' />
-                  <div className='relative w-12 h-12 mb-3'>
-                    <Image src={category.icon} loader={localImageLoader} alt={t(category.key)} fill sizes='48px' className='object-contain' />
+            className="category-swiper !px-4 !py-8"
+          >
+            {loading
+              ? // render skeleton slides inside Swiper while loading
+              Array.from({ length: 6 }).map((_, i) => (
+                <SwiperSlide key={`skeleton-${i}`} className="py-2">
+                  <div
+                    className={[
+                      'group relative flex flex-col items-center justify-center h-full',
+                      'rounded-xl border border-emerald-100/70 bg-white',
+                      'px-5 py-8 transition-all duration-200',
+                    ].join(' ')}
+                    aria-hidden
+                  >
+                    <span className="absolute inset-0 rounded-xl bg-emerald-50 opacity-0 transition-opacity" />
+                    <div className="relative w-12 h-12 mb-3">
+                      <div className="w-full h-full rounded-full bg-gray-100 animate-pulse" />
+                    </div>
+                    <div className="w-24 h-4 rounded bg-gray-100 animate-pulse" />
                   </div>
-                  <span className=' text-nowrap truncate relative text-sm font-semibold text-gray-900 group-hover:text-emerald-700'>{t(category.key)}</span>
-                </Link>
-              </SwiperSlide>
-            ))}
+                </SwiperSlide>
+              ))
+              : items.map(category => (
+                <SwiperSlide key={category.id} className="py-2">
+                  <Link
+                    href={`/services/${encodeURIComponent(category.slug)}`}
+                    className={[
+                      'group relative flex flex-col items-center justify-center h-full',
+                      'rounded-xl border border-emerald-100/70 bg-white',
+                      'px-5 py-8 transition-all duration-200',
+                      'shadow-sm hover:shadow-emerald-200/60 hover:shadow-lg',
+                      'hover:-translate-y-0.5',
+                    ].join(' ')}
+                    aria-label={`Browse ${category.name}`}
+                  >
+                    <span className="absolute inset-0 rounded-xl bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative w-12 h-12 mb-3">
+                      <Image src={category.iconUrl} alt={category.name} fill sizes="48px" className="object-contain" />
+                    </div>
+                    <span className="text-nowrap truncate relative text-sm font-semibold text-gray-900 group-hover:text-emerald-700">
+                      {category.name}
+                    </span>
+                  </Link>
+                </SwiperSlide>
+              ))}
           </Swiper>
         </div>
       </div>
@@ -209,14 +322,43 @@ export function CategorySwiper() {
   );
 }
 
+
 export function PopularServicesSwiper() {
   const t = useTranslations('home');
 
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPopular = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await api.get('/services/popular');
+        const data = res?.data?.records || [];
+
+        setItems(data);
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+
+          setItems(POPULAR_SERVICES);
+        } else {
+          setError('Failed to load popular services');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPopular();
+  }, []);
+
   return (
-    <section className='container !px-4 sm:!px-6 lg:!px-8 !py-12'>
-      <div className='flex items-end justify-between mb-4'>
-        <h2 className='text-2xl md:text-3xl font-bold tracking-tight'>{t('popularServicesTitle')}</h2>
-        <Link href='/services' className='text-emerald-700 hover:text-emerald-800 text-sm font-semibold underline underline-offset-4'>
+    <section className="container !px-4 sm:!px-6 lg:!px-8 !py-12">
+      <div className="flex items-end justify-between mb-4">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{t('popularServicesTitle')}</h2>
+        <Link href="/services" className="text-emerald-700 hover:text-emerald-800 text-sm font-semibold underline underline-offset-4">
           {t('seeAll', { default: 'See all' })}
         </Link>
       </div>
@@ -230,20 +372,66 @@ export function PopularServicesSwiper() {
         }}
         pagination={{ clickable: true }}
         modules={[Pagination]}
-        className='popular-services-swiper'>
-        {POPULAR_SERVICES.map(service => (
-          <SwiperSlide key={service.key}>
-            <Link href={service.href} className={['group relative flex flex-col items-center text-center', 'bg-white rounded-2xl border border-emerald-100/70', 'px-6 py-10 h-full', 'shadow-[0_6px_24px_rgba(16,185,129,0.06)] hover:shadow-[0_16px_40px_rgba(16,185,129,0.15)]', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>
-              <span className='absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full'>{t('from', { default: 'From' })} $25</span>
-              <div className='relative w-14 h-14 mb-4'>
-                <Image src={service.icon} loader={localImageLoader} alt={t(service.key)} fill sizes='56px' className='object-contain' />
+        className="popular-services-swiper"
+      >
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => (
+            <SwiperSlide key={`ps-skel-${i}`}>
+              <div
+                className={[
+                  'group relative flex flex-col items-center text-center',
+                  'bg-white rounded-2xl border border-emerald-100/70',
+                  'px-6 py-10 h-full',
+                  'transition-all duration-200',
+                ].join(' ')}
+                aria-hidden
+              >
+                <div className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full opacity-0" />
+                <div className="relative w-14 h-14 mb-4">
+                  <div className="w-full h-full rounded-full bg-gray-100 animate-pulse" />
+                </div>
+                <div className="w-32 h-4 rounded bg-gray-100 animate-pulse mx-auto" />
+                <div className="mt-3 w-20 h-3 rounded bg-gray-100 animate-pulse mx-auto" />
               </div>
-              <span className='text-sm font-semibold text-gray-900 group-hover:text-emerald-700'>{t(service.key)}</span>
-              <span className='mt-2 text-xs text-emerald-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity'>{t('bookNow', { default: 'Book now →' })}</span>
-            </Link>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          ))
+          : items.map(service => (
+            <SwiperSlide key={service.slug}>
+              <Link
+                // primary target: service detail using service.slug
+                href={`/services/${encodeURIComponent(service.categorySlug)}/${encodeURIComponent(service.slug)}`}
+                className={[
+                  'group relative flex flex-col items-center text-center',
+                  'bg-white rounded-2xl border border-emerald-100/70',
+                  'px-6 py-10 h-full',
+                  'shadow-[0_6px_24px_rgba(16,185,129,0.06)] hover:shadow-[0_16px_40px_rgba(16,185,129,0.15)]',
+                  'transition-all duration-200 hover:-translate-y-0.5',
+                ].join(' ')}
+                aria-label={service.title}
+              >
+                <span className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">From ${service.startingPrice}</span>
+                <div className="relative w-14 h-14 mb-4">
+                  <Image
+                    src={service.categoryIconUrl || '/icons/popular/default.svg'}
+                    loader={localImageLoader}
+                    alt={service.title}
+                    fill
+                    sizes="56px"
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-sm font-semibold text-gray-900 group-hover:text-emerald-700">{service.title}</span>
+                <span className="mt-2 text-xs text-emerald-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity">Book now →</span>
+              </Link>
+            </SwiperSlide>
+          ))}
       </Swiper>
+
+      {error && (
+        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
     </section>
   );
 }
@@ -251,19 +439,13 @@ export function PopularServicesSwiper() {
 export function WhyChoose() {
   const t = useTranslations('home');
 
-  const items = [
-    { key: 'categories', icon: '/icons/why-choose/categories.svg' },
-    { key: 'pricing', icon: '/icons/why-choose/pricing.svg' },
-    { key: 'quality', icon: '/icons/why-choose/quality.svg' },
-    { key: 'support', icon: '/icons/why-choose/support.svg' },
-  ];
 
   return (
     <section className='container !px-4 sm:!px-6 lg:!px-8 !py-12'>
       <div className='rounded-3xl bg-gradient-to-r from-emerald-50 to-white border border-emerald-100/70 p-6 md:p-10'>
         <h2 className='text-3xl md:text-4xl font-extrabold mb-8'>{t('whyChoose.title')}</h2>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-          {items.map(item => (
+          {WHY_CHOOSE_ITEMS.map(item => (
             <div key={item.key} className={['flex flex-col rounded-2xl bg-white border border-emerald-100/70', 'px-6 py-8 shadow-sm hover:shadow-emerald-200/50 hover:shadow-lg', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>
               <div className='w-12 h-12 mb-4 relative'>
                 <Image src={item.icon} loader={localImageLoader} alt={t(`whyChoose.items.${item.key}.title`)} fill sizes='48px' className='object-contain' />
@@ -295,16 +477,17 @@ export function ClientsExperiences() {
           1024: { slidesPerView: 3, spaceBetween: 24 },
           768: { slidesPerView: 2.15, spaceBetween: 20 },
           0: { slidesPerView: 1, spaceBetween: 12 },
-        }}>
+        }}
+        wrapperClass='items-stretch'>
         {experiences.map(item => (
-          <SwiperSlide key={item.id}>
+          <SwiperSlide key={item.id} className='!h-[444px]'>
             <article className={['bg-white rounded-2xl border border-emerald-100/70', 'p-4 h-full flex flex-col gap-5', 'shadow-[0_6px_24px_rgba(16,185,129,0.06)]'].join(' ')}>
-              <div className='relative w-full rounded-xl overflow-hidden aspect-[16/10]'>
-                <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover' />
+              <div className='relative  w-full rounded-xl overflow-hidden aspect-[16/10]'>
+                <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover max-h-[225px]' />
               </div>
 
               <blockquote className='text-gray-900 text-base leading-7'>
-                “{item.quote}”<span className='text-xs ms-2 inline-block text-gray-600 italic'>— {item.company}</span>
+                “{item.quote}”<span className='text-xs ms-2 inline-block text-gray-600 italic'> — {item.company}</span>
               </blockquote>
 
               <footer className='pt-4 border-t border-emerald-100/70'>
@@ -403,10 +586,10 @@ function CTAStrip() {
             <p className='text-emerald-50/90 mt-1'>{t('cta.subtitle', { default: 'Describe your project and get proposals within minutes.' })}</p>
           </div>
           <div className='flex items-center gap-3'>
-            <Link href='/orders/new' className='inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 font-bold shadow-lg hover:shadow-xl transition'>
+            <Link href='/share-job-description' className='inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 font-bold shadow-lg hover:shadow-xl transition'>
               {t('cta.postOrder', { default: 'Post an Order' })} <ArrowRight className='w-5 h-5' />
             </Link>
-            <Link href='/services' className='inline-flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition'>
+            <Link href='/services/all' className='inline-flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition'>
               {t('cta.browse', { default: 'Browse Services' })}
             </Link>
           </div>
