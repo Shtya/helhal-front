@@ -19,6 +19,15 @@ class ApiService {
       const res = await this.client.request(cfg);
       return res.data;
     } catch (err) {
+
+      const isAxiosCancel = err?.code === 'ERR_CANCELED';
+      const isAbortError = err?.name === 'AbortError';
+      const isCanceledToken = !!err?.__CANCEL__;
+
+      // If it's a cancellation/abort, rethrow the original error so callers can handle it
+      if (isAxiosCancel || isAbortError || isCanceledToken) {
+        throw err;
+      }
       const message = err?.response?.data?.message || err?.message || 'API request failed';
       console.error('API Error:', err);
       throw new Error(message);

@@ -627,7 +627,7 @@
       "rating": "Rating",
       "newest": "Newest"
     },
-    "searchPlaceholder": "Search by Location",
+    "searchPlaceholder": "Search",
     "results": "result(s)",
     "noServices": "No services found",
     "noServicesDesc": "We couldn’t find any services matching your filters. Try adjusting the filters or search keywords.",

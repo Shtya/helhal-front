@@ -13,14 +13,15 @@ export default function SellerBudgetDropdown({
   currencySymbol = '$', // تقدر تغيّرها لـ EGP مثلاً
 }) {
   const BRAND = '#007a55';
-   const rootRef = useRef(null);
+  const rootRef = useRef(null);
 
-   const fmtNumber = n => {
+  const fmtNumber = n => {
     if (n === '' || n === null || n === undefined) return '';
     const num = Number(n);
     if (Number.isNaN(num)) return '';
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(num);
   };
+
 
   // حوّل مفاتيح priceRanges إلى تسميات لطيفة
   const labelForRange = id => {
@@ -36,7 +37,7 @@ export default function SellerBudgetDropdown({
     }
   };
 
-   const tiers = useMemo(() => {
+  const tiers = useMemo(() => {
     const pr = filterOptions.priceRanges || {
       u1000: 0,
       m1000_3600: 0,
@@ -66,7 +67,7 @@ export default function SellerBudgetDropdown({
 
   // detect changes
   useEffect(() => {
-    if (!open) return;
+    if (!open || !selectedId) return;
     const changed = selectedId !== selectedPriceRange || (selectedId === 'custom' && String(customValue || '') !== String(customBudget || ''));
     setHasChanges(changed);
   }, [selectedId, customValue, selectedPriceRange, customBudget, open]);
@@ -200,7 +201,7 @@ export default function SellerBudgetDropdown({
                   ${selectedId === 'custom' ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}>
                 <div className='h-[44px] rounded-md flex items-center px-4 text-sm' style={{ border: `2px solid ${BRAND}` }}>
                   <span className='text-slate-400 mr-2'>{currencySymbol}</span>
-                  <input type='text' inputMode='numeric' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' placeholder='Enter amount' />
+                  <input type='text' inputMode='numeric' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' placeholder='Enter max amount' />
                 </div>
 
                 <div className='mt-2 text-[11px] text-slate-400'>{customValue ? `You entered: ${currencySymbol}${fmtNumber(customValue)}` : 'Type a number only'}</div>
@@ -212,7 +213,7 @@ export default function SellerBudgetDropdown({
             {/* Footer */}
             <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>
               <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
-              {hasChanges && <Button icon={<Check size={16} />} color='default' className='!w-fit !h-[35px]' onClick={applyChanges} />}
+              {hasChanges && <Button icon={<Check size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={applyChanges} />}
             </div>
           </div>
         </div>

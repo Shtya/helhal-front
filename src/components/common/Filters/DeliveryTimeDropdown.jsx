@@ -30,6 +30,8 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
 
   // Check for changes
   useEffect(() => {
+    if (!selectedId) return;
+
     if (open) {
       const isChanged = selectedId !== selectedDeliveryTime || (selectedId === 'custom' && customValue !== customDeliveryTime);
       setHasChanges(isChanged);
@@ -152,7 +154,7 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
                     {' '}
                     <TimerIcon />{' '}
                   </span>
-                  <input type='text' inputMode='numeric' placeholder='Enter delivery time in days' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' />
+                  <input type='text' inputMode='numeric' placeholder='Enter max delivery time in days' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' />
                 </div>
 
                 <div className='mt-3 border-t border-slate-200' />
@@ -162,7 +164,7 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
             {/* Footer */}
             <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>
               <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
-              {hasChanges && <Button icon={<Check size={16} />} color='default' className='!w-fit !h-[35px]' onClick={applyChanges} />}
+              {hasChanges && <Button icon={<Check size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={applyChanges} />}
             </div>
           </div>
         </div>

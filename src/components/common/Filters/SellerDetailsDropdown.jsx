@@ -69,6 +69,8 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
     availability: new Set(selectedValues?.sellerAvailability || []), // احتفظنا بيها تحسّبًا
     speaks: new Set(selectedValues?.sellerSpeaks || []),
     countries: new Set(selectedValues?.sellerCountries || []),
+    fastDelivery: !!selectedValues?.fastDelivery,
+    additionalRevision: !!selectedValues?.additionalRevision,
   });
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -78,13 +80,20 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
       availability: new Set(selectedValues?.sellerAvailability || []),
       speaks: new Set(selectedValues?.sellerSpeaks || []),
       countries: new Set(selectedValues?.sellerCountries || []),
+      fastDelivery: !!selectedValues?.fastDelivery,
+      additionalRevision: !!selectedValues?.additionalRevision,
     });
   }, [selectedValues]);
 
-  // مقارنة التغييرات عند فتح المينيو
   useEffect(() => {
     if (!open) return;
-    const changed = !arraysEqual([...selected.level], selectedValues?.sellerLevel || []) || !arraysEqual([...selected.availability], selectedValues?.sellerAvailability || []) || !arraysEqual([...selected.speaks], selectedValues?.sellerSpeaks || []) || !arraysEqual([...selected.countries], selectedValues?.sellerCountries || []);
+    const changed =
+      !arraysEqual([...selected.level], selectedValues?.sellerLevel || []) ||
+      !arraysEqual([...selected.availability], selectedValues?.sellerAvailability || []) ||
+      !arraysEqual([...selected.speaks], selectedValues?.sellerSpeaks || []) ||
+      !arraysEqual([...selected.countries], selectedValues?.sellerCountries || []) ||
+      (selected.fastDelivery !== !!selectedValues?.fastDelivery) ||
+      (selected.additionalRevision !== !!selectedValues?.additionalRevision);
     setHasChanges(changed);
   }, [selected, selectedValues, open]);
 
@@ -114,12 +123,26 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
     });
   };
 
+
+
+  // toggle for boolean extras
+  const toggleExtra = (key) => {
+    setSelected(prev => ({
+      ...prev,
+
+      [key]: !prev[key],
+
+    }));
+  };
+
   const clearAll = () => {
     setSelected({
       level: new Set(),
       availability: new Set(),
       speaks: new Set(),
       countries: new Set(),
+      fastDelivery: false,
+      additionalRevision: false,
     });
     setHasChanges(true);
   };
@@ -130,11 +153,13 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
       sellerAvailability: [...selected.availability],
       sellerSpeaks: [...selected.speaks],
       sellerCountries: [...selected.countries],
+      fastDelivery: !!selected.fastDelivery,
+      additionalRevision: !!selected.additionalRevision,
     });
     setOpen(false);
   };
 
-  const totalSelected = selected.level.size + selected.availability.size + selected.speaks.size + selected.countries.size;
+  const totalSelected = selected.level.size + selected.availability.size + selected.speaks.size + selected.countries.size + (selected.fastDelivery ? 1 : 0) + (selected.additionalRevision ? 1 : 0);;
 
   // -------- UI Subcomponents
   const OptionRow = ({ active, disabled, label, count, onClick }) => (
@@ -159,13 +184,33 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
     </button>
   );
 
-  const Section = ({ title, children, subtitle }) => (
+  // Single-check row for boolean extras
+  const BoolRow = ({ active, label, count, onClick }) => (
+    <button
+      type='button'
+      onClick={onClick}
+      className={`w-full px-2 py-1 mx-1 rounded-md flex items-center justify-between text-left transition cursor-pointer
+        ${active ? 'gradient text-white' : 'hover:bg-emerald-50 text-slate-800'}`}>
+      <span className='flex items-center gap-3'>
+        <span className={`w-5 h-5 rounded-md border flex items-center justify-center ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513]'}`}>
+          {active && <Check className='w-3 h-3 text-white' />}
+        </span>
+        <div>
+          <span className={`whitespace-nowrap truncate text-sm ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
+        </div>
+      </span>
+      <span className={`mx-1 ${active ? 'text-emerald-50' : 'text-slate-400'} text-[10px]`}>{count}</span>
+    </button>
+  );
+
+
+  const Section = ({ title, children, subtitle, one = false }) => (
     <div className='px-4'>
       <div className='flex items-baseline justify-between mb-2'>
         <h4 className='text-base font-bold text-slate-800'>{title}</h4>
         {subtitle && <span className='text-[10px] text-slate-400'>{subtitle}</span>}
       </div>
-      <div className='grid grid-cols-2 gap-1'>{children}</div>
+      <div className={`grid ${one ? 'grid-cols-1' : 'grid-cols-2'} gap-1`}>{children}</div>
       <div className='my-2 border-t border-slate-200' />
     </div>
   );
@@ -223,10 +268,32 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
               </Section>
             )}
 
+            {/* Extras (boolean filters) */}
+            {(filterOptions.fastDelivery !== undefined || filterOptions.additionalRevision !== undefined) && (
+              <Section title='Extras' one>
+                {/* fastDelivery */}
+                <BoolRow
+                  key='fastDelivery'
+                  label='Fast delivery'
+                  count={filterOptions.fastDelivery ?? 0}
+                  active={!!selected.fastDelivery}
+                  onClick={() => toggleExtra('fastDelivery')}
+                />
+                {/* additionalRevision */}
+                <BoolRow
+                  key='additionalRevision'
+                  label='Additional revision'
+                  count={filterOptions.additionalRevision ?? 0}
+                  active={!!selected.additionalRevision}
+                  onClick={() => toggleExtra('additionalRevision')}
+                />
+              </Section>
+            )}
+
             {/* Footer */}
             <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>
               <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
-              {hasChanges && <Button icon={<Check size={16} />} color='default' className='!w-fit !h-[35px]' onClick={applyChanges} />}
+              {hasChanges && <Button icon={<Check size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={applyChanges} />}
             </div>
           </div>
         </div>

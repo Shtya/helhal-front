@@ -5,7 +5,7 @@ import Input from '@/components/atoms/Input';
 import Select from '@/components/atoms/Select';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
 import ServiceCard from '@/components/pages/services/ServiceCard';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import Pagination from '@/components/atoms/Pagination';
 import { apiService } from '@/services/GigServices';
@@ -16,7 +16,7 @@ import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdo
 import DeliveryTimeDropdown from '@/components/common/Filters/DeliveryTimeDropdown';
 import { motion } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
-import TabsPagination from '@/components/common/TabsPagination';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const defaultFilters = {
   search: '',
@@ -39,7 +39,7 @@ function buildQuery(formData, pagination) {
   return {
     page: pagination.page,
     limit: pagination.limit,
-    ...(formData.search && { search: formData.search }),
+    // ...(formData.search && { search: formData.search }),
     ...(formData.priceRange && { priceRange: formData.priceRange }),
     ...(formData.customBudget && { customBudget: formData.customBudget }),
     ...(formData.rating && { rating: formData.rating.id }),
@@ -62,7 +62,8 @@ export default function AllServicesPage() {
   const [filterOptions, setFilterOptions] = useState();
   const [formData, setFormData] = useState(defaultFilters);
   const [loading, setLoading] = useState(true);
-
+  const controllerRef = useRef(null);
+  const [search, setSearch] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 8,
@@ -71,11 +72,7 @@ export default function AllServicesPage() {
   });
 
   // Debounce search input → update formData.search from Input
-  const [debounced, setDebounced] = useState(formData.search);
-  useEffect(() => {
-    const tmr = setTimeout(() => setDebounced(formData.search), 600);
-    return () => clearTimeout(tmr);
-  }, [formData.search]);
+  const debounced = useDebounce(search)
 
   useEffect(() => {
     let mounted = true;
@@ -94,19 +91,32 @@ export default function AllServicesPage() {
   }, []);
 
   const fetchAllServices = useCallback(async () => {
+
+    // Cancel previous request
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
+    controllerRef.current = new AbortController();
     setLoading(true);
+
     try {
       const q = buildQuery({ ...formData, search: debounced }, pagination);
-      const res = await apiService.getServicesPublic(q); // <-- uses your /services/me
+      const res = await apiService.getServicesPublic(q, { signal: controllerRef.current.signal }); // <-- uses your /services/me
       // expect shape: { services: [], pagination: { page, limit, total, pages } }
       if (res?.services) setServices(res.services);
       if (res?.pagination) setPagination(res.pagination);
     } catch (err) {
-      console.error('Error fetching services:', err);
-      setServices([]);
-      setPagination(p => ({ ...p, total: 0, pages: 1 }));
+      // ignore aborts
+      const isAbort = err?.name === 'AbortError' || err?.code === 'ERR_CANCELED' || err?.message?.toLowerCase?.().includes('canceled');
+      if (!isAbort) {
+        console.error('Error fetching services:', err);
+        setServices([]);
+        setPagination(p => ({ ...p, total: 0, pages: 1 }));
+      }
+
     } finally {
       setLoading(false);
+      controllerRef.current = null;
     }
   }, [debounced, formData, pagination.page, pagination.limit]);
 
@@ -115,14 +125,49 @@ export default function AllServicesPage() {
   }, [fetchAllServices]);
 
   // Reset page to 1 whenever filters (except page) change
-  useEffect(() => {
-    setPagination(prev => ({ ...prev, page: 1 }));
-  }, [debounced, formData.priceRange, formData.customBudget, formData.rating, formData.sortBy, formData.sellerLevel, formData.sellerAvailability, formData.sellerSpeaks, formData.sellerCountries, formData.deliveryTime, formData.customDeliveryTime, formData.revisions, formData.fastDelivery, formData.additionalRevision]);
+  function resetpage() {
+    handlePageChange(1);
+  }
+  const handleSelectChange = (field, value) => {
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      return updated;
+    });
+    resetpage();
+  };
 
-  const handleSelectChange = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
-  const handleSellerDetailsChange = details => setFormData(prev => ({ ...prev, ...details }));
-  const handleBudgetChange = (priceRange, customBudget = '') => setFormData(prev => ({ ...prev, priceRange, customBudget: priceRange === 'custom' ? customBudget : '' }));
-  const handleDeliveryTimeChange = (deliveryTime, customDeliveryTime = '') => setFormData(prev => ({ ...prev, deliveryTime, customDeliveryTime: deliveryTime === 'custom' ? customDeliveryTime : '' }));
+  const handleSellerDetailsChange = details => {
+    setFormData(prev => {
+      const updated = { ...prev, ...details };
+      return updated;
+    });
+    resetpage();
+  };
+
+  const handleBudgetChange = (priceRange, customBudget = '') => {
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        priceRange,
+        customBudget: priceRange === 'custom' ? customBudget : '',
+      };
+      return updated;
+    });
+    resetpage();
+  };
+
+  const handleDeliveryTimeChange = (deliveryTime, customDeliveryTime = '') => {
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        deliveryTime,
+        customDeliveryTime: deliveryTime === 'custom' ? customDeliveryTime : '',
+      };
+      return updated;
+    });
+    resetpage();
+  };
+
   const handlePageChange = newPage => setPagination(prev => ({ ...prev, page: newPage }));
 
   const resetFilters = () => setFormData(defaultFilters);
@@ -165,7 +210,7 @@ export default function AllServicesPage() {
               ]}
               placeholder={t('rating')}
               cnPlaceholder='!text-gray-900'
-              value={formData.rating}
+              value={formData?.rating?.id}
               onChange={val => handleSelectChange('rating', val)}
             />
 
@@ -179,31 +224,34 @@ export default function AllServicesPage() {
               ]}
               placeholder={t('sortBy')}
               cnPlaceholder='!text-gray-900'
-              value={formData.sortBy}
+              value={formData?.sortBy?.id}
               onChange={val => handleSelectChange('sortBy', val)}
             />
 
             <Input
               placeholder={t('searchPlaceholder')}
               iconLeft={'/icons/search.svg'}
-              actionIcon={'/icons/send-arrow.svg'}
-              value={formData.search}
+              // actionIcon={'/icons/send-arrow.svg'}
+              value={search}
               onAction={() => {
                 /* optional: trigger fetch immediately */
               }}
-              onChange={e => handleSelectChange('search', e.target.value)}
+              onChange={e => setSearch(e.target.value)}
             />
           </div>
         </motion.div>
       </div>
 
       {/* ==== Cards ==== */}
-      <section className='cards-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>{loading ? Array.from({ length: pagination.limit }).map((_, i) => <CardSkeleton key={i} />) : services.length > 0 ? services.map((service, idx) => <ServiceCard key={(service.id ?? idx) + '-svc'} service={service} />) : <NoResults mainText={t('noServices')} additionalText={t('noServicesDesc')} buttonText={t('resetFilters')} onClick={resetFilters} />}</section>
+      <section className='cards-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+        {loading ? Array.from({ length: pagination.limit }).map((_, i) => <CardSkeleton key={i} />)
+          : services.length > 0 ? services.map((service, idx) => <ServiceCard key={(service.id ?? idx) + '-svc'} service={service} />)
+            : <NoResults mainText={t('noServices')} additionalText={t('noServicesDesc')} buttonText={t('resetFilters')} onClick={resetFilters} />}</section>
 
       {/* ==== Pagination ==== */}
       {!loading && services?.length > 0 &&
 
-        <Pagination page={10} totalPages={700} setPage={handlePageChange} />
+        <Pagination page={pagination?.page} totalPages={pagination?.pages || 0} setPage={handlePageChange} />
       }
     </main>
   );
