@@ -6,8 +6,7 @@ import ServiceSlider from '@/components/common/ServiceSlider';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
 import DiscoverySection from '@/components/pages/explore/DiscoverySection';
 import Hero from '@/components/pages/explore/Hero';
-import React, { useEffect, useMemo, useState } from 'react';
-import { services } from '../../../../db';
+import React from 'react';
 import { swiperSettingsExplore } from '@/config/Swiper';
 import Button from '@/components/atoms/Button';
 
@@ -34,7 +33,7 @@ const page = () => {
         <div className='relative z-10 px-6 max-w-3xl mx-auto text-white'>
           <h1 className='text-3xl md:text-5xl font-extrabold mb-4'>Freelance services</h1>
           <p className='text-xl opacity-90 md:text-4xl mb-8'>are just a click away!</p>
-          <Button name={'See more'} href={'/services'} color='green' className='!max-w-[300px] w-full ' />
+          <Button name={'See more'} href={'/services/all'} color='green' className='!max-w-[300px] w-full ' />
           {/* <a href='#services' className='inline-block px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-lg rounded-lg shadow-lg transition'>
             See more
           </a> */}

@@ -8,6 +8,7 @@ import { useValues } from '@/context/GlobalContext';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
 import NoResults from '@/components/common/NoResults';
+import ErrorState from '@/components/common/ErrorState';
 
 const TTL_MS = 2 * 60 * 1000; // 2 minutes
 
@@ -25,6 +26,8 @@ export default function DiscoverySection() {
   const fetchServices = async tab => {
     setErr(null);
 
+
+
     // cache hit (valid within TTL)
     const cached = cacheRef.current.get(tab);
     if (cached && Date.now() - cached.at < TTL_MS) {
@@ -36,6 +39,7 @@ export default function DiscoverySection() {
     const controller = new AbortController();
     try {
       const params = { limit: 8 };
+
       let baseUrl = '/services';
       if (tab !== 'all') baseUrl = `/services/category/${tab}`;
 
@@ -95,7 +99,7 @@ export default function DiscoverySection() {
         {loading || loadingCategory ? (
           Array.from({ length: 8 }).map((_, i) => <ServiceCard loading={true} key={`sk-${i}`} />)
         ) : err ? (
-          <ErrorState message={err} onRetry={() => fetchServices(activeTab)} />
+          <ErrorState title="Failed to load services" message={err} onRetry={() => fetchServices(activeTab)} />
         ) : services.length === 0 ? (
           <EmptyState onReset={() => setActiveTab('all')} />
         ) : (
@@ -110,23 +114,11 @@ export default function DiscoverySection() {
   );
 }
 
-function ErrorState({ message, onRetry }) {
-  return (
-    <div className='col-span-full grid place-items-center rounded-2xl border border-rose-200 bg-rose-50 p-8 text-rose-700'>
-      <p className='font-medium'>Failed to load services</p>
-      <p className='mt-1 text-sm opacity-80'>{message}</p>
-      <button onClick={onRetry} className='mt-4 rounded-xl bg-rose-600 px-4 py-2 text-white hover:bg-rose-700'>
-        Retry
-      </button>
-    </div>
-  );
-}
 
 function EmptyState({ onReset }) {
   return (
     <div className='col-span-full grid place-items-center rounded-2xl border border-slate-200 bg-white p-10 text-slate-600'>
       <NoResults onClick={onReset} buttonText={"Reset filters"} mainText={"No services found."} additionalText={"Try another category or view all services."} />
-
     </div>
   );
 }

@@ -382,7 +382,11 @@
       "title": "Ready to post your order?",
       "subtitle": "Describe your project and get proposals within minutes.",
       "postOrder": "Post an Order",
-      "browse": "Browse Services"
+      "loginToPost": "Login to Post an Order",
+      "browse": "Browse Services",
+      "sellerTitle": "Ready to publish your service?",
+      "sellerSubtitle": "Showcase your skills and start receiving orders.",
+      "createService": "Create a Service"
     }
   },
   "layout": {

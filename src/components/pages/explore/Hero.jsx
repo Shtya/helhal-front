@@ -100,12 +100,25 @@ const item = {
   hidden: { opacity: 0, y: 10, scale: 0.98 },
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: 'easeOut' } },
 };
-
 export default function Hero() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
 
-  const cards = [
-    {
+  const cards = [];
+
+  // Conditionally push the first card based on role
+  if (role === 'guest') {
+    cards.push({
+      id: 'create-account',
+      icon: <UserRoundCog className='h-6 w-6' />,
+      title: 'Create your account',
+      lines: ['Sign up to hire freelancers', 'Access personalized recommendations'],
+      buttonLabel: 'Join Now',
+      href: '/auth?tab=register',
+      accent: 'from-emerald-400/20 to-emerald-400/0',
+      chip: 'New here?',
+    });
+  } else if (role === 'buyer') {
+    cards.push({
       id: 'recommended',
       icon: <MailPlus className='h-6 w-6' />,
       title: 'Recommended for you',
@@ -114,8 +127,23 @@ export default function Hero() {
       href: '/share-job-description',
       accent: 'from-emerald-400/20 to-emerald-400/0',
       chip: 'Get started',
-    },
-    {
+    });
+  } else if (role === 'seller') {
+    cards.push({
+      id: 'create-service',
+      icon: <MailPlus className='h-6 w-6' />,
+      title: 'Create your service',
+      lines: ['Showcase your skills', 'Start receiving client requests'],
+      buttonLabel: 'Add a Service',
+      href: '/create-gig',
+      accent: 'from-emerald-400/20 to-emerald-400/0',
+      chip: 'Boost visibility',
+    });
+  }
+  // No card pushed for admin
+
+  if (role !== 'guest')
+    cards.push({
       id: 'complete-profile',
       icon: <UserRoundCog className='h-6 w-6' />,
       title: 'Complete your account',
@@ -124,46 +152,43 @@ export default function Hero() {
       href: '/profile',
       accent: 'from-emerald-400/20 to-emerald-400/0',
       chip: 'Action needed',
-    },
-  ];
+    });
 
   return (
-    <>
-      {/* <HeroAnother /> */}
+    <section className='relative my-10 rounded-lg overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-white to-slate-50'>
+      <div className='pointer-events-none absolute inset-0'>
+        <div className='absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl' />
+        <div className='absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-emerald-300/20 blur-3xl' />
+      </div>
 
-      <section className='relative my-10 rounded-lg overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-white to-slate-50'>
-        {/* subtle ambient light blobs */}
-        <div className='pointer-events-none absolute inset-0'>
-          <div className='absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl' />
-          <div className='absolute -bottom-20 -right-20 h-80 w-80 rounded-full bg-emerald-300/20 blur-3xl' />
-        </div>
+      <div className='relative z-10 px-6 py-10 md:px-10 md:py-14'>
+        <motion.div variants={container} initial='hidden' animate='show'>
+          <motion.p variants={item} className='mb-2 text-sm text-slate-500'>
+            Quick actions
+          </motion.p>
 
-        <div className='relative z-10 px-6 py-10 md:px-10 md:py-14'>
-          <motion.div variants={container} initial='hidden' animate='show'>
-            <motion.p variants={item} className='mb-2 text-sm text-slate-500'>
-              Quick actions
-            </motion.p>
+          <motion.h1 variants={item} className='text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900'>
+            Welcome back,&nbsp;
+            <span className='bg-gradient-to-r from-emerald-800 to-emerald-500 bg-clip-text text-transparent'>
+              {user?.username || 'there'}
+            </span>
+          </motion.h1>
 
-            <motion.h1 variants={item} className='text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900'>
-              Welcome back,&nbsp;
-              <span className='bg-gradient-to-r from-emerald-800 to-emerald-500 bg-clip-text text-transparent'>{user?.username || 'there'}</span>
-            </motion.h1>
+          <motion.p variants={item} className='mt-2 text-slate-600'>
+            Pick up where you left off, or knock out what’s next.
+          </motion.p>
 
-            <motion.p variants={item} className='mt-2 text-slate-600'>
-              Pick up where you left off, or knock out what’s next.
-            </motion.p>
-
-            <motion.div variants={item} className='mt-8 w-full max-w-[1000px] grid gap-5 sm:grid-cols-2'>
-              {cards.map((c, idx) => (
-                <ActionCard key={c.id} {...c} delay={0.08 * (idx + 1)} />
-              ))}
-            </motion.div>
+          <motion.div variants={item} className='mt-8 w-full max-w-[1000px] grid gap-5 sm:grid-cols-2'>
+            {cards.map((c, idx) => (
+              <ActionCard key={c.id} {...c} delay={0.08 * (idx + 1)} />
+            ))}
           </motion.div>
-        </div>
-      </section>
-    </>
+        </motion.div>
+      </div>
+    </section>
   );
 }
+
 
 function ActionCard({ icon, title, lines, buttonLabel, href, accent = 'from-emerald-400/15 to-emerald-400/0', chip = 'Suggested', delay = 0 }) {
   return (

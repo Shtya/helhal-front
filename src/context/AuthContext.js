@@ -60,10 +60,12 @@ export function AuthProvider({ children }) {
     if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
   };
 
+  const role = user?.role || 'guest';
   return (
     <AuthContext.Provider
       value={{
         user,
+        role,
         loadingUser,
         setCurrentUser,
         refetchUser: fetchUser,

@@ -15,6 +15,7 @@ import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users } from 'lucide-react
 import ReactPlayer from 'react-player';
 import { localImageLoader } from '@/utils/helper';
 import api from '@/lib/axios';
+import { useAuth } from '@/context/AuthContext';
 
 
 // ========================= PAGE =========================
@@ -574,22 +575,56 @@ export function VideoSlider() {
   );
 }
 
-function CTAStrip() {
+export function CTAStrip() {
   const t = useTranslations('home');
+  const { role } = useAuth();
+
+
+  const isBuyer = role === 'buyer';
+  const isSeller = role === 'seller';
+
+  // Optional: hide CTA for admin
+  if (role === 'admin') return null;
+
+  let primaryHref = '/auth?tab=login';
+  let primaryLabel = t('cta.loginToPost', { default: 'Login to Post an Order' });
+
+  if (isBuyer) {
+    primaryHref = '/share-job-description';
+    primaryLabel = t('cta.postOrder', { default: 'Post an Order' });
+  } else if (isSeller) {
+    primaryHref = '/create-gig';
+    primaryLabel = t('cta.createService', { default: 'Create a Service' });
+  }
+
   return (
-    <section className='container !px-4 sm:!px-6 lg:!px-8 !pb-16'>
-      <div className='relative overflow-hidden rounded-3xl border border-emerald-100/70 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600'>
-        <div className='absolute -inset-1 opacity-20 [mask-image:radial-gradient(closest-side,white,transparent)] bg-[conic-gradient(at_top_left,white,transparent_30%)]' />
-        <div className='relative p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 text-white'>
+    <section className="container !px-4 sm:!px-6 lg:!px-8 !pb-16">
+      <div className="relative overflow-hidden rounded-3xl border border-emerald-100/70 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600">
+        <div className="absolute -inset-1 opacity-20 [mask-image:radial-gradient(closest-side,white,transparent)] bg-[conic-gradient(at_top_left,white,transparent_30%)]" />
+        <div className="relative p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 text-white">
           <div>
-            <h3 className='text-2xl md:text-3xl font-extrabold'>{t('cta.title', { default: 'Ready to post your order?' })}</h3>
-            <p className='text-emerald-50/90 mt-1'>{t('cta.subtitle', { default: 'Describe your project and get proposals within minutes.' })}</p>
+            <h3 className="text-2xl md:text-3xl font-extrabold">
+              {isSeller
+                ? t('cta.sellerTitle', { default: 'Ready to publish your service?' })
+                : t('cta.title', { default: 'Ready to post your order?' })}
+            </h3>
+            <p className="text-emerald-50/90 mt-1">
+              {isSeller
+                ? t('cta.sellerSubtitle', { default: 'Showcase your skills and start receiving orders.' })
+                : t('cta.subtitle', { default: 'Describe your project and get proposals within minutes.' })}
+            </p>
           </div>
-          <div className='flex items-center gap-3'>
-            <Link href='/share-job-description' className='inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 font-bold shadow-lg hover:shadow-xl transition'>
-              {t('cta.postOrder', { default: 'Post an Order' })} <ArrowRight className='w-5 h-5' />
+          <div className="flex items-center gap-3">
+            <Link
+              href={primaryHref}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 font-bold shadow-lg hover:shadow-xl transition"
+            >
+              {primaryLabel} <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href='/services/all' className='inline-flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition'>
+            <Link
+              href="/services/all"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition"
+            >
               {t('cta.browse', { default: 'Browse Services' })}
             </Link>
           </div>
