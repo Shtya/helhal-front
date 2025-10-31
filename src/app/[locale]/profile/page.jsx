@@ -575,25 +575,41 @@ function LanguageSelector({ value = [], setValue }) {
   );
 }
 
+const MAX_SKILLS = 5;
+const MAX_EDUCATIONS = 2;
+const MAX_CERTIFICATIONS = 2;
+
 const aboutSchema = z.object({
   description: z.string().max(1000, 'Max 1000 characters'),
   username: z.string().max(50, 'Max 50 characters'),
   languages: z.array(z.string()).optional(),
-  skills: z.array(z.string().max(50, 'Skill name must be 50 characters or fewer')).optional(),
-  education: z.array(
-    z.object({
-      degree: z.string(),
-      institution: z.string(),
-      year: z.string(),
-    })
-  ).optional(),
-  certifications: z.array(
-    z.object({
-      name: z.string(),
-      issuingOrganization: z.string().optional(),
-      year: z.string().optional(),
-    })
-  ).optional(),
+  skills: z
+    .array(z.string().max(50, 'Skill name must be 50 characters or fewer'))
+    .max(MAX_SKILLS, `You can add up to ${MAX_SKILLS} skills only`)
+    .optional(),
+
+  education: z
+    .array(
+      z.object({
+        degree: z.string(),
+        institution: z.string(),
+        year: z.string(),
+      })
+    )
+    .max(MAX_EDUCATIONS, `You can add up to ${MAX_EDUCATIONS} education entries only`)
+    .optional(),
+
+  certifications: z
+    .array(
+      z.object({
+        name: z.string(),
+        issuingOrganization: z.string().optional(),
+        year: z.string().optional(),
+      })
+    )
+    .max(MAX_CERTIFICATIONS, `You can add up to ${MAX_CERTIFICATIONS} certifications only`)
+    .optional(),
+
   country: z.string().optional(),
   type: z.string().optional(),
 });
@@ -602,7 +618,6 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
 
   const {
     register,
-    handleSubmit,
     setValue,
     watch,
     reset,
@@ -674,6 +689,10 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
   const [eduOpen, setEduOpen] = useState(false);
   const [certOpen, setCertOpen] = useState(false);
 
+  const skills = watch('skills') || [];
+  const educations = watch('education') || [];
+  const certifications = watch('certifications') || [];
+  console.log(skills.length, skills.length > MAX_SKILLS)
   if (loading) return <SkeletonInfoCard />;
 
   return (
@@ -704,20 +723,21 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
       <Divider className='!mt-6 !mb-2 ' />
 
       {/* Skills */}
-      <SectionHeader title='Skills' iconSrc='/icons/add-green.svg' actionAria='Add skill' onAction={() => setShowSkillInput(true)} />
+      <SectionHeader title='Skills' iconSrc='/icons/add-green.svg' actionAria='Add skill' onAction={() => setShowSkillInput(true)} disabled={skills.length >= MAX_SKILLS} />
 
       <PillEditor
-        items={watch('skills') || []}
+        items={skills}
+        maxSkills={MAX_SKILLS}
         placeholder='e.g., React'
         showInput={showSkillInput}
         setShowInput={setShowSkillInput}
         onAdd={val => {
-          const current = watch('skills') || [];
+          const current = skills;
           const normalized = val.trim().toLowerCase();
           const alreadyExists = current.some(skill => skill.trim().toLowerCase() === normalized);
 
           if (alreadyExists) {
-            showWarningToast('Skill already added');
+            showWarningToast('This skill already added');
             return;
           }
 
@@ -725,7 +745,7 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
         }}
 
         onRemove={i => {
-          const current = watch('skills') || [];
+          const current = skills;
           setValue('skills', current.filter((_, idx) => idx !== i));
         }}
       />
@@ -734,10 +754,10 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
       <Divider className='!mt-6 !mb-2 ' />
 
       {/* Education */}
-      <SectionHeader title='Education' iconSrc='/icons/add-green.svg' actionAria='Add education' onAction={() => setEduOpen(true)} />
+      <SectionHeader title='Education' iconSrc='/icons/add-green.svg' actionAria='Add education' onAction={() => setEduOpen(true)} disabled={educations.length >= MAX_EDUCATIONS} />
       <div className='mt-2 space-y-2'>
-        {(watch('education') || []).length > 0 ? (
-          watch('education').map((e, idx) => (
+        {(educations).length > 0 ? (
+          educations.map((e, idx) => (
             <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-3 text-sm'>
               <div className='min-w-0'>
                 <div className='font-semibold truncate'>
@@ -760,8 +780,12 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
         <Modal title='Add Education' onClose={() => setEduOpen(false)}>
           <EducationForm
             onSubmit={item => {
-              const current = watch('education') || [];
-              setValue('education', [...current, item]);
+              const alreadyHas = educations.some(e => e.degree === item.degree && e.institution === item.institution && e.year === item.year)
+              if (alreadyHas) {
+                showWarningToast('This education already added');
+                return;
+              }
+              setValue('education', [...educations, item]);
 
               setEduOpen(false);
             }}
@@ -773,10 +797,10 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
       <Divider />
 
       {/* Certifications */}
-      <SectionHeader title='Certification' iconSrc='/icons/add-green.svg' actionAria='Add certification' onAction={() => setCertOpen(true)} />
+      <SectionHeader title='Certification' iconSrc='/icons/add-green.svg' actionAria='Add certification' onAction={() => setCertOpen(true)} disabled={certifications.length >= MAX_CERTIFICATIONS} />
       <div className='mt-2 space-y-2'>
-        {(watch('certifications') || []).length > 0 ? (
-          watch('certifications').map((c, idx) => (
+        {(certifications).length > 0 ? (
+          certifications.map((c, idx) => (
             <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-3 text-sm'>
               <div className='min-w-0'>
                 <div className='font-semibold truncate'>{c?.name || '—'}</div>
@@ -799,8 +823,13 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
         <Modal title='Add Certification' onClose={() => setCertOpen(false)}>
           <CertificationForm
             onSubmit={item => {
-              const current = watch('certifications') || [];
-              setValue('certifications', [...current, item]);
+
+              const alreadyHas = certifications.some(c => c.name === item.name && c.issuingOrganization === item.issuingOrganization && c.year === item.year)
+              if (alreadyHas) {
+                showWarningToast('This certification already added');
+                return;
+              }
+              setValue('certifications', [...certifications, item]);
 
               setCertOpen(false);
             }}
@@ -877,15 +906,15 @@ function SkeletonInfoCard() {
   );
 }
 
-function SectionHeader({ title, iconSrc, actionAria, onAction }) {
+function SectionHeader({ title, iconSrc, actionAria, onAction, disabled }) {
+
   return (
     <div className='mt-1 flex items-center justify-between'>
       <h3 className='text-[20px] font-semibold tracking-tight text-[#111827]'>{title}</h3>
       {iconSrc && (
         <button onClick={() => {
-          console.log('Button clicked');
           onAction?.();
-        }} aria-label={actionAria} title={actionAria} className='cursor-pointer  h-9 w-9 items-center justify-center rounded-xl  hover:scale-[1.1] active:scale-95 transition'>
+        }} disabled={disabled} aria-label={actionAria} title={actionAria} className='cursor-pointer  h-9 w-9 items-center justify-center rounded-xl  hover:scale-[1.1] active:scale-95 transition'>
           <Image src={iconSrc} alt={title} width={36} height={36} />
         </button>
       )}
