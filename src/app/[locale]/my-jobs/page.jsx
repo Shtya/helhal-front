@@ -30,26 +30,69 @@ const chip = 'inline-flex items-center gap-1 rounded-full border border-slate-20
 // Skeleton Loader (light mode)
 // -------------------------------------------------
 export const JobSkeleton = () => (
-  <div className={cardBase + ' animate-pulse'}>
+  <div className={`${cardBase} flex flex-col justify-between`}>
     <div className={ribbonBar} />
-    <div className='p-6 sm:p-7'>
-      <div className='h-6 w-2/3 rounded bg-slate-200' />
-      <div className='mt-3 h-4 w-full rounded bg-slate-200' />
-      <div className='mt-2 h-4 w-5/6 rounded bg-slate-200' />
-      <div className='mt-5 flex gap-2'>
+
+    {/* Top Content */}
+    <div className='p-6 sm:p-7 !pb-10'>
+      {/* Title + Status */}
+      <header className='flex items-start justify-between gap-3'>
+        <div className='h-8 w-2/3 rounded bg-slate-200' />
         <div className='h-6 w-24 rounded-full bg-slate-200' />
-        <div className='h-6 w-20 rounded-full bg-slate-200' />
+      </header>
+
+      {/* Description */}
+      <div className='mt-3 space-y-2'>
+        <div className='h-4 w-full rounded bg-slate-200' />
+        <div className='h-4 w-5/6 rounded bg-slate-200' />
       </div>
+
+      {/* Skills & Budget */}
+      <div className='mt-5 space-y-3'>
+        <div className='flex gap-2'>
+          {[1, 2, 3].map(i => (
+            <div key={i} className='h-6 w-20 rounded-full bg-slate-200' />
+          ))}
+        </div>
+        <div className='flex flex-wrap items-center gap-3'>
+          <div className='h-6 w-24 rounded-full bg-slate-200' />
+          <div className='h-6 w-32 rounded-full bg-slate-200' />
+        </div>
+      </div>
+
       <Divider className='!my-6' />
-      <div className='grid grid-cols-2 gap-4'>
-        <div className='h-10 rounded bg-slate-200' />
-        <div className='h-10 rounded bg-slate-200' />
+
+      {/* Buyer Info */}
+      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-slate-200" />
+          <div className="space-y-2">
+            <div className="h-4 w-32 rounded bg-slate-200" />
+            <div className="h-4 w-40 rounded bg-slate-200" />
+          </div>
+        </div>
+        <div className="h-8 w-36 rounded-full bg-slate-200" />
+      </section>
+
+      {/* Attachments */}
+      <div className='mt-5 rounded-xl border border-slate-200 p-3'>
+        <div className='mb-2 flex items-center gap-2'>
+          <div className='h-4 w-24 rounded bg-slate-200' />
+        </div>
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='h-20 rounded bg-slate-200' />
+          <div className='h-20 rounded bg-slate-200' />
+        </div>
       </div>
-      <div className='mt-6 h-9 w-40 rounded bg-slate-200' />
     </div>
+
+    {/* Footer */}
+    <footer className='m-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200'>
+      <div className='h-9 w-40 rounded bg-slate-200' />
+      <div className='h-9 w-24 rounded bg-slate-200' />
+    </footer>
   </div>
 );
-
 // -------------------------------------------------
 // Helpers
 // -------------------------------------------------
@@ -79,7 +122,7 @@ const initials = name =>
 // -------------------------------------------------
 // Job Card
 // -------------------------------------------------
-const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
+const JobCard = ({ job, onPublishToggle, loadingJobId, activeTab, onDeleteRequest }) => {
   const created = useMemo(() => job?.created_at?.split('T')[0] ?? '—', [job?.created_at]);
   const buyerInitials = useMemo(() => initials(job?.buyer?.username), [job?.buyer?.username]);
 
@@ -88,7 +131,7 @@ const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
       <div className={ribbonBar} />
 
       {/* Top Content */}
-      <div className='p-6 sm:p-7 !pb-24'>
+      <div className='p-6 sm:p-7 !pb-10'>
         {/* Title */}
         <header className='flex items-start justify-between gap-3'>
           <h2 className='text-xl sm:text-2xl font-semibold tracking-tight text-slate-900'>{job.title}</h2>
@@ -144,7 +187,15 @@ const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
             {(job.status === 'draft' || job.status === 'published') && (
               <div className={`${chip} !py-[6px] !pr-4 flex items-center gap-2 flex-wrap`}>
                 <span className="text-xs text-slate-500">Draft</span>
-                <Switcher checked={job.status === 'published'} onChange={() => onPublishToggle(job.id, job.status)} />
+                {loadingJobId === job.id ? (
+                  <div className="w-7 h-7 border-[3px] border-[var(--main)] border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Switcher
+                    checked={job.status === 'published'}
+                    onChange={() => onPublishToggle(job.id, job.status)}
+                  />
+                )}
+
                 <span className="text-xs text-slate-500">Publish</span>
               </div>
             )}
@@ -158,7 +209,12 @@ const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
             <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
               <FolderOpen className='shrink-0 h-4 w-4' /> Attachments
             </div>
-            <AttachmentList attachments={job.attachments} />
+            <AttachmentList
+              attachments={job.attachments}
+              className="!flex flex-wrap gap-4"
+              cnAttachment="!flex-1 !min-w-[180px] !max-w-full !basis-[calc(50%-0.5rem)]"
+            />
+
           </div>
         )}
       </div>
@@ -183,7 +239,7 @@ const JobCard = ({ job, onPublishToggle, activeTab, onDeleteRequest }) => {
 // -------------------------------------------------
 export default function MyJobsPage() {
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -191,17 +247,17 @@ export default function MyJobsPage() {
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [jobToDelete, setJobToDelete] = useState(null);
+  const [loadingJobId, setLoadingJobId] = useState(null);
 
-  useEffect(() => {
+  function handleChangeTab(tab) {
+    setActiveTab(tab)
     const saved = sessionStorage.getItem('itemsPerPage');
     if (saved) setItemsPerPage(Number(saved));
     setCurrentPage(1);
-    loadJobs(1);
-  }, [activeTab]);
-
+  }
   useEffect(() => {
     loadJobs(currentPage);
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, activeTab]);
 
   const loadJobs = async (page = 1) => {
     try {
@@ -227,16 +283,23 @@ export default function MyJobsPage() {
     setCurrentPage(1);
   };
 
-  const onPublishToggle = (id, status) => {
+  const onPublishToggle = async (id, status) => {
     const next = status === 'draft' ? 'published' : 'draft';
-    updateJob(id, { status: next })
-      .then(res => {
-        setJobs(prev => prev.map(j => (j.id === id ? { ...j, status: next } : j)));
-      })
-      .catch(err => {
-        toast.error(err.response.data.message);
-      });
+
+    try {
+      setLoadingJobId(id);
+      await updateJob(id, { status: next });
+      setJobs(prev =>
+        prev.map(j => (j.id === id ? { ...j, status: next } : j))
+      );
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to update job status');
+    }
+    finally {
+      setLoadingJobId(null);
+    }
   };
+
 
   const confirmDelete = id => {
     setJobToDelete(id);
@@ -275,15 +338,16 @@ export default function MyJobsPage() {
           { label: 'Completed', value: 'completed' },
         ]}
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={handleChangeTab}
         className='max-w-full'
       />
 
       <div className='mt-6 grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3'>
+
         {loading ? (
-          Array.from({ length: 9 }).map((_, i) => <JobSkeleton key={i} />)
+          Array.from({ length: 6 }).map((_, i) => <JobSkeleton key={i} />)
         ) : jobs.length > 0 ? (
-          jobs.map(job => <JobCard key={job.id} activeTab={activeTab} job={job} onPublishToggle={onPublishToggle} onDeleteRequest={confirmDelete} />)
+          jobs.map(job => <JobCard key={job.id} activeTab={activeTab} loadingJobId={loadingJobId} job={job} onPublishToggle={onPublishToggle} onDeleteRequest={confirmDelete} />)
         ) : (
           <div className='md:col-span-2 lg:col-span-3'>
             <NoResults mainText='No jobs available at the moment' additionalText='Looks like no jobs are available right now. Check back later!' buttonText='Create a New Job' buttonLink='/share-job-description' />

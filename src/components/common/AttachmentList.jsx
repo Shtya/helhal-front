@@ -2,19 +2,24 @@ import React, { useState } from 'react';
 import { Paperclip } from 'lucide-react';
 import { Modal } from './Modal';
 import { baseImg } from '@/lib/axios';
+import Img from '../atoms/Img';
 
-const AttachmentList = ({ attachments, className }) => {
+const AttachmentList = ({ attachments, className, cnAttachment }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isImageLoading, setIsImageLoading] = useState(true);
+
 
   const handleAttachmentClick = file => {
     setSelectedFile(file);
     setIsModalOpen(true);
+    setIsImageLoading(true);
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedFile(null);
+    setIsImageLoading(false);
   };
 
   const isImage = file => {
@@ -26,11 +31,12 @@ const AttachmentList = ({ attachments, className }) => {
     window.open(baseImg + file?.url, '_blank');
   };
 
+
   return (
     <div className={`mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 xl:gap-4 ${className}`}>
       {attachments?.length > 0 &&
         attachments.map((f, i) => (
-          <div key={i} className='flex items-center  w-full gap-3 rounded-xl border border-gray-200 p-3 cursor-pointer hover:bg-gray-100' onClick={() => handleAttachmentClick(f)}>
+          <div key={i} className={`flex items-center  w-full  gap-3 rounded-xl border border-gray-200 p-3 cursor-pointer hover:bg-gray-100 ${cnAttachment}`} onClick={() => handleAttachmentClick(f)}>
             <div className="w-12 h-12 flex-shrink-0 rounded-lg bg-gradient-to-br from-pink-500 via-purple-500 to-yellow-500 flex items-center justify-center">
               <Paperclip className="w-6 h-6 text-white" />
             </div>
@@ -45,7 +51,12 @@ const AttachmentList = ({ attachments, className }) => {
       {isModalOpen && selectedFile && (
         <Modal title={'Preview File'} onClose={handleCloseModal}>
           {isImage(selectedFile) ? (
-            <img src={baseImg + selectedFile?.url} alt={selectedFile?.name} className='w-full' />
+            <div>
+              {isImageLoading && (
+                <div className="animate-pulse bg-gray-200 rounded-md w-full" style={{ height: '464px' }} />
+              )}
+              <Img src={selectedFile?.url} alt={selectedFile?.name} className='w-full' onLoad={() => setIsImageLoading(false)} />
+            </div>
           ) : (
             // Provide option to open in a new tab for non-image files (e.g., PDFs, Word docs)
             <div className='text-center'>
@@ -53,7 +64,7 @@ const AttachmentList = ({ attachments, className }) => {
               <button onClick={() => handleOpenInNewTab(selectedFile)} className='mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300'>
                 Open in New Tab
               </button>
-              <a href={baseImg + selectedFile?.url} download={selectedFile?.name} className='mt-4 ml-2 inline-block px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300'>
+              <a href={baseImg + selectedFile?.url} target='_blank' download={selectedFile?.name} className='mt-4 ml-2 inline-block px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300'>
                 Download
               </a>
             </div>

@@ -355,7 +355,10 @@ export default function SellerJobsPage() {
       </motion.div>
 
       <div className='mt-8'>
-        <TabsPagination currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => setLimit(sz)} itemsPerPage={limit} />
+        <TabsPagination currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => {
+          setLimit(sz)
+          resetpage();
+        }} itemsPerPage={limit} />
       </div>
 
       {/* Drawer (details + apply) */}
