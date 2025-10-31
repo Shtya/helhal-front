@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, Eraser } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 
@@ -11,7 +11,6 @@ export default function AdvancedJobsDropdown({
     sortBy: 'newest', // 'newest' | 'budgetAsc' | 'budgetDesc'
     max7days: false,
     withAttachments: false,
-    hourly: false,
   },
   onApply, // (next) => void
   className = '',
@@ -24,7 +23,9 @@ export default function AdvancedJobsDropdown({
 
   // local copy so user can cancel
   const [selected, setSelected] = useState(value);
-  useEffect(() => setSelected(value), [JSON.stringify()]); // sync when parent changes
+  useEffect(() =>
+    setSelected(value),
+    [JSON.stringify(value)]); // sync when parent changes
 
   // outside click + ESC
   useEffect(() => {
@@ -42,11 +43,19 @@ export default function AdvancedJobsDropdown({
     };
   }, [open]);
 
+  function clearAll() {
+    setSelected({ sortBy: 'newest', max7days: false, withAttachments: false })
+  }
+
+  function applyChanges() {
+    onApply?.(selected);
+    setOpen(false);
+  }
   const hasChanges = useMemo(() => {
     return selected.sortBy !== value.sortBy || selected.max7days !== value.max7days || selected.withAttachments !== value.withAttachments || selected.hourly !== value.hourly;
   }, [selected, value]);
 
-  const totalSelected = (selected.max7days ? 1 : 0) + (selected.withAttachments ? 1 : 0) + (selected.hourly ? 1 : 0);
+  const totalSelected = (selected.max7days ? 1 : 0) + (selected.withAttachments ? 1 : 0);
 
   // UI bits (kept very close to your SellerDetailsDropdown style)
   const OptionRow = ({ active, label, onClick }) => (
@@ -67,7 +76,7 @@ export default function AdvancedJobsDropdown({
   );
 
   const Section = ({ title, subtitle, children }) => (
-    <div className='px-4'>
+    <div className='min-w-[330px] px-4'>
       <div className='flex items-baseline justify-between mb-2'>
         <h4 className='text-base font-bold text-slate-800'>{title}</h4>
         {subtitle && <span className='text-[10px] text-slate-400'>{subtitle}</span>}
@@ -81,7 +90,7 @@ export default function AdvancedJobsDropdown({
     <>
       {open && <div className='fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn' onClick={() => setOpen(false)} />}
 
-      <div ref={rootRef} className={`relative inline-block text-left ${open && 'z-[110]'} ${className}`}>
+      <div ref={rootRef} className={`relative  text-left ${open && 'z-[110]'} ${className}`}>
         {/* Trigger */}
         <button
           type='button'
@@ -101,9 +110,9 @@ export default function AdvancedJobsDropdown({
       <div
         ref={menuRef}
         style={menuStyle}
-        className={`absolute right-0 mt-2 w-[380px] rounded-2xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
+        className={`absolute right-0 mt-2 w-[385px] rounded-2xl  bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70] 
           ${open ? 'scale-100 opacity-100 z-[110]' : 'scale-95 opacity-0 pointer-events-none'}`}>
-        <div className='py-4 max-h-[70vh] overflow-auto'>
+        <div className='py-4 max-h-[70vh] w-full  overflow-y-auto overflow-x-auto'>
           {/* Sort by */}
           <Section title='Sort by'>
             <OptionRow label='Newest' active={selected.sortBy === 'newest'} onClick={() => setSelected(s => ({ ...s, sortBy: 'newest' }))} />
@@ -115,22 +124,13 @@ export default function AdvancedJobsDropdown({
           <Section title='Quick toggles' subtitle='Client-side filters'>
             <OptionRow label='≤ 7 days' active={!!selected.max7days} onClick={() => setSelected(s => ({ ...s, max7days: !s.max7days }))} />
             <OptionRow label='With attachments' active={!!selected.withAttachments} onClick={() => setSelected(s => ({ ...s, withAttachments: !s.withAttachments }))} />
-            <OptionRow label='Hourly' active={!!selected.hourly} onClick={() => setSelected(s => ({ ...s, hourly: !s.hourly }))} />
           </Section>
 
           {/* Footer */}
-          <div className='px-4 -mb-2 flex items-center justify-between gap-2'>
-            <Button name='Clear All' color='outline' className='!w-fit !h-[35px]' onClick={() => setSelected({ sortBy: 'newest', max7days: false, withAttachments: false, hourly: false })} />
+          <div className='px-4 min-w-[330px] mb-2 flex items-center justify-end gap-2'>
+            <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
             {hasChanges && (
-              <Button
-                name='Apply'
-                color='default'
-                className='!w-fit !h-[35px]'
-                onClick={() => {
-                  onApply?.(selected);
-                  setOpen(false);
-                }}
-              />
+              <Button icon={<Check size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={applyChanges} />
             )}
           </div>
         </div>

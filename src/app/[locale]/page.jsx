@@ -99,7 +99,7 @@ const CLIENT_EXPERIENCES = {
     {
       id: '1',
       image: '/images/clients/client1.jpg',
-      quote: 'Finding the perfect photographer used to be a struggle—until we found Helhal. The results exceeded our expectations.',
+      quote: 'Finding the perfect photographer used to be a struggle—until we found Helhal. The results exceeded our expectations.  The results exceeded our expectations.',
       company: 'Lumière Co.',
       clientName: 'Sarah J.',
       title: 'Marketing Director at Lumière Co.',
@@ -519,10 +519,10 @@ export function ClientsExperiences() {
         }}
         wrapperClass='items-stretch'>
         {experiences.map(item => (
-          <SwiperSlide key={item.id} className='!h-[444px]'>
+          <SwiperSlide key={item.id} className='!min-h-[444px]'>
             <article className={['bg-white rounded-2xl border border-emerald-100/70', 'p-4 h-full flex flex-col gap-5', 'shadow-[0_6px_24px_rgba(16,185,129,0.06)]'].join(' ')}>
               <div className='relative  w-full rounded-xl overflow-hidden aspect-[16/10]'>
-                <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover max-h-[225px]' />
+                <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover  h-full max-h-[300px]' />
               </div>
 
               <blockquote className='text-gray-900 text-base leading-7'>

@@ -5,11 +5,11 @@ import { ChevronDown, Loader2, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '@/lib/axios';
 
-const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChange, allowCreate = true, placeholder = 'Select an option', label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur }, ref) => {
+const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChange, allowCreate = true, placeholder = 'Select an option', loadingText = "Loading...", label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur }, ref) => {
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
 
- 
+
   const [query, setQuery] = useState('');
   const [items, setItems] = useState([]); // raw API list
   const [loading, setLoading] = useState(false);
@@ -72,7 +72,8 @@ const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChang
 
   // Load on first open for that scope
   useEffect(() => {
-    if (open) fetchCategories();
+    if (!open && !value) return;
+    fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, scopeKey]);
 
@@ -176,7 +177,7 @@ const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChang
           aria-haspopup='listbox'
           aria-expanded={open}
           name={name}>
-          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{selected?.name || placeholder}</span>
+          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{loading ? loadingText : selected?.name || placeholder}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
         </button>
 

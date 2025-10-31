@@ -4,6 +4,7 @@ import Select from '../atoms/Select';
 
 const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage, className }) => {
 
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentPage])
@@ -32,10 +33,10 @@ const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageC
         {/* Items per page selector */}
         {onItemsPerPageChange && <Select
           options={[
-            { id: 1, name: '5' },
-            { id: 2, name: '10' },
-            { id: 3, name: '20' },
-            { id: 4, name: '50' },
+            { id: 5, name: '5' },
+            { id: 10, name: '10' },
+            { id: 20, name: '20' },
+            { id: 50, name: '50' },
           ]}
           value={itemsPerPage}
           onChange={selectedOption => onItemsPerPageChange(Number(selectedOption.name))}

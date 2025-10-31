@@ -1,9 +1,15 @@
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 
 const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, showAction = true, actionIcon, onSearch, value, onChange }) => {
   const [searchTerm, setSearchTerm] = useState(value || '');
+
+  // Sync internal state with external value changes
+  useEffect(() => {
+    if (value !== searchTerm)
+      setSearchTerm(value || '');
+  }, [value]);
 
   const handleSearch = e => {
     e.preventDefault();

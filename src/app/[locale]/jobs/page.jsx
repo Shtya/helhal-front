@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -17,21 +17,53 @@ import AdvancedJobsDropdown from '@/components/Filters/AdvancedJobsDropdown';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
 import UserAvatar from '@/components/common/UserAvatar';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useAuth } from '@/context/AuthContext';
+import { updateUrlParams } from '@/utils/helper';
+import { usePathname } from '@/i18n/navigation';
+import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdown';
+import CategorySelect from '@/components/atoms/CategorySelect';
 
 // -------------------------------------------------
 // Services
 // -------------------------------------------------
-async function listPublishedJobs({ page = 1, limit = 12, q = '', category, subcategory, minBudget, maxBudget, budgetType } = {}) {
+// build query helper for fetchAllServices
+function buildQuery({ page = 1, limit = 12, q = '', filters = {} } = {}) {
+  const out = {
+    page: Number(page) || 1,
+    limit: Number(limit) || 12,
+  };
+
+  if (typeof q === 'string' && q.trim()) out.q = q.trim();
+
+  // map filters to API params
+  if (filters.category) out.category = String(filters.category);
+  if (filters.budgetType) out.budgetType = String(filters.budgetType);
+  if (filters.priceRange) out.priceRange = String(filters.priceRange);
+  if (filters.customBudget) out.customBudget = String(filters.customBudget);
+
+  // booleans
+  if (filters.max7days === true || filters.max7days === 'true') out.max7days = true;
+  if (filters.withAttachments === true || filters.withAttachments === 'true') out.withAttachments = true;
+
+  // leave min/max if present (API may consume them)
+  if (filters.sortBy) out.sortBy = filters.sortBy;
+
+  return out;
+}
+
+async function listPublishedJobs({ page = 1, limit = 12, q = '', category, budgetType, max7days, withAttachments, customBudget, priceRange, sortBy = 'newest' } = {}) {
   const res = await api.get('/jobs', {
     params: {
       page,
       limit,
       q,
       category,
-      subcategory,
-      minBudget,
-      maxBudget,
       budgetType,
+      max7days,
+      withAttachments,
+      customBudget,
+      priceRange,
+      // sortBy, return it when backend add it 
       filters: { status: 'published' },
     },
   });
@@ -81,55 +113,41 @@ function formatBudget(job) {
 // -------------------------------------------------
 // Page
 // -------------------------------------------------
+
+const defaultFilters = {
+  priceRange: '',
+  customBudget: '',
+  budgetType: '',
+  minBudget: '',
+  maxBudget: '',
+  sortBy: 'newest',
+  max7days: '',
+  withAttachments: '',
+  category: '',
+}
 export default function SellerJobsPage() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { role } = useAuth();
 
   // Data
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(Number(searchParams.get('page') || 1));
   const [pages, setPages] = useState(1);
-  const [limit, setLimit] = useState(12);
+  const [limit, setLimit] = useState(Number(searchParams.get('limit') || 10));
 
-  // Filters
-
+  // Search
   const [q, setQ] = useState(searchParams.get('q') || '');
-  const debouncedQ = useDebounce(q)
-  const [budgetType, setBudgetType] = useState(searchParams.get('budgetType') || '');
-  const [minBudget, setMinBudget] = useState(searchParams.get('min') || '');
-  const [maxBudget, setMaxBudget] = useState(searchParams.get('max') || '');
+
+  const debouncedQ = useDebounce({ value: q, onDebounce: resetPage });
+  const skipDebouncedRef = useRef(false);
+
 
   // Drawer state
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
 
-  useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      try {
-        setLoading(true);
-        const res = await listPublishedJobs({
-          page,
-          limit,
-          debouncedQ,
-          budgetType,
-          minBudget: minBudget || undefined,
-          maxBudget: maxBudget || undefined,
-        });
-        if (!isMounted) return;
-        setJobs(res.jobs || []);
-        setPages(res.pagination?.pages || 1);
-      } catch (e) {
-        console.error(e);
-        toast.error('Failed to load jobs');
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    })();
-    return () => {
-      isMounted = false;
-    };
-  }, [page, limit, debouncedQ, budgetType, minBudget, maxBudget]);
 
   const openDrawerForJob = async job => {
     try {
@@ -140,48 +158,182 @@ export default function SellerJobsPage() {
     }
   };
 
-  const [sortBy, setSortBy] = useState('newest');
-  const [t_max7days, setTMax7Days] = useState(false);
-  const [t_withAttachments, setTWithAttachments] = useState(false);
-  const [t_hourly, setTHourly] = useState(false);
+
+  function resetPage() {
+    setPage(1);
+  }
+
+  // Filters (grouped)
+  const [filters, setFiltersState] = useState({
+    priceRange: searchParams.get('priceRange') || '',
+    customBudget: searchParams.get('customBudget') || '',
+    budgetType: searchParams.get('budgetType') || '',
+    sortBy: searchParams.get('sortBy') || 'newest',
+    max7days: searchParams.get('max7days') === 'true',
+    withAttachments: searchParams.get('withAttachments') === 'true',
+    category: searchParams.get('category') || '',
+  });
+
+
+  function setFilter(key, value) {
+    setFiltersState(prev => {
+
+      if (prev[key] === value) return prev;
+      return { ...prev, [key]: value };
+    });
+    // always reset page when filters change (but not when we change page/limit)
+    setPage(1);
+  }
+
+  // Reset filters + search
+  const resetFilters = () => {
+    setFiltersState(defaultFilters);
+    setQ('');
+    resetPage();
+    if (debouncedQ) skipDebouncedRef.current = true;
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+
+    if (page && Number(page) > 1) {
+      params.set('page', String(page));
+    } else {
+      params.delete('page');
+    }
+
+
+    if (limit && Number(limit) !== 10) {
+      params.set('limit', String(limit));
+    } else {
+      params.delete('limit');
+    }
+
+
+    if (typeof debouncedQ === 'string' && debouncedQ.trim()) {
+      params.set('q', debouncedQ.trim());
+    } else {
+      params.delete('q');
+    }
+
+
+    Object.entries(filters || {}).forEach(([key, value]) => {
+      if (value === '' || value == null || value === false) {
+        params.delete(key);
+        return;
+      }
+
+      if (typeof value === 'boolean') {
+        params.set(key, 'true');
+      } else {
+        params.set(key, String(value));
+      }
+    });
+
+    updateUrlParams(pathname, params);
+  }, [page, limit, debouncedQ, filters, pathname]);
+
+
+  // Fetch jobs
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchAllServices() {
+      try {
+        if (skipDebouncedRef.current) {
+          skipDebouncedRef.current = false;
+          return; // skip this fetch triggered by debounce reset
+        }
+
+        setLoading(true);
+        const query = buildQuery({ page, limit, q: debouncedQ, filters });
+
+        const res = await listPublishedJobs(query);
+        if (!isMounted) return;
+        setJobs(res.jobs || []);
+        setPages(res.pagination?.pages || 1);
+      } catch (e) {
+        console.error(e);
+        toast.error('Failed to load jobs');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    fetchAllServices();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [page, limit, debouncedQ, filters]);
+
 
   return (
-    <div className='container !mb-12'>
-      <HeroHeader />
+    <div className='container !mb-12 !pt-8 '>
+      {role === 'buyer' && <HeroHeader />}
 
       {/* Filters Panel */}
       <motion.section variants={fadeItem} initial='hidden' animate='show' transition={spring} className='card'>
-        <div className='flex flex-col sm:flex-row md:items-center justify-between gap-3'>
-          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={e => setQ(e)} placeholder='Search by title, description, or skills' className='max-sm:max-w-full' />
-          <div className='flex max-sm:flex-wrap items-center gap-2'>
-            <Select
-              value={budgetType}
-              onChange={opt => setBudgetType(opt?.id ?? '')}
-              options={[
-                { id: '', name: 'Any Budget Type' },
-                { id: 'fixed', name: 'Fixed' },
-                { id: 'hourly', name: 'Hourly' },
-              ]}
-              className='!w-40 !text-xs min-w-0 truncate'
-              variant='minimal'
+        <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
+          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={v => setQ(v)} placeholder='Search by title, description, or skills' className='!max-w-full' showAction={false} />
+          <CategorySelect
+            type='category'
+            loadingText="Loading categories..."
+            cnPlaceholder='!text-gray-900'
+            value={filters?.category}
+            onChange={opt => {
+              setFilter('category', opt?.id ?? '');
+            }}
+            placeholder='Select a category'
+          />
+
+
+          <Select
+            value={filters.budgetType}
+            onChange={opt => {
+              setFilter('budgetType', opt?.id ?? '');
+            }
+            }
+            options={[
+              { id: '', name: 'Any Budget Type' },
+              { id: 'fixed', name: 'Fixed' },
+              { id: 'hourly', name: 'Hourly' },
+            ]}
+            className='!text-xs min-w-0 truncate'
+            variant='minimal'
+          />
+          <SellerBudgetDropdown onBudgetChange={() => {
+            setFiltersState(prev => {
+              const updated = {
+                ...prev,
+                priceRange,
+                customBudget: priceRange === 'custom' ? customBudget : '',
+              };
+              return updated;
+            });
+            resetpage();
+          }} selectedPriceRange={filters.priceRange} customBudget={filters.customBudget} />
+
+          <div className='flex-grow sm:flex-grow-0'>
+            <AdvancedJobsDropdown
+              value={{
+                sortBy: filters.sortBy,
+                max7days: filters.max7days,
+                withAttachments: filters.withAttachments,
+              }}
+              onApply={next => {
+                setFiltersState(prev => ({
+                  ...prev,
+                  sortBy: next.sortBy,
+                  max7days: next.max7days,
+                  withAttachments: next.withAttachments,
+                }))
+                resetPage();
+              }
+              }
             />
-            <div className='justify-self-end'>
-              <AdvancedJobsDropdown
-                value={{
-                  sortBy,
-                  max7days: t_max7days,
-                  withAttachments: t_withAttachments,
-                  hourly: t_hourly,
-                }}
-                onApply={next => {
-                  setSortBy(next.sortBy);
-                  setTMax7Days(next.max7days);
-                  setTWithAttachments(next.withAttachments);
-                  setTHourly(next.hourly);
-                }}
-              />
-            </div>
           </div>
+
         </div>
       </motion.section>
 
@@ -197,7 +349,7 @@ export default function SellerJobsPage() {
           ))
         ) : (
           <div className='md:col-span-2 lg:col-span-3'>
-            <NoResults mainText='No jobs right now' additionalText='Try widening your filters or check back later.' />
+            <NoResults mainText='No jobs right now' additionalText='Try widening your filters or check back later.' buttonText="Reset Filters" onClick={resetFilters} />
           </div>
         )}
       </motion.div>
@@ -237,7 +389,7 @@ export default function SellerJobsPage() {
 // -------------------------------------------------
 function HeroHeader() {
   return (
-    <motion.header initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={spring} className='card relative mt-8 mb-6 overflow-hidden'>
+    <motion.header initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={spring} className='card relative mb-6 overflow-hidden'>
       <div className='pointer-events-none absolute inset-0 -z-10 opacity-80 [background:radial-gradient(1000px_300px_at_20%_-10%,#ecfeff,transparent),radial-gradient(1000px_300px_at_80%_120%,#eef2ff,transparent)]' />
       <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
         <div>
@@ -267,7 +419,9 @@ function JobCard({ job, onOpen, index }) {
       {/* Top bar (posted + actions) */}
       <div className='mb-1 flex items-center justify-between'>
         <div className='text-xs text-slate-500'>Posted {posted || createdDate}</div>
-        <div className='relative flex items-center gap-2 opacity-70 group-hover:opacity-100'>
+        <div className='relative flex items-center gap-2 opacity-70 group-hover:opacity-100'
+          onClick={e => e.stopPropagation()}
+          onKeyDown={e => e.stopPropagation()} >
           <FavoriteButton className=' !top-0 !right-0 !relative' />
         </div>
       </div>

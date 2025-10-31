@@ -121,7 +121,7 @@ export default function FilterServices({ category = 'all' }) {
     const [categoryData, setCategorydata] = useState(null);
 
     // Debounce search input → update formData.search from Input
-    const debounced = useDebounce(search)
+    const debounced = useDebounce({ value: search, onDebounce: () => setPagination(prev => ({ ...prev, page: 1 })) })
     const skipDebouncedRef = useRef(false);
 
     useEffect(() => {
@@ -274,7 +274,9 @@ export default function FilterServices({ category = 'all' }) {
         setSearch('');
         setPagination(prev => ({ ...prev, page: 1 }));
 
-        skipDebouncedRef.current = true;
+
+        if (debounced)
+            skipDebouncedRef.current = true;
     };
 
     // if (!isAllActive && !categoryData && !loading) return <NotFound />;
