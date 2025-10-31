@@ -692,7 +692,7 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
   const skills = watch('skills') || [];
   const educations = watch('education') || [];
   const certifications = watch('certifications') || [];
-  console.log(skills.length, skills.length > MAX_SKILLS)
+
   if (loading) return <SkeletonInfoCard />;
 
   return (

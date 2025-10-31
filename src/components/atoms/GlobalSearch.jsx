@@ -30,7 +30,7 @@ export default function GlobalSearch({ className = '' }) {
   const scopes = [
     { label: 'Services', value: 'services', path: '/services' },
     { label: 'Jobs', value: 'jobs', path: '/jobs' },
-    { label: 'Sellers', value: 'sellers', path: '/sellers' },
+    // { label: 'Sellers', value: 'sellers', path: '/sellers' },
   ];
   const [scopeIndex, setScopeIndex] = useState(0);
   const scope = scopes[scopeIndex];
