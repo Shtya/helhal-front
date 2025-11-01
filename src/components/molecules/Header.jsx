@@ -298,9 +298,22 @@ export default function Header() {
       },
     ];
 
+    // Seller-only
+    const admin = [
+      {
+        label: 'Jobs',
+        icon: <Briefcase className='h-5 w-5' />,
+        children: [
+          { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
+        ],
+      },
+    ];
+
+
     // Conditional + common
     if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }];
     if (u?.role === 'seller') return [...common, ...seller];
+    if (u?.role === 'admin') return [...common, ...admin];
     return [...common]; // fallback if no role
   };
 

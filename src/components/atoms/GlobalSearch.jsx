@@ -5,6 +5,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Clock, ChevronDown, ExternalLink, Loader2, X } from 'lucide-react';
 import api from '@/lib/axios';
+import { apiService } from '@/services/GigServices';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function GlobalSearch({ className = '' }) {
   const BRAND = '#108A0090';
@@ -12,12 +14,13 @@ export default function GlobalSearch({ className = '' }) {
 
   // ---------- UI state
   const [q, setQ] = useState('');
+  const debouncedQ = useDebounce({ value: q })
   const [open, setOpen] = useState(false); // search dropdown
   const [scopeOpen, setScopeOpen] = useState(false); // scope dropdown
   const [highlight, setHighlight] = useState({ section: 'recent', index: -1 });
 
   // ---------- Data state
-  const [jobs, setJobs] = useState([]);
+  const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
   const [recent, setRecent] = useState([]);
 
@@ -28,7 +31,7 @@ export default function GlobalSearch({ className = '' }) {
 
   // ---------- Scopes (select lives **inside** the input)
   const scopes = [
-    { label: 'Services', value: 'services', path: '/services' },
+    { label: 'Services', value: 'services', path: '/services/all' },
     { label: 'Jobs', value: 'jobs', path: '/jobs' },
     // { label: 'Sellers', value: 'sellers', path: '/sellers' },
   ];
@@ -58,36 +61,48 @@ export default function GlobalSearch({ className = '' }) {
     } catch { }
   };
 
-  // ---------- Debounced jobs fetch (lightweight)
+  // ---------- Debounced records fetch (lightweight)
   useEffect(() => {
-    if (!open) return;
-    const term = q.trim();
-    if (!term) {
-      setJobs([]);
+    if (!open || !debouncedQ) {
+      setRecords([]);
       return;
     }
-    const t = setTimeout(async () => {
+
+    const fetchRecords = async () => {
       setLoading(true);
       try {
-        const res = await api.get('/jobs', {
-          params: {
-            search: term,
+        let list = [];
+        if (scope.value === 'services') {
+          const data = await apiService.getServices('all', {
+            search: debouncedQ,
             limit: 5,
             sortBy: 'created_at',
             sortOrder: 'DESC',
             'filters[status]': 'published',
-          },
-        });
-        const records = res?.data?.records || res?.data?.jobs || [];
-        setJobs(Array.isArray(records) ? records.slice(0, 5) : []);
+          });
+          list = data?.records || data?.services || [];
+        } else {
+          const res = await api.get('/jobs', {
+            params: {
+              search: debouncedQ,
+              limit: 5,
+              sortBy: 'created_at',
+              sortOrder: 'DESC',
+              'filters[status]': 'published',
+            },
+          });
+          list = res?.data?.records || res?.data?.jobs || [];
+        }
+        setRecords(Array.isArray(list) ? list.slice(0, 5) : []);
       } catch {
-        setJobs([]);
+        setRecords([]);
       } finally {
         setLoading(false);
       }
-    }, 160);
-    return () => clearTimeout(t);
-  }, [q, open]);
+    };
+
+    fetchRecords();
+  }, [debouncedQ, open, scope.value]);
 
   // ---------- Outside click / ESC
   useEffect(() => {
@@ -102,11 +117,6 @@ export default function GlobalSearch({ className = '' }) {
         setOpen(false);
         setScopeOpen(false);
       }
-      // const mod = e.ctrlKey || e.metaKey;
-      // if (mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
-      //   e.preventDefault();
-      //   cycleScope(e.key === 'ArrowRight' ? +1 : -1);
-      // }
     };
     document.addEventListener('mousedown', onDoc);
     document.addEventListener('keydown', onKey);
@@ -120,10 +130,20 @@ export default function GlobalSearch({ className = '' }) {
   const sections = useMemo(() => {
     const blocks = [];
     if (recent.length) blocks.push({ key: 'recent', items: recent.map(t => ({ type: 'recent', label: t })) });
-    if (q.trim()) blocks.push({ key: 'jobs', items: jobs.map(j => ({ type: 'job', id: j.id, label: j.title, subtitle: j?.buyer?.username })) });
+    if (q.trim()) {
+      blocks.push({
+        key: scope.value,
+        items: records.map(r => ({
+          type: scope.value === 'services' ? 'service' : 'job',
+          href: r.href,
+          label: r.title || r.name || '',
+          subtitle: r?.buyer?.username || r?.seller?.username || '',
+        })),
+      });
+    }
     blocks.push({ key: 'suggest', items: suggestions.map(s => ({ type: 'suggest', label: s })) });
     return blocks;
-  }, [recent, jobs, suggestions, q]);
+  }, [recent, records, suggestions, q, scope.value]);
 
   const moveHighlight = dir => {
     if (!sections.length) return;
@@ -160,29 +180,30 @@ export default function GlobalSearch({ className = '' }) {
     }
   };
 
-  const activateHighlighted = () => {
-    if (!sections.length) return;
-    const sec = sections.find(s => s.key === highlight.section);
-    if (!sec) return;
-    const item = sec.items[highlight.index];
-    if (!item) return;
-    handleChoose(item);
-  };
+  // const activateHighlighted = () => {
+  //   if (!sections.length) return;
+  //   const sec = sections.find(s => s.key === highlight.section);
+  //   if (!sec) return;
+  //   const item = sec.items[highlight.index];
+  //   if (!item) return;
+  //   handleChoose(item);
+  // };
 
   // ---------- Navigation helpers
   const go = term => {
     const t = String(term || q).trim();
     if (!t) return;
     pushRecent(t);
-    router.push(`${scope.path}?q=${encodeURIComponent(t)}`);
     setOpen(false);
+    router.push(`${scope.path}?q=${encodeURIComponent(t)}`);
   };
 
   const handleChoose = item => {
-    if (item.type === 'job' && item.id) {
-      router.push(`/jobs/${item.id}`);
+    if ((item.type === 'job' || item.type === 'service') && item.href) {
       setOpen(false);
-      pushRecent(q || item.label);
+      pushRecent(item.label);
+      if (item.type === 'job') router.push(item.href);
+      else router.push(item.href);
       return;
     }
     go(item.label);
@@ -226,7 +247,7 @@ export default function GlobalSearch({ className = '' }) {
 
           <span className='h-5 w-px bg-slate-200 mx-1' />
 
-          <Search className='h-4 w-4 text-slate-500' />
+          <Search className='h-4 w-4 text-slate-500 shrink-0' />
           <input
             ref={inputRef}
             value={q}
@@ -251,7 +272,7 @@ export default function GlobalSearch({ className = '' }) {
               }
               if (e.key === 'Enter') {
                 e.preventDefault();
-                activateHighlighted() || go(q);
+                go();
               }
               const mod = e.ctrlKey || e.metaKey;
               if (mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
@@ -294,23 +315,37 @@ export default function GlobalSearch({ className = '' }) {
         {open && !scopeOpen && (
           <div className='absolute z-50 mt-2 w-full overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
             <div className='max-h-[380px] overflow-auto p-2'>
+
+              {/* Live records */}
+              {q.trim() && (
+                <Section title={`Live ${scope.label}`} loading={loading} empty={records.length === 0 && !loading} emptyHint={loading ? '' : `No matching ${scope.label.toLowerCase()} yet`}>
+                  {records.map((r, i) => (
+                    <Row
+                      key={r.id || `${scope.value}-${i}`}
+                      icon={<ExternalLink className='h-4 w-4' />}
+                      active={highlight.section === scope.value && highlight.index === i}
+                      onMouseEnter={() => setHighlight({ section: scope.value, index: i })}
+                      onClick={() =>
+                        handleChoose({
+                          type: scope.value === 'services' ? 'service' : 'job',
+                          href: scope.value === 'services' ? `/services/${r?.category?.slug}/${r?.slug}` : `/jobs/${r.id}`,
+                          label: r.title || r.name,
+                        })
+                      }
+                      subtitle={r?.buyer?.username || r?.seller?.username}
+                      meta={r?.budget ? `$${r.budget}` : null}>
+                      <High text={r.title || r.name} query={q} />
+                    </Row>
+                  ))}
+                </Section>
+              )}
+
               {/* Recent */}
               {recent.length > 0 && (
                 <Section title='Recent'>
                   {recent.map((r, i) => (
                     <Row key={`r-${r}-${i}`} icon={<Clock className='h-4 w-4' />} active={highlight.section === 'recent' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'recent', index: i })} onClick={() => handleChoose({ type: 'recent', label: r })}>
                       <High text={r} query={q} />
-                    </Row>
-                  ))}
-                </Section>
-              )}
-
-              {/* Live Jobs */}
-              {q.trim() && (
-                <Section title='Jobs' loading={loading} empty={jobs.length === 0 && !loading} emptyHint={loading ? '' : 'No matching jobs yet'}>
-                  {jobs.map((j, i) => (
-                    <Row key={j.id} icon={<ExternalLink className='h-4 w-4' />} active={highlight.section === 'jobs' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'jobs', index: i })} onClick={() => handleChoose({ type: 'job', id: j.id, label: j.title })} subtitle={j?.buyer?.username} meta={j?.budget ? `$${j.budget}` : null}>
-                      <High text={j.title} query={q} />
                     </Row>
                   ))}
                 </Section>
@@ -327,8 +362,8 @@ export default function GlobalSearch({ className = '' }) {
             </div>
 
             {/* Footer CTA */}
-            <button onClick={() => go(q)} className='flex w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-emerald-50'>
-              <span>
+            <button onClick={() => go(q)} className='flex  w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-emerald-50'>
+              <span className='break-all'>
                 Search “{q || '…'}” in <span className='font-semibold'>{scope.label}</span>
               </span>
               <span className='text-[11px] text-slate-400'>Enter ↵</span>
@@ -358,7 +393,7 @@ export default function GlobalSearch({ className = '' }) {
 function Section({ title, children, loading = false, empty = false, emptyHint = '' }) {
   return (
     <div className='py-1'>
-      <div className='sticky top-0 z-[1] bg-white/95 backdrop-blur px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500'>{title}</div>
+      <div className='sticky -top-2 z-[1] bg-white/95 backdrop-blur px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500'>{title}</div>
       {loading && <div className='px-2 pb-2 text-sm text-slate-500'>Loading…</div>}
       {empty && !loading && <div className='px-2 pb-2 text-sm text-slate-400'>{emptyHint}</div>}
       {children}

@@ -19,7 +19,6 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { updateUrlParams } from '@/utils/helper';
-import NotFound from '@/components/molecules/NotFound';
 
 const defaultFilters = {
 
@@ -43,6 +42,7 @@ function buildQuery(formData, pagination) {
         page: pagination.page,
         limit: pagination.limit,
 
+        // ...(formData.search && { search: formData.search }), return it whe back solve exeption
         ...(formData.priceRange && { priceRange: formData.priceRange }),
         ...(formData.customBudget && { customBudget: formData.customBudget }),
         ...(formData.rating && { rating: formData.rating.id }),
@@ -109,7 +109,12 @@ export default function FilterServices({ category = 'all' }) {
         };
     });
 
-    const [search, setSearch] = useState(searchParams.get('search') ?? '');
+    const [search, setSearch] = useState(searchParams.get('q') ?? '');
+    useEffect(() => {
+        const q = searchParams.get('q') ?? '';
+        setSearch(q);
+    }, [searchParams]);
+
     const [pagination, setPagination] = useState({
         page: parseInt(searchParams.get('page') ?? '1', 10),
         limit: 8,
@@ -207,7 +212,7 @@ export default function FilterServices({ category = 'all' }) {
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
 
-        if (debounced) params.set('search', debounced); else params.delete('search');
+        if (debounced) params.set('q', debounced); else params.delete('q');
         updateUrlParams(pathname, params);
     }, [debounced]);
 

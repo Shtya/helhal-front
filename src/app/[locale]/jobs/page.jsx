@@ -140,6 +140,12 @@ export default function SellerJobsPage() {
   // Search
   const [q, setQ] = useState(searchParams.get('q') || '');
 
+
+  useEffect(() => {
+    const search = searchParams.get('q') ?? '';
+    setQ(search);
+  }, [searchParams]);
+
   const debouncedQ = useDebounce({ value: q, onDebounce: resetPage });
   const skipDebouncedRef = useRef(false);
 
