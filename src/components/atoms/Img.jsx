@@ -1,10 +1,13 @@
 'use client';
 
 import { baseImg } from '@/lib/axios';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-export default function Img({ src, altSrc, alt = '', className = 'h-full w-full object-cover', fallback = '/icons/no-img.png', loading = 'lazy', decoding = 'async', draggable = false, ...rest }) {
+export default function Img({ src, altSrc, alt = '', className = 'h-full w-full object-cover', fallback = '/icons/no-img.png', loading = 'lazy', decoding = 'async', draggable = false, textFallback = '', ...rest }) {
   const altSrcFinal = altSrc || fallback;
+  const [errored, setErrored] = useState(false);
+
+  useEffect
   const resolved = useMemo(() => {
     if (src === null || src === undefined) return altSrcFinal;
     if (typeof src !== 'string') return altSrcFinal;
@@ -31,6 +34,7 @@ export default function Img({ src, altSrc, alt = '', className = 'h-full w-full 
     // show contained altSrcFinal to avoid ugly stretch
     e.currentTarget.classList.add('!object-contain', 'bg-slate-50');
     e.currentTarget.src = altSrcFinal;
+    setErrored(true);
   };
 
   const handleLoad = e => {
@@ -41,6 +45,14 @@ export default function Img({ src, altSrc, alt = '', className = 'h-full w-full 
       e.currentTarget.classList.remove('!object-contain');
     }
   };
+
+  if (errored && textFallback) {
+    return (
+      <span className="text-sm font-semibold text-slate-600 select-none">
+        {textFallback}
+      </span>
+    );
+  }
 
   return <img src={resolved} alt={alt} className={className} onError={handleError} onLoad={handleLoad} loading={loading} decoding={decoding} draggable={draggable} {...rest} />;
 }

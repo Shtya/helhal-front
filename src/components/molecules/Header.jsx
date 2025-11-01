@@ -12,6 +12,7 @@ import api from '@/lib/axios';
 import { localImageLoader } from '@/utils/helper';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 import { useAuth } from '@/context/AuthContext';
+import Img from '../atoms/Img';
 
 /* =========================================================
    Animations
@@ -462,7 +463,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
     <div className='relative' ref={dropdownRef}>
       <motion.button onClick={() => setIsOpen(v => !v)} className='hidden md:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} aria-label={t('userMenuAriaLabel') || 'User menu'}>
 
-        <Image src={user?.profileImage || '/images/placeholder-avatar.png'} loader={localImageLoader} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
+        <Img src={user?.profileImage || '/images/placeholder-avatar.png'} altSrc='/images/placeholder-avatar.png' loader={localImageLoader} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
       </motion.button>
 
       <AnimatePresence>
@@ -594,7 +595,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
 
           {/* Drawer */}
           <motion.div role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 md:hidden h-screen'>
-            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/90'>
+            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/100'>
               {/* Header */}
               <div className='relative px-4 pt-4 pb-3'>
                 <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-50/70 to-transparent pointer-events-none' />
@@ -611,7 +612,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               {user && (
                 <div className='px-4 pe-6 pb-3 flex items-center gap-3'>
                   <motion.div whileHover={{ rotate: 4 }} transition={{ type: 'spring', stiffness: 280, damping: 18 }}>
-                    <Image src={user.profileImage || '/images/placeholder-avatar.png'} loader={localImageLoader} alt='Avatar' width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm' />
+                    <Img src={user.profileImage} altSrc={'/images/placeholder-avatar.png'} alt={`avatar`} width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm h-11 w-11' />
                   </motion.div>
                   <div className='min-w-0'>
                     <p className='text-sm text-slate-900 font-medium truncate'>{user.username || 'User'}</p>
@@ -674,10 +675,12 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
 
               {/* Logout */}
               {user && (
-                <motion.button onClick={onLogout} className='flex items-center gap-2 w-full px-3 mx-2 my-2 py-2 text-sm text-slate-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
-                  <LogOut size={16} />
-                  {isLogoutLoading ? 'Logging out…' : 'Logout'}
-                </motion.button>
+                <div className='mx-2'>
+                  <motion.button onClick={onLogout} className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-slate-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
+                    <LogOut size={16} />
+                    {isLogoutLoading ? 'Logging out…' : 'Logout'}
+                  </motion.button>
+                </div>
               )}
 
               <div className='h-[max(12px,env(safe-area-inset-bottom))]' />
@@ -726,7 +729,6 @@ export const getInitials = name =>
     .join('') || 'U';
 
 function UserMiniCard({ user }) {
-  const [imgErr, setImgErr] = useState(false);
   const name = user?.username || 'User';
   const email = user?.email || '';
   const role = (user?.role || 'member').toLowerCase();
@@ -740,9 +742,7 @@ function UserMiniCard({ user }) {
           {/* animated conic ring */}
           <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30 group-hover:opacity-60 transition' />
           <div className='relative size-12 rounded-full border border-slate-200 shadow-sm overflow-hidden bg-white flex items-center justify-center'>
-            {imgErr || !user?.profileImage
-              ? <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(name)}</span>
-              : <Image src={user.profileImage} loader={localImageLoader} alt={`${name} avatar`} width={48} height={48} onError={() => setImgErr(true)} className='rounded-full object-cover size-12' />}
+            <Img src={user.profileImage} alt={`${name} avatar`} width={48} height={48} className='rounded-full object-cover size-12' textFallback={getInitials(name)} />
           </div>
         </div>
       </motion.div>
