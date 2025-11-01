@@ -16,6 +16,9 @@ import { Switcher } from '@/components/atoms/Switcher';
 import { CalendarDays, Mail, User2, Trash2, FolderOpen, ChevronRight } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import toast from 'react-hot-toast';
+import { useSearchParams } from 'next/navigation';
+import { updateUrlParams } from '@/utils/helper';
+import { usePathname } from '@/i18n/navigation';
 
 // -------------------------------------------------
 // Visual Tokens (light mode only)
@@ -238,9 +241,25 @@ const JobCard = ({ job, onPublishToggle, loadingJobId, activeTab, onDeleteReques
 // Page
 // -------------------------------------------------
 export default function MyJobsPage() {
+  const tabs = [
+    { label: 'All', value: 'all' },
+    { label: 'Draft', value: 'draft' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Published', value: 'published' },
+    { label: 'Awarded', value: 'awarded' },
+    { label: 'Completed', value: 'completed' },
+  ]
+
+
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState(() => {
+    const tab = searchParams.get('tab')
+    if (!tab || !tabs.some(t => t.value === tab)) return 'all'; else tab;
+
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -249,12 +268,31 @@ export default function MyJobsPage() {
   const [jobToDelete, setJobToDelete] = useState(null);
   const [loadingJobId, setLoadingJobId] = useState(null);
 
+
   function handleChangeTab(tab) {
     setActiveTab(tab)
     const saved = sessionStorage.getItem('itemsPerPage');
     if (saved) setItemsPerPage(Number(saved));
     setCurrentPage(1);
   }
+
+
+  useEffect(() => {
+    if (!activeTab) return;
+
+    const params = new URLSearchParams();
+    params.set('tab', activeTab);
+    updateUrlParams(pathname, params);
+  }, [activeTab]);
+
+
+  useEffect(() => {
+    const paramsTab = searchParams.get('tab') ?? '';
+    if (!paramsTab || !tabs.some(t => t.value === paramsTab)) return;
+
+    handleChangeTab(paramsTab);
+  }, [searchParams]);
+
   useEffect(() => {
     loadJobs(currentPage);
   }, [currentPage, itemsPerPage, activeTab]);
@@ -330,14 +368,7 @@ export default function MyJobsPage() {
       </div>
 
       <Tabs
-        tabs={[
-          { label: 'All', value: 'all' },
-          { label: 'Draft', value: 'draft' },
-          { label: 'Pending', value: 'pending' },
-          { label: 'Published', value: 'published' },
-          { label: 'Awarded', value: 'awarded' },
-          { label: 'Completed', value: 'completed' },
-        ]}
+        tabs={tabs}
         activeTab={activeTab}
         setActiveTab={handleChangeTab}
         className='max-w-full'
