@@ -7,6 +7,7 @@ import { Modal } from '@/components/common/Modal';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
+import api from '@/lib/axios';
 
 const page = () => {
   const stats = [

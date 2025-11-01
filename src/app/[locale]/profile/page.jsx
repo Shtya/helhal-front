@@ -575,7 +575,7 @@ function LanguageSelector({ value = [], setValue }) {
   );
 }
 
-const MAX_SKILLS = 5;
+const MAX_SKILLS = 15;
 const MAX_EDUCATIONS = 2;
 const MAX_CERTIFICATIONS = 2;
 
@@ -922,7 +922,7 @@ function SectionHeader({ title, iconSrc, actionAria, onAction, disabled }) {
   );
 }
 
-function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInput }) {
+function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInput, maxOneSkilllength = 50 }) {
   const [input, setInput] = useState('');
 
   return (
@@ -950,7 +950,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
         <div className='mt-3 flex items-center gap-2'>
           <input
             value={input}
-            onChange={e => setInput(e.target.value.slice(0, 200))}
+            onChange={e => setInput(e.target.value.slice(0, maxOneSkilllength))}
             onKeyDown={e => {
               if (e.key === 'Enter' && input.trim()) {
                 onAdd?.(input.trim());

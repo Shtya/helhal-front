@@ -24,7 +24,7 @@ import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 
 const MIN_SKILL_LENGTH = 2;
 const MAX_SKILL_LENGTH = 50;
-const MAX_SKILLS = 50;
+const MAX_SKILLS = 15;
 const jobValidationSchema = yup.object({
   title: yup
     .string()

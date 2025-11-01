@@ -129,7 +129,8 @@ export default function SellerJobsPage() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { role } = useAuth();
-
+  // keep job id in sync with URL
+  const jobIdFromUrl = searchParams.get('job') || null;
   // Data
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -141,28 +142,33 @@ export default function SellerJobsPage() {
   const [q, setQ] = useState(searchParams.get('q') || '');
 
 
-  useEffect(() => {
-    const search = searchParams.get('q') ?? '';
-    setQ(search);
-  }, [searchParams]);
 
   const debouncedQ = useDebounce({ value: q, onDebounce: resetPage });
   const skipDebouncedRef = useRef(false);
 
 
   // Drawer state
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(!!jobIdFromUrl);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [selectedJobId, setSelectedJobId] = useState(jobIdFromUrl);
 
 
   const openDrawerForJob = async job => {
     try {
       setSelectedJob(job);
+      setSelectedJobId(job?.id)
       setDrawerOpen(true);
     } catch (e) {
       toast.error(e?.response?.data?.message || 'Unable to open job');
     }
   };
+
+
+  function closeDrawer() {
+    setDrawerOpen(false);
+    setSelectedJob(null);
+    setSelectedJobId(null);
+  }
 
 
   function resetPage() {
@@ -200,6 +206,21 @@ export default function SellerJobsPage() {
   };
 
   useEffect(() => {
+    const search = searchParams.get('q') ?? '';
+    const jobId = searchParams.get('job') || null;
+    if (q != search)
+      setQ(search);
+
+    if (jobId !== selectedJobId) {
+      setSelectedJobId(jobId)
+
+      if (jobId)
+        setDrawerOpen(true);
+    }
+
+  }, [searchParams]);
+
+  useEffect(() => {
     const params = new URLSearchParams();
 
 
@@ -209,6 +230,12 @@ export default function SellerJobsPage() {
       params.delete('page');
     }
 
+    // keep job id in URL when a job is selected
+    if (selectedJobId) {
+      if (selectedJobId) params.set('job', String(selectedJobId));
+    } else {
+      params.delete('job');
+    }
 
     if (limit && Number(limit) !== 10) {
       params.set('limit', String(limit));
@@ -238,7 +265,7 @@ export default function SellerJobsPage() {
     });
 
     updateUrlParams(pathname, params);
-  }, [page, limit, debouncedQ, filters, pathname]);
+  }, [page, limit, debouncedQ, filters, pathname, selectedJobId]);
 
 
   // Fetch jobs
@@ -371,7 +398,8 @@ export default function SellerJobsPage() {
       <JobDrawer
         open={drawerOpen}
         job={selectedJob}
-        onClose={() => setDrawerOpen(false)}
+        jobId={selectedJobId}
+        onClose={closeDrawer}
         onSubmitProposal={async values => {
           if (!selectedJob?.id) return;
           const payload = {
@@ -509,15 +537,54 @@ const applySchema = yup.object({
   milestoneAmount: yup.number().typeError('Enter a number').positive().optional(),
 });
 
-export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
+
+
+export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
   const { role, user } = useAuth();
-  const canSubmitProposal = role === 'seller' && job?.buyer?.id !== user?.id;
-  const buyer = job?.buyer || {};
-  const country = buyer?.country || '—';
-  const budget = job?.budget ?? job?.estimatedBudget;
-  const priceType = job?.budgetType === 'hourly' ? 'Hourly' : 'Fixed-price';
-  const experience = job?.experienceLevel || 'Intermediate';
-  const projectType = job?.projectType || 'One-time project';
+
+  const [localJob, setLocalJob] = useState(job);
+  const [jobLoading, setJobLoading] = useState(false);
+
+
+  useEffect(() => {
+
+    if (!job) return;
+
+    if (job?.id !== localJob?.Id) {
+      setLocalJob(job);
+    }
+  }, [job])
+  // synchronize when parent provides an object job
+  useEffect(() => {
+
+    if (!jobId) return;
+
+    if (job?.id === jobId) {
+      return;
+    }
+
+    let mounted = true;
+    const fetchJob = async id => {
+      setJobLoading(true);
+      try {
+        const res = await api.get(`/jobs/${id}`);
+        if (!mounted) return;
+        // support both API shapes
+        const j = res?.data?.job ?? res?.data ?? null;
+        setLocalJob(j);
+      } catch (err) {
+        console.error(err);
+        toast.error(err?.response?.data?.message || 'Failed to load job');
+        setLocalJob(null);
+      } finally {
+        if (mounted) setJobLoading(false);
+      }
+    };
+    fetchJob(String(jobId));
+    return () => {
+      mounted = false;
+    };
+  }, [jobId]);
 
   const {
     register,
@@ -537,7 +604,13 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
     onClose?.();
   };
 
-  const buyerName = job?.buyer?.username || '—';
+
+  const canSubmitProposal = role === 'seller' && localJob?.buyer?.id !== user?.id;
+  const buyer = localJob?.buyer || {};
+  const country = buyer?.country || '—';
+  const budget = localJob?.budget ?? localJob?.estimatedBudget;
+  const priceType = localJob?.budgetType === 'hourly' ? 'Hourly' : 'Fixed-price';
+  const buyerName = localJob?.buyer?.username || '—';
   const buyerInitials = useMemo(
     () =>
       (buyerName || '?')
@@ -548,7 +621,7 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
         .join(''),
     [buyerName],
   );
-  const created = (job?.created_at || '').split('T')[0];
+  const created = (localJob?.created_at || '').split('T')[0];
 
   return (
     <AnimatePresence>
@@ -559,160 +632,241 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
 
           {/* Drawer */}
           <motion.aside className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col' initial={{ x: -580 }} animate={{ x: 0 }} exit={{ x: -580 }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
-            {/* Header */}
-            <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
-              <div className='flex items-center flex-wrap gap-3'>
-                <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{job?.title || 'Job details'}</h3>
-                {/* show relation badge in drawer header */}
-                {user && (job?.buyer?.id === user?.id || job?.seller?.id === user?.id) && (
-                  <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
-                    You posted this
-                  </span>
-                )}
-              </div>
-              <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
-                <X className='h-5 w-5 text-slate-700' />
-              </button>
-            </div>
+            {jobLoading ? (
+              <JobDrawerSkeleton onClose={onClose} />
+            ) : (
+              <>
 
-            {/* Scrollable body */}
-            <div className='flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-6'>
-              {/* Summary */}
-              {job?.description && (
-                <section>
-                  <h4 className='text-sm font-semibold text-slate-900 mb-2'>Summary</h4>
-                  <p className='text-sm text-slate-700'>{job.description}</p>
-                </section>
-              )}
-
-
-              {/* Basic meta */}
-              <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Budget + Price Type */}
-                <div className="rounded-xl border border-slate-200 p-4">
-                  <div className="text-slate-900 font-semibold">${fmtMoney(budget)}</div>
-                  <div className="text-xs text-slate-500">{priceType}</div>
-                </div>
-
-                {/* Preferred Delivery */}
-                <div className="rounded-xl border border-slate-200 p-4">
-                  <div className="text-slate-900 font-semibold">
-                    {job.preferredDeliveryDays} {job.preferredDeliveryDays === 1 ? 'day' : 'days'}
-                  </div>
-                  <div className="text-xs text-slate-500">Preferred delivery</div>
-                </div>
-              </section>
-
-              {/* Skills */}
-              {Array.isArray(job?.skillsRequired) && job.skillsRequired.length > 0 && (
-                <section>
-                  <h4 className='text-sm font-semibold text-slate-900 mb-2'>Skills and Expertise</h4>
-                  <div className='flex flex-wrap gap-2'>
-                    {job.skillsRequired.map((s, i) => (
-                      <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
-                        {s}
+                {/* Header */}
+                <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
+                  <div className='flex items-center flex-wrap gap-3'>
+                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || 'Job details'}</h3>
+                    {/* show relation badge in drawer header */}
+                    {user && (localJob?.buyer?.id === user?.id || localJob?.seller?.id === user?.id) && (
+                      <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
+                        You posted this
                       </span>
-                    ))}
+                    )}
                   </div>
-                </section>
-              )}
-
-              {/* Client */}
-              <section>
-                <h4 className='text-sm font-semibold text-slate-900 mb-2'>About the client</h4>
-                <div className='mt-1 flex items-center gap-3'>
-                  <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200'>
-                    <span className='text-sm font-semibold'>{buyerInitials}</span>
-                  </div>
-                  <div>
-                    <div className='text-sm font-semibold text-slate-900 flex items-center gap-2'>{buyerName}</div>
-                    <div className='text-sm text-slate-500'>{country}</div>
-                  </div>
+                  <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
+                    <X className='h-5 w-5 text-slate-700' />
+                  </button>
                 </div>
 
-                <div className='mt-3 space-y-2 text-sm'>
-                  <div className='flex items-center gap-2'>
+                {/* Scrollable body */}
+                <div className='flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-6'>
+                  {/* Summary */}
+                  {localJob?.description && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Summary</h4>
+                      <p className='text-sm text-slate-700'>{localJob?.description}</p>
+                    </section>
+                  )}
 
-                    {job?.buyer?.paymentVerified ?
-                      <CheckCircle2 className='h-4 w-4 text-emerald-600' />
-                      : <CircleX className='h-4 w-4 text-red-600' />}
-                    <span>Payment method verified</span>
-                  </div>
-                  <div className='flex items-center gap-2 text-slate-700'>
-                    <CalendarDays className='h-4 w-4' />
-                    <span>Posted {created || '—'}</span>
-                  </div>
+
+                  {/* Basic meta */}
+                  <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Budget + Price Type */}
+                    <div className="rounded-xl border border-slate-200 p-4">
+                      <div className="text-slate-900 font-semibold">${fmtMoney(budget)}</div>
+                      <div className="text-xs text-slate-500">{priceType}</div>
+                    </div>
+
+                    {/* Preferred Delivery */}
+                    <div className="rounded-xl border border-slate-200 p-4">
+                      <div className="text-slate-900 font-semibold">
+                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? 'day' : 'days'}
+                      </div>
+                      <div className="text-xs text-slate-500">Preferred delivery</div>
+                    </div>
+                  </section>
+
+                  {/* Skills */}
+                  {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Skills and Expertise</h4>
+                      <div className='flex flex-wrap gap-2'>
+                        {localJob?.skillsRequired.map((s, i) => (
+                          <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {/* Client */}
+                  <section>
+                    <h4 className='text-sm font-semibold text-slate-900 mb-2'>About the client</h4>
+                    <div className='mt-1 flex items-center gap-3'>
+                      <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200'>
+                        <span className='text-sm font-semibold'>{buyerInitials}</span>
+                      </div>
+                      <div>
+                        <div className='text-sm font-semibold text-slate-900 flex items-center gap-2'>{buyerName}</div>
+                        <div className='text-sm text-slate-500'>{country}</div>
+                      </div>
+                    </div>
+
+                    <div className='mt-3 space-y-2 text-sm'>
+                      <div className='flex items-center gap-2'>
+
+                        {localJob?.buyer?.paymentVerified ?
+                          <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+                          : <CircleX className='h-4 w-4 text-red-600' />}
+                        <span>Payment method verified</span>
+                      </div>
+                      <div className='flex items-center gap-2 text-slate-700'>
+                        <CalendarDays className='h-4 w-4' />
+                        <span>Posted {created || '—'}</span>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Attachments */}
+                  {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Attachments</h4>
+                      <div className='rounded-xl border border-slate-200 p-3'>
+                        <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
+                          <FolderOpen className='h-4 w-4' /> Files
+                        </div>
+                        <AttachmentList attachments={localJob?.attachments} />
+                      </div>
+                    </section>
+                  )}
+                  {/* additionalInfo */}
+                  {localJob?.additionalInfo && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
+                      <p className='text-sm text-slate-700'>{localJob?.additionalInfo}</p>
+                    </section>
+                  )}
+
+                  {/* APPLY FORM */}
+                  <section id='apply'>
+                    <div className='flex items-center justify-between mb-2'>
+                      <h4 className='text-sm font-semibold text-slate-900'>Apply</h4>
+                    </div>
+
+                    <form className='space-y-4' onSubmit={handleSubmit(submit)}>
+                      {/* Bid + Delivery */}
+                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                        <div>
+                          <label className='block text-sm font-medium text-slate-700'>Bid amount (SAR)</label>
+                          <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
+                          {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
+                        </div>
+                        <div>
+                          <label className='block text-sm font-medium text-slate-700'>Delivery (days)</label>
+                          <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
+                          {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
+                        </div>
+                      </div>
+
+                      {/* Cover letter */}
+                      <div>
+                        <label className='block text-sm font-medium text-slate-700'>Cover letter</label>
+                        <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='Explain your approach, similar work, and timeline…' {...register('coverLetter')} />
+                        {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
+                      </div>
+
+                      {/* Portfolio links */}
+                      <div>
+                        <label className='block text-sm font-medium text-slate-700'>Portfolio links (one per line)</label>
+                        <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={'https://…\nhttps://…'} {...register('portfolioUrls')} />
+                      </div>
+
+                      <div className='flex items-center justify-end gap-2'>
+                        <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
+                          Cancel
+                        </button>
+                        <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
+                          {isSubmitting ? 'Submitting…' : 'Apply now'}
+                        </button>
+                      </div>
+                    </form>
+                  </section>
                 </div>
-              </section>
-
-              {/* Attachments */}
-              {Array.isArray(job?.attachments) && job.attachments.length > 0 && (
-                <section>
-                  <h4 className='text-sm font-semibold text-slate-900 mb-2'>Attachments</h4>
-                  <div className='rounded-xl border border-slate-200 p-3'>
-                    <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                      <FolderOpen className='h-4 w-4' /> Files
-                    </div>
-                    <AttachmentList attachments={job.attachments} />
-                  </div>
-                </section>
-              )}
-              {/* additionalInfo */}
-              {job?.additionalInfo && (
-                <section>
-                  <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
-                  <p className='text-sm text-slate-700'>{job.additionalInfo}</p>
-                </section>
-              )}
-
-              {/* APPLY FORM */}
-              <section id='apply'>
-                <div className='flex items-center justify-between mb-2'>
-                  <h4 className='text-sm font-semibold text-slate-900'>Apply</h4>
-                </div>
-
-                <form className='space-y-4' onSubmit={handleSubmit(submit)}>
-                  {/* Bid + Delivery */}
-                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                    <div>
-                      <label className='block text-sm font-medium text-slate-700'>Bid amount (SAR)</label>
-                      <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
-                      {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
-                    </div>
-                    <div>
-                      <label className='block text-sm font-medium text-slate-700'>Delivery (days)</label>
-                      <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
-                      {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
-                    </div>
-                  </div>
-
-                  {/* Cover letter */}
-                  <div>
-                    <label className='block text-sm font-medium text-slate-700'>Cover letter</label>
-                    <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='Explain your approach, similar work, and timeline…' {...register('coverLetter')} />
-                    {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
-                  </div>
-
-                  {/* Portfolio links */}
-                  <div>
-                    <label className='block text-sm font-medium text-slate-700'>Portfolio links (one per line)</label>
-                    <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={'https://…\nhttps://…'} {...register('portfolioUrls')} />
-                  </div>
-
-                  <div className='flex items-center justify-end gap-2'>
-                    <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
-                      Cancel
-                    </button>
-                    <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
-                      {isSubmitting ? 'Submitting…' : 'Apply now'}
-                    </button>
-                  </div>
-                </form>
-              </section>
-            </div>
+              </>)}
           </motion.aside>
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+
+function JobDrawerSkeleton({ onClose }) {
+  return (
+    <div className="space-y-6 animate-pulse p-4">
+      {/* header */}
+      <div className='flex items-center justify-between  pb-4 border-b border-slate-200'>
+
+        <div className="h-6 w-2/3 bg-slate-200 rounded" />
+
+        <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
+          <X className='h-5 w-5 text-slate-700' />
+        </button>
+      </div>
+
+      {/* summary */}
+      <div className="space-y-2">
+        <div className="h-4 w-1/3 bg-slate-200 rounded" />
+        <div className="h-3 w-full bg-slate-200 rounded" />
+        <div className="h-3 w-5/6 bg-slate-200 rounded" />
+      </div>
+
+      {/* meta grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="rounded-xl border border-slate-200 p-4">
+          <div className="h-5 w-24 bg-slate-200 rounded mb-2" />
+          <div className="h-3 w-16 bg-slate-200 rounded" />
+        </div>
+        <div className="rounded-xl border border-slate-200 p-4">
+          <div className="h-5 w-20 bg-slate-200 rounded mb-2" />
+          <div className="h-3 w-24 bg-slate-200 rounded" />
+        </div>
+      </div>
+
+      {/* skills */}
+      <div className="flex flex-wrap gap-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-6 w-20 bg-slate-200 rounded-full" />
+        ))}
+      </div>
+
+      {/* client */}
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-slate-200" />
+        <div className="flex-1">
+          <div className="h-4 w-36 bg-slate-200 rounded mb-2" />
+          <div className="h-3 w-20 bg-slate-200 rounded" />
+        </div>
+      </div>
+
+      {/* attachments */}
+      <div className="rounded-xl border border-slate-200 p-3 space-y-2">
+        <div className="h-4 w-28 bg-slate-200 rounded" />
+        <div className="h-8 w-full bg-slate-200 rounded" />
+      </div>
+
+      {/* additional info */}
+      <div className="h-12 w-full bg-slate-200 rounded" />
+
+      {/* apply form skeleton */}
+      <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><div className="h-10 w-full bg-slate-200 rounded" /></div>
+          <div><div className="h-10 w-full bg-slate-200 rounded" /></div>
+        </div>
+        <div className="h-24 w-full bg-slate-200 rounded" />
+        <div className="h-16 w-full bg-slate-200 rounded" />
+        <div className="flex items-center justify-end gap-2">
+          <div className="h-9 w-24 bg-slate-200 rounded" />
+          <div className="h-9 w-32 bg-slate-200 rounded" />
+        </div>
+      </div>
+    </div>
   );
 }

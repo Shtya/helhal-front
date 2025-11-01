@@ -328,7 +328,7 @@ export default function GlobalSearch({ className = '' }) {
                       onClick={() =>
                         handleChoose({
                           type: scope.value === 'services' ? 'service' : 'job',
-                          href: scope.value === 'services' ? `/services/${r?.category?.slug}/${r?.slug}` : `/jobs/${r.id}`,
+                          href: scope.value === 'services' ? `/services/${r?.category?.slug}/${r?.slug}` : `/jobs?job=${r.id}`,
                           label: r.title || r.name,
                         })
                       }
