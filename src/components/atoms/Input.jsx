@@ -2,6 +2,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import FormErrorMessage from './FormErrorMessage';
 
 const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placeholder = 'Enter text', iconLeft, actionIcon, onAction, onChange, onBlur, name, type = 'text', required = false, showMsgError = true, ...props }, ref) => {
   return (
@@ -31,7 +32,7 @@ const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placehold
         )}
       </div>
 
-      {showMsgError && error && <p className='text-red-500 text-sm mt-1'>{error}</p>}
+      {showMsgError && error && <FormErrorMessage message={error} />}
     </div>
   );
 });

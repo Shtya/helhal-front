@@ -70,8 +70,10 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, X } from 'lucide-react';
+import FormErrorMessage from './FormErrorMessage';
+import { json } from 'zod';
 
-export default function TagInput({ label, value, fieldName, getValues, setValue, placeholder = 'Type and press Enter…', errors, onChange, onRemoveItemHandler, maxTags, className }) {
+export default function TagInput({ label, value, fieldName, getValues, setValue, placeholder = 'Type and press Enter…', errors, onChange, onRemoveItemHandler, onValidate, maxTags, minTagLength, maxTagLength, plusDisabled, className }) {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
 
@@ -84,15 +86,30 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
   }, [value, getValues, fieldName]);
 
   const canAddMore = typeof maxTags === 'number' ? tags.length < maxTags : true;
-  const errorMsg = errors?.[fieldName]?.message;
+  const error = errors?.[fieldName];
+
+
+  const errorMsg = useMemo(() => {
+    if (Array.isArray(error)) {
+      const firstValid = error.find(item => item?.message);
+      return firstValid?.message ?? null;
+    }
+    return error?.message ?? null;
+  }, [error]);
+
+  function splitAndClean(input) {
+    if (Array.isArray(input)) return input;
+
+    return input
+      .split(/[,\n]/g)       // Split by comma or newline
+      .map(s => s.trim())    // Remove surrounding whitespace
+      .filter(Boolean);      // Remove empty strings
+  }
 
   const commit = useCallback(
     raw => {
       if (!raw) return;
-      const pieces = raw
-        .split(/[,\n]/g)
-        .map(s => s.trim())
-        .filter(Boolean);
+      const pieces = splitAndClean(raw);
 
       if (pieces.length === 0) return;
 
@@ -112,8 +129,18 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
     [tags, setValue, fieldName, onChange, canAddMore],
   );
 
+  // return is valid to add or not 
+  function isValid(tag) {
+    if (minTagLength && tag?.length < minTagLength) return false;
+
+    if (!onValidate) return true;
+
+    return onValidate(tag);
+  }
   const handleAddClick = () => {
     if (!canAddMore) return;
+    if (!isValid(inputValue.trim())) return;
+
     commit(inputValue, tags, maxTags);
     setInputValue('');
     inputRef.current?.focus();
@@ -145,8 +172,30 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
     const text = e.clipboardData.getData('text');
     if (!text) return;
     e.preventDefault();
-    commit(text);
+    // if maxTagLength provided, trim each pasted token to allowed length
+    if (typeof maxTagLength === 'number' && maxTagLength > 0) {
+      const tokens = splitAndClean(text)
+        .map(s => (s.length > maxTagLength ? s.slice(0, maxTagLength) : s))
+        .filter(s => isValid(s));
+      if (tokens.length) {
+        commit(tokens.join(','));
+      }
+    } else {
+      commit(text);
+    }
     setInputValue('');
+  };
+
+  const handleInputChange = e => {
+    const v = e.target.value ?? '';
+    if (typeof maxTagLength === 'number' && maxTagLength > 0) {
+      // trim to allowed length
+      if (v.length > maxTagLength) {
+        setInputValue(v.slice(0, maxTagLength));
+        return;
+      }
+    }
+    setInputValue(v);
   };
 
   // Make container focus the input when clicked
@@ -182,13 +231,14 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
           <input
             ref={inputRef}
             value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={onKeyDown}
             onPaste={onPaste}
             onBlur={() => {
 
               // optionally commit on blur  
               if (inputValue.trim()) {
+                if (!isValid(inputValue.trim())) return;
                 commit(inputValue);
                 setInputValue('');
               }
@@ -197,13 +247,13 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
             className='w-full border-0 outline-none focus:ring-0 text-sm text-gray-900 placeholder:text-gray-400 pr-8'
             disabled={!canAddMore}
           />
-          <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md  disabled:opacity-40' disabled={!canAddMore || !inputValue.trim()}>
+          <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md  disabled:opacity-40' disabled={!canAddMore || !inputValue.trim() || (minTagLength && inputValue?.length < minTagLength)}>
             <Plus size={16} />
           </button>
         </div>
       </div>
 
-      {errorMsg && <p className='text-red-500 text-sm mt-1'>{errorMsg}</p>}
+      {errorMsg && <FormErrorMessage message={errorMsg} />}
 
       {/* Optional helper / counter */}
       {typeof maxTags === 'number' && (

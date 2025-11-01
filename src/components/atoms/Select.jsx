@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import { List } from "react-virtualized";
 import InputSearch from './InputSearch';
+import FormErrorMessage from './FormErrorMessage';
 
 //options = [{ id: '1', name: 'Option 1' }, { id: '2', name: 'Option 2' }]
 const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder = 'Select an option', label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, ...props }, ref) => {
@@ -254,7 +255,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
         </button>
       </div>
 
-      {error && <p className='text-red-500 text-sm mt-1'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
 
       {menu}
     </div>

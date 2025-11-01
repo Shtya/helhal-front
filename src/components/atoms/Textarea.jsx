@@ -2,6 +2,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import FormErrorMessage from './FormErrorMessage';
 
 const Textarea = forwardRef(({
   cnLabel,
@@ -67,7 +68,7 @@ const Textarea = forwardRef(({
       </div>
 
       {error && (
-        <p className="text-red-500 text-sm mt-1">{error}</p>
+        <FormErrorMessage message={error} />
       )}
     </div>
   );

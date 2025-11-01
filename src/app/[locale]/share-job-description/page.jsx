@@ -20,25 +20,84 @@ import { toast } from 'react-hot-toast';
 import InputList from '@/components/atoms/InputList';
 import AttachmentList from '@/components/common/AttachmentList';
 import CategorySelect from '@/components/atoms/CategorySelect';
+import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 
+const MIN_SKILL_LENGTH = 2;
+const MAX_SKILL_LENGTH = 50;
+const MAX_SKILLS = 50;
 const jobValidationSchema = yup.object({
-  title: yup.string().required('Title is required'),
-  description: yup.string().required('Description is required'),
-  categoryId: yup.string().required('Category is required'),
-  skillsRequired: yup.array().of(yup.string()).min(1, 'At least one skill is required').required('Skills are required'),
-  attachments: yup.array().of(
-    yup.object({
-      name: yup.string().required(),
-      url: yup.string().required(),
-      type: yup.string().required(),
-    }),
-  ),
-  additionalInfo: yup.string().nullable(),
-  budget: yup.number().min(0, 'Budget must be positive').typeError('Budget is required'),
-  budgetType: yup.string().oneOf(['fixed', 'hourly'], 'Budget type must be fixed or hourly').required('Budget type is required'),
-  preferredDeliveryDays: yup.number().min(1, 'Minimum 1 day').typeError('Preferred Delivery Days is required'),
-  status: yup.string().oneOf(['draft', 'published']),
+  title: yup
+    .string()
+    .required('Title is required')
+    .min(5, 'Title must be at least 5 characters')
+    .max(100, 'Title must be at most 100 characters'),
+
+  description: yup
+    .string()
+    .required('Description is required')
+    .min(12, 'Description must be at least 12 characters')
+    .max(15000, 'Description must be at most 15,000 characters'),
+
+  categoryId: yup
+    .string()
+    .required('Category is required'),
+
+  subcategoryId: yup
+    .string().optional().nullable(),
+
+  skillsRequired: yup
+    .array()
+    .of(
+      yup
+        .string()
+        .min(MIN_SKILL_LENGTH, `Each skill  must be at least ${MIN_SKILL_LENGTH} characters`)
+        .max(MAX_SKILL_LENGTH, `Each skill must be at most ${MAX_SKILL_LENGTH} characters`)
+    )
+    .min(1, 'At least one skill is required')
+    .max(MAX_SKILLS, `You can add up to ${MAX_SKILLS} skills`)
+    .required('Skills are required'),
+
+
+  attachments: yup
+    .array()
+    .of(
+      yup.object({
+        id: yup.string().required(),
+        filename: yup.string().required(),
+        mimeType: yup.string().required(),
+        size: yup.number().required(),
+        type: yup.string().required(),
+        url: yup.string().required(),
+      })
+    ).max(10, 'You can upload up to 10 attachments'),
+
+  additionalInfo: yup
+    .string()
+    .nullable()
+    .max(5000, 'Additional info must be at most 5,000 characters'),
+
+  budget: yup
+    .number()
+    .min(0, 'Budget must be positive')
+    .max(10000000, 'Budget must not exceed 10,000,000')
+    .typeError('Budget is required'),
+
+  budgetType: yup
+    .string()
+    .oneOf(['fixed', 'hourly'], 'Budget type must be fixed or hourly')
+    .required('Budget type is required'),
+
+  preferredDeliveryDays: yup
+    .number()
+    .min(1, 'Minimum 1 day')
+    .max(1200, 'Maximum delivery time is 1200 days')
+    .typeError('Preferred Delivery Days is required'),
+
+  status: yup
+    .string()
+    .oneOf(['draft', 'published']),
 });
+
 
 export default function CreateJobPage() {
   const t = useTranslations('createProject');
@@ -51,12 +110,8 @@ export default function CreateJobPage() {
     { key: 'step3', label: 'Review & Submit' },
   ];
 
-  const getInitialStep = () => {
-    const stepFromUrl = searchParams.get('step');
-    return stepFromUrl ? parseInt(stepFromUrl) : 0;
-  };
 
-  const [currentStep, setCurrentStep] = useState(getInitialStep());
+  const [currentStep, setCurrentStep] = useState(0);
   const [isPublishing, setIsPublishing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingJobId, setExistingJobId] = useState(null);
@@ -91,11 +146,6 @@ export default function CreateJobPage() {
 
   const formValues = watch();
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('step', currentStep.toString());
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [currentStep, router, searchParams]);
 
   useEffect(() => {
     const saveFormData = () => {
@@ -186,13 +236,7 @@ export default function CreateJobPage() {
     try {
       setIsSubmitting(true);
 
-      const attachments = files.map(file => ({
-        name: file.filename,
-        url: file.url,
-        type: file.type,
-      }));
-
-      setValue('attachments', attachments, {
+      setValue('attachments', files, {
         shouldValidate: true,
       });
     } catch (error) {
@@ -202,45 +246,19 @@ export default function CreateJobPage() {
     }
   };
 
-  // const onSubmit = async data => {
-  //   setIsSubmitting(true);
-  //   try {
-  //     const jobData = {
-  //       ...data,
-  //       status: isPublishing ? 'published' : 'draft',
-  //       budget: Number(data.budget),
-  //       preferredDeliveryDays: data.preferredDeliveryDays ? Number(data.preferredDeliveryDays) : undefined,
-  //     };
 
-  //     delete jobData.subcategory;
-  //     delete jobData.category;
-
-  //     let result;
-  //     if (existingJobId) {
-  //       result = await updateJob(existingJobId, jobData);
-  //     } else {
-  //       result = await createJob(jobData);
-  //     }
-
-  //     sessionStorage.removeItem('jobFormData');
-  //     sessionStorage.removeItem('jobFormPublishing');
-
-  //     toast.success('Job published successfully!');
-  //     router.push('/my-jobs');
-  //   } catch (error) {
-  //     console.error('Error submitting job:', error);
-  //     toast.error('Failed to submit job. Please try again.');
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
 
   const onSubmit = async data => {
-    setIsSubmitting(true);
+    // setIsSubmitting(true);
 
     // Base payload
     const payload = {
       ...data,
+      attachments: data.attachments.map(file => ({
+        name: file.filename,
+        url: file.url,
+        type: file.type,
+      })),
       budget: Number(data.budget),
       preferredDeliveryDays: data.preferredDeliveryDays ? Number(data.preferredDeliveryDays) : undefined,
     };
@@ -282,10 +300,10 @@ export default function CreateJobPage() {
               return 'Job created ✅';
             } else {
               // UPDATE
-              if (isPublishing && status === 'published') {
+              if (status === 'published') {
                 return 'Job published ✅ It’s now visible to sellers.';
               }
-              if (!isPublishing && status === 'draft') {
+              if (status === 'draft') {
                 return 'Draft updated 💾';
               }
               return 'Job updated ✅';
@@ -349,7 +367,7 @@ export default function CreateJobPage() {
 
           {currentStep === 1 && <BudgetAndDelivery key='step2' register={register} control={control} errors={errors} trigger={trigger} budgetTypeOptions={budgetTypeOptions} setCurrentStep={setCurrentStep} />}
 
-          {currentStep === 2 && <ProjectReview key='step3' data={formValues} isPublishing={isPublishing} onPublishToggle={setIsPublishing} onEditProject={() => setCurrentStep(0)} onEditJob={() => setCurrentStep(1)} onBack={() => setCurrentStep(1)} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} />}
+          {currentStep === 2 && <ProjectReview key='step3' data={formValues} isPublishing={isPublishing} onPublishToggle={setIsPublishing} onEditProject={() => setCurrentStep(0)} onEditJob={() => setCurrentStep(1)} onBack={() => setCurrentStep(1)} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} errors={errors} />}
         </div>
       </div>
     </div>
@@ -435,13 +453,17 @@ function HeroCard({ currentStep, className = '' }) {
 }
 
 function ProjectForm({ register, getValues, control, errors, setValue, trigger, handleFileSelection, watch, setCurrentStep, formValues }) {
+
   const handleNext = async () => {
-    const isValid = await trigger(['title', 'description', 'categoryId', 'skillsRequired']);
+    const isValid = await trigger(['title', 'description', 'categoryId', 'skillsRequired', 'attachments']);
+    console.log(errors)
     if (isValid) {
       setCurrentStep(1);
     } else {
     }
   };
+
+
 
   return (
     <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
@@ -454,7 +476,7 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
       </div>
 
       <div className='mb-4'>
-        <Textarea cnInput='text-[14px]' {...register('description')} cnLabel={'!text-[15px]'} label='Project Description' placeholder='Describe your project in detail' rows={2} error={errors.description?.message} />
+        <Textarea cnInput='text-[14px]' {...register('description')} cnLabel={'!text-[15px]'} label='Project Description' placeholder='Describe your project in detail' rows={5} error={errors.description?.message} />
       </div>
 
       <div className='mb-4'>
@@ -501,14 +523,16 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
       </div>
 
       <div className='mb-4'>
-        <InputList label='Skills Required *' value={formValues.skillsRequired || []} getValues={getValues} setValue={setValue} fieldName='skillsRequired' placeholder='Add a skill (e.g., WordPress)' errors={errors} validationMessage='Please provide at least one skill.' />
+        <InputList label='Skills Required *' value={formValues.skillsRequired || []} getValues={getValues} setValue={setValue} fieldName='skillsRequired' placeholder='Add a skill (e.g., WordPress)' errors={errors} validationMessage='Please provide at least one skill.' maxTags={MAX_SKILLS} />
       </div>
 
       <div className='mb-4'>
-        <Textarea cnInput='text-[14px]' {...register('additionalInfo')} cnLabel={'!text-[15px]'} label='Additional Information (Optional)' placeholder='Any additional details or requirements' rows={2} />
+        <Textarea cnInput='text-[14px]' {...register('additionalInfo')} cnLabel={'!text-[15px]'} label='Additional Information (Optional)' placeholder='Any additional details or requirements' rows={4} error={errors.additionalInfo?.message} />
+
       </div>
 
-      <AttachFilesButton onChange={handleFileSelection} />
+      <AttachFilesButton onChange={handleFileSelection} value={formValues.attachments} />
+      <FormErrorMessage message={errors.attachments?.message} />
 
       <div className='flex items-center justify-between gap-4 mt-6'>
         {/* <Button className='!max-w-fit' name={'Back'} onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))} color='secondary' /> */}
@@ -558,7 +582,7 @@ function BudgetAndDelivery({ register, control, errors, trigger, budgetTypeOptio
   );
 }
 
-function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onEditJob, onBack, onSubmit, isSubmitting }) {
+function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onEditJob, onBack, onSubmit, isSubmitting, errors }) {
   const hasFiles = useMemo(() => (data.attachments || []).length > 0, [data.attachments]);
 
   return (

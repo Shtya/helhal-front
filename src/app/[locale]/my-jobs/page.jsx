@@ -333,6 +333,7 @@ export default function MyJobsPage() {
         tabs={[
           { label: 'All', value: 'all' },
           { label: 'Draft', value: 'draft' },
+          { label: 'Pending', value: 'pending' },
           { label: 'Published', value: 'published' },
           { label: 'Awarded', value: 'awarded' },
           { label: 'Completed', value: 'completed' },

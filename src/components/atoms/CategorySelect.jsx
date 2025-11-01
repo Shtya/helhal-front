@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, forwardRef, useMemo } from 'react';
 import { ChevronDown, Loader2, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '@/lib/axios';
+import FormErrorMessage from './FormErrorMessage';
 
 const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChange, allowCreate = true, placeholder = 'Select an option', loadingText = "Loading...", label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur }, ref) => {
   const [open, setOpen] = useState(false);
@@ -220,7 +221,7 @@ const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChang
         )}
       </div>
 
-      {error && <p className='text-red-500 text-sm mt-1'>{error}</p>}
+      {error && <FormErrorMessage message={error} />}
     </div>
   );
 });

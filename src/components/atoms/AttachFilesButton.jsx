@@ -16,7 +16,7 @@ export const getFileIcon = mimeType => {
   return <File className='w-10 h-10 text-gray-400' />;
 };
 
-export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange }) {
+export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange, value }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [loadedOnce, setLoadedOnce] = useState(false);
@@ -31,6 +31,26 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
 
   // Derived selected array for chips outside modal
   const selectedFiles = useMemo(() => Array.from(selectedMap.values()), [selectedMap]);
+  // sync incoming `value` prop into internal selected state
+  useEffect(() => {
+    if (!Array.isArray(value)) return;
+    const ids = new Set();
+    const map = new Map();
+    value.forEach(v => {
+      if (!v) return;
+      if (typeof v === 'object' && v.id != null) {
+        ids.add(v.id);
+        map.set(v.id, v);
+      } else {
+        const id = String(v);
+        ids.add(id);
+
+        map.set(id, { id });
+      }
+    });
+    setSelectedIds(ids);
+    setSelectedMap(map);
+  }, [value]);
 
   // Open/close helpers
   const openModal = () => setIsModalOpen(true);
@@ -254,8 +274,8 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
         {!hiddenFiles && (
           <ul className='flex flex-wrap items-center gap-2 w-full'>
             {selectedFiles.map(file => (
-              <li key={file.id} className='flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full text-sm' title={file.filename}>
-                <span className='truncate max-w-[160px]'>{file.filename}</span>
+              <li key={file.id} className='flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full text-sm' title={file.filename || file.name}>
+                <span className='truncate max-w-[160px]'>{file.filename || file.name}</span>
                 <button
                   onClick={() => {
                     setSelectedIds(prev => {
