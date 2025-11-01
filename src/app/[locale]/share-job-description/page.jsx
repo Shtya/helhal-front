@@ -79,7 +79,7 @@ const jobValidationSchema = yup.object({
   budget: yup
     .number()
     .min(0, 'Budget must be positive')
-    .max(10000000, 'Budget must not exceed 10,000,000')
+    .max(100000, 'Budget must not exceed 100,000')
     .typeError('Budget is required'),
 
   budgetType: yup

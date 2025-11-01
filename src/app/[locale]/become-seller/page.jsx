@@ -1,8 +1,12 @@
 'use client';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import Button from '@/components/atoms/Button';
 import FAQSection from '@/components/common/Faqs';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
+import { Modal } from '@/components/common/Modal';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 
 const page = () => {
   const stats = [
@@ -96,7 +100,7 @@ const page = () => {
         <div className='relative z-10 px-6 max-w-3xl mx-auto text-white' data-aos='zoom-in' data-aos-delay='200'>
           <h1 className='text-3xl md:text-5xl font-extrabold mb-4'>Freelance services</h1>
           <p className='text-xl opacity-90 md:text-4xl mb-8'>are just a click away!</p>
-          <Button name={'See more'} href={'/share-job-description'} color='green' className='!max-w-[300px] w-full' />
+          <BecomeSellerButton className='!max-w-[300px] w-full' />
         </div>
       </section>
 
@@ -171,6 +175,59 @@ const page = () => {
 };
 
 export default page;
+
+function BecomeSellerButton({ className = '' }) {
+  const router = useRouter();
+  const { refetchUser } = useAuth();
+  const [isConfirm, setIsConfirm] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
+
+  const handleConvert = useCallback(async () => {
+    setIsConverting(true);
+    try {
+      // adjust endpoint if your API uses a different path
+      await api.post('/auth/convert-to-seller');
+      toast.success('Your account was converted to a seller');
+      // navigate to create-gig page
+      router.push('/create-gig');
+      setIsConfirm(false);
+      await refetchUser();
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || 'Failed to convert account');
+    } finally {
+      setIsConverting(false);
+    }
+  }, [router]);
+
+  return (
+    <>
+      <Button
+        name='Become a Seller'
+        onClick={() => setIsConfirm(true)}
+        color='green'
+        className={className}
+      />
+
+      {isConfirm && (
+        <Modal onClose={() => setIsConfirm(false)} title={'Convert your account to a Seller'}>
+          <div className='mt-4 space-y-3'>
+            <p className='text-sm text-slate-700'>
+              Converting your account will enable you to create Gigs and sell services. Are you sure you want to continue?
+            </p>
+            <p className='text-xs text-slate-500 px-3 rounded-lg'>
+              Note: After converting to a seller account, you won't be able to post jobs anymore.
+            </p>
+          </div>
+          <div className='mt-8 flex gap-4'>
+            <Button name='Cancel' color='outline' onClick={() => setIsConfirm(false)} />
+            <Button name='Convert' color='green' onClick={handleConvert} loading={isConverting} />
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+}
 
 // Category Card
 function CategoryCard({ title, image, index }) {
