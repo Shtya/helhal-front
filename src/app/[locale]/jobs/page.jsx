@@ -11,7 +11,7 @@ import AttachmentList from '@/components/common/AttachmentList';
 import NoResults from '@/components/common/NoResults';
 import TabsPagination from '@/components/common/TabsPagination';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, Banknote, CalendarDays, CheckCircle2, Clock, FolderOpen, MapPin, Star, X, Save, Flag } from 'lucide-react';
+import { ArrowUpRight, CalendarDays, CheckCircle2, FolderOpen, X, CircleX } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdvancedJobsDropdown from '@/components/Filters/AdvancedJobsDropdown';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
@@ -561,11 +561,21 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
                 </section>
               )}
 
+
               {/* Basic meta */}
-              <section className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                <div className='rounded-xl border border-slate-200 p-4'>
-                  <div className='text-slate-900 font-semibold'>{fmtMoney(budget)}</div>
-                  <div className='text-xs text-slate-500'>{priceType}</div>
+              <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Budget + Price Type */}
+                <div className="rounded-xl border border-slate-200 p-4">
+                  <div className="text-slate-900 font-semibold">${fmtMoney(budget)}</div>
+                  <div className="text-xs text-slate-500">{priceType}</div>
+                </div>
+
+                {/* Preferred Delivery */}
+                <div className="rounded-xl border border-slate-200 p-4">
+                  <div className="text-slate-900 font-semibold">
+                    {job.preferredDeliveryDays} {job.preferredDeliveryDays === 1 ? 'day' : 'days'}
+                  </div>
+                  <div className="text-xs text-slate-500">Preferred delivery</div>
                 </div>
               </section>
 
@@ -598,7 +608,10 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
 
                 <div className='mt-3 space-y-2 text-sm'>
                   <div className='flex items-center gap-2'>
-                    <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+
+                    {job?.buyer?.paymentVerified ?
+                      <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+                      : <CircleX className='h-4 w-4 text-red-600' />}
                     <span>Payment method verified</span>
                   </div>
                   <div className='flex items-center gap-2 text-slate-700'>
@@ -618,6 +631,13 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
                     </div>
                     <AttachmentList attachments={job.attachments} />
                   </div>
+                </section>
+              )}
+              {/* additionalInfo */}
+              {job?.additionalInfo && (
+                <section>
+                  <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
+                  <p className='text-sm text-slate-700'>{job.additionalInfo}</p>
                 </section>
               )}
 
