@@ -417,11 +417,18 @@ function HeroHeader() {
 // Cards (Upwork-like layout)
 // -------------------------------------------------
 function JobCard({ job, onOpen, index }) {
+  const { user } = useAuth();
+
   const posted = timeAgo?.(job?.created_at) || '';
   const createdDate = (job?.created_at || '').split('T')[0];
   const budgetLine = formatBudget?.(job) || `${job?.pricing || ''}`;
   const buyer = job?.buyer || {};
   const country = buyer?.country || '—';
+
+  // determine relation to current user
+  const isRelatedToUser = Boolean(
+    user && (job?.buyer?.id === user?.id || job?.seller?.id === user?.id)
+  );
 
   return (
     <motion.article className='group  border-b border-b-slate-200 p-5 sm:p-6 hover:bg-gray-100 bg-gray-50/50 transition-all duration-200 cursor-pointer' onClick={onOpen} role='button' tabIndex={0} onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onOpen()} transition={spring}>
@@ -431,6 +438,12 @@ function JobCard({ job, onOpen, index }) {
         <div className='relative flex items-center gap-2 opacity-70 group-hover:opacity-100'
           onClick={e => e.stopPropagation()}
           onKeyDown={e => e.stopPropagation()} >
+          {/* relation badge */}
+          {isRelatedToUser && (
+            <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
+              Related to you
+            </span>
+          )}
           <FavoriteButton className=' !top-0 !right-0 !relative' />
         </div>
       </div>
@@ -497,6 +510,8 @@ const applySchema = yup.object({
 });
 
 export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
+  const { role, user } = useAuth();
+  const canSubmitProposal = role === 'seller' && job?.buyer?.id !== user?.id;
   const buyer = job?.buyer || {};
   const country = buyer?.country || '—';
   const budget = job?.budget ?? job?.estimatedBudget;
@@ -516,6 +531,7 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
   }, [open, reset]);
 
   const submit = async values => {
+    if (!canSubmitProposal) return;
     await onSubmitProposal?.(values);
     reset();
     onClose?.();
@@ -545,7 +561,15 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
           <motion.aside className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col' initial={{ x: -580 }} animate={{ x: 0 }} exit={{ x: -580 }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
             {/* Header */}
             <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
-              <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{job?.title || 'Job details'}</h3>
+              <div className='flex items-center flex-wrap gap-3'>
+                <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{job?.title || 'Job details'}</h3>
+                {/* show relation badge in drawer header */}
+                {user && (job?.buyer?.id === user?.id || job?.seller?.id === user?.id) && (
+                  <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
+                    You posted this
+                  </span>
+                )}
+              </div>
               <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
                 <X className='h-5 w-5 text-slate-700' />
               </button>
@@ -652,12 +676,12 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                     <div>
                       <label className='block text-sm font-medium text-slate-700'>Bid amount (SAR)</label>
-                      <input type='number' step='1' className='mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
+                      <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
                       {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
                     </div>
                     <div>
                       <label className='block text-sm font-medium text-slate-700'>Delivery (days)</label>
-                      <input type='number' step='1' className='mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
+                      <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
                       {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
                     </div>
                   </div>
@@ -665,21 +689,21 @@ export function JobDrawer({ open, onClose, job, onSubmitProposal }) {
                   {/* Cover letter */}
                   <div>
                     <label className='block text-sm font-medium text-slate-700'>Cover letter</label>
-                    <textarea rows={6} className='mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='Explain your approach, similar work, and timeline…' {...register('coverLetter')} />
+                    <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='Explain your approach, similar work, and timeline…' {...register('coverLetter')} />
                     {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
                   </div>
 
                   {/* Portfolio links */}
                   <div>
                     <label className='block text-sm font-medium text-slate-700'>Portfolio links (one per line)</label>
-                    <textarea rows={3} className='mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={'https://…\nhttps://…'} {...register('portfolioUrls')} />
+                    <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={'https://…\nhttps://…'} {...register('portfolioUrls')} />
                   </div>
 
                   <div className='flex items-center justify-end gap-2'>
                     <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
                       Cancel
                     </button>
-                    <button type='submit' disabled={isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
+                    <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
                       {isSubmitting ? 'Submitting…' : 'Apply now'}
                     </button>
                   </div>
