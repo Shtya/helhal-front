@@ -28,12 +28,14 @@ const MAX_SKILLS = 15;
 const jobValidationSchema = yup.object({
   title: yup
     .string()
+    .trim()
     .required('Title is required')
     .min(5, 'Title must be at least 5 characters')
     .max(100, 'Title must be at most 100 characters'),
 
   description: yup
     .string()
+    .trim()
     .required('Description is required')
     .min(12, 'Description must be at least 12 characters')
     .max(15000, 'Description must be at most 15,000 characters'),
@@ -73,6 +75,7 @@ const jobValidationSchema = yup.object({
 
   additionalInfo: yup
     .string()
+    .trim()
     .nullable()
     .max(5000, 'Additional info must be at most 5,000 characters'),
 
