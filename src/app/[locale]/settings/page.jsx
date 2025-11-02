@@ -186,11 +186,11 @@ function AccountSettings() {
 
   async function deactivate() {
     const finalReason = reason === 'other' ? customReason : reason;
-    if (!finalReason) return;
+    if (!finalReason?.trim()) return;
     setDeactivating(true);
     try {
 
-      await api.post('/auth/account-deactivation', { reason: finalReason });
+      await api.post('/auth/account-deactivation', { reason: finalReason?.trim() });
       logout();
       window.location.href = '/';
     } finally {
@@ -276,7 +276,7 @@ function AccountSettings() {
 
       <Button name='Deactivate Account' color='red' loading={deactivating} className='mt-6 max-w-[450px] w-full !rounded-md' onClick={() => {
         const finalReason = reason === 'other' ? customReason : reason;
-        if (!finalReason) return;
+        if (!finalReason?.trim()) return;
         setConfirmOpen(true)
       }} />
       {confirmOpen && (
