@@ -161,7 +161,7 @@ function SearchBar({ className = '', large = false }) {
     e.preventDefault();
     const trimmed = query.trim();
     if (trimmed) {
-      router.push(`/services/all?page=1&search=${encodeURIComponent(trimmed)}`);
+      router.push(`/services/all?page=1&q=${encodeURIComponent(trimmed)}`);
     }
   };
 
