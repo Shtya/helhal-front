@@ -102,7 +102,7 @@ export default function GlobalSearch({ className = '' }) {
     };
 
     fetchRecords();
-  }, [debouncedQ, open, scope.value]);
+  }, [debouncedQ, scope.value]);
 
   // ---------- Outside click / ESC
   useEffect(() => {

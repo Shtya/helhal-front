@@ -286,12 +286,12 @@ export default function MyJobsPage() {
   }, [activeTab]);
 
 
+  const paramsTab = searchParams.get('tab') ?? '';
   useEffect(() => {
-    const paramsTab = searchParams.get('tab') ?? '';
     if (!paramsTab || !tabs.some(t => t.value === paramsTab)) return;
 
     handleChangeTab(paramsTab);
-  }, [searchParams]);
+  }, [paramsTab]);
 
   useEffect(() => {
     loadJobs(currentPage);

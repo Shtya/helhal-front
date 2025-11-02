@@ -141,8 +141,6 @@ export default function SellerJobsPage() {
   // Search
   const [q, setQ] = useState(searchParams.get('q') || '');
 
-
-
   const debouncedQ = useDebounce({ value: q, onDebounce: resetPage });
   const skipDebouncedRef = useRef(false);
 
@@ -205,11 +203,11 @@ export default function SellerJobsPage() {
     if (debouncedQ) skipDebouncedRef.current = true;
   };
 
+  const qParams = searchParams.get('q') ?? '';
+  const jobId = searchParams.get('job') || null;
   useEffect(() => {
-    const search = searchParams.get('q') ?? '';
-    const jobId = searchParams.get('job') || null;
-    if (q != search)
-      setQ(search);
+    if (q?.trim() != qParams?.trim())
+      setQ(qParams?.trim());
 
     if (jobId !== selectedJobId) {
       setSelectedJobId(jobId)
@@ -218,7 +216,7 @@ export default function SellerJobsPage() {
         setDrawerOpen(true);
     }
 
-  }, [searchParams]);
+  }, [qParams?.trim(), jobId]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -265,14 +263,14 @@ export default function SellerJobsPage() {
     });
 
     updateUrlParams(pathname, params);
-  }, [page, limit, debouncedQ, filters, pathname, selectedJobId]);
+  }, [page, limit, debouncedQ?.trim(), filters, pathname, selectedJobId]);
 
 
   // Fetch jobs
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchAllServices() {
+    async function fetchJobs() {
       try {
         if (skipDebouncedRef.current) {
           skipDebouncedRef.current = false;
@@ -280,7 +278,7 @@ export default function SellerJobsPage() {
         }
 
         setLoading(true);
-        const query = buildQuery({ page, limit, q: debouncedQ, filters });
+        const query = buildQuery({ page, limit, q: debouncedQ?.trim(), filters });
 
         const res = await listPublishedJobs(query);
         if (!isMounted) return;
@@ -293,12 +291,12 @@ export default function SellerJobsPage() {
         if (isMounted) setLoading(false);
       }
     }
-    fetchAllServices();
+    fetchJobs();
 
     return () => {
       isMounted = false;
     };
-  }, [page, limit, debouncedQ, filters]);
+  }, [page, limit, debouncedQ?.trim(), filters]);
 
 
   return (
@@ -308,7 +306,6 @@ export default function SellerJobsPage() {
       {/* Filters Panel */}
       <motion.section variants={fadeItem} initial='hidden' animate='show' transition={spring} className='card'>
         <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
-          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={v => setQ(v)} placeholder='Search by title, description, or skills' className='!max-w-full' showAction={false} />
           <CategorySelect
             type='category'
             loadingText="Loading categories..."
@@ -367,6 +364,7 @@ export default function SellerJobsPage() {
             />
           </div>
 
+          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={v => setQ(v)} placeholder='Search by title, description, or skills' className='!max-w-full' showAction={false} />
         </div>
       </motion.section>
 

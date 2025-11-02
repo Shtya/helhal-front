@@ -61,6 +61,7 @@ function buildQuery(formData, pagination) {
 
 export default function FilterServices({ category = 'all' }) {
     const searchParams = useSearchParams();
+
     const pathname = usePathname()
     const isAllActive = category == 'all';
     const t = useTranslations('CategoryPage'); // reuse same keys
@@ -110,10 +111,13 @@ export default function FilterServices({ category = 'all' }) {
     });
 
     const [search, setSearch] = useState(searchParams.get('q') ?? '');
+    const q = searchParams.get('q') ?? '';
+
     useEffect(() => {
-        const q = searchParams.get('q') ?? '';
-        setSearch(q);
-    }, [searchParams]);
+        if (search?.trim() !== q?.trim())
+            setSearch(q?.trim());
+    }, [q?.trim()]);
+
 
     const [pagination, setPagination] = useState({
         page: parseInt(searchParams.get('page') ?? '1', 10),
@@ -160,7 +164,7 @@ export default function FilterServices({ category = 'all' }) {
         setLoading(true);
 
         try {
-            const q = buildQuery({ ...formData, search: debounced }, pagination);
+            const q = buildQuery({ ...formData, search: debounced?.trim() }, pagination);
             const res = await apiService.getServices(category, q, { signal: controllerRef.current.signal }); // <-- uses your /services/me
             // expect shape: { services: [], pagination: { page, limit, total, pages } }
             if (res?.services) setServices(res.services);
@@ -180,7 +184,7 @@ export default function FilterServices({ category = 'all' }) {
             setLoading(false);
             controllerRef.current = null;
         }
-    }, [debounced, formData, pagination.page, pagination.limit]);
+    }, [debounced?.trim(), formData, pagination.page, pagination.limit]);
 
     useEffect(() => {
         fetchAllServices();
@@ -212,7 +216,7 @@ export default function FilterServices({ category = 'all' }) {
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
 
-        if (debounced) params.set('q', debounced); else params.delete('q');
+        if (debounced?.trim()) params.set('q', debounced?.trim()); else params.delete('q');
         updateUrlParams(pathname, params);
     }, [debounced]);
 
@@ -273,6 +277,7 @@ export default function FilterServices({ category = 'all' }) {
     const handlePageChange = newPage => {
         setPagination(prev => ({ ...prev, page: newPage }))
     };
+
 
     const resetFilters = () => {
         setFormData(defaultFilters);
