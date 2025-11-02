@@ -1600,35 +1600,35 @@ export default function Overview() {
     setSaving(true);
     try {
       const payload = {
+        profileImage: state.profileImage,
         username: state.username?.trim(),
-        email: state.email,
-        password: state.password || undefined, // optional
-        type: state.type,
         countryCode: state.countryCode,
         phone: state.phone,
-        profileImage: state.profileImage,
-        role: state.role, // if editable in your backend
-        status: state.status, // if editable
-        ownerType: state.ownerType,
         description: state.description?.trim(),
         languages: state.languages,
-        country: state.country,
-        sellerLevel: state.sellerLevel,
         skills: state.skills,
         education: state.education,
         certifications: state.certifications,
-        introVideoUrl: state.introVideoUrl,
-        portfolioItems: state.portfolioItems,
-        portfolioFile: state.portfolioFile,
-        responseTime: state.responseTime,
-        deliveryTime: state.deliveryTime,
-        ageGroup: state.ageGroup,
-        revisions: state.revisions,
-        preferences: state.preferences,
-        balance: state.balance,
-        totalSpent: state.totalSpent,
-        totalEarned: state.totalEarned,
-        reputationPoints: state.reputationPoints
+        country: state.country,
+        type: state.type,
+
+
+        // role: state.role, 
+        // status: state.status, 
+        // ownerType: state.ownerType,
+        // sellerLevel: state.sellerLevel,
+        // introVideoUrl: state.introVideoUrl,
+        // portfolioItems: state.portfolioItems,
+        // portfolioFile: state.portfolioFile,
+        // responseTime: state.responseTime,
+        // deliveryTime: state.deliveryTime,
+        // ageGroup: state.ageGroup,
+        // revisions: state.revisions,
+        // preferences: state.preferences,
+        // balance: state.balance,
+        // totalSpent: state.totalSpent,
+        // totalEarned: state.totalEarned,
+        // reputationPoints: state.reputationPoints
       };
 
       const res = await toast.promise(
