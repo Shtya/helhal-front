@@ -42,11 +42,11 @@ const minYear = currentYear - DATE_AVARAGE;
 
 const educationSchema = z.object({
   degree: z
-    .string()
+    .string().trim()
     .min(1, 'Degree is required')
     .max(MAX_DEGREE_LENGTH, `Degree must be ${MAX_DEGREE_LENGTH} characters or less`),
   institution: z
-    .string()
+    .string().trim()
     .min(1, 'Institution is required')
     .max(MAX_INSTITUTION_LENGTH, `Institution must be ${MAX_INSTITUTION_LENGTH} characters or less`),
   year: z
@@ -102,11 +102,11 @@ const MAX_ISSUER_LENGTH = 250;
 
 const certificationSchema = z.object({
   name: z
-    .string()
+    .string().trim()
     .min(1, 'Name is required')
     .max(MAX_NAME_LENGTH, `Name must be ${MAX_NAME_LENGTH} characters or less`),
   issuingOrganization: z
-    .string()
+    .string().trim()
     .min(1, 'Issuing Organization is required')
     .max(MAX_ISSUER_LENGTH, `Issuing Organization must be ${MAX_ISSUER_LENGTH} characters or less`),
   year: z
@@ -580,11 +580,11 @@ const MAX_EDUCATIONS = 2;
 const MAX_CERTIFICATIONS = 2;
 
 const aboutSchema = z.object({
-  description: z.string().max(1000, 'Max 1000 characters'),
-  username: z.string().max(50, 'Max 50 characters'),
+  username: z.string().trim().max(50, 'Max 50 characters'),
+  description: z.string().trim().max(1000, 'Max 1000 characters'),
   languages: z.array(z.string()).optional(),
   skills: z
-    .array(z.string().max(50, 'Skill name must be 50 characters or fewer'))
+    .array(z.string().trim().max(50, 'Skill name must be 50 characters or fewer'))
     .max(MAX_SKILLS, `You can add up to ${MAX_SKILLS} skills only`)
     .optional(),
 
@@ -707,7 +707,7 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
           }} rows={4} placeholder='Tell buyers about yourself…' />
           <div className='flex justify-between items-center'>
             <p className='mt-1 text-xs text-[#6B7280]'>Use a clear, professional summary. Ctrl/Cmd+Enter to save.</p>
-            <p className='mt-1 text-xs text-[#6B7280]'>{watch('description')?.length}/1000 characters</p>
+            <p className='mt-1 text-xs text-[#6B7280]'>{watch('description')?.trim()?.length}/1000 characters</p>
           </div>
           {errors.description && <p className='text-red-500 text-xs'>{errors.description.message}</p>}
         </>
@@ -780,6 +780,7 @@ function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertifi
         <Modal title='Add Education' onClose={() => setEduOpen(false)}>
           <EducationForm
             onSubmit={item => {
+
               const alreadyHas = educations.some(e => e.degree === item.degree && e.institution === item.institution && e.year === item.year)
               if (alreadyHas) {
                 showWarningToast('This education already added');
@@ -1562,6 +1563,7 @@ export default function Overview() {
 
   useEffect(() => {
     if (loading || reverting) return;
+
     const current = stableStringify(pickEditable(state));
     setDirty(baselineRef.current != null && current !== baselineRef.current);
   }, [state, loading, reverting]);
@@ -1598,7 +1600,7 @@ export default function Overview() {
     setSaving(true);
     try {
       const payload = {
-        username: state.username,
+        username: state.username?.trim(),
         email: state.email,
         password: state.password || undefined, // optional
         type: state.type,
@@ -1608,7 +1610,7 @@ export default function Overview() {
         role: state.role, // if editable in your backend
         status: state.status, // if editable
         ownerType: state.ownerType,
-        description: state.description,
+        description: state.description?.trim(),
         languages: state.languages,
         country: state.country,
         sellerLevel: state.sellerLevel,
@@ -1626,8 +1628,7 @@ export default function Overview() {
         balance: state.balance,
         totalSpent: state.totalSpent,
         totalEarned: state.totalEarned,
-        reputationPoints: state.reputationPoints,
-        sellerLevel: 'lvl2'
+        reputationPoints: state.reputationPoints
       };
 
       const res = await toast.promise(
@@ -1826,7 +1827,7 @@ function pickEditable(state) {
   // only fields you actually send to the backend (payload)
   const { username, email, password, type, phone, profileImage, role, status, ownerType, description, languages, country, sellerLevel, skills, education, certifications, introVideoUrl, portfolioItems, portfolioFile, responseTime, deliveryTime, ageGroup, revisions, preferences, balance, totalSpent, totalEarned, reputationPoints } = state;
   return {
-    username,
+    username: username?.trim(),
     email,
     password: password || undefined,
     type,
@@ -1835,7 +1836,7 @@ function pickEditable(state) {
     role,
     status,
     ownerType,
-    description,
+    description: description?.trim(),
     languages,
     country,
     sellerLevel,
