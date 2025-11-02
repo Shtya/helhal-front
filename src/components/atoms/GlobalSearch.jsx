@@ -63,7 +63,7 @@ export default function GlobalSearch({ className = '' }) {
 
   // ---------- Debounced records fetch (lightweight)
   useEffect(() => {
-    if (!open || !debouncedQ) {
+    if (!open || !debouncedQ?.trim()) {
       setRecords([]);
       return;
     }
@@ -74,7 +74,7 @@ export default function GlobalSearch({ className = '' }) {
         let list = [];
         if (scope.value === 'services') {
           const data = await apiService.getServices('all', {
-            search: debouncedQ,
+            search: debouncedQ?.trim(),
             limit: 5,
             sortBy: 'created_at',
             sortOrder: 'DESC',
@@ -84,7 +84,7 @@ export default function GlobalSearch({ className = '' }) {
         } else {
           const res = await api.get('/jobs', {
             params: {
-              search: debouncedQ,
+              search: debouncedQ?.trim(),
               limit: 5,
               sortBy: 'created_at',
               sortOrder: 'DESC',
@@ -102,7 +102,7 @@ export default function GlobalSearch({ className = '' }) {
     };
 
     fetchRecords();
-  }, [debouncedQ, scope.value]);
+  }, [debouncedQ?.trim(), scope.value]);
 
   // ---------- Outside click / ESC
   useEffect(() => {
