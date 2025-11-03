@@ -13,6 +13,7 @@ import { localImageLoader } from '@/utils/helper';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 import { useAuth } from '@/context/AuthContext';
 import Img from '../atoms/Img';
+import Logo from '../common/Logo';
 
 /* =========================================================
    Animations
@@ -244,9 +245,10 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, role } = useAuth();
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
+  const isGuest = role === 'guest';
   useEffect(() => {
     setIsMobileNavOpen(false);
   }, [pathname]);
@@ -312,6 +314,7 @@ export default function Header() {
 
 
     // Conditional + common
+    if (isGuest) return [...common, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }]
     if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }];
     if (u?.role === 'seller') return [...common, ...seller];
     if (u?.role === 'admin') return [...common, ...admin];
@@ -380,12 +383,7 @@ export default function Header() {
       <div className='container h-16 md:h-[88px] flex items-center justify-between gap-3'>
         {/* Left: Logo + nav */}
         <div className='flex items-center gap-3'>
-          <Link href='/' className='flex items-center group'>
-            <motion.div whileHover={{ rotate: -4, scale: 1.05 }} transition={springy}>
-              <Image src='/images/helhal-logo.png' alt='Logo' width={42} height={42} priority className='rounded-xl shadow-sm' />
-            </motion.div>
-            <span className='ml-2 text-slate-900 hidden sm:block font-semibold tracking-tight'>Helhal</span>
-          </Link>
+          <Logo />
           <NavLinks links={navLinks} />
         </div>
 

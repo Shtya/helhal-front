@@ -18,6 +18,7 @@ import { SelectInput } from '@/components/pages/auth/SelectInput';
 import { usernameSchema } from '@/utils/profile';
 import { useAuth } from '@/context/AuthContext';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
+import Logo from '@/components/common/Logo';
 
 
 /* ---------- schemas ----------- */
@@ -240,6 +241,7 @@ const RegisterForm = ({ onOtp }) => {
   const t = useTranslations('auth');
   const searchParams = useSearchParams();
   const referralCode = searchParams.get('ref') || '';
+  const userType = searchParams.get('type') || 'buyer';
   const { setLoading, setError, loading } = useContext(AuthFormContext);
   const {
     register,
@@ -248,7 +250,7 @@ const RegisterForm = ({ onOtp }) => {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { username: '', email: '', password: '', role: 'buyer', type: 'Individual', ref: referralCode },
+    defaultValues: { username: '', email: '', password: '', role: userType, type: 'Individual', ref: referralCode },
   });
 
   const onSubmit = async data => {
@@ -646,36 +648,43 @@ export default function AuthPage() {
   const features = Array.isArray(rawFeatures) ? rawFeatures : [];
   return (
     <AuthFormContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess }}>
-      <div className='min-h-screen container !px-0 flex max-lg:flex-col'>
-        {/* left hero */}
-        <div className='w-full flex p-12 text-white relative overflow-hidden'>
-          <div className='absolute inset-0 z-[10]' style={{ background: 'linear-gradient(269.99deg, rgba(0,0,0,0) 15.21%, rgba(0,0,0,0.48) 33.9%, rgba(0,0,0,0.8) 132.88%)' }} />
-          <img src='/images/auth.jpeg' alt='' className='absolute inset-0 object-cover w-full h-full object-right' />
-          <div className='relative z-10 max-w-2xl mx-auto my-auto'>
-            <motion.h1 className='text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3'>  {t('heroTitle')}</motion.h1>
-            <motion.p className='text-base sm:text-lg md:text-2xl    font-normal mb-6'>{t('heroSubtitle')}</motion.p>
-            <div className='space-y-2 sm:text-base md:text-lg lg:text-lg'>
-              {features?.map((text, i) => (
-                <p key={i} className='flex gap-2 items-center'>
-                  <span className='w-6 h-6 bg-white/20 rounded-full flex items-center justify-center'>✓</span>
-                  {text}
-                </p>
-              ))}
+      <div className='min-h-screen !px-0 flex justify-center  bg-gray-100 '>
+        <div className='max-w-screen-2xl m-0 sm:m-10   sm:rounded-lg flex justify-center flex-1 overflow-hidden bg-white'>
+
+
+          {/* left hero */}
+          <div className='hidden w-full lg:flex p-12 text-white relative overflow-hidden'>
+            <div className='absolute inset-0 z-[10]' style={{ background: 'linear-gradient(269.99deg, rgba(0,0,0,0) 15.21%, rgba(0,0,0,0.48) 33.9%, rgba(0,0,0,0.8) 132.88%)' }} />
+            <img src='/images/auth.jpeg' alt='' className='absolute inset-0 object-cover w-full h-full object-right' />
+            <div className='relative z-10 max-w-2xl mx-auto my-auto'>
+              <motion.h1 className='text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-3'>  {t('heroTitle')}</motion.h1>
+              <motion.p className='text-base lg:text-lg xl:text-2xl    font-normal mb-6'>{t('heroSubtitle')}</motion.p>
+              <div className='space-y-2 sm:text-base lg:text-lg xl:text-lg'>
+                {features?.map((text, i) => (
+                  <p key={i} className='flex gap-2 items-center'>
+                    <span className='w-6 h-6 bg-white/20 rounded-full flex items-center justify-center'>✓</span>
+                    {text}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* right panel: forms */}
-        <div className='w-full lg:max-w-[500px] flex items-center justify-center lg:px-10 p-6'>
-          <motion.div className='w-full max-lg:bg-slate-50 max-lg:border max-lg:rounded-2xl max-lg:p-8'>
-            <TitleByTab view={view} activeTab={activeTab} />
-            <AuthTabs setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} />
-            <AnimatePresence mode='wait'>
-              <motion.div key={`${activeTab}-${view}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
-                {renderContent()}
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
+          {/* right panel: forms */}
+          <div className='w-full lg:max-w-[500px] flex items-center justify-center lg:px-10 p-6'>
+            <motion.div className='w-full  max-lg:p-8'>
+              <div className='mb-12 flex justify-center items-center'>
+                <Logo />
+              </div>
+              <TitleByTab view={view} activeTab={activeTab} />
+              <AuthTabs setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} />
+              <AnimatePresence mode='wait'>
+                <motion.div key={`${activeTab}-${view}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+                  {renderContent()}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          </div>
         </div>
       </div>
     </AuthFormContext.Provider>
