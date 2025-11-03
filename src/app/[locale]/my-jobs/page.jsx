@@ -65,18 +65,6 @@ export const JobSkeleton = () => (
 
       <Divider className='!my-6' />
 
-      {/* Buyer Info */}
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-slate-200" />
-          <div className="space-y-2">
-            <div className="h-4 w-32 rounded bg-slate-200" />
-            <div className="h-4 w-40 rounded bg-slate-200" />
-          </div>
-        </div>
-        <div className="h-8 w-36 rounded-full bg-slate-200" />
-      </section>
-
       {/* Attachments */}
       <div className='mt-5 rounded-xl border border-slate-200 p-3'>
         <div className='mb-2 flex items-center gap-2'>
@@ -103,8 +91,8 @@ const getStatusStyles = status => {
   switch (status) {
     case 'published':
       return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-    case 'draft':
-      return 'bg-slate-50 text-slate-700 border-slate-200';
+    // case 'draft':
+    //   return 'bg-slate-50 text-slate-700 border-slate-200';
     case 'awarded':
       return 'bg-blue-50 text-blue-700 border-blue-200';
     case 'completed':
@@ -166,44 +154,7 @@ const JobCard = ({ job, onPublishToggle, loadingJobId, activeTab, onDeleteReques
 
         <Divider className='!my-6' />
 
-        {/* Buyer & Publish Toggle */}
-        <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:flex-wrap">
-          {/* Buyer Info */}
-          <div className="flex flex-wrap items-center gap-3 min-w-0">
-            <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200">
-              <span className="text-sm font-semibold">{buyerInitials}</span>
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 truncate">
-                <User2 className="h-4 w-4 opacity-70 flex-shrink-0" />
-                <span className="truncate max-w-[140px] sm:max-w-none">{job?.buyer?.username}</span>
-              </div>
-              <div className="mt-0.5 flex items-center gap-2 text-sm text-slate-600 truncate">
-                <Mail className="h-4 w-4 opacity-70 flex-shrink-0" />
-                <span className="truncate max-w-[180px] sm:max-w-none">{job?.buyer?.email}</span>
-              </div>
-            </div>
-          </div>
 
-          {/* Status Switcher */}
-          <div className="flex items-center gap-3 sm:flex-shrink-0">
-            {(job.status === 'draft' || job.status === 'published') && (
-              <div className={`${chip} !py-[6px] !pr-4 flex items-center gap-2 flex-wrap`}>
-                <span className="text-xs text-slate-500">Draft</span>
-                {loadingJobId === job.id ? (
-                  <div className="w-7 h-7 border-[3px] border-[var(--main)] border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <Switcher
-                    checked={job.status === 'published'}
-                    onChange={() => onPublishToggle(job.id, job.status)}
-                  />
-                )}
-
-                <span className="text-xs text-slate-500">Publish</span>
-              </div>
-            )}
-          </div>
-        </section>
 
 
         {/* Attachments */}
@@ -243,7 +194,7 @@ const JobCard = ({ job, onPublishToggle, loadingJobId, activeTab, onDeleteReques
 export default function MyJobsPage() {
   const tabs = [
     { label: 'All', value: 'all' },
-    { label: 'Draft', value: 'draft' },
+    // { label: 'Draft', value: 'draft' },
     { label: 'Pending', value: 'pending' },
     { label: 'Published', value: 'published' },
     { label: 'Awarded', value: 'awarded' },

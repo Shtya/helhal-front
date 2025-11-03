@@ -671,11 +671,11 @@ export default function AuthPage() {
           </div>
 
           {/* right panel: forms */}
-          <div className='w-full lg:max-w-[500px] flex items-center justify-center lg:px-10 p-6'>
-            <motion.div className='w-full  max-lg:p-8'>
-              <div className='mb-12 flex justify-center items-center'>
-                <Logo />
-              </div>
+          <div className='w-full lg:max-w-[500px] flex items-center flex-col justify-center p-6 lg:px-10 '>
+            <div className='flex justify-center items-center'>
+              <Logo textHideMobile={false} />
+            </div>
+            <motion.div className='w-full  max-lg:p-8 lg:py-8'>
               <TitleByTab view={view} activeTab={activeTab} />
               <AuthTabs setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} />
               <AnimatePresence mode='wait'>

@@ -178,6 +178,8 @@ const page = () => {
 export default page;
 
 function BecomeSellerButton({ className = '' }) {
+  const { role } = useAuth();
+  const isGuest = role === 'guest'
   const router = useRouter();
   const { refetchUser } = useAuth();
   const [isConfirm, setIsConfirm] = useState(false);
@@ -201,11 +203,20 @@ function BecomeSellerButton({ className = '' }) {
     }
   }, [router]);
 
+
+  function handleClick() {
+    if (isGuest) {
+      router.push('/auth?tab=register&type=seller')
+    }
+    else {
+      setIsConfirm(true)
+    }
+  }
   return (
     <>
       <Button
         name='Become a Seller'
-        onClick={() => setIsConfirm(true)}
+        onClick={handleClick}
         color='green'
         className={className}
       />

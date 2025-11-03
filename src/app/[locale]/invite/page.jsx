@@ -8,9 +8,9 @@ import 'aos/dist/aos.css';
 import Textarea from '@/components/atoms/Textarea';
 import { Pencil, Plus, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { showWarningToast } from '@/utils/notifications';
 import z from 'zod';
 import toast from 'react-hot-toast';
+import api from '@/lib/axios';
 
 const emailSchema = z.string().email();
 

@@ -96,9 +96,9 @@ const jobValidationSchema = yup.object({
     .max(1200, 'Maximum delivery time is 1200 days')
     .typeError('Preferred Delivery Days is required'),
 
-  status: yup
-    .string()
-    .oneOf(['draft', 'published']),
+  // status: yup
+  //   .string()
+  //   .oneOf(['draft', 'published']),
 });
 
 
@@ -115,7 +115,7 @@ export default function CreateJobPage() {
 
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [isPublishing, setIsPublishing] = useState(true);
+  // const [isPublishing, setIsPublishing] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingJobId, setExistingJobId] = useState(null);
 
@@ -155,7 +155,7 @@ export default function CreateJobPage() {
       try {
         const formData = getValues();
         sessionStorage.setItem('jobFormData', JSON.stringify(formData));
-        sessionStorage.setItem('jobFormPublishing', JSON.stringify(isPublishing));
+        // sessionStorage.setItem('jobFormPublishing', JSON.stringify(isPublishing));
       } catch (error) {
         console.error('Error saving form data:', error);
       }
@@ -163,22 +163,22 @@ export default function CreateJobPage() {
 
     const timeoutId = setTimeout(saveFormData, 500);
     return () => clearTimeout(timeoutId);
-  }, [formValues, isPublishing, getValues]);
+  }, [formValues, getValues]);
 
   useEffect(() => {
     const loadSavedData = () => {
       try {
         const savedFormData = sessionStorage.getItem('jobFormData');
-        const savedPublishing = sessionStorage.getItem('jobFormPublishing');
+        // const savedPublishing = sessionStorage.getItem('jobFormPublishing');
 
         if (savedFormData) {
           const parsedData = JSON.parse(savedFormData);
           reset(parsedData);
         }
 
-        if (savedPublishing) {
-          setIsPublishing(JSON.parse(savedPublishing));
-        }
+        // if (savedPublishing) {
+        //   setIsPublishing(JSON.parse(savedPublishing));
+        // }
       } catch (error) {
         console.error('Error loading saved data:', error);
       }
@@ -224,13 +224,12 @@ export default function CreateJobPage() {
       budget: '',
       budgetType: 'fixed',
       preferredDeliveryDays: '',
-      status: 'draft',
     });
-    setIsPublishing(true);
+    // setIsPublishing(true);
     setExistingJobId(null);
 
     sessionStorage.removeItem('jobFormData');
-    sessionStorage.removeItem('jobFormPublishing');
+    // sessionStorage.removeItem('jobFormPublishing');
 
     router.replace('?step=0', { scroll: false });
   };
@@ -272,7 +271,7 @@ export default function CreateJobPage() {
 
     // Only send status on UPDATE; for CREATE let backend/setting decide
     if (existingJobId) {
-      payload.status = isPublishing ? 'published' : 'draft';
+      payload.status = 'published';
     }
 
     try {
@@ -283,14 +282,14 @@ export default function CreateJobPage() {
       const result = await toast.promise(
         req(),
         {
-          loading: action === 'create' ? (isPublishing ? 'Publishing your job…' : 'Saving your draft…') : isPublishing ? 'Updating & publishing…' : 'Updating draft…',
+          loading: action === 'create' ? 'Creating your job…' : 'Updating your job',
           success: res => {
             // Decide message based on actual backend status
             const status = String(res?.status || '').toLowerCase();
 
             // Clear persisted form state
             sessionStorage.removeItem('jobFormData');
-            sessionStorage.removeItem('jobFormPublishing');
+            // sessionStorage.removeItem('jobFormPublishing');
 
             if (!existingJobId) {
               // CREATE
@@ -370,7 +369,7 @@ export default function CreateJobPage() {
 
           {currentStep === 1 && <BudgetAndDelivery key='step2' register={register} control={control} errors={errors} trigger={trigger} budgetTypeOptions={budgetTypeOptions} setCurrentStep={setCurrentStep} />}
 
-          {currentStep === 2 && <ProjectReview key='step3' data={formValues} isPublishing={isPublishing} onPublishToggle={setIsPublishing} onEditProject={() => setCurrentStep(0)} onEditJob={() => setCurrentStep(1)} onBack={() => setCurrentStep(1)} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} errors={errors} />}
+          {currentStep === 2 && <ProjectReview key='step3' data={formValues} onEditProject={() => setCurrentStep(0)} onEditJob={() => setCurrentStep(1)} onBack={() => setCurrentStep(1)} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} errors={errors} />}
         </div>
       </div>
     </div>
@@ -643,32 +642,25 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
         </div>
       </section>
 
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        {/* Switcher Row */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-gray-600">Save as Draft</span>
-          <Switcher checked={isPublishing} onChange={onPublishToggle} />
-          <span className="text-sm text-gray-600">Publish</span>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-2 justify-end sm:justify-start">
-          <Button
-            className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
-            name="Back"
-            onClick={onBack}
-            color="secondary"
-          />
-          <Button
-            className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
-            name={isPublishing ? 'Publish Job' : 'Save Draft'}
-            onClick={onSubmit}
-            color="green"
-            loading={isSubmitting}
-            disabled={isSubmitting}
-          />
-        </div>
+      {/* Action Buttons */}
+      <div className="mt-8 flex items-center gap-2 justify-between flex-1">
+        <Button
+          className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
+          name="Back"
+          onClick={onBack}
+          color="secondary"
+        />
+        <Button
+          className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
+          name={'Publish Job'}
+          onClick={onSubmit}
+          color="green"
+          loading={isSubmitting}
+          disabled={isSubmitting}
+        />
       </div>
+
 
     </div>
   );

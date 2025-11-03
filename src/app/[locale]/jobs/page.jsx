@@ -332,7 +332,7 @@ export default function SellerJobsPage() {
             className='!text-xs min-w-0 truncate'
             variant='minimal'
           />
-          <SellerBudgetDropdown onBudgetChange={() => {
+          <SellerBudgetDropdown onBudgetChange={(priceRange) => {
             setFiltersState(prev => {
               const updated = {
                 ...prev,
@@ -341,7 +341,7 @@ export default function SellerJobsPage() {
               };
               return updated;
             });
-            resetpage();
+            resetPage();
           }} selectedPriceRange={filters.priceRange} customBudget={filters.customBudget} />
 
           <div className='flex-grow sm:flex-grow-0'>
