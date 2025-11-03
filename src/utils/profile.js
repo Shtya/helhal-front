@@ -19,3 +19,8 @@ export function validateUsername(value) {
     }
     return null;
 }
+
+export function validatPhone(value) {
+    const isInvalid = value && (value.length < 6 || !/^\d+$/.test(value));
+    return isInvalid;
+}

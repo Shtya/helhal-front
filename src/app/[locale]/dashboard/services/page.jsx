@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
- import { Search,   Eye,  Trash2, Plus, Folder  } from 'lucide-react';
+import { Search, Eye, Trash2, Plus, Folder } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -187,7 +187,7 @@ export default function AdminServicesDashboard() {
     { key: 'created_at', label: 'Created', type: 'date' },
   ];
 
-  const actions = row => (
+  const Actions = ({ row }) => (
     <div className='flex items-center gap-2'>
       <Link href={`/services/category/${row.slug}`} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
@@ -234,7 +234,7 @@ export default function AdminServicesDashboard() {
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
         <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
-          <Table data={rows} columns={columns} actions={actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
+          <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
         <Modal open={modalOpen} title={mode === 'view' ? 'Service Details' : mode === 'edit' ? 'Edit Service' : 'Create Service'} onClose={() => setModalOpen(false)} size='lg' hideFooter>

@@ -3,7 +3,7 @@
 import { baseImg } from '@/lib/axios';
 import { useEffect, useMemo, useState } from 'react';
 
-export default function Img({ src, altSrc, alt = '', className = 'h-full w-full object-cover', fallback = '/icons/no-img.png', loading = 'lazy', decoding = 'async', draggable = false, textFallback = '', ...rest }) {
+export default function Img({ src, altSrc, alt = '', className = 'h-full w-full object-cover', fallback = '/icons/no-img.png', loading = 'lazy', decoding = 'async', draggable = false, textFallback = '', onLoad, ...rest }) {
   const altSrcFinal = altSrc || fallback;
   const [errored, setErrored] = useState(false);
 
@@ -38,6 +38,7 @@ export default function Img({ src, altSrc, alt = '', className = 'h-full w-full 
   };
 
   const handleLoad = e => {
+    onLoad?.()
     // if it successfully loads something that isn’t the fallback, keep object-cover
     if (e.currentTarget.src.includes(altSrcFinal)) {
       e.currentTarget.classList.add('!object-contain');

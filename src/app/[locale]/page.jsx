@@ -267,11 +267,11 @@ export function CategorySwiper() {
         setItems(data);
       } catch (err) {
         // development fallback dataset
-        if (process.env.NODE_ENV === 'development') {
-          setItems(CATEGORIES_FALLBACK);
-        } else {
-          setError('Failed to load categories');
-        }
+        // if (process.env.NODE_ENV !== 'development') {
+        // }
+        setItems(CATEGORIES_FALLBACK);
+        // setError('Failed to load categories');
+
       } finally {
         setLoading(false);
       }
@@ -380,7 +380,6 @@ export function PopularServicesSwiper() {
         setItems(data);
       } catch (err) {
         if (process.env.NODE_ENV === 'development') {
-
           setItems(POPULAR_SERVICES);
         } else {
           setError('Failed to load popular services');

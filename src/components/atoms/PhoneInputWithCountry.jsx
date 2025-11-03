@@ -35,7 +35,7 @@ const FlagSvg = ({ code }) => {
 //countryCode is a object: { code: 'SA', dial_code: '+966' }
 //phone is a string: '234589654'
 export default function PhoneInputWithCountry({
-    value,
+    value = { countryCode: { code: 'SA', dial_code: '+966' }, phone: '' },
     onChange,
 }) {
     const formattedOptions = useMemo(() => countryCodes.map(({ name, dial_code, code }) => ({

@@ -11,6 +11,7 @@ import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import ImagePicker from '@/components/atoms/ImagePicker';
 import Textarea from '@/components/atoms/Textarea';
+import ActionMenuPortal from '@/components/dashboard/Table/ActionMenuPortal';
 
 export default function AdminCategoriesDashboard() {
   const [activeTab, setActiveTab] = useState('all');
@@ -174,7 +175,7 @@ export default function AdminCategoriesDashboard() {
     { key: 'created_at', label: 'Created', type: 'date' },
   ];
 
-  const actions = row => (
+  const Actions = ({ row }) => (
     <div className='flex items-center gap-2'>
       <button onClick={() => openView(row.id)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
@@ -186,6 +187,7 @@ export default function AdminCategoriesDashboard() {
         <Trash2 size={16} />
       </button>
     </div>
+
   );
 
   return (
@@ -216,7 +218,7 @@ export default function AdminCategoriesDashboard() {
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
         <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
-          <Table data={rows} columns={columns} actions={actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
+          <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
         <Modal open={modalOpen} title={mode === 'view' ? 'Category Details' : mode === 'edit' ? 'Edit Category' : 'Create Category'} onClose={() => setModalOpen(false)} size='md' hideFooter>

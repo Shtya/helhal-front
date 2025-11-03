@@ -147,7 +147,7 @@ export default function AdminOrdersDashboard() {
     {
       key: 'totalAmount',
       label: 'Amount',
-      render: v => `$${v.totalAmount }`
+      render: v => `$${v.totalAmount}`
     },
     {
       key: 'buyer',
@@ -167,7 +167,7 @@ export default function AdminOrdersDashboard() {
     { key: 'orderDate', label: 'Order Date', type: 'date' },
   ];
 
-  const actions = row => (
+  const Actions = ({ row }) => (
     <div className='flex items-center gap-2'>
       <button onClick={() => openView(row.id)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
@@ -214,15 +214,15 @@ export default function AdminOrdersDashboard() {
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
         <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
-          <Table 
-            data={rows} 
-            columns={columns} 
-            actions={actions} 
-            loading={loading} 
-            rowsPerPage={filters.limit} 
-            page={filters.page} 
-            totalCount={totalCount} 
-            onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} 
+          <Table
+            data={rows}
+            columns={columns}
+            Actions={Actions}
+            loading={loading}
+            rowsPerPage={filters.limit}
+            page={filters.page}
+            totalCount={totalCount}
+            onPageChange={p => setFilters(prev => ({ ...prev, page: p }))}
           />
         </div>
 
@@ -244,14 +244,14 @@ function OrderView({ value, onClose }) {
           <label className='block text-sm font-medium text-slate-700 mb-1'>Order Title</label>
           <div className='p-2 bg-slate-50 rounded-md'>{value.title}</div>
         </div>
-        
+
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Status</label>
           <div className='p-2 bg-slate-50 rounded-md'>
             <MetricBadge tone={
               value.status === 'Completed' ? 'success' :
-              value.status === 'Cancelled' ? 'danger' :
-              value.status === 'Pending' ? 'warning' : 'info'
+                value.status === 'Cancelled' ? 'danger' :
+                  value.status === 'Pending' ? 'warning' : 'info'
             }>
               {value.status}
             </MetricBadge>
@@ -264,7 +264,7 @@ function OrderView({ value, onClose }) {
           <label className='block text-sm font-medium text-slate-700 mb-1'>Buyer</label>
           <div className='p-2 bg-slate-50 rounded-md'>{value.buyer?.username || 'N/A'}</div>
         </div>
-        
+
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Seller</label>
           <div className='p-2 bg-slate-50 rounded-md'>{value.seller?.username || 'N/A'}</div>
@@ -274,9 +274,9 @@ function OrderView({ value, onClose }) {
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Total Amount</label>
-          <div className='p-2 bg-slate-50 rounded-md font-semibold'>${typeof value.totalAmount == "string" ? value.totalAmount?.toFixed(2)  : value.totalAmount}</div>
+          <div className='p-2 bg-slate-50 rounded-md font-semibold'>${typeof value.totalAmount == "string" ? value.totalAmount?.toFixed(2) : value.totalAmount}</div>
         </div>
-        
+
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Package Type</label>
           <div className='p-2 bg-slate-50 rounded-md'>{value.packageType}</div>
@@ -315,7 +315,7 @@ function OrderView({ value, onClose }) {
           <div className='p-3 bg-slate-50 rounded-md'>
             <div className='font-semibold'>Invoice #{value.invoices[0].invoiceNumber}</div>
             <div>Status: {value.invoices[0].paymentStatus}</div>
-            <div>Total: ${value.invoices[0].totalAmount }</div>
+            <div>Total: ${value.invoices[0].totalAmount}</div>
           </div>
         </div>
       )}

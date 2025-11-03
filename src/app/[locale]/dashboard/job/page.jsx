@@ -59,7 +59,7 @@ export default function AdminJobsDashboard() {
       const res = await api.get('/settings');
       setJobsRequireApproval(!!res?.data?.jobsRequireApproval);
     } catch (e) {
-       toast.error(e?.response?.data?.message || 'Failed to load platform settings');
+      toast.error(e?.response?.data?.message || 'Failed to load platform settings');
     } finally {
       setSettingsLoading(false);
     }
@@ -88,7 +88,7 @@ export default function AdminJobsDashboard() {
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
         search: debouncedSearch,
-				filters : {status : ""}
+        filters: { status: "" }
       };
       if (activeTab !== 'all') q.filters.status = activeTab;
 
@@ -221,16 +221,16 @@ export default function AdminJobsDashboard() {
     { key: 'created_at', label: 'Created', type: 'date' },
   ];
 
-  const actions = row => (
+  const Actions = ({ row }) => (
     <div className='flex items-center gap-2'>
       <button onClick={() => openView(row.id)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
       </button>
       <Select
-        value={row.status}
+        value={row?.status}
         onChange={e => updateJobStatus(row.id, e.id)}
         options={[
-          { id: 'pending', name: 'Set Pending' },  
+          { id: 'pending', name: 'Set Pending' },
           { id: 'draft', name: 'Set Draft' },
           { id: 'published', name: 'Publish' }, // calls /publish
           { id: 'awarded', name: 'Mark Awarded' },
@@ -293,7 +293,7 @@ export default function AdminJobsDashboard() {
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
         <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
-          <Table data={rows} columns={columns} actions={actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
+          <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
         <Modal open={modalOpen} title='Job Details' onClose={() => setModalOpen(false)} size='lg' hideFooter>

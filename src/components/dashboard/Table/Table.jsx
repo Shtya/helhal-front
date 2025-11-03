@@ -36,7 +36,7 @@ function EmptyState({ title = 'No results found', subtitle = 'Try adjusting filt
 export default function Table({
   data,
   columns,
-  actions,
+  Actions,
   loading = false,
   rowsPerPage = 10,
   page, // NEW (optional): server current page
@@ -45,6 +45,7 @@ export default function Table({
 }) {
   const [currentPage, setCurrentPage] = useState(1); // client mode fallback
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isImageLoading, setIsImageLoading] = useState(true);
 
   const serverMode = typeof totalCount === 'number' && typeof page === 'number' && typeof onPageChange === 'function';
   const handlePageChange = p => {
@@ -66,7 +67,10 @@ export default function Table({
   };
 
   const handleImageClick = imageSrc => {
-    if (!loading) setSelectedImage(imageSrc);
+    if (!loading) {
+      setIsImageLoading(true)
+      setSelectedImage(imageSrc)
+    };
   };
 
   const closeImagePreview = () => setSelectedImage(null);
@@ -77,6 +81,7 @@ export default function Table({
   const totalPages = Math.max(1, Math.ceil(fullCount / rowsPerPage));
   const showingFrom = loading || fullCount === 0 ? 0 : Math.min((effectivePage - 1) * rowsPerPage + 1, fullCount);
   const showingTo = loading || fullCount === 0 ? 0 : Math.min(effectivePage * rowsPerPage, fullCount);
+
 
   return (
     <div className='  rounded-xl shadow-inner ring-1 ring-slate-200' aria-busy={loading} aria-live='polite'>
@@ -89,7 +94,7 @@ export default function Table({
                   {loading ? <Skeleton className='h-4 w-24' /> : column.label}
                 </th>
               ))}
-              {actions && <th className='px-4 py-4 rtl:text-right ltr:text-left text-sm text-nowrap font-semibold text-slate-700'>{loading ? <Skeleton className='h-4 w-16' /> : 'Action'}</th>}
+              {Actions && <th className='px-4 py-4 rtl:text-right ltr:text-left text-sm text-nowrap font-semibold text-slate-700'>{loading ? <Skeleton className='h-4 w-16' /> : 'Action'}</th>}
             </tr>
           </thead>
 
@@ -148,13 +153,13 @@ export default function Table({
                   );
                 })}
 
-                {actions && <td className='px-4 py-4 text-sm'>{loading ? <Skeleton className='h-8 w-20' /> : actions(row)}</td>}
+                {Actions && <td className='px-4 py-4 text-sm'>{loading ? <Skeleton className='h-8 w-20' /> : <Actions row={row} />}</td>}
               </tr>
             ))}
 
             {!loading && data.length === 0 && (
               <tr>
-                <td colSpan={columns.length + (actions ? 1 : 0)} className='px-4'>
+                <td colSpan={columns.length + (Actions ? 1 : 0)} className='px-4'>
                   <EmptyState title='Nothing to show here' subtitle='No rows match your current filters. You can clear filters or try a different search.' />
                 </td>
               </tr>
@@ -181,11 +186,16 @@ export default function Table({
 
       {selectedImage && !loading && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div className='relative bg-white p-4 rounded-xl ring-1 ring-slate-200 shadow-xl'>
-            <button onClick={closeImagePreview} className='w-9 h-9 inline-flex items-center justify-center absolute -top-3 -right-3 text-white bg-slate-900 rounded-full shadow hover:opacity-90'>
-              <X />
+          <div className={`relative  rounded-xl  shadow-xl `}>
+            <button onClick={closeImagePreview} className='w-9 h-9 inline-flex items-center justify-center z-[52] absolute -top-3 -right-3 text-white bg-slate-900 rounded-full shadow hover:opacity-90'>
+              {!isImageLoading ? <X /> :
+                <span className="relative flex h-6 w-6">
+                  <span className="absolute h-full w-full rounded-full border-4 border-white/30 border-t-white animate-spin"></span>
+                  <span className="absolute h-full w-full rounded-full border-4 border-transparent border-r-white animate-spin-slow"></span>
+                </span>}
             </button>
-            <Img src={selectedImage} alt='Preview' className='max-w-[90vw] max-h-[80vh] rounded-md' />
+            <Img src={selectedImage} alt='Preview' className={`${!isImageLoading && 'bg-white ring-1 ring-slate-200'}   p-4 max-w-[80vw] max-h-[80vh] rounded-md  `} onLoad={() => setIsImageLoading(false)} />
+
           </div>
         </div>
       )}
