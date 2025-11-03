@@ -276,6 +276,17 @@ export default function Header() {
       },
     ];
 
+    //guest
+
+    const guest = [
+      {
+        label: 'Jobs',
+        icon: <Briefcase className='h-5 w-5' />,
+        children: [
+          { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
+        ],
+      },
+    ]
     // Buyer-only
     const buyer = [
       {
@@ -314,7 +325,7 @@ export default function Header() {
 
 
     // Conditional + common
-    if (isGuest) return [...common, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }]
+    if (isGuest) return [...common, ...guest, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }]
     if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }];
     if (u?.role === 'seller') return [...common, ...seller];
     if (u?.role === 'admin') return [...common, ...admin];
@@ -324,6 +335,9 @@ export default function Header() {
   const navLinks = buildNavLinks(user);
   const getNavItemsByRole = role => {
     const byOrder = (a, b) => (a.order ?? 99999) - (b.order ?? 99999);
+
+    if (role === 'guest') return [];
+
     const common = [
       { href: '/profile', label: 'My Profile', icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
       { href: '/orders', label: 'My Orders', icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/orders'), order: 2 },
@@ -406,10 +420,7 @@ export default function Header() {
               </Link>
 
               {/* Mobile toggle */}
-              <motion.button onClick={toggleMobileNav} className='md:hidden p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
-                {isMobileNavOpen ? <X className='w-6 h-6' strokeWidth={1.5} /> : <Menu className='w-6 h-6' />}
-              </motion.button>
-
+              <MobileToggle toggleMobileNav={toggleMobileNav} isMobileNavOpen={isMobileNavOpen} />
               <AvatarDropdown user={user} navItems={navItems} onLogout={handleLogout} />
             </>
           ) : (
@@ -420,6 +431,7 @@ export default function Header() {
               <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors'>
                 Sign Up
               </Link>
+              <MobileToggle toggleMobileNav={toggleMobileNav} isMobileNavOpen={isMobileNavOpen} />
             </div>
           )}
         </div>
@@ -431,6 +443,14 @@ export default function Header() {
   );
 }
 
+const MobileToggle = ({ toggleMobileNav, isMobileNavOpen }) => {
+  return (
+    <motion.button onClick={toggleMobileNav} className='md:hidden p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
+      {isMobileNavOpen ? <X className='w-6 h-6' strokeWidth={1.5} /> : <Menu className='w-6 h-6' />}
+    </motion.button>
+
+  )
+}
 /* =========================================================
    Avatar Dropdown
    ========================================================= */
