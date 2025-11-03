@@ -3,12 +3,71 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck } from 'lucide-react';
+import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt } from 'lucide-react';
 import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
+import { useAuth } from '@/context/AuthContext';
+
+const mockJobs = [
+  {
+    id: "job-001",
+    title: "Arabic-English Subtitle Translator Needed",
+    description: "Translate short-form video content from Arabic to English.\nMust maintain tone and timing.\nExperience with subtitle tools preferred.",
+    categoryId: "translation",
+    budget: "50.00",
+    budgetType: "fixed",
+    preferredDeliveryDays: 5,
+    skillsRequired: ["Translation", "Subtitling", "Arabic"],
+    attachments: [],
+    buyer: { username: "media_hub" },
+  },
+  {
+    id: "job-002",
+    title: "React Dashboard QA Tester (Freelance)",
+    description: "We're looking for a QA tester to validate a React-based analytics dashboard.\nTasks include regression testing, edge case validation, and reporting UI bugs.\nMust be familiar with browser dev tools and responsive testing.",
+    categoryId: "development",
+    budget: "25.00",
+    budgetType: "hourly",
+    preferredDeliveryDays: 10,
+    skillsRequired: ["QA Testing", "React", "Browser DevTools"],
+    attachments: [
+      { name: "test-plan.pdf", url: "uploads/test-plan.pdf", type: "document" }
+    ],
+    buyer: { username: "dash_ops" },
+  },
+  {
+    id: "job-003",
+    title: "Voiceover Artist for Educational Biology Series",
+    description: "Seeking a warm, clear voice for a biology explainer series.\nEach episode is 3–5 minutes.\nScript provided.\nBonus if you can sync VO with visuals.",
+    categoryId: "audio",
+    budget: "100.00",
+    budgetType: "fixed",
+    preferredDeliveryDays: 7,
+    skillsRequired: ["Voiceover", "Biology", "Audio Sync"],
+    attachments: [],
+    buyer: { username: "edu_studio" },
+  },
+  {
+    id: "job-004",
+    title: "Figma Designer for Arabic-first Mobile App",
+    description: "Design clean, RTL-friendly mobile screens for a fintech app.\nMust understand Arabic UX conventions and currency formatting.\nDeliver layered Figma file with components.",
+    categoryId: "design",
+    budget: "40.00",
+    budgetType: "hourly",
+    preferredDeliveryDays: 14,
+    skillsRequired: ["Figma", "Arabic UX", "Mobile Design"],
+    attachments: [
+      { name: "wireframes.png", url: "uploads/wireframes.png", type: "image" }
+    ],
+    buyer: { username: "fintech_lab" },
+  }
+];
+
 
 export default function ProfilePageClient() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const isSameUser = user?.id === id;
   const [buyer, setBuyer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,12 +101,13 @@ export default function ProfilePageClient() {
   if (loading) return <SkeletonPage />;
   if (error) {
     return (
-      <main className='mx-auto max-w-6xl p-6'>
-        <div className='rounded-xl border border-rose-200 bg-rose-50 text-rose-700 p-4'>{error}</div>
+      <main className='mx-auto max-w-6xl p-6 text-center min-h-[250px] flex items-center justify-center '>
+        <div className='flex-1 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 p-4'>{error || "Failed to load user. Try again."}</div>
       </main>
     );
   }
   if (!buyer) return null;
+
 
   return (
     <main className='container !my-10'>
@@ -81,9 +141,9 @@ export default function ProfilePageClient() {
             </div>
 
             <div className='flex items-center gap-2'>
-              <Link href={`/chat?userId=${buyer?.id || ''}`} className='px-4 py-2 text-sm font-semibold rounded-xl bg-white text-emerald-700 hover:bg-emerald-50 active:scale-95 transition shadow'>
+              {!isSameUser && <Link href={`/chat?userId=${buyer?.id || ''}`} className='px-4 py-2 text-sm font-semibold rounded-xl bg-white text-emerald-700 hover:bg-emerald-50 active:scale-95 transition shadow'>
                 Message
-              </Link>
+              </Link>}
             </div>
           </div>
 
@@ -113,7 +173,7 @@ export default function ProfilePageClient() {
 
           <Card title='Contact'>
             <InfoRow icon={Mail} label='Email' value={buyer?.email || '—'} copyable />
-            <InfoRow icon={Smartphone} label='Phone' value={buyer?.phone || '—'} />
+            <InfoRow icon={Smartphone} label='Phone' value={buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—'} />
             <InfoRow icon={Globe} label='Country' value={buyer?.country || '—'} />
           </Card>
 
@@ -135,17 +195,32 @@ export default function ProfilePageClient() {
           </Card>
 
           {/* ===== Services (Redesigned) ===== */}
-          <Card title='Services'>
-            {Array.isArray(buyer?.services) && buyer.services.length > 0 ? (
-              <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4'>
-                {buyer.services.map(svc => (
-                  <ServiceCard key={svc?.id || svc?.title} service={svc} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState text='No services yet.' actionHref={`/create-gig?owner=${buyer?.id || ''}`} actionText='Create a service' />
-            )}
-          </Card>
+          {buyer?.role === 'seller' ? (
+            <Card title="Services">
+              {Array.isArray(buyer?.services) && buyer.services.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {buyer.services.map(svc => (
+                    <ServiceCard key={svc?.id || svc?.title} service={svc} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState text="No services yet." />
+              )}
+            </Card>
+          ) : (
+            <Card title="Jobs">
+              {Array.isArray(buyer?.jobs) && buyer?.jobs.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {buyer?.jobs.map(job => (
+                    <JobCard key={job?.id || job?.title} job={job} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState text="No jobs yet." />
+              )}
+            </Card>
+          )}
+
         </div>
       </section>
     </main>
@@ -156,16 +231,22 @@ export default function ProfilePageClient() {
 
 function SkeletonPage() {
   return (
-    <main className='mx-auto max-w-6xl p-4 sm:p-6 lg:p-8 animate-pulse'>
-      <div className='h-36 rounded-3xl bg-slate-100' />
-      <div className='mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3'>
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className='h-20 rounded-xl bg-slate-100' />
-        ))}
-      </div>
-      <div className='mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6'>
-        <div className='h-64 rounded-2xl bg-slate-100' />
-        <div className='lg:col-span-2 h-64 rounded-2xl bg-slate-100' />
+
+    <main className='container !my-10'>
+      <div className=' mx-auto px-4 sm:px-6 lg:px-8 animate-pulse'>
+
+
+
+        <div className='h-36 rounded-3xl bg-slate-100' />
+        <div className='mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3'>
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className='h-20 rounded-xl bg-slate-100' />
+          ))}
+        </div>
+        <div className='mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6'>
+          <div className='h-64 rounded-2xl bg-slate-100' />
+          <div className='lg:col-span-2 h-64 rounded-2xl bg-slate-100' />
+        </div>
       </div>
     </main>
   );
@@ -179,7 +260,7 @@ function Card({ title, children }) {
     </div>
   );
 }
- 
+
 function InfoRow({ icon: Icon, label, value, copyable }) {
   const val = value ?? '—';
   return (
@@ -236,7 +317,57 @@ function ServiceCard({ service }) {
         <Metric icon={Star} label='Rating' value={rating} />
         <Metric icon={Clock} label='Delivery' value={`${delivery}d`} />
       </div>
- 
+
+    </div>
+  );
+}
+
+
+
+function JobCard({ job }) {
+  const initials = getInitials(job?.title || 'Job');
+  const budget = job?.budget ? parseFloat(job.budget) : null;
+  const delivery = job?.preferredDeliveryDays ?? '—';
+  const buyer = job?.buyer?.username || 'Unknown';
+  const budgetLabel = job?.budgetType === 'hourly' ? `${formatMoney(budget)}/hr` : formatMoney(budget);
+
+  return (
+    <div className="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
+      {/* Top row */}
+      <div className="flex items-center gap-3">
+        <div className="flex-none h-11 w-11 grid place-items-center rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-400 text-white font-semibold shadow">
+          {initials}
+        </div>
+        <div className="min-w-0 truncate whitespace-nowrap">
+          <Link
+            href={`/jobs?job=${job?.id}`}
+            className="font-semibold text-slate-900 group-hover:text-indigo-600"
+            title={job?.title || 'Untitled job'}
+          >
+            {job?.title || 'Untitled job'}
+          </Link>
+          {job?.buyer?.username && (
+            <div className="mt-0.5 text-xs text-slate-500 truncate">Posted by {job.buyer.username}</div>
+          )}
+        </div>
+      </div>
+
+      {/* Metrics */}
+      <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
+        <Metric icon={DollarSign} label="Budget" value={budgetLabel} />
+        <Metric icon={Clock} label="Delivery" value={`${delivery}d`} />
+        <Metric
+          icon={Receipt}
+          label="Type"
+          value={job?.budgetType === 'hourly' ? 'Hourly' : 'Fixed'}
+        />
+
+      </div>
+
+      {/* Description */}
+      <p className="mt-3 text-sm text-slate-700 whitespace-pre-wrap line-clamp-4">
+        {job?.description}
+      </p>
     </div>
   );
 }

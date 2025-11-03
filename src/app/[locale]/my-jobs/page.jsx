@@ -381,10 +381,6 @@ function JobDrawer({ open, onClose, job, jobId }) {
                     <div className='mt-3 space-y-2 text-sm'>
                       <div className='flex items-center gap-2'>
 
-                        {localJob?.buyer?.paymentVerified ?
-                          <CheckCircle2 className='h-4 w-4 text-emerald-600' />
-                          : <CircleX className='h-4 w-4 text-red-600' />}
-                        <span>Payment method verified</span>
                       </div>
                       <div className='flex items-center gap-2 text-slate-700'>
                         <CalendarDays className='h-4 w-4' />
@@ -467,7 +463,6 @@ function JobDrawerSkeleton({ onClose }) {
 
       {/* client */}
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-slate-200" />
         <div className="flex-1">
           <div className="h-4 w-36 bg-slate-200 rounded mb-2" />
           <div className="h-3 w-20 bg-slate-200 rounded" />

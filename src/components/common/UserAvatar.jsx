@@ -23,7 +23,9 @@ export default function UserAvatar({ buyer, href }) {
           {initials}
         </div>
 
-        <div className="flex flex-col justify-center min-w-0">
+        <div className="flex flex-col justify-center min-w-0"
+          onClick={e => e.stopPropagation()}
+          onKeyDown={e => e.stopPropagation()}>
           <Link
             href={profileHref}
             className="flex flex-wrap items-center gap-2 font-semibold text-slate-900 hover:text-indigo-600 truncate"
