@@ -452,6 +452,9 @@ export default function AdminUsersDashboard() {
                         <p>
                           <span className='font-medium'>Languages:</span> {selectedUser.languages?.join(', ') || 'No languages listed'}
                         </p>
+                        <p>
+                          <span className='font-medium'>Referral Code:</span> {selectedUser.referralCode || 'No Referral Code'}
+                        </p>
                       </div>
                     </div>
                   </div>
