@@ -1,106 +1,25 @@
 // MyJobsPage.jsx (light mode focused)
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { deleteJob, getMyJobs, updateJob } from '@/services/jobService';
-import TabList from '@/components/atoms/TabList';
-import PriceTag from '@/components/atoms/priceTag';
-import { ItemSkills } from '../share-job-description/page';
+
 import NoResults from '@/components/common/NoResults';
-import { Divider } from '../services/[category]/[service]/page';
-import AttachmentList from '@/components/common/AttachmentList';
 import Button from '@/components/atoms/Button';
 import TabsPagination from '@/components/common/TabsPagination';
 import { Modal } from '@/components/common/Modal';
-import { Switcher } from '@/components/atoms/Switcher';
-import { CalendarDays, Mail, User2, Trash2, FolderOpen, ChevronRight } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
 import { updateUrlParams } from '@/utils/helper';
 import { usePathname } from '@/i18n/navigation';
+import JobCard, { JobSkeleton } from '@/components/pages/my-jobs/JobCard';
 
-// -------------------------------------------------
-// Visual Tokens (light mode only)
-// -------------------------------------------------
-const cardBase = ' !bg-gray-50/50 group relative overflow-hidden rounded-2xl border border-gray-200 bg-white  ring-1 ring-black/5 transition-all duration-300 hover:shadow-xl hover:-translate-y-[2px]';
 
-const ribbonBar = 'absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-fuchsia-500 to-amber-500 opacity-80';
-
-const chip = 'inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700';
-
-// -------------------------------------------------
-// Skeleton Loader (light mode)
-// -------------------------------------------------
-export const JobSkeleton = () => (
-  <div className={`${cardBase} flex flex-col justify-between`}>
-    <div className={ribbonBar} />
-
-    {/* Top Content */}
-    <div className='p-6 sm:p-7 !pb-10'>
-      {/* Title + Status */}
-      <header className='flex items-start justify-between gap-3'>
-        <div className='h-8 w-2/3 rounded bg-slate-200' />
-        <div className='h-6 w-24 rounded-full bg-slate-200' />
-      </header>
-
-      {/* Description */}
-      <div className='mt-3 space-y-2'>
-        <div className='h-4 w-full rounded bg-slate-200' />
-        <div className='h-4 w-5/6 rounded bg-slate-200' />
-      </div>
-
-      {/* Skills & Budget */}
-      <div className='mt-5 space-y-3'>
-        <div className='flex gap-2'>
-          {[1, 2, 3].map(i => (
-            <div key={i} className='h-6 w-20 rounded-full bg-slate-200' />
-          ))}
-        </div>
-        <div className='flex flex-wrap items-center gap-3'>
-          <div className='h-6 w-24 rounded-full bg-slate-200' />
-          <div className='h-6 w-32 rounded-full bg-slate-200' />
-        </div>
-      </div>
-
-      <Divider className='!my-6' />
-
-      {/* Attachments */}
-      <div className='mt-5 rounded-xl border border-slate-200 p-3'>
-        <div className='mb-2 flex items-center gap-2'>
-          <div className='h-4 w-24 rounded bg-slate-200' />
-        </div>
-        <div className='grid grid-cols-2 gap-4'>
-          <div className='h-20 rounded bg-slate-200' />
-          <div className='h-20 rounded bg-slate-200' />
-        </div>
-      </div>
-    </div>
-
-    {/* Footer */}
-    <footer className='m-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200'>
-      <div className='h-9 w-40 rounded bg-slate-200' />
-      <div className='h-9 w-24 rounded bg-slate-200' />
-    </footer>
-  </div>
-);
 // -------------------------------------------------
 // Helpers
 // -------------------------------------------------
-const getStatusStyles = status => {
-  switch (status) {
-    case 'published':
-      return 'bg-emerald-50 text-emerald-700 border-emerald-200';
-    // case 'draft':
-    //   return 'bg-slate-50 text-slate-700 border-slate-200';
-    case 'awarded':
-      return 'bg-blue-50 text-blue-700 border-blue-200';
-    case 'completed':
-      return 'bg-purple-50 text-purple-700 border-purple-200';
-    default:
-      return 'bg-slate-50 text-slate-700 border-slate-200';
-  }
-};
+
 
 const initials = name =>
   (name || '?')
@@ -110,83 +29,6 @@ const initials = name =>
     .map(p => p[0]?.toUpperCase())
     .join('');
 
-// -------------------------------------------------
-// Job Card
-// -------------------------------------------------
-const JobCard = ({ job, onPublishToggle, loadingJobId, activeTab, onDeleteRequest }) => {
-  const created = useMemo(() => job?.created_at?.split('T')[0] ?? '—', [job?.created_at]);
-  const buyerInitials = useMemo(() => initials(job?.buyer?.username), [job?.buyer?.username]);
-
-  return (
-    <article className={`${cardBase} flex flex-col justify-between `} >
-      <div className={ribbonBar} />
-
-      {/* Top Content */}
-      <div className='p-6 sm:p-7 !pb-10'>
-        {/* Title */}
-        <header className='flex items-start justify-between gap-3'>
-          <h2 className='text-xl sm:text-2xl font-semibold tracking-tight text-slate-900'>{job.title}</h2>
-          <span className={chip + ' ' + getStatusStyles(job.status)}>
-            <span className='h-2 w-2 rounded-full bg-current opacity-70 [color:currentColor]' />
-            <span className='capitalize'>{job.status}</span>
-          </span>
-        </header>
-
-        {/* Description */}
-        {job.description && <p className='mt-2 line-clamp-3 text-slate-600'>{job.description}</p>}
-
-        {/* Skills & Budget */}
-        <div className='mt-5 space-y-3'>
-          {job?.skillsRequired?.length ? <ItemSkills cnLabel='max-w-fit text-sm !font-normal' label='Tech' value={job.skillsRequired} /> : null}
-
-          <div className='flex flex-wrap items-center gap-3'>
-            <span className='text-sm text-slate-500'>Budget</span>
-            <span className={chip + ' !py-[6px]'}>
-              <PriceTag color='green' price={job.budget} />
-            </span>
-            <span className='text-sm text-slate-500'>Created</span>
-            <span className={chip + ' !py-[6px]'}>
-              <CalendarDays className='h-4 w-4' />
-              <span className='tabular-nums'>{created}</span>
-            </span>
-          </div>
-        </div>
-
-        <Divider className='!my-6' />
-
-
-
-
-        {/* Attachments */}
-        {Array.isArray(job?.attachments) && job.attachments.length > 0 && (
-          <div className='mt-5 rounded-xl border border-slate-200 p-3'>
-            <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-              <FolderOpen className='shrink-0 h-4 w-4' /> Attachments
-            </div>
-            <AttachmentList
-              attachments={job.attachments}
-              className="!flex flex-wrap gap-4"
-              cnAttachment="!flex-1 !min-w-[180px] !max-w-full !basis-[calc(50%-0.5rem)]"
-            />
-
-          </div>
-        )}
-      </div>
-
-      {/* Footer Actions (pinned) */}
-      <footer className=' m-3 bottom-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200'>
-        <Button href={`/my-jobs/${job.id}/proposals`} name={`View Proposals (${job.proposals?.length || 0})`} className='min-w-[170px]' />
-        <div className='flex items-center gap-2'>
-          {/* <Button variant='ghost' className='!px-3' href={`/my-jobs/${job.id}`} name='Details' rightIcon={<ChevronRight className='h-4 w-4' />} /> */}
-          <Button onClick={() => onDeleteRequest(job.id)} color='red' name='Cancel' leftIcon={<Trash2 className='h-4 w-4' />} />
-        </div>
-      </footer>
-
-      {/* Focus ring */}
-      <div className='pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-black/5 transition-opacity group-hover:opacity-100' />
-    </article>
-  );
-};
 
 // -------------------------------------------------
 // Page
@@ -348,6 +190,22 @@ export default function MyJobsPage() {
           </div>
         </Modal>
       )}
+    </div>
+  );
+}
+
+
+function Skill({ label, value, cnLabel }) {
+  return (
+    <div className='flex items-center gap-4 '>
+      {label && <div className={`text-base text-slate-500 font-semibold w-full max-w-[140px] ${cnLabel}`}>{label}</div>}
+      <div className='flex flex-wrap gap-2'>
+        {value?.map((skill, index) => (
+          <span key={index} className='bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-medium flex items-center'>
+            {skill}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
