@@ -29,3 +29,6 @@ export function updateUrlParams(pathname, params) {
     const newUrl = `${pathname}?${params.toString()}`;
     window.history.replaceState(null, '', newUrl);
 }
+
+
+export const fmtMoney = n => `$${n?.toLocaleString()}`;

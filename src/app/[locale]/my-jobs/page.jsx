@@ -1,6 +1,6 @@
 // MyJobsPage.jsx (light mode focused)
 'use client';
-
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
 import { deleteJob, getMyJobs, updateJob } from '@/services/jobService';
 
@@ -11,9 +11,13 @@ import { Modal } from '@/components/common/Modal';
 import Tabs from '@/components/common/Tabs';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
-import { updateUrlParams } from '@/utils/helper';
+import { fmtMoney, updateUrlParams } from '@/utils/helper';
 import { usePathname } from '@/i18n/navigation';
 import JobCard, { JobSkeleton } from '@/components/pages/my-jobs/JobCard';
+import { useAuth } from '@/context/AuthContext';
+import { CalendarDays, CheckCircle2, CircleX, FolderOpen, X } from 'lucide-react';
+import AttachmentList from '@/components/common/AttachmentList';
+import api from '@/lib/axios';
 
 
 // -------------------------------------------------
@@ -153,6 +157,55 @@ export default function MyJobsPage() {
     }
   };
 
+
+  // Drawer state
+  // keep job id in sync with URL
+  const jobIdFromUrl = searchParams.get('job') || null;
+  const [drawerOpen, setDrawerOpen] = useState(!!jobIdFromUrl);
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [selectedJobId, setSelectedJobId] = useState(jobIdFromUrl);
+
+  const jobId = searchParams.get('job') || null;
+  useEffect(() => {
+    if (jobId !== selectedJobId) {
+      setSelectedJobId(jobId)
+
+      if (jobId)
+        setDrawerOpen(true);
+    }
+
+  }, [jobId]);
+
+  const openDrawerForJob = async job => {
+    try {
+      setSelectedJob(job);
+      setSelectedJobId(job?.id)
+      setDrawerOpen(true);
+    } catch (e) {
+      toast.error(e?.response?.data?.message || 'Unable to open job');
+    }
+  };
+
+  function closeDrawer() {
+    setDrawerOpen(false);
+    setSelectedJob(null);
+    setSelectedJobId(null);
+  }
+
+
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    // keep job id in URL when a job is selected
+    if (selectedJobId) {
+      if (selectedJobId) params.set('job', String(selectedJobId));
+    } else {
+      params.delete('job');
+    } updateUrlParams(pathname, params);
+  }, [selectedJobId]);
+
+
+
   return (
     <div className='container !mb-12'>
       <div className='mt-8 mb-4 flex items-center justify-between'>
@@ -172,7 +225,7 @@ export default function MyJobsPage() {
         {loading ? (
           Array.from({ length: 6 }).map((_, i) => <JobSkeleton key={i} />)
         ) : jobs.length > 0 ? (
-          jobs.map(job => <JobCard key={job.id} activeTab={activeTab} loadingJobId={loadingJobId} job={job} onPublishToggle={onPublishToggle} onDeleteRequest={confirmDelete} />)
+          jobs.map(job => <JobCard onOpen={() => openDrawerForJob(job)} key={job.id} activeTab={activeTab} loadingJobId={loadingJobId} job={job} onPublishToggle={onPublishToggle} onDeleteRequest={confirmDelete} />)
         ) : (
           <div className='md:col-span-2 lg:col-span-3'>
             <NoResults mainText='No jobs available at the moment' additionalText='Looks like no jobs are available right now. Check back later!' buttonText='Create a New Job' buttonLink='/share-job-description' />
@@ -190,22 +243,245 @@ export default function MyJobsPage() {
           </div>
         </Modal>
       )}
+
+      {/* Drawer (details + apply) */}
+      <JobDrawer
+        open={drawerOpen}
+        job={selectedJob}
+        jobId={selectedJobId}
+        onClose={closeDrawer} />
     </div>
   );
 }
 
 
-function Skill({ label, value, cnLabel }) {
+
+function JobDrawer({ open, onClose, job, jobId }) {
+
+  const [localJob, setLocalJob] = useState(job);
+  const [jobLoading, setJobLoading] = useState(false);
+
+  useEffect(() => {
+
+    if (!job) return;
+
+    if (job?.id !== localJob?.Id) {
+      setLocalJob(job);
+    }
+  }, [job])
+  // synchronize when parent provides an object job
+  useEffect(() => {
+
+    if (!jobId) return;
+
+    if (job?.id === jobId) {
+      return;
+    }
+
+    let mounted = true;
+    const fetchJob = async id => {
+      setJobLoading(true);
+      try {
+        const res = await api.get(`/jobs/${id}`);
+        if (!mounted) return;
+        // support both API shapes
+        const j = res?.data?.job ?? res?.data ?? null;
+        setLocalJob(j);
+      } catch (err) {
+        console.error(err);
+        toast.error(err?.response?.data?.message || 'Failed to load job');
+        setLocalJob(null);
+      } finally {
+        if (mounted) setJobLoading(false);
+      }
+    };
+    fetchJob(String(jobId));
+    return () => {
+      mounted = false;
+    };
+  }, [jobId]);
+
+  const budget = localJob?.budget ?? localJob?.estimatedBudget;
+  const priceType = localJob?.budgetType === 'hourly' ? 'Hourly' : 'Fixed-price';
+
+  const created = (localJob?.created_at || '').split('T')[0];
   return (
-    <div className='flex items-center gap-4 '>
-      {label && <div className={`text-base text-slate-500 font-semibold w-full max-w-[140px] ${cnLabel}`}>{label}</div>}
-      <div className='flex flex-wrap gap-2'>
-        {value?.map((skill, index) => (
-          <span key={index} className='bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm font-medium flex items-center'>
-            {skill}
-          </span>
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Overlay */}
+          <motion.div className='fixed inset-0 bg-black/40 backdrop-blur-[1px] z-40' onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+
+          {/* Drawer */}
+          <motion.aside className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col' initial={{ x: -580 }} animate={{ x: 0 }} exit={{ x: -580 }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
+            {jobLoading ? (
+              <JobDrawerSkeleton onClose={onClose} />
+            ) : (
+              <>
+                {/* Header */}
+                <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
+                  <div className='flex items-center flex-wrap gap-3'>
+                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || 'Job details'}</h3>
+
+                  </div>
+                  <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
+                    <X className='h-5 w-5 text-slate-700' />
+                  </button>
+                </div>
+
+                {/* Scrollable body */}
+                <div className='flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-6'>
+                  {/* Summary */}
+                  {localJob?.description && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Summary</h4>
+
+                      <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                        {localJob?.description}
+                      </p>
+
+                    </section>
+                  )}
+
+
+                  {/* Basic meta */}
+                  <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Budget + Price Type */}
+                    <div className="rounded-xl border border-slate-200 p-4">
+                      <div className="text-slate-900 font-semibold">{fmtMoney(budget)}</div>
+                      <div className="text-xs text-slate-500">{priceType}</div>
+                    </div>
+
+                    {/* Preferred Delivery */}
+                    <div className="rounded-xl border border-slate-200 p-4">
+                      <div className="text-slate-900 font-semibold">
+                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? 'day' : 'days'}
+                      </div>
+                      <div className="text-xs text-slate-500">Preferred delivery</div>
+                    </div>
+                  </section>
+
+                  {/* Skills */}
+                  {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Skills and Expertise</h4>
+                      <div className='flex flex-wrap gap-2'>
+                        {localJob?.skillsRequired.map((s, i) => (
+                          <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+
+                  {/* Client */}
+                  <section>
+                    <h4 className='text-sm font-semibold text-slate-900 mb-2'>About the client</h4>
+                    <div className='mt-3 space-y-2 text-sm'>
+                      <div className='flex items-center gap-2'>
+
+                        {localJob?.buyer?.paymentVerified ?
+                          <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+                          : <CircleX className='h-4 w-4 text-red-600' />}
+                        <span>Payment method verified</span>
+                      </div>
+                      <div className='flex items-center gap-2 text-slate-700'>
+                        <CalendarDays className='h-4 w-4' />
+                        <span>Posted {created || '—'}</span>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Attachments */}
+                  {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Attachments</h4>
+                      <div className='rounded-xl border border-slate-200 p-3'>
+                        <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
+                          <FolderOpen className='h-4 w-4' /> Files
+                        </div>
+                        <AttachmentList attachments={localJob?.attachments} />
+                      </div>
+                    </section>
+                  )}
+                  {/* additionalInfo */}
+                  {localJob?.additionalInfo && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
+                      <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
+                    </section>
+                  )}
+                </div>
+              </>)}
+          </motion.aside>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
+
+
+function JobDrawerSkeleton({ onClose }) {
+  return (
+    <div className="space-y-6 animate-pulse p-4">
+      {/* header */}
+      <div className='flex items-center justify-between  pb-4 border-b border-slate-200'>
+
+        <div className="h-6 w-2/3 bg-slate-200 rounded" />
+
+        <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
+          <X className='h-5 w-5 text-slate-700' />
+        </button>
+      </div>
+
+      {/* summary */}
+      <div className="space-y-2">
+        <div className="h-4 w-1/3 bg-slate-200 rounded" />
+        <div className="h-3 w-full bg-slate-200 rounded" />
+        <div className="h-3 w-full bg-slate-200 rounded" />
+        <div className="h-3 w-full bg-slate-200 rounded" />
+
+        <div className="h-3 w-5/6 bg-slate-200 rounded" />
+      </div>
+
+      {/* meta grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="rounded-xl border border-slate-200 p-4">
+          <div className="h-5 w-24 bg-slate-200 rounded mb-2" />
+          <div className="h-3 w-16 bg-slate-200 rounded" />
+        </div>
+        <div className="rounded-xl border border-slate-200 p-4">
+          <div className="h-5 w-20 bg-slate-200 rounded mb-2" />
+          <div className="h-3 w-24 bg-slate-200 rounded" />
+        </div>
+      </div>
+
+      {/* skills */}
+      <div className="flex flex-wrap gap-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-6 w-20 bg-slate-200 rounded-full" />
         ))}
       </div>
+
+      {/* client */}
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-slate-200" />
+        <div className="flex-1">
+          <div className="h-4 w-36 bg-slate-200 rounded mb-2" />
+          <div className="h-3 w-20 bg-slate-200 rounded" />
+        </div>
+      </div>
+
+      {/* attachments */}
+      <div className="rounded-xl border border-slate-200 p-3 space-y-2">
+        <div className="h-4 w-28 bg-slate-200 rounded" />
+        <div className="h-8 w-full bg-slate-200 rounded" />
+      </div>
+
+      {/* additional info */}
+      <div className="h-12 w-full bg-slate-200 rounded" />
     </div>
   );
 }

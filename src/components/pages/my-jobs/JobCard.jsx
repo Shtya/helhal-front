@@ -27,7 +27,7 @@ const getStatusStyles = status => {
     }
 };
 
-const JobCard = ({ job, onDeleteRequest }) => {
+const JobCard = ({ job, onDeleteRequest, onOpen }) => {
     const created = useMemo(() => job?.created_at?.split('T')[0] ?? '—', [job?.created_at]);
 
     const postedAgo = useMemo(() => {
@@ -58,7 +58,7 @@ const JobCard = ({ job, onDeleteRequest }) => {
                 {/* Header */}
                 <header className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                        <h3 className="text-lg sm:text-xl font-semibold text-slate-900 truncate">{job.title}</h3>
+                        <h3 className="text-lg sm:text-xl font-semibold text-slate-900 truncate hover:underline cursor-pointer   " onClick={onOpen}>{job.title}</h3>
 
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-500">
                             {/* replaced created + raw budget with budgetType + postedAgo */}
@@ -175,54 +175,69 @@ export default JobCard
 // Skeleton Loader (light mode)
 // -------------------------------------------------
 export const JobSkeleton = () => (
-    <div className={`${cardBase} flex flex-col justify-between`}>
+    <div className={`${cardBase} flex flex-col justify-between animate-pulse`}>
+        {/* top accent (matches card) */}
+        <div className="absolute inset-x-0 top-0 h-1 bg-slate-200 opacity-60" />
 
+        {/* content */}
+        <div className="p-6 sm:p-7">
+            {/* header: title + status */}
+            <header className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                    <div className="h-6 w-2/3 rounded bg-slate-200 mb-3" />
+                    <div className="h-4 w-48 rounded bg-slate-200" />
+                </div>
 
-        {/* Top Content */}
-        <div className='p-6 sm:p-7 !pb-10'>
-            {/* Title + Status */}
-            <header className='flex items-start justify-between gap-3'>
-                <div className='h-8 w-2/3 rounded bg-slate-200' />
-                <div className='h-6 w-24 rounded-full bg-slate-200' />
+                <div className="flex flex-col items-end gap-3 shrink-0">
+                    <div className="h-6 w-20 rounded-full bg-slate-200" />
+                    <div className="h-4 w-20 rounded bg-slate-200" />
+                </div>
             </header>
 
-            {/* Description */}
-            <div className='mt-3 space-y-2'>
-                <div className='h-4 w-full rounded bg-slate-200' />
-                <div className='h-4 w-5/6 rounded bg-slate-200' />
-            </div>
-
-            {/* Skills & Budget */}
-            <div className='mt-5 space-y-3'>
-                <div className='flex gap-2'>
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className='h-6 w-20 rounded-full bg-slate-200' />
-                    ))}
-                </div>
-                <div className='flex flex-wrap items-center gap-3'>
-                    <div className='h-6 w-24 rounded-full bg-slate-200' />
-                    <div className='h-6 w-32 rounded-full bg-slate-200' />
+            {/* avatar + meta */}
+            <div className="mt-4 flex gap-4 items-start">
+                <div className="h-10 w-10 rounded-full bg-slate-200 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                    <div className="h-4 w-1/2 rounded bg-slate-200 mb-3" />
+                    <div className="h-3 w-1/3 rounded bg-slate-200" />
                 </div>
             </div>
 
-            <Divider className='!my-6' />
+            {/* description */}
+            <div className="mt-4 space-y-2">
+                <div className="h-3 w-full rounded bg-slate-200" />
+                <div className="h-3 w-5/6 rounded bg-slate-200" />
+            </div>
 
-            {/* Attachments */}
-            <div className='mt-5 rounded-xl border border-slate-200 p-3'>
-                <div className='mb-2 flex items-center gap-2'>
-                    <div className='h-4 w-24 rounded bg-slate-200' />
+            {/* skills */}
+            <div className="mt-4 flex flex-wrap gap-2">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="h-6 w-20 rounded-full bg-slate-200" />
+                ))}
+            </div>
+
+            {/* attachments block */}
+            <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <div className="mb-3 flex items-center justify-between">
+                    <div className="h-4 w-24 rounded bg-slate-200" />
+                    <div className="h-4 w-12 rounded bg-slate-200" />
                 </div>
-                <div className='grid grid-cols-2 gap-4'>
-                    <div className='h-20 rounded bg-slate-200' />
-                    <div className='h-20 rounded bg-slate-200' />
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="h-16 rounded bg-slate-200" />
+                    <div className="h-16 rounded bg-slate-200" />
                 </div>
             </div>
         </div>
 
-        {/* Footer */}
-        <footer className='m-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl bg-white px-3 py-3 ring-1 ring-slate-200'>
-            <div className='h-9 w-40 rounded bg-slate-200' />
-            <div className='h-9 w-24 rounded bg-slate-200' />
+        {/* footer */}
+        <footer className="border-t border-slate-100 px-4 py-3 flex items-center justify-between gap-3 bg-white">
+            <div className="flex items-center gap-3">
+                <div className="h-8 w-36 rounded bg-slate-200" />
+            </div>
+            <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-md bg-slate-200" />
+                <div className="h-9 w-44 rounded bg-slate-200" />
+            </div>
         </footer>
     </div>
 );

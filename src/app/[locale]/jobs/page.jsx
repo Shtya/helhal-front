@@ -18,7 +18,7 @@ import FavoriteButton from '@/components/atoms/FavoriteButton';
 import UserAvatar from '@/components/common/UserAvatar';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useAuth } from '@/context/AuthContext';
-import { updateUrlParams } from '@/utils/helper';
+import { fmtMoney, updateUrlParams } from '@/utils/helper';
 import { usePathname } from '@/i18n/navigation';
 import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdown';
 import CategorySelect from '@/components/atoms/CategorySelect';
@@ -481,7 +481,7 @@ function JobCard({ job, onOpen, index }) {
       <div className='mt-1 text-sm text-slate-600'>{budgetLine || 'Fixed-price · Intermediate'}</div>
 
       {/* Description */}
-      {job.description ? <p className='mt-2 text-slate-700 line-clamp-2'>{job.description}</p> : null}
+      {job.description ? <p className='mt-2 text-slate-700 text-[15px] md:text-base line-clamp-6   md:line-clamp-2'>{job.description}</p> : null}
 
       {/* Skill chips */}
       {Array.isArray(job.skillsRequired) && job.skillsRequired.length > 0 && (
@@ -525,7 +525,6 @@ function JobCardSkeleton() {
 // -------------------------------------------------
 // Drawer (Details + Apply)
 // -------------------------------------------------
-const fmtMoney = n => (typeof n === 'number' ? `$${n.toLocaleString()}` : n || '');
 const applySchema = yup.object({
   coverLetter: yup.string().min(20, 'Min 20 chars').required('Required'),
   bidAmount: yup.number().typeError('Enter a number').positive().required('Required'),
@@ -670,7 +669,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Budget + Price Type */}
                     <div className="rounded-xl border border-slate-200 p-4">
-                      <div className="text-slate-900 font-semibold">${fmtMoney(budget)}</div>
+                      <div className="text-slate-900 font-semibold">{fmtMoney(budget)}</div>
                       <div className="text-xs text-slate-500">{priceType}</div>
                     </div>
 
@@ -815,6 +814,8 @@ function JobDrawerSkeleton({ onClose }) {
       {/* summary */}
       <div className="space-y-2">
         <div className="h-4 w-1/3 bg-slate-200 rounded" />
+        <div className="h-3 w-full bg-slate-200 rounded" />
+        <div className="h-3 w-full bg-slate-200 rounded" />
         <div className="h-3 w-full bg-slate-200 rounded" />
         <div className="h-3 w-5/6 bg-slate-200 rounded" />
       </div>
