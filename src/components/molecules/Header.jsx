@@ -153,7 +153,7 @@ const NotificationPopup = () => {
 
   return (
     <div className='' ref={btnRef}>
-      <motion.button onClick={() => setOpen(v => !v)} className='relative inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
+      <motion.button onClick={() => setOpen(v => !v)} className='relative  inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
         <Bell className='h-5 w-5 text-slate-700' />
         {badge > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-emerald-600 px-1 text-[11px] text-white'>{badge > 99 ? '99+' : badge}</span>}
       </motion.button>
@@ -388,7 +388,7 @@ export default function Header() {
       await fetch('/api/logout', { method: 'POST' }).catch(() => { });
     } finally {
       setIsLogoutLoading(false);
-      router.push('/auth');
+      router.push('/');
     }
   };
 
@@ -396,26 +396,26 @@ export default function Header() {
     <header className='sticky top-0 z-40 transition-all duration-300 backdrop-blur-md bg-white/70 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]'>
       <div className='container h-16 md:h-[88px] flex items-center justify-between gap-3'>
         {/* Left: Logo + nav */}
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-1 md:gap-3 shrink-0'>
           <Logo />
           <NavLinks links={navLinks} />
         </div>
 
         {/* Middle: Search */}
-        <GlobalSearch />
+        <GlobalSearch isMobileNavOpen={isMobileNavOpen} />
 
         {/* Right: Actions */}
-        <div className='flex items-center gap-1.5 lg:gap-2 md:gap-3'>
+        <div className='flex items-center gap-1 md:gap-1.5 lg:gap-2 shrink-0'>
           {user ? (
             <>
-              <Link href='/chat' aria-label='Go to chat' className='relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
+              <Link href='/chat' aria-label='Go to chat' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
                 <MessageCircle className='h-5 w-5 text-slate-600' />
                 <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center'>2</span>
               </Link>
 
               <NotificationPopup />
 
-              <Link href='/cart' aria-label='Cart' className='relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
+              <Link href='/cart' aria-label='Cart' className='shrink-0  relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
                 <ShoppingCart className='h-5 w-5 text-slate-600 ' />
               </Link>
 
@@ -445,7 +445,7 @@ export default function Header() {
 
 const MobileToggle = ({ toggleMobileNav, isMobileNavOpen }) => {
   return (
-    <motion.button onClick={toggleMobileNav} className='md:hidden p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
+    <motion.button onClick={toggleMobileNav} className='lg:hidden p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
       {isMobileNavOpen ? <X className='w-6 h-6' strokeWidth={1.5} /> : <Menu className='w-6 h-6' />}
     </motion.button>
 
@@ -479,7 +479,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
   return (
     <div className='relative' ref={dropdownRef}>
-      <motion.button onClick={() => setIsOpen(v => !v)} className='hidden md:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} aria-label={t('userMenuAriaLabel') || 'User menu'}>
+      <motion.button onClick={() => setIsOpen(v => !v)} className='hidden lg:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} aria-label={t('userMenuAriaLabel') || 'User menu'}>
 
         <Img src={user?.profileImage || '/images/placeholder-avatar.png'} altSrc='/images/placeholder-avatar.png' loader={localImageLoader} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
       </motion.button>
@@ -525,7 +525,7 @@ function NavLinks({ links }) {
   const pathname = usePathname();
 
   return (
-    <motion.ul className='hidden md:flex  items-center gap-1 ltr:ml-4 lg:ltr:ml-6  rtl:mr-4 lg:rtl:mr-6' variants={stagger} initial='hidden' animate='show'>
+    <motion.ul className='hidden lg:flex  items-center gap-1  ' variants={stagger} initial='hidden' animate='show'>
       {links.map(link => {
         const isActive = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
 
@@ -547,7 +547,7 @@ function NavLinks({ links }) {
 
 function TopLink({ href, label, icon, active }) {
   return (
-    <Link href={href} className={`  relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
+    <Link href={href} className={`  relative px-2 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
       {icon} {label}
       <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
     </Link>
@@ -577,7 +577,7 @@ export function DropdownItem({ label, icon, active, children }) {
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`absolute left-0 mt-2 w-[240px]   rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute left-0 mt-2 w-[240px] rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         {children}
       </motion.div>
     </div>
@@ -609,10 +609,10 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
       {open && (
         <>
           {/* Overlay */}
-          <motion.button type='button' onClick={onClose} className='fixed inset-0 z-30 md:hidden bg-slate-900/60 backdrop-blur-[12px]' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+          <motion.button type='button' onClick={onClose} className='fixed inset-0 z-30 lg:hidden bg-slate-900/60 backdrop-blur-[12px]' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
 
           {/* Drawer */}
-          <motion.div role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 md:hidden h-screen'>
+          <motion.div role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 lg:hidden h-screen'>
             <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/100'>
               {/* Header */}
               <div className='relative px-4 pt-4 pb-3'>

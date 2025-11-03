@@ -8,10 +8,10 @@ import api from '@/lib/axios';
 import { apiService } from '@/services/GigServices';
 import { useDebounce } from '@/hooks/useDebounce';
 
-export default function GlobalSearch({ className = '' }) {
+export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   const BRAND = '#108A0090';
   const router = useRouter();
-
+  const [mobileOpen, setMobileOpen] = useState(false);
   // ---------- UI state
   const [q, setQ] = useState('');
   const debouncedQ = useDebounce({ value: q })
@@ -61,6 +61,9 @@ export default function GlobalSearch({ className = '' }) {
     } catch { }
   };
 
+  useEffect(() => {
+    if (isMobileNavOpen) setMobileOpen(false)
+  }, [isMobileNavOpen])
   // ---------- Debounced records fetch (lightweight)
   useEffect(() => {
     if (!open || !debouncedQ?.trim()) {
@@ -195,12 +198,14 @@ export default function GlobalSearch({ className = '' }) {
     if (!t) return;
     pushRecent(t);
     setOpen(false);
+    setMobileOpen(false)
     router.push(`${scope.path}?q=${encodeURIComponent(t)}`);
   };
 
   const handleChoose = item => {
     if ((item.type === 'job' || item.type === 'service') && item.href) {
       setOpen(false);
+      setMobileOpen(false)
       pushRecent(item.label);
       if (item.type === 'job') router.push(item.href);
       else router.push(item.href);
@@ -225,155 +230,163 @@ export default function GlobalSearch({ className = '' }) {
     );
   };
 
+
   return (
-    <div ref={rootRef} className={`relative hidden xl:flex ${className}`}>
-      <div className='relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
-        <div className='flex items-center gap-2 rounded-md border bg-white/20 backdrop-blur-3xl px-2 py-1 text-sm  transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
+    <div className='max-xl:ms-auto'>
 
-          <button
-            ref={scopeBtnRef}
-            onClick={() => {
-              setScopeOpen(prev => {
-                const next = !prev;
-                if (next) setOpen(false); // CLOSE search when opening scope
-                return next;
-              });
-            }}
-            className='inline-flex items-center gap-1 rounded-lg px-2 py-1 text-slate-700 hover:bg-slate-50 border border-transparent hover:border-slate-200'
-            aria-expanded={scopeOpen}>
-            <span className='font-semibold'>{scope.label}</span>
-            <ChevronDown className={`h-4 w-4 transition ${scopeOpen ? 'rotate-180' : ''}`} />
-          </button>
+      <button onClick={() => setMobileOpen(p => !p)} aria-label='Go to chat' className=' xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
+        <Search className='h-5 w-5 text-slate-600' />
+      </button>
+      <div ref={rootRef} className={`relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"}  top-16 md:top-[88px] left-0 right-0 max-xl:bg-white  xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
+        <div className='relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
+          <div className='flex items-center gap-2 xl:rounded-md  xl:border bg-white/20 backdrop-blur-3xl px-2 py-1 text-sm  transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
 
-          <span className='h-5 w-px bg-slate-200 mx-1' />
-
-          <Search className='h-4 w-4 text-slate-500 shrink-0' />
-          <input
-            ref={inputRef}
-            value={q}
-            onChange={e => {
-              setQ(e.target.value);
-              setOpen(true);
-              setScopeOpen(false);
-              setHighlight({ section: 'recent', index: -1 });
-            }} // typing closes scope
-            onFocus={() => {
-              setOpen(true);
-              setScopeOpen(false);
-            }} // focusing closes scope
-            onKeyDown={e => {
-              if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                moveHighlight(1);
-              }
-              if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                moveHighlight(-1);
-              }
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                go();
-              }
-              const mod = e.ctrlKey || e.metaKey;
-              if (mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
-                e.preventDefault();
-                cycleScope(e.key === 'ArrowRight' ? +1 : -1);
-              }
-            }}
-            placeholder='Search'
-            className='peer w-full bg-transparent outline-none placeholder:text-slate-400'
-          />
-
-          {/* Clear & spinner */}
-          {loading && <Loader2 className='h-4 w-4 animate-spin text-slate-400' />}
-          {q && !loading && (
-            <button onClick={() => setQ('')} className='rounded-md p-1 text-slate-500 hover:bg-slate-100' aria-label='Clear'>
-              <X className='h-4 w-4' />
+            <button
+              ref={scopeBtnRef}
+              onClick={() => {
+                setScopeOpen(prev => {
+                  const next = !prev;
+                  if (next) setOpen(false); // CLOSE search when opening scope
+                  return next;
+                });
+              }}
+              className='inline-flex items-center gap-1 max-xl:p-[10px] rounded-lg px-2 py-1 text-slate-700 max-xl:bg-emerald-600 max-xl:text-white  hover:xl:bg-slate-50 border border-transparent max-xl:border-slate-200 hover:xl:border-slate-200'
+              aria-expanded={scopeOpen}>
+              <span className='font-semibold'>{scope.label}</span>
+              <ChevronDown className={`h-4 w-4 transition ${scopeOpen ? 'rotate-180' : ''}`} />
             </button>
+
+            <span className='hidden xl:block h-5 w-px bg-slate-200 mx-1' />
+
+            <div className='max-xl:flex-1 flex items-center gap-2 max-xl:border max-xl:bg-white/20 max-xl:rounded-md max-xl:border-[#cbd5e1] max-xl:p-[10px]'>
+              <Search className='h-5 w-5 xl:h-4 xl:w-4 text-slate-500 shrink-0' />
+              <input
+                ref={inputRef}
+                value={q}
+                onChange={e => {
+                  setQ(e.target.value);
+                  setOpen(true);
+                  setScopeOpen(false);
+                  setHighlight({ section: 'recent', index: -1 });
+                }} // typing closes scope
+                onFocus={() => {
+                  setOpen(true);
+                  setScopeOpen(false);
+                }} // focusing closes scope
+                onKeyDown={e => {
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    moveHighlight(1);
+                  }
+                  if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    moveHighlight(-1);
+                  }
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    go();
+                  }
+                  const mod = e.ctrlKey || e.metaKey;
+                  if (mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+                    e.preventDefault();
+                    cycleScope(e.key === 'ArrowRight' ? +1 : -1);
+                  }
+                }}
+                placeholder='Search'
+                className='peer w-full bg-transparent outline-none placeholder:text-slate-400'
+              />
+
+              {/* Clear & spinner */}
+              {loading && <Loader2 className='h-4 w-4 animate-spin text-slate-400' />}
+              {q && !loading && (
+                <button onClick={() => setQ('')} className='rounded-md p-1 text-slate-500 hover:bg-slate-100' aria-label='Clear'>
+                  <X className='h-4 w-4' />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Scope menu anchored to input (left) */}
+          {scopeOpen && (
+            <div className='absolute left-2 xl:left-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
+              {scopes.map((opt, i) => (
+                <button
+                  key={opt.value}
+                  onClick={() => {
+                    setScopeIndex(i);
+                    setScopeOpen(false);
+                    inputRef.current?.focus();
+                  }}
+                  className={`block w-full px-3 py-2 text-left text-sm ${i === scopeIndex ? 'bg-emerald-50 text-emerald-700' : 'hover:bg-slate-50'}`}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Results dropdown — only show if search open AND scope menu closed */}
+          {open && !scopeOpen && (
+            <div className='absolute z-50 mt-2 w-full overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
+              <div className='max-h-[380px] overflow-auto p-2'>
+
+                {/* Live records */}
+                {q.trim() && (
+                  <Section title={`Live ${scope.label}`} loading={loading} empty={records.length === 0 && !loading} emptyHint={loading ? '' : `No matching ${scope.label.toLowerCase()} yet`}>
+                    {records.map((r, i) => (
+                      <Row
+                        key={r.id || `${scope.value}-${i}`}
+                        icon={<ExternalLink className='h-4 w-4' />}
+                        active={highlight.section === scope.value && highlight.index === i}
+                        onMouseEnter={() => setHighlight({ section: scope.value, index: i })}
+                        onClick={() =>
+                          handleChoose({
+                            type: scope.value === 'services' ? 'service' : 'job',
+                            href: scope.value === 'services' ? `/services/${r?.category?.slug}/${r?.slug}` : `/jobs?job=${r.id}`,
+                            label: r.title || r.name,
+                          })
+                        }
+                        subtitle={r?.buyer?.username || r?.seller?.username}
+                        meta={r?.budget ? `$${r.budget}` : null}>
+                        <High text={r.title || r.name} query={q} />
+                      </Row>
+                    ))}
+                  </Section>
+                )}
+
+                {/* Recent */}
+                {recent.length > 0 && (
+                  <Section title='Recent'>
+                    {recent.map((r, i) => (
+                      <Row key={`r-${r}-${i}`} icon={<Clock className='h-4 w-4' />} active={highlight.section === 'recent' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'recent', index: i })} onClick={() => handleChoose({ type: 'recent', label: r })}>
+                        <High text={r} query={q} />
+                      </Row>
+                    ))}
+                  </Section>
+                )}
+
+                {/* Suggestions */}
+                <Section title='Try searching for'>
+                  {suggestions.map((s, i) => (
+                    <Row key={`s-${s}`} icon={<Search className='h-4 w-4' />} active={highlight.section === 'suggest' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'suggest', index: i })} onClick={() => handleChoose({ type: 'suggest', label: s })}>
+                      <High text={s} query={q} />
+                    </Row>
+                  ))}
+                </Section>
+              </div>
+
+              {/* Footer CTA */}
+              <button onClick={() => go(q)} className='flex  w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-emerald-50'>
+                <span className='break-all'>
+                  Search “{q || '…'}” in <span className='font-semibold'>{scope.label}</span>
+                </span>
+                <span className='text-[11px] text-slate-400'>Enter ↵</span>
+              </button>
+            </div>
           )}
         </div>
 
-        {/* Scope menu anchored to input (left) */}
-        {scopeOpen && (
-          <div className='absolute left-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
-            {scopes.map((opt, i) => (
-              <button
-                key={opt.value}
-                onClick={() => {
-                  setScopeIndex(i);
-                  setScopeOpen(false);
-                  inputRef.current?.focus();
-                }}
-                className={`block w-full px-3 py-2 text-left text-sm ${i === scopeIndex ? 'bg-emerald-50 text-emerald-700' : 'hover:bg-slate-50'}`}>
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Results dropdown — only show if search open AND scope menu closed */}
-        {open && !scopeOpen && (
-          <div className='absolute z-50 mt-2 w-full overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
-            <div className='max-h-[380px] overflow-auto p-2'>
-
-              {/* Live records */}
-              {q.trim() && (
-                <Section title={`Live ${scope.label}`} loading={loading} empty={records.length === 0 && !loading} emptyHint={loading ? '' : `No matching ${scope.label.toLowerCase()} yet`}>
-                  {records.map((r, i) => (
-                    <Row
-                      key={r.id || `${scope.value}-${i}`}
-                      icon={<ExternalLink className='h-4 w-4' />}
-                      active={highlight.section === scope.value && highlight.index === i}
-                      onMouseEnter={() => setHighlight({ section: scope.value, index: i })}
-                      onClick={() =>
-                        handleChoose({
-                          type: scope.value === 'services' ? 'service' : 'job',
-                          href: scope.value === 'services' ? `/services/${r?.category?.slug}/${r?.slug}` : `/jobs?job=${r.id}`,
-                          label: r.title || r.name,
-                        })
-                      }
-                      subtitle={r?.buyer?.username || r?.seller?.username}
-                      meta={r?.budget ? `$${r.budget}` : null}>
-                      <High text={r.title || r.name} query={q} />
-                    </Row>
-                  ))}
-                </Section>
-              )}
-
-              {/* Recent */}
-              {recent.length > 0 && (
-                <Section title='Recent'>
-                  {recent.map((r, i) => (
-                    <Row key={`r-${r}-${i}`} icon={<Clock className='h-4 w-4' />} active={highlight.section === 'recent' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'recent', index: i })} onClick={() => handleChoose({ type: 'recent', label: r })}>
-                      <High text={r} query={q} />
-                    </Row>
-                  ))}
-                </Section>
-              )}
-
-              {/* Suggestions */}
-              <Section title='Try searching for'>
-                {suggestions.map((s, i) => (
-                  <Row key={`s-${s}`} icon={<Search className='h-4 w-4' />} active={highlight.section === 'suggest' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'suggest', index: i })} onClick={() => handleChoose({ type: 'suggest', label: s })}>
-                    <High text={s} query={q} />
-                  </Row>
-                ))}
-              </Section>
-            </div>
-
-            {/* Footer CTA */}
-            <button onClick={() => go(q)} className='flex  w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-emerald-50'>
-              <span className='break-all'>
-                Search “{q || '…'}” in <span className='font-semibold'>{scope.label}</span>
-              </span>
-              <span className='text-[11px] text-slate-400'>Enter ↵</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* tiny fade-in animation */}
-      <style jsx>{`
+        {/* tiny fade-in animation */}
+        <style jsx>{`
         .animate-fadeIn {
           animation: fadeIn 120ms ease-out;
         }
@@ -386,6 +399,7 @@ export default function GlobalSearch({ className = '' }) {
           }
         }
       `}</style>
+      </div>
     </div>
   );
 }
