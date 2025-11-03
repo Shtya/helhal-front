@@ -657,7 +657,11 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   {localJob?.description && (
                     <section>
                       <h4 className='text-sm font-semibold text-slate-900 mb-2'>Summary</h4>
-                      <p className='text-sm text-slate-700'>{localJob?.description}</p>
+
+                      <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                        {localJob?.description}
+                      </p>
+
                     </section>
                   )}
 
@@ -737,7 +741,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   {localJob?.additionalInfo && (
                     <section>
                       <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
-                      <p className='text-sm text-slate-700'>{localJob?.additionalInfo}</p>
+                      <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
                     </section>
                   )}
 

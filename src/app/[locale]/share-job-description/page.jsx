@@ -604,13 +604,13 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
 
         <div className='mt-6 space-y-5'>
           <Item label='Title' value={data.title || '—'} />
-          <Item label='Description' value={data.description || '—'} />
+          <Item label='Description' value={data.description || '—'} className cnValue='whitespace-pre-wrap' />
           <Item label='Category' value={data.category.name || '—'} />
           {data.subcategoryId && <Item label='Subcategory' value={data.subcategory.name || '—'} />}
 
           <ItemSkills label='Skills Required' value={data.skillsRequired} />
 
-          {data.additionalInfo && <Item label='Additional Information' value={data.additionalInfo} />}
+          {data.additionalInfo && <Item label='Additional Information' value={data.additionalInfo} cnValue='whitespace-pre-wrap' />}
 
           <div>
             <div className='flex items-center gap-2'>
@@ -666,18 +666,18 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
   );
 }
 
-function Item({ label, value }) {
+function Item({ label, value, cnValue }) {
   return (
-    <div className='flex items-center gap-3  '>
+    <div className='flex  gap-3  '>
       <div className='text-[16px] max-w-[140px] w-full  font-semibold text-black'>{label}</div>
-      <div className='text-gray-800 mt-1 leading-relaxed'>{value}</div>
+      <div className={`text-gray-800 mt-1 leading-relaxed ${cnValue}`}>{value}</div>
     </div>
   );
 }
 
 export function ItemSkills({ label, value, cnLabel }) {
   return (
-    <div className='flex items-center gap-4 '>
+    <div className='flex  gap-4 '>
       <div className={`text-base text-slate-500 font-semibold w-full max-w-[140px] ${cnLabel}`}>{label}</div>
       <div className='flex flex-wrap gap-2'>
         {value?.map((skill, index) => (
