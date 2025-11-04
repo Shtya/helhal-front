@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import api from '@/lib/axios';
 import FormErrorMessage from './FormErrorMessage';
 
-const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChange, allowCreate = true, placeholder = 'Select an option', loadingText = "Loading...", label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur }, ref) => {
+const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId, value, onChange, allowCreate = true, placeholder = 'Select an option', loadingText = "Loading...", label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur, disabled }, ref) => {
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
 
@@ -107,9 +107,16 @@ const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChang
   // Client-side filtered list
   const filtered = useMemo(() => {
     const q = (query || '').trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(i => (i.name || '').toLowerCase().includes(q));
-  }, [items, query]);
+    const excludeIds = new Set(excludes); // assuming excludes is an array of ids
+
+    if (!q && excludeIds.size === 0) return;
+
+    return items.filter(i => {
+      const matchesQuery = !q || (i.name || '').toLowerCase().includes(q);
+      const notExcluded = !excludeIds.has(i.id);
+      return matchesQuery && notExcluded;
+    });
+  }, [items, query, excludes]);
 
   const createIfNotExists = async () => {
     const name = (query || '').trim();
@@ -171,6 +178,7 @@ const CategorySelect = forwardRef(({ type = 'category', parentId, value, onChang
           type='button'
           ref={mergedButtonRef}
           onClick={handleButtonClick}
+          disabled={disabled}
           className={`${cnSelect || ''} ${getBorderClass()} h-[40px] cursor-pointer w-full flex items-center justify-between rounded-md border px-4 py-2 text-sm transition
                 bg-white text-gray-700 
                 hover:bg-gray-50 hover:border-emerald-600/70 

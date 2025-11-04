@@ -219,9 +219,9 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
                 return (
                   <button key={asset.id} onClick={() => toggleSelect(asset)} className={['group relative h-[140px] rounded-xl border transition text-left', isSelected ? 'border-emerald-500 bg-emerald-50/40' : 'border-slate-200 hover:border-emerald-400 bg-white'].join(' ')}>
                     {/* delete button */}
-                    <button onClick={e => handleDeleteFile(asset.id, e)} className='absolute top-2 right-2 p-1 rounded-full bg-white/90 border border-slate-200 shadow-sm opacity-0 group-hover:opacity-100 transition' title='Delete'>
+                    <div onClick={e => handleDeleteFile(asset.id, e)} className='cursor-pointer absolute top-2 right-2 p-1 rounded-full bg-white/90 border border-slate-200 shadow-sm opacity-0 group-hover:opacity-100 transition' title='Delete'>
                       <FiX className='w-4 h-4 text-red-600' />
-                    </button>
+                    </div>
 
                     {/* check mark */}
                     {isSelected && (

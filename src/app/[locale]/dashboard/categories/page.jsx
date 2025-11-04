@@ -5,23 +5,23 @@ import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
 import DashboardLayout from '@/components/dashboard/Layout';
-import { MetricBadge, Modal, GlassCard } from '@/components/dashboard/Ui';
+import { Modal, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import ImagePicker from '@/components/atoms/ImagePicker';
 import Textarea from '@/components/atoms/Textarea';
-import ActionMenuPortal from '@/components/dashboard/Table/ActionMenuPortal';
+import { useDebounce } from '@/hooks/useDebounce';
+import z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import CategorySelect from '@/components/atoms/CategorySelect';
+import toast from 'react-hot-toast';
 
 export default function AdminCategoriesDashboard() {
   const [activeTab, setActiveTab] = useState('all');
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  useEffect(() => {
-    const id = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
-    return () => clearTimeout(id);
-  }, [searchQuery]);
+
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -29,6 +29,13 @@ export default function AdminCategoriesDashboard() {
     sortBy: 'created_at',
     sortOrder: 'DESC',
   });
+
+  function resetPage() {
+    setFilters(p => ({ ...p, page: 1 }))
+  }
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce({ value: searchQuery, onDebounce: () => resetPage() });
+  const [sort, setSort] = useState('newest');
 
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
@@ -59,7 +66,7 @@ export default function AdminCategoriesDashboard() {
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
       };
-      if (debouncedSearch) q.search = debouncedSearch;
+      if (debouncedSearch?.trim()) q.search = debouncedSearch?.trim();
       if (activeTab !== 'all') q.type = activeTab; // ✅ send type, not filters
 
       const res = await api.get('/categories', { params: q });
@@ -71,7 +78,7 @@ export default function AdminCategoriesDashboard() {
         setTotalCount(data.length);
       } else {
         setRows(Array.isArray(data.records) ? data.records : []);
-        setTotalCount(Number(data.total ?? 0)); // ✅ use total
+        setTotalCount(Number(data.total_records ?? 0)); // ✅ use total
       }
     } catch (e) {
       console.error('Error fetching categories:', e);
@@ -79,7 +86,7 @@ export default function AdminCategoriesDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
+  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 
   useEffect(() => {
     fetchCategories();
@@ -93,10 +100,11 @@ export default function AdminCategoriesDashboard() {
 
   const applySortPreset = opt => {
     const id = opt?.id ?? opt?.target?.value ?? opt;
-    if (id === 'newest') setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'DESC', page: 1 }));
-    if (id === 'oldest') setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'ASC', page: 1 }));
-    if (id === 'az') setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'ASC', page: 1 }));
-    if (id === 'za') setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'DESC', page: 1 }));
+    if (id === 'newest') { setSort(id); setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'DESC', page: 1 })) }
+    else if (id === 'oldest') { setSort(id); setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'ASC', page: 1 })) }
+    else if (id === 'az') { setSort(id); setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'ASC', page: 1 })) }
+    else if (id === 'za') { setSort(id); setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'DESC', page: 1 })) }
+    else return;
   };
 
   const openCreate = () => {
@@ -111,12 +119,12 @@ export default function AdminCategoriesDashboard() {
     setModalOpen(true);
   };
 
-  const openView = async id => {
+  const openView = async row => {
     try {
       setApiError(null);
-      const res = await api.get(`/categories/${id}`);
+      // const res = await api.get(`/categories/${id}`);
       setMode('view');
-      setCurrent(res.data);
+      setCurrent(row);
       setModalOpen(true);
     } catch (e) {
       setApiError(e?.response?.data?.message || 'Failed to load category.');
@@ -151,11 +159,19 @@ export default function AdminCategoriesDashboard() {
 
   const onDelete = async id => {
     if (!confirm('Delete this category? This cannot be undone.')) return;
+
+    const toastId = toast.loading('Deleting category…');
+
     try {
       await api.delete(`/categories/${id}`);
       await fetchCategories();
+
+      toast.success('Category deleted successfully.', { id: toastId });
     } catch (e) {
-      alert(e?.response?.data?.message || 'Error deleting category (maybe it has related services).');
+      toast.error(e?.response?.data?.message || 'Error deleting category (maybe it has related services).', {
+        id: toastId,
+      });
+      console.error('Delete error:', e);
     }
   };
 
@@ -177,7 +193,7 @@ export default function AdminCategoriesDashboard() {
 
   const Actions = ({ row }) => (
     <div className='flex items-center gap-2'>
-      <button onClick={() => openView(row.id)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
+      <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
       </button>
       <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title='Edit'>
@@ -202,6 +218,7 @@ export default function AdminCategoriesDashboard() {
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}
+                value={sort}
                 placeholder='Order by'
                 options={[
                   { id: 'newest', name: 'Newest' },
@@ -221,7 +238,7 @@ export default function AdminCategoriesDashboard() {
           <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
-        <Modal open={modalOpen} title={mode === 'view' ? 'Category Details' : mode === 'edit' ? 'Edit Category' : 'Create Category'} onClose={() => setModalOpen(false)} size='md' hideFooter>
+        <Modal open={modalOpen} title={mode === 'view' ? 'Category Details' : mode === 'edit' ? `Edit Category (${current?.name})` : 'Create Category'} onClose={() => setModalOpen(false)} size='md' hideFooter>
           <CategoryForm mode={mode} value={current} onSubmit={onSubmit} onCancel={() => setModalOpen(false)} submitting={submitting} apiError={apiError} />
         </Modal>
       </div>
@@ -229,107 +246,183 @@ export default function AdminCategoriesDashboard() {
   );
 }
 
-function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = false, apiError = null }) {
-  const [form, setForm] = useState({
-    id: value?.id ?? '',
-    name: value?.name ?? '',
-    slug: value?.slug ?? '',
-    description: value?.description ?? '',
-    type: value?.type ?? 'category',
-    image: value?.image ?? '',
-  });
+const schema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(70, 'Name must be at most 70 characters'),
 
-  useEffect(() => {
-    setForm({
-      id: value?.id ?? '',
+  slug: z
+    .string()
+    .min(1, 'Slug is required')
+    .max(70, 'Slug must be at most 70 characters')
+    .regex(/^[a-zA-Z0-9-_]+$/, 'Slug can only contain letters, numbers, hyphens, and underscores'),
+
+  description: z
+    .string()
+    .max(300, 'Description must be at most 300 characters')
+    .optional(),
+
+  type: z.enum(['category', 'subcategory']),
+  parentId: z.string().optional(),
+
+  image: z
+    .url('Invalid URL')
+    .or(z.literal(''))
+    .optional(),
+
+  iconUrl: z
+    .url('Invalid URL')
+    .or(z.literal(''))
+    .optional(),
+}).refine(data => data.type === 'category' || !!data.parentId, {
+  message: 'Parent category is required for subcategories',
+  path: ['parentId'],
+});;
+
+
+function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = false, apiError = null }) {
+  const readOnly = mode === 'view';
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
       name: value?.name ?? '',
       slug: value?.slug ?? '',
       description: value?.description ?? '',
       type: value?.type ?? 'category',
       image: value?.image ?? '',
-    });
-  }, [value]);
+      iconUrl: value?.iconUrl ?? '',
+      parentId: value?.parentId ?? '',
+    },
+  });
 
-  const readOnly = mode === 'view';
+  const name = watch('name');
+  const slug = watch('slug');
+  const type = watch('type');
 
-  const setField = (k, v) => {
-    setForm(prev => {
-      const next = { ...prev, [k]: v };
-      onChange?.(next);
-      return next;
-    });
+  // Auto-update slug when name changes
+  useEffect(() => {
+    const autoSlug = slugify(name || '');
+    if (!slug || slug === slugify(value?.name || '')) {
+      setValue('slug', autoSlug);
+    }
+  }, [name]);
+
+  const submit = data => {
+    if (readOnly || submitting) return;
+    onSubmit?.(data);
   };
 
-  const handleNameChange = val => {
-    // Auto-update slug only if it was empty or matched the previous auto-slug
-    setForm(prev => {
-      const shouldAuto = !prev.slug || prev.slug === slugify(prev.name || '');
-      const next = {
-        ...prev,
-        name: val,
-        slug: shouldAuto ? slugify(val) : prev.slug,
-      };
-      onChange?.(next);
-      return next;
-    });
-  };
-
-  const canSubmit = useMemo(() => {
-    if (readOnly) return false;
-    return form.name.trim().length > 0 && form.slug.trim().length > 0;
-  }, [form, readOnly]);
-
-  const submit = async e => {
-    e.preventDefault();
-    if (!canSubmit || !onSubmit) return; // ✅ correct guard
-    await onSubmit(form);
-  };
 
   return (
-    <form onSubmit={submit} className='space-y-4'>
-      {apiError && <div className='rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700'>{apiError}</div>}
+    <div className="space-y-4">
+      {apiError && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {apiError}
+        </div>
+      )}
 
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Type</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
         <Select
           disabled={readOnly}
-          value={form.type}
-          onChange={opt => setField('type', opt?.id ?? opt)}
+          value={watch('type')}
+          onChange={opt => setValue('type', opt?.id ?? 'category')}
           options={[
             { id: 'category', name: 'Main Category' },
             { id: 'subcategory', name: 'Subcategory' },
           ]}
+          error={errors.type?.message}
+        />
+      </div>
+
+      {type === 'subcategory' && (
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Parent Category *</label>
+          <CategorySelect
+            value={watch('parentId')}
+            excludes={[value?.id]}
+            disabled={readOnly}
+            onChange={cat => { setValue('parentId', cat?.id) }}
+            error={errors.parentId?.message}
+          />
+        </div>
+      )}
+
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
+        <Input
+          disabled={readOnly}
+          placeholder="Enter category name"
+          {...register('name')}
+          error={errors.name?.message}
         />
       </div>
 
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Name *</label>
-        <Input disabled={readOnly} value={form.name} onChange={e => handleNameChange(e.target?.value)} placeholder='Enter category name' required />
+        <label className="block text-sm font-medium text-slate-700 mb-1">Slug *</label>
+        <Input
+          disabled={readOnly}
+          placeholder="category-slug"
+          {...register('slug')}
+          error={errors.slug?.message}
+        />
       </div>
 
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Slug *</label>
-        <Input disabled={readOnly} value={form.slug} onChange={e => setField('slug', e.target?.value)} placeholder='category-slug' required />
+        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+        <Textarea
+          disabled={readOnly}
+          rows={3}
+          {...register('description')}
+          error={errors.description?.message}
+        />
       </div>
 
-      <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Description</label>
-        <Textarea disabled={readOnly} value={form.description} onChange={e => setField('description', e.target.value)} rows={3} />
+      <div className={`${!readOnly && "!mb-0"}`}>
+
+        <ImagePicker
+          value={watch('image')}
+          onChange={url => setValue('image', url)}
+          disabled={readOnly}
+          allowManual
+        />
       </div>
 
-      <ImagePicker value={form.image || ''} onChange={url => setField('image', url)} disabled={readOnly} allowManual />
+      <ImagePicker
+        value={watch('iconUrl')}
+        label="Icon"
+        onChange={url => setValue('iconUrl', url)}
+        disabled={readOnly}
+        allowManual
+      />
 
       {readOnly ? (
-        <div className='flex justify-end'>
-          <Button color='white' name='Close' onClick={onCancel} className='!w-fit' />
+        <div className="flex justify-end">
+          <Button color="white" name="Close" onClick={onCancel} className="!w-fit" />
         </div>
       ) : (
-        <div className='flex justify-end gap-3'>
-          <Button color='secondary' name='Cancel' onClick={onCancel} className='!w-fit' />
-          <Button type='submit' color='default' name={submitting ? 'Saving…' : mode === 'edit' ? 'Update Category' : 'Create Category'} disabled={!canSubmit || submitting} className='!w-fit' />
+        <div className="flex justify-end gap-3">
+          <Button color="secondary" name="Cancel" onClick={onCancel} className="!w-fit" />
+          <Button
+            type="button"
+            color="green"
+            onClick={handleSubmit(submit)}
+            name={submitting ? 'Saving…' : mode === 'edit' ? 'Update Category' : 'Create Category'}
+            disabled={submitting}
+            className="!w-fit"
+          />
         </div>
       )}
-    </form>
+    </div>
   );
 }
 
