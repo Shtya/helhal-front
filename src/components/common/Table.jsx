@@ -43,17 +43,16 @@ function EmptyState({ title = 'No results found', subtitle = 'Try adjusting filt
   );
 }
 
-const Table = ({ data, columns, actions, loading = false }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage = 5, totalCount = 0, onPageChange }) => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const rowsPerPage = 5;
+
+  const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   const handlePageChange = page => {
-    if (!loading) setCurrentPage(page);
+    if (!loading) onPageChange?.(page);
   };
 
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const currentRows = useMemo(() => data.slice(startIndex, startIndex + rowsPerPage), [data, startIndex]);
+  const currentRows = data;
 
   const getStatusClass = (status, column) => {
     const statusMapping = column?.status?.find(item => item[0] === status);
@@ -69,9 +68,8 @@ const Table = ({ data, columns, actions, loading = false }) => {
   // When loading, show placeholder rows that match the table shape
   const displayRows = loading ? Array.from({ length: rowsPerPage }).map((_, i) => ({ __skeleton: i })) : currentRows;
 
-  const totalPages = Math.max(1, Math.ceil(data.length / rowsPerPage));
-  const showingFrom = loading ? 0 : Math.min(startIndex + 1, data.length);
-  const showingTo = loading ? 0 : Math.min(startIndex + rowsPerPage, data.length);
+  const showingFrom = (page - 1) * rowsPerPage + 1;
+  const showingTo = Math.min(page * rowsPerPage, totalCount);
 
   return (
     <div className='bg-white rounded-lg shadow-inner border border-slate-200' aria-busy={loading} aria-live='polite'>
@@ -197,7 +195,7 @@ const Table = ({ data, columns, actions, loading = false }) => {
       <div className=' mt-8 py-4 px-4 border-t border-t-slate-200'>
 
         <div className='md:hidden'>
-          <TabsPagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} className="max-md:flex-1" />
+          <TabsPagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} className="max-md:flex-1" />
         </div>
         <div className='hidden md:flex justify-between items-center'>
           <span className='text-sm text-gray-500'>
@@ -205,14 +203,14 @@ const Table = ({ data, columns, actions, loading = false }) => {
               <Skeleton className='h-4 w-56' />
             ) : (
               <>
-                Showing {showingFrom}-{showingTo} of {data.length}
+                Showing {showingFrom}-{showingTo} of {totalCount}
               </>
             )}
           </span>
 
           {/* Pagination */}
           <div className={loading ? 'opacity-60 pointer-events-none' : ''}>
-            <Pagination className='!mt-0' page={currentPage} totalPages={totalPages} setPage={handlePageChange} />
+            <Pagination className='!mt-0' page={page} totalPages={totalPages} setPage={handlePageChange} />
           </div>
         </div>
       </div>

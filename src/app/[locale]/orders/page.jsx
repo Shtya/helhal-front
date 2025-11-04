@@ -12,9 +12,12 @@ import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
 import Button from '@/components/atoms/Button';
 import api, { baseImg } from '@/lib/axios';
-import { MessageCircle } from 'lucide-react';
+import { CreditCard, MessageCircle } from 'lucide-react';
 import { Modal } from '@/components/common/Modal';
 import { useAuth } from '@/context/AuthContext';
+import { Link } from '@/i18n/navigation';
+import Img from '@/components/atoms/Img';
+import toast from 'react-hot-toast';
 
 // Animation
 export const tabAnimation = {
@@ -27,9 +30,11 @@ export const tabAnimation = {
 const OrderStatus = {
   PENDING: 'Pending',
   ACCEPTED: 'Accepted',
+  ACTIVE: 'Active', // Pending +  Accepted
   DELIVERED: 'Delivered',
   COMPLETED: 'Completed',
   CANCELLED: 'Cancelled',
+  MISSING_DETAILS: "Missing Details",
   DISPUTED: 'Disputed',
 };
 
@@ -38,21 +43,10 @@ const TABS = [
   { label: 'Active', value: 'active' }, // Pending + Accepted
   { label: 'Delivered', value: 'delivered' },
   { label: 'Completed', value: 'completed' },
-  { label: 'Disputed', value: 'disputed' }, // <—
-
+  { label: 'Disputed', value: 'disputed' },
   { label: 'Canceled', value: 'canceled' },
 ];
 
-const TAB_STATUS_FILTER = {
-  all: 'ALL',
-  active: [OrderStatus.PENDING, OrderStatus.ACCEPTED],
-  'missing-details': [OrderStatus.MISSING_DETAILS],
-  delivered: [OrderStatus.DELIVERED],
-  completed: [OrderStatus.COMPLETED],
-  disputed: [OrderStatus.DISPUTED], // <—
-
-  canceled: [OrderStatus.CANCELLED],
-};
 
 const fmtMoney = v => {
   const n = Number(v ?? 0);
@@ -60,7 +54,7 @@ const fmtMoney = v => {
 };
 const fmtDate = d => (d ? new Date(d).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' }) : '');
 
-function UserMini({ user }) {
+function UserMini({ user, href }) {
   const letter = (user?.username?.[0] || '?').toUpperCase();
   const img = user?.profileImage || user?.avatarUrl;
 
@@ -69,13 +63,14 @@ function UserMini({ user }) {
       <div className='h-9 w-9 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-sm font-semibold'>
         {img ? (
           // استخدم next/image لو حابب
-          <img src={img} alt={user?.username || 'user'} className='h-full w-full object-cover' />
+          <Img src={img} alt={user?.username || 'user'} altSrc='/no-user.png' className='h-full w-full object-cover' />
         ) : (
           letter
         )}
       </div>
       <div className='leading-tight'>
-        <h1 className='font-medium text-sm truncate max-w-[160px]'>{user?.username || '—'}</h1>
+        {href ? <Link href={href} className='font-medium text-sm truncate max-w-[160px]  hover:underline' >{user?.username || '—'}</Link>
+          : <h1 className='font-medium text-sm truncate max-w-[160px]'>{user?.username || '—'}</h1>}
         <p className='text-xs text-gray-500 truncate max-w-[160px]'>{user?.email || ''}</p>
       </div>
     </div>
@@ -84,13 +79,26 @@ function UserMini({ user }) {
 
 export default function Page() {
   const [activeTab, setActiveTab] = useState('all');
+
   const [search, setSearch] = useState('');
+  const [pagination, setPagination] = useState({ page: 1, limit: 5, total: 0 });
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const isSeller = role === 'seller';
+  const isBuyer = role === 'buyer';
   const [actionLoading, setActionLoading] = useState({});
 
+
+  function onPageChange(page) {
+    setPagination(prev => ({ ...prev, page: page }))
+  }
+
+  function resetPage() {
+    onPageChange(1)
+  }
   function setRowLoading(id, actionOrNull) {
     setActionLoading(prev => ({ ...prev, [id]: actionOrNull }));
   }
@@ -103,10 +111,40 @@ export default function Page() {
   const columns = useMemo(
     () => [
       { key: 'gig', label: 'Service img', type: 'img' },
-      { key: 'service', label: 'Service', className: '' },
+      {
+        key: 'service',
+        label: 'Service / Job',
+        className: '',
+        render: row => {
+          const order = row._raw;
+          const fromJob = !!order.jobId;
+          const title = order?.title || 'Untitled';
+          const slug = order?.service?.slug;
+          const badge = fromJob ? 'Job' : 'Service';
+          const href = fromJob ? `/my-jobs?job=${order.jobId}` : `/services/category/${slug}`;
 
-      { key: 'seller', label: 'Owner' },
-      { key: 'buyer', label: 'Client' },
+
+          return (
+            <div className="flex flex-col items-start gap-1">
+              <Link
+                href={href}
+                className="text-sm font-medium text-slate-800 hover:underline max-w-[220px] truncate"
+                title={title}
+              >
+                {title}
+              </Link>
+              <span className={`inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 ring-1 ring-slate-200`}>
+                {badge}
+              </span>
+            </div>
+          );
+        }
+      },
+
+      {
+        key: isBuyer ? 'seller' : 'buyer',
+        label: isBuyer ? 'Freelancer' : 'Client'
+      },
 
       // { key: 'orderNumber', label: 'Order number' },
       { key: 'orderDate', label: 'Order date' },
@@ -125,7 +163,7 @@ export default function Page() {
         ],
       },
     ],
-    [],
+    [isBuyer],
   );
 
   // Build query for a BIG page (client-side pagination in <Table />)
@@ -134,18 +172,20 @@ export default function Page() {
 
     if (search?.trim()) {
       params.set('search', search.trim());
-    } else {
-      if (activeTab === 'missing-details') params.set('search', OrderStatus.MISSING_DETAILS);
-      else if (activeTab === 'delivered') params.set('search', OrderStatus.DELIVERED);
-      else if (activeTab === 'completed') params.set('search', OrderStatus.COMPLETED);
-      else if (activeTab === 'canceled') params.set('search', OrderStatus.CANCELLED);
-      // 'all' and 'active' -> broad fetch
     }
 
-    params.set('page', '1');
-    params.set('limit', '10');
+    if (activeTab === 'active') params.set('status', OrderStatus.ACTIVE);
+    else if (activeTab === 'delivered') params.set('status', OrderStatus.DELIVERED);
+    else if (activeTab === 'completed') params.set('status', OrderStatus.COMPLETED);
+    else if (activeTab === 'canceled') params.set('status', OrderStatus.CANCELLED);
+    else if (activeTab === 'disputed') params.set('status', OrderStatus.DISPUTED);
+    // 'all' -> broad fetch
+
+    params.set('page', pagination.page);
+    params.set('limit', pagination.limit);
+
     return params.toString();
-  }, [activeTab, search]);
+  }, [activeTab, search, pagination.page, pagination.limit]);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -153,31 +193,23 @@ export default function Page() {
     try {
       const qs = buildQuery();
       const { data } = await api.get(`/orders?${qs}`);
-      console.log(data);
       const list = data?.records;
 
-      // Client filter for "Active"
-      let filtered = list;
-      if (activeTab === 'active') {
-        filtered = list.filter(o => [OrderStatus.PENDING, OrderStatus.ACCEPTED].includes(o?.status));
-      } else if (!search.trim() && activeTab !== 'all' && Array.isArray(TAB_STATUS_FILTER[activeTab])) {
-        const expected = TAB_STATUS_FILTER[activeTab];
-        filtered = list.filter(o => expected.includes(o?.status));
-      }
-
-      const rows = filtered.map(o => {
+      const rows = list.map(o => {
         return {
           _raw: o,
           id: o?.id,
           gig: o?.service?.gallery?.[0]?.url,
           service: `${o?.title?.length > 20 ? o?.title?.slice(0, 20) + '...' : o?.title}`,
-          seller: o?.seller ? <UserMini user={o.seller} /> : '—',
-          buyer: o?.buyer ? <UserMini user={o.buyer} /> : '—',
+          seller: o?.seller ? <UserMini user={o.seller} href={`profile/${o.seller.id}`} /> : '—',
+          buyer: o?.buyer ? <UserMini user={o.buyer} href={`profile/${o.buyer.id}`} /> : '—',
           orderDate: fmtDate(o?.created_at),
           total: fmtMoney(o?.totalAmount),
           status: o?.status || '',
         };
       });
+
+      setPagination(prev => ({ ...prev, page: data.current_page, limit: data.per_page, total: data.total_records }))
 
       setOrders(rows);
     } catch (e) {
@@ -187,7 +219,7 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  }, [buildQuery, activeTab, search]);
+  }, [buildQuery]);
 
   useEffect(() => {
     fetchOrders();
@@ -195,9 +227,11 @@ export default function Page() {
 
   const onSearch = val => {
     setSearch(val || '');
+    resetPage()
   };
   const onChangeTab = val => {
     setActiveTab(val);
+    resetPage()
   };
 
   async function completeOrder(row) {
@@ -219,7 +253,6 @@ export default function Page() {
       setRowLoading(row.id, null);
     }
   }
-
   // Dispute modal state
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [disputeRow, setDisputeRow] = useState(null);
@@ -233,6 +266,8 @@ export default function Page() {
     setDisputeError('');
     setDisputeOpen(true);
   }
+
+
   function closeDisputeModal() {
     if (disputeSubmitting) return;
     setDisputeOpen(false);
@@ -288,11 +323,30 @@ export default function Page() {
     }
   }
 
+  const handleCancel = async (row) => {
+    const confirmed = window.confirm('Are you sure you want to cancel this order?');
+
+    if (!confirmed) return;
+    try {
+      setRowLoading(row.id, 'cancel');
+      await api.post(`/orders/${row.id}/cancel`);
+
+      toast('Payment canceled', { icon: '⚠️' });
+      patchOrderRow(row.id, r => ({
+        ...r,
+        status: OrderStatus.CANCELLED, // <—
+        _raw: { ...r._raw, status: OrderStatus.CANCELLED },
+      }));
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to cancel order');
+    } finally {
+      setRowLoading(row);
+    }
+  };
+
   function renderActions(row) {
     const s = row.status;
-
-    const isSeller = row?._raw?.service?.sellerId === user?.id;
-    const isBuyer = row?._raw?.buyerId === user?.id;
 
     const hasOpenDispute = !!(row?._raw?.hasOpenDispute || row?._raw?.disputeStatus === 'open' || row?._raw?.disputeStatus === 'in_review');
 
@@ -321,6 +375,26 @@ export default function Page() {
             loading={loadingAction === 'dispute'}
           />
         )}
+        {isBuyer && row.status === OrderStatus.PENDING && (
+          <>
+            <Button
+              href={`/payment?orderId=${row.id}`}
+              name="Pay"
+              color="green"
+              className="!w-fit !h-[35px]"
+              disabled={isBusy}
+            />
+          </>
+        )}
+
+        {isBuyer && [OrderStatus.PENDING, OrderStatus.ACCEPTED].includes(row.status) && (<Button
+          name="Cancel"
+          onClick={() => handleCancel(row)}
+          disabled={loadingAction === 'cancel' || isBusy} loading={loadingAction === 'cancel'}
+          color="red"
+          className="!w-fit !h-[35px]"
+
+        />)}
         {hasOpenDispute && <Button color='outline' name='In Dispute' className='!w-fit !h-[35px] pointer-events-none opacity-60' disabled />}
       </div>
     );
@@ -338,8 +412,7 @@ export default function Page() {
       <AnimatePresence mode='wait'>
         <motion.div key={activeTab + search}>
           {err && <div className='mt-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700'>{err}</div>}
-
-          <Table loading={loading} data={orders} columns={columns} actions={renderActions} />
+          <Table loading={loading} data={orders} columns={columns} actions={renderActions} page={pagination.page} rowsPerPage={pagination.limit} totalCount={pagination.total} onPageChange={onPageChange} />
         </motion.div>
       </AnimatePresence>
 

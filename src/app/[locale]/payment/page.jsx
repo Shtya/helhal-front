@@ -55,8 +55,13 @@ export default function PaymentPage() {
   const orderId = searchParams.get('orderId');
 
   const [order, setOrder] = useState(null);
+  const payable = order?.status === 'Pending';
+  const cancellable = ['Accepted', 'Pending'].includes(order?.status);
+  const isFromJob = !!order?.jobId;
+
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
     if (!orderId) return;
@@ -74,9 +79,12 @@ export default function PaymentPage() {
   }, [orderId]);
 
   const handleSuccess = async () => {
+    if (!payable) return;
+
     try {
       setPaying(true);
       await api.post(`/orders/${orderId}/mark-paid`);
+
       toast.success('Payment successful!');
       router.push(`/payment/success?orderId=${orderId}`);
     } catch (err) {
@@ -87,9 +95,21 @@ export default function PaymentPage() {
     }
   };
 
-  const handleCancel = () => {
-    toast('Payment canceled', { icon: '⚠️' });
-    router.push('/my-jobs');
+  const handleCancel = async () => {
+    if (!cancellable) return;
+
+    try {
+      setCanceling(true);
+      await api.post(`/orders/${orderId}/cancel`);
+
+      toast('Payment canceled', { icon: '⚠️' });
+      router.push('/my-jobs');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to cancel order');
+    } finally {
+      setCanceling(false);
+    }
   };
 
   const invoice = order?.invoices?.[0];
@@ -110,7 +130,7 @@ export default function PaymentPage() {
           <div className='mb-6 flex items-start justify-between gap-3'>
             <h2 className='text-xl font-semibold text-slate-900'>{order.title}</h2>
             <div className='flex items-center gap-2'>
-              {order.packageType ? <span className='rounded-full bg-slate-100 px-3 py-1 text-xs font-medium capitalize text-slate-700'>{order.packageType}</span> : null}
+              {!isFromJob && order.packageType ? <span className='rounded-full bg-slate-100 px-3 py-1 text-xs font-medium capitalize text-slate-700'>{order.packageType}</span> : null}
               {order.status ? <span className='rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800'>{order.status}</span> : null}
             </div>
           </div>
@@ -167,10 +187,10 @@ export default function PaymentPage() {
                   <span>Status</span>
                   <span
                     className={`font-medium capitalize ${invoice.paymentStatus === 'pending'
-                        ? 'text-amber-600'
-                        : invoice.paymentStatus === 'paid'
-                          ? 'text-emerald-600'
-                          : 'text-slate-600'
+                      ? 'text-amber-600'
+                      : invoice.paymentStatus === 'paid'
+                        ? 'text-emerald-600'
+                        : 'text-slate-600'
                       }`}
                   >
                     {invoice.paymentStatus}
@@ -196,11 +216,11 @@ export default function PaymentPage() {
 
           {/* Actions */}
           <div className='flex items-center justify-end gap-4 '>
-            <Button name={paying ? 'Processing…' : 'Pay Now'} color='green' onClick={handleSuccess} loading={paying} className=' !w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Confirm payment'>
+            <Button name={paying ? 'Processing…' : 'Pay Now'} disabled={!payable} color='green' onClick={handleSuccess} loading={paying} className=' !w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Confirm payment'>
               {paying ? <Loader2 className='mr-2 inline h-4 w-4 animate-spin' /> : <CreditCard className='mr-2 inline h-4 w-4' />}
             </Button>
 
-            <Button name='Cancel' color='red' onClick={handleCancel} className='!w-fit !px-6 h-11 rounded-xl text-base' aria-label='Cancel and go back'>
+            <Button name='Cancel' color='red' disabled={!cancellable} onClick={handleCancel} className='!w-fit !px-6 h-11 rounded-xl text-base' loading={canceling} aria-label='Cancel and go back'>
               <AlertCircle className='mr-2 inline h-4 w-4' />
             </Button>
           </div>

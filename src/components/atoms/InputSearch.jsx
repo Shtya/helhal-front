@@ -36,7 +36,9 @@ const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, show
         )}
 
         {/* Input field */}
-        <input type='text' placeholder={placeholder} value={searchTerm} onChange={handleChange} className={`w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400 ${actionIcon && 'w-[calc(100%-50px)]'}`} />
+        <input type='text' placeholder={placeholder} value={searchTerm} onChange={handleChange} onKeyDown={e => {
+          if (e.key === 'Enter') handleSearch(e);
+        }} className={`w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400 ${actionIcon && 'w-[calc(100%-50px)]'}`} />
 
         {/* Action button */}
         {actionIcon && showAction && (
