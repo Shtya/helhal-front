@@ -7,7 +7,7 @@ import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api, { baseImg } from '@/lib/axios';
 import DashboardLayout from '@/components/dashboard/Layout';
-import { MetricBadge, GlassCard } from '@/components/dashboard/Ui';
+import { MetricBadge, GlassCard, Modal } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -276,7 +276,7 @@ export default function AdminUsersDashboard() {
   }
 
   function handleNavigate() {
-    router.push(`/profile/${selectedUser.id}`)
+    router.push(`/profile/${selectedUser?.id}`)
   }
 
 
@@ -335,139 +335,131 @@ export default function AdminUsersDashboard() {
         </div>
 
         {/* Modal */}
-        {showUserModal && (selectedUser || editingUser) && (
-          <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className='bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto ring-1 ring-slate-200 shadow-xl'>
-              <div className='flex items-center justify-between mb-6'>
-                <h2 className='text-xl font-semibold'>
-                  {editMode ? 'Edit User' : 'User Details'}
-                </h2>
-                <button onClick={() => {
-                  setShowUserModal(false);
-                  setEditMode(false);
-                  setEditingUser(null);
-                }} className='text-slate-400 hover:text-slate-600'>
-                  ✕
+        <Modal open={showUserModal && (selectedUser || editingUser)} title={editMode ? 'Edit User' : 'User Details'} onClose={() => {
+          setShowUserModal(false);
+          setEditMode(false);
+          setEditingUser(null);
+        }} size='lg' hideFooter>
+
+
+          {editMode ? (
+            // Edit mode using InfoCard
+            <>
+              <Input
+                required
+                label="Username"
+                value={editingUser.username}
+                onChange={e => {
+                  const value = e.target.value.slice(0, 50);
+                  setEditingUser(s => ({ ...s, username: value }));
+                  handleChangeUsername(value);
+                }}
+                onBlur={e => handleChangeUsername(e.target.value)}
+              />
+              {usernameError && <FormErrorMessage message={t(`errors.${usernameError}`)} />}
+              <Divider />
+              <PhoneInputWithCountry
+                value={{ countryCode: editingUser.countryCode || { code: 'SA', dial_code: '+966' }, phone: editingUser.phone }}
+                onChange={handleChangePhone}
+              />
+              {phoneError && <FormErrorMessage message={t(`errors.${phoneError}`)} />}
+              <Divider />
+              <InfoCard
+                className='!border-none !bg-transparent  !shadow-none !p-0'
+                loading={false}
+                about={{
+                  username: editingUser.username,
+                  email: editingUser.email,
+                  phone: editingUser.phone,
+                  countryCode: editingUser.countryCode,
+                  description: editingUser.description,
+                  education: editingUser.education,
+                  certifications: editingUser.certifications,
+                  languages: editingUser.languages || [],
+                  skills: editingUser.skills || [],
+                  country: editingUser.country,
+                  type: editingUser.type,
+                }}
+                setAbout={updater => {
+                  setEditingUser(prev => ({ ...prev, ...(typeof updater === 'function' ? updater(prev) : updater) }));
+                }}
+                onCountryChange={code => setEditingUser(prev => ({ ...prev, country: code }))}
+                onTypeChange={type => setEditingUser(prev => ({ ...prev, type }))}
+                onRemoveEducation={onRemoveEducation}
+                onRemoveCertification={onRemoveCertification}
+                accountTypeOptions={[
+                  { id: 'Business', name: 'Business' },
+                  { id: 'Individual', name: 'Individual' },
+                ]}
+              />
+
+              <div className='mt-6 flex justify-end gap-3'>
+                <button
+                  onClick={() => {
+                    setShowUserModal(false);
+                    setEditMode(false);
+                    setEditingUser(null);
+                  }}
+                  className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'
+                  disabled={savingUser}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleSaveUser(editingUser)}
+                  disabled={savingUser || phoneError || usernameError}
+                  className='px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50'
+                >
+                  {savingUser ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
-              {editMode ? (
-                // Edit mode using InfoCard
-                <>
-                  <Input
-                    required
-                    label="Username"
-                    value={editingUser.username}
-                    onChange={e => {
-                      const value = e.target.value.slice(0, 50);
-                      setEditingUser(s => ({ ...s, username: value }));
-                      handleChangeUsername(value);
-                    }}
-                    onBlur={e => handleChangeUsername(e.target.value)}
-                  />
-                  {usernameError && <FormErrorMessage message={t(`errors.${usernameError}`)} />}
-                  <Divider />
-                  <PhoneInputWithCountry
-                    value={{ countryCode: editingUser.countryCode || { code: 'SA', dial_code: '+966' }, phone: editingUser.phone }}
-                    onChange={handleChangePhone}
-                  />
-                  {phoneError && <FormErrorMessage message={t(`errors.${phoneError}`)} />}
-                  <Divider />
-                  <InfoCard
-                    className='!border-none !bg-transparent  !shadow-none !p-0'
-                    loading={false}
-                    about={{
-                      username: editingUser.username,
-                      email: editingUser.email,
-                      phone: editingUser.phone,
-                      countryCode: editingUser.countryCode,
-                      description: editingUser.description,
-                      education: editingUser.education,
-                      certifications: editingUser.certifications,
-                      languages: editingUser.languages || [],
-                      skills: editingUser.skills || [],
-                      country: editingUser.country,
-                      type: editingUser.type,
-                    }}
-                    setAbout={updater => {
-                      setEditingUser(prev => ({ ...prev, ...(typeof updater === 'function' ? updater(prev) : updater) }));
-                    }}
-                    onCountryChange={code => setEditingUser(prev => ({ ...prev, country: code }))}
-                    onTypeChange={type => setEditingUser(prev => ({ ...prev, type }))}
-                    onRemoveEducation={onRemoveEducation}
-                    onRemoveCertification={onRemoveCertification}
-                    accountTypeOptions={[
-                      { id: 'Business', name: 'Business' },
-                      { id: 'Individual', name: 'Individual' },
-                    ]}
-                  />
+            </>
+          ) : (
+            <>
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <div className='flex flex-col items-center text-center'>
+                  <Img src={selectedUser?.profileImage} alt={selectedUser?.username} altSrc='/images/placeholder-avatar.png' className='w-28 h-28 rounded-full object-cover mb-4 ring-2 ring-white shadow-sm' />
+                  <h3 className='text-lg font-semibold text-slate-900 hover:underline cursor-pointer' onClick={handleNavigate}>{selectedUser?.username}</h3>
+                  <p className='text-slate-600'>{selectedUser?.email}</p>
+                  <div className='mt-4 flex flex-wrap gap-2'>
+                    <MetricBadge tone={selectedUser?.status === 'active' ? 'success' : selectedUser?.status === 'suspended' ? 'danger' : 'warning'}>{selectedUser?.status}</MetricBadge>
+                    <MetricBadge tone='info'>{selectedUser?.role}</MetricBadge>
+                  </div>
+                </div>
+                <div>
+                  <h4 className='font-semibold mb-3 text-slate-900'>User Information</h4>
+                  <div className='space-y-2 text-sm text-slate-700'>
+                    <p>
+                      <span className='font-medium'>Member Since:</span> {new Date(selectedUser?.memberSince).toLocaleDateString()}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Last Login:</span> {selectedUser?.lastLogin ? new Date(selectedUser?.lastLogin).toLocaleString() : 'Never'}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Description:</span> {selectedUser?.description || 'No description'}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Skills:</span> {selectedUser?.skills?.join(', ') || 'No skills listed'}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Languages:</span> {selectedUser?.languages?.join(', ') || 'No languages listed'}
+                    </p>
+                    <p>
+                      <span className='font-medium'>Referral Code:</span> {selectedUser?.referralCode || 'No Referral Code'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className='mt-6 flex justify-end gap-3'>
+                <button onClick={() => setShowUserModal(false)} className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'>
+                  Close
+                </button>
+              </div>
+            </>
+          )}
 
-                  <div className='mt-6 flex justify-end gap-3'>
-                    <button
-                      onClick={() => {
-                        setShowUserModal(false);
-                        setEditMode(false);
-                        setEditingUser(null);
-                      }}
-                      className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'
-                      disabled={savingUser}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => handleSaveUser(editingUser)}
-                      disabled={savingUser || phoneError || usernameError}
-                      className='px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50'
-                    >
-                      {savingUser ? 'Saving...' : 'Save Changes'}
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                    <div className='flex flex-col items-center text-center'>
-                      <Img src={selectedUser.profileImage} alt={selectedUser.username} altSrc='/images/placeholder-avatar.png' className='w-28 h-28 rounded-full object-cover mb-4 ring-2 ring-white shadow-sm' />
-                      <h3 className='text-lg font-semibold text-slate-900 hover:underline cursor-pointer' onClick={handleNavigate}>{selectedUser.username}</h3>
-                      <p className='text-slate-600'>{selectedUser.email}</p>
-                      <div className='mt-4 flex flex-wrap gap-2'>
-                        <MetricBadge tone={selectedUser.status === 'active' ? 'success' : selectedUser.status === 'suspended' ? 'danger' : 'warning'}>{selectedUser.status}</MetricBadge>
-                        <MetricBadge tone='info'>{selectedUser.role}</MetricBadge>
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className='font-semibold mb-3 text-slate-900'>User Information</h4>
-                      <div className='space-y-2 text-sm text-slate-700'>
-                        <p>
-                          <span className='font-medium'>Member Since:</span> {new Date(selectedUser.memberSince).toLocaleDateString()}
-                        </p>
-                        <p>
-                          <span className='font-medium'>Last Login:</span> {selectedUser.lastLogin ? new Date(selectedUser.lastLogin).toLocaleString() : 'Never'}
-                        </p>
-                        <p>
-                          <span className='font-medium'>Description:</span> {selectedUser.description || 'No description'}
-                        </p>
-                        <p>
-                          <span className='font-medium'>Skills:</span> {selectedUser.skills?.join(', ') || 'No skills listed'}
-                        </p>
-                        <p>
-                          <span className='font-medium'>Languages:</span> {selectedUser.languages?.join(', ') || 'No languages listed'}
-                        </p>
-                        <p>
-                          <span className='font-medium'>Referral Code:</span> {selectedUser.referralCode || 'No Referral Code'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='mt-6 flex justify-end gap-3'>
-                    <button onClick={() => setShowUserModal(false)} className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'>
-                      Close
-                    </button>
-                  </div>
-                </>
-              )}
-            </motion.div>
-          </div>
-        )}
+
+        </Modal>
       </div>
     </DashboardLayout>
   );

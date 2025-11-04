@@ -181,10 +181,10 @@ export function Modal({ open, title, subtitle, icon: Icon, onClose, size = 'md',
           <motion.div className='absolute inset-0 bg-slate-900/60 backdrop-blur-sm' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => closeOnBackdrop && onClose()} />
           {/* Panel */}
           <motion.div role='dialog' aria-modal='true' aria-labelledby={title ? 'modal-title' : undefined} className='pointer-events-none absolute inset-0 grid place-items-center p-4' initial={{ opacity: 0, y: 12, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.98 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}>
-            <div ref={panelRef} className={`pointer-events-auto w-full ${SIZE_CLASS[size]} max-h-[90vh] overflow-hidden rounded-2xl`} onClick={e => e.stopPropagation()}>
+            <div ref={panelRef} className={`pointer-events-auto w-full ${SIZE_CLASS[size]} max-h-[90vh] overflow-x-hidden overflow-y-auto rounded-2xl`} onClick={e => e.stopPropagation()}>
               {/* Glow border */}
               <div className={`relative rounded-2xl`}>
-                <div className={`pointer-events-none absolute -inset-[1px] rounded-2xl bg-gradient-to-br ${accentGrad} opacity-60 blur`} aria-hidden='true' />
+                <div className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br ${accentGrad} opacity-60 blur`} aria-hidden='true' />
                 {/* Surface */}
                 <div className='relative rounded-2xl bg-white/95 ring-1 ring-slate-200 shadow-2xl'>
                   {/* Header */}

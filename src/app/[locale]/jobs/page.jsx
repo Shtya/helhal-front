@@ -22,6 +22,7 @@ import { fmtMoney, updateUrlParams } from '@/utils/helper';
 import { usePathname } from '@/i18n/navigation';
 import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdown';
 import CategorySelect from '@/components/atoms/CategorySelect';
+import Client from '@/components/pages/jobs/Client';
 
 // -------------------------------------------------
 // Services
@@ -608,16 +609,8 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
   const budget = localJob?.budget ?? localJob?.estimatedBudget;
   const priceType = localJob?.budgetType === 'hourly' ? 'Hourly' : 'Fixed-price';
   const buyerName = localJob?.buyer?.username || '—';
-  const buyerInitials = useMemo(
-    () =>
-      (buyerName || '?')
-        .split(' ')
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(p => p[0]?.toUpperCase())
-        .join(''),
-    [buyerName],
-  );
+
+
   const created = (localJob?.created_at || '').split('T')[0];
 
   return (
@@ -698,16 +691,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
                   {/* Client */}
                   <section>
-                    <h4 className='text-sm font-semibold text-slate-900 mb-2'>About the client</h4>
-                    <div className='mt-1 flex items-center gap-3'>
-                      <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200'>
-                        <span className='text-sm font-semibold'>{buyerInitials}</span>
-                      </div>
-                      <div>
-                        <div className='text-sm font-semibold text-slate-900 flex items-center gap-2'>{buyerName}</div>
-                        <div className='text-sm text-slate-500'>{country}</div>
-                      </div>
-                    </div>
+                    <Client name={buyerName} subtitle={country} />
 
                     <div className='mt-3 space-y-2 text-sm'>
                       <div className='flex items-center gap-2'>

@@ -10,16 +10,16 @@ import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import toast from 'react-hot-toast';
+import { useDebounce } from '@/hooks/useDebounce';
+import { getDateAgo } from '@/utils/date';
+import Client from '@/components/pages/jobs/Client';
+import StatusBadge from '@/components/pages/jobs/StatusBadge';
 
 export default function AdminJobsDashboard() {
   const [activeTab, setActiveTab] = useState('all');
   const [orderBy, setOrderBy] = useState({ id: 'newest', name: 'Newest' });
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  useEffect(() => {
-    const id = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
-    return () => clearTimeout(id);
-  }, [searchQuery]);
+  const debouncedSearch = useDebounce({ value: searchQuery });
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -42,7 +42,6 @@ export default function AdminJobsDashboard() {
   const tabs = [
     { value: 'all', label: 'All Jobs' },
     { value: 'pending', label: 'Pending' }, // NEW
-    { value: 'draft', label: 'Drafts' },
     { value: 'published', label: 'Published' },
     { value: 'awarded', label: 'Awarded' },
     { value: 'completed', label: 'Completed' },
@@ -96,49 +95,54 @@ export default function AdminJobsDashboard() {
     if (id === 'budget_low') setFilters(p => ({ ...p, sortBy: 'budget', sortOrder: 'ASC', page: 1 }));
   };
 
-  const openView = async id => {
-    try {
-      setApiError(null);
-      const res = await api.get(`/jobs/${id}`);
-      setCurrent(res.data);
-      setModalOpen(true);
-    } catch (e) {
-      setApiError(e?.response?.data?.message || 'Failed to load job.');
-    }
+  const openView = async raw => {
+
+    setCurrent(raw);
+    setModalOpen(true);
+
   };
 
   const publishJob = async id => {
+    const toastId = toast.loading('Publishing job...');
+
     try {
       await api.put(`/jobs/${id}/publish`);
-      toast.success('Job published ✅');
+      toast.success('Job published ✅', { id: toastId });
       await fetchJobs();
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Error publishing job.');
+      toast.error(e?.response?.data?.message || 'Error publishing job.', { id: toastId });
     }
   };
 
   const updateJobStatus = async (id, status) => {
+    let toastId;
+
     try {
-      // Publishing goes through the admin-only endpoint
       if (status === 'published') {
-        return publishJob(id);
+        return publishJob(id); // already has its own toast
       }
+
+      toastId = toast.loading(`Changing status to ${status}...`);
       await api.put(`/jobs/${id}`, { status });
-      toast.success(`Status set to ${status}`);
+      toast.success(`Status set to ${status}`, { id: toastId });
       await fetchJobs();
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Error updating job status.');
+      toast.error(e?.response?.data?.message || 'Error updating job status.', { id: toastId });
     }
   };
 
   const deleteJob = async id => {
-    if (!confirm('Delete this job? This cannot be undone.')) return;
+    const ok = confirm('Delete this job? This cannot be undone.');
+    if (!ok) return;
+
+    const toastId = toast.loading('Deleting job...');
+
     try {
       await api.delete(`/jobs/${id}`);
-      toast.success('Job deleted');
+      toast.success('Job deleted', { id: toastId });
       await fetchJobs();
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Error deleting job.');
+      toast.error(e?.response?.data?.message || 'Error deleting job.', { id: toastId });
     }
   };
 
@@ -150,20 +154,7 @@ export default function AdminJobsDashboard() {
       label: 'Status',
       render: v => {
         const s = v.status;
-        const tone = s === 'completed' ? 'success' : s === 'awarded' ? 'success' : s === 'published' ? 'info' : s === 'closed' ? 'danger' : s === 'pending' ? 'amber' : 'neutral';
-        const icons = {
-          pending: <Clock size={14} className='mr-1' />,
-          draft: <Clock size={14} className='mr-1' />,
-          published: <Users size={14} className='mr-1' />,
-          awarded: <CheckCircle size={14} className='mr-1' />,
-          completed: <CheckCircle size={14} className='mr-1' />,
-          closed: <XCircle size={14} className='mr-1' />,
-        };
-        return (
-          <MetricBadge tone={tone}>
-            {icons[s] || null} {s}
-          </MetricBadge>
-        );
+        return <StatusBadge status={s} />
       },
     },
     {
@@ -191,7 +182,7 @@ export default function AdminJobsDashboard() {
 
   const Actions = ({ row }) => (
     <div className='flex items-center gap-2'>
-      <button onClick={() => openView(row.id)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
+      <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
       </button>
       <Select
@@ -199,7 +190,6 @@ export default function AdminJobsDashboard() {
         onChange={e => updateJobStatus(row.id, e.id)}
         options={[
           { id: 'pending', name: 'Set Pending' },
-          { id: 'draft', name: 'Set Draft' },
           { id: 'published', name: 'Publish' }, // calls /publish
           { id: 'awarded', name: 'Mark Awarded' },
           { id: 'completed', name: 'Complete' },
@@ -258,19 +248,27 @@ export default function AdminJobsDashboard() {
 
 function JobView({ value, onClose }) {
   if (!value) return null;
+  const createdAt = value?.created_at;
+  const formatted = createdAt
+    ? new Date(createdAt).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    })
+    : '—';
 
   return (
-    <div className='space-y-6'>
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Job Title</label>
-          <div className='p-2 bg-slate-50 rounded-md font-semibold'>{value.title}</div>
-        </div>
+    <div className='space-y-4'>
+      <div>
+        <label className='block text-sm font-medium text-slate-700 mb-1'>Job Title</label>
+        <div className='p-2 bg-slate-50 rounded-md font-semibold'>{value.title}</div>
+      </div>
+      <div className='grid grid-cols-1 items-center md:grid-cols-2 gap-4'>
 
-        <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Status</label>
+        <div className='text-sm'>{getDateAgo(value?.created_at)}</div>
+        <div className='flex gap-2 items-center'>
+          <label className='text-sm font-medium text-slate-700'>Status:</label>
           <div className='p-2 bg-slate-50 rounded-md'>
-            <MetricBadge tone={value.status === 'completed' ? 'success' : value.status === 'awarded' ? 'success' : value.status === 'published' ? 'info' : value.status === 'closed' ? 'danger' : value.status === 'pending' ? 'amber' : 'neutral'}>{value.status}</MetricBadge>
+            <MetricBadge tone={value.status === 'completed' ? 'success' : value.status === 'awarded' ? 'success' : value.status === 'published' ? 'info' : value.status === 'closed' ? 'danger' : value.status === 'pending' ? 'neutral' : 'neutral'}>{value.status}</MetricBadge>
           </div>
         </div>
       </div>
@@ -279,6 +277,8 @@ function JobView({ value, onClose }) {
         <label className='block text-sm font-medium text-slate-700 mb-1'>Description</label>
         <div className='p-3 bg-slate-50 rounded-md whitespace-pre-wrap'>{value.description}</div>
       </div>
+
+      <Client name={value.buyer?.username} subtitle={value.buyer?.email} id={value.buyer?.id} />
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
@@ -294,10 +294,9 @@ function JobView({ value, onClose }) {
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Posted By</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{value.buyer?.username || 'N/A'}</div>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>Preferred Delivery</label>
+          <div className='p-2 bg-slate-50 rounded-md'>{value.preferredDeliveryDays} days</div>
         </div>
-
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Proposals</label>
           <div className='p-2 bg-slate-50 rounded-md'>{value.proposals?.length || 0} proposals</div>
@@ -305,20 +304,22 @@ function JobView({ value, onClose }) {
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Preferred Delivery</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{value.preferredDeliveryDays} days</div>
-        </div>
+
 
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Skills Required</label>
-          <div className='p-2 bg-slate-50 rounded-md'>
-            {value.skillsRequired?.map((skill, i) => (
-              <span key={i} className='inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-1 mb-1'>
-                {skill}
-              </span>
-            ))}
-          </div>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>Posted</label>
+          <div className='p-2 bg-slate-50 rounded-md'>{formatted}</div>
+        </div>
+
+      </div>
+      <div>
+        <label className='block text-sm font-medium text-slate-700 mb-1'>Skills Required</label>
+        <div className='p-2 bg-slate-50 rounded-md'>
+          {value.skillsRequired?.map((skill, i) => (
+            <span key={i} className='inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-1 mb-1'>
+              {skill}
+            </span>
+          ))}
         </div>
       </div>
 
@@ -336,6 +337,13 @@ function JobView({ value, onClose }) {
             ))}
           </div>
         </div>
+      )}
+
+      {value?.additionalInfo && (
+        <section>
+          <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
+          <p className='text-sm text-slate-700 whitespace-pre-wrap'>{value?.additionalInfo}</p>
+        </section>
       )}
 
       <div className='flex justify-end'>

@@ -11,7 +11,7 @@ export const menuItems = [
   { name: 'Users', href: '/dashboard/users', icon: Users, title: 'Users', desc: 'Manage user accounts, roles, status, and permissions.' },
   { name: 'Categories', href: '/dashboard/categories', icon: FolderTree, title: 'Categories', desc: 'Create and organize categories for your content and services.' },
   { name: 'Services', href: '/dashboard/services', icon: ShoppingBag, title: 'Services', desc: 'Add, edit, and publish services with pricing and packages.' },
-  { name: 'Job', href: '/dashboard/job', icon: ShoppingBag, title: 'Job', desc: 'Add, edit, and publish Job.' },
+  { name: 'Jobs', href: '/dashboard/jobs', icon: ShoppingBag, title: 'Jobs', desc: 'Add, edit, and publish Job.' },
   { name: 'Orders', href: '/dashboard/orders', icon: Package, title: 'Orders', desc: 'Track, fulfill, and update order statuses and notes.' },
   { name: 'Invoices', href: '/dashboard/invoices', icon: FileText, title: 'Invoices', desc: 'Generate, download, and manage invoices and billing.' },
   { name: 'Disputes', href: '/dashboard/disputes', icon: Wallet, title: 'Disputes', desc: 'Request payouts, view balances, and payment history.' },

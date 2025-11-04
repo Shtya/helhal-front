@@ -4,6 +4,8 @@ import AttachmentList from '@/components/common/AttachmentList';
 import { User2, Trash2, FolderOpen } from 'lucide-react';
 import { Divider } from "@/app/[locale]/services/[category]/[service]/page";
 import Button from "@/components/atoms/Button";
+import { getDateAgo } from "@/utils/date";
+import StatusBadge from "../jobs/StatusBadge";
 
 // -------------------------------------------------
 // Visual Tokens (light mode only)
@@ -31,15 +33,7 @@ const JobCard = ({ job, onDeleteRequest, onOpen }) => {
     const created = useMemo(() => job?.created_at?.split('T')[0] ?? '—', [job?.created_at]);
 
     const postedAgo = useMemo(() => {
-        if (!job?.created_at) return '—';
-        const createdTs = new Date(job.created_at).getTime();
-        const diffMs = Date.now() - createdTs;
-        const mins = Math.floor(diffMs / 60000);
-        if (mins < 60) return `${mins} ${mins === 1 ? 'minute' : 'minutes'} ago`;
-        const hours = Math.floor(mins / 60);
-        if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-        const days = Math.floor(hours / 24);
-        return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+        return getDateAgo(job?.created_at);
     }, [job?.created_at]);
 
     const priceTypeLabel = job?.budgetType === 'hourly' ? 'Hourly' : 'Fixed price';
@@ -72,10 +66,7 @@ const JobCard = ({ job, onDeleteRequest, onOpen }) => {
                     </div>
 
                     <div className="flex flex-col items-end gap-2 shrink-0">
-                        <span className={`${chip} ${getStatusStyles(job.status)} text-xs uppercase tracking-wide`} aria-hidden>
-                            <span className="h-2 w-2 rounded-full bg-current opacity-80 [color:currentColor]" />
-                            <span className="ml-2 capitalize">{job.status}</span>
-                        </span>
+                        <StatusBadge status={job.status} />
 
                         <div className="text-xs text-slate-400">{job?.preferredDeliveryDays || 0} Delivery Days</div>
                     </div>
