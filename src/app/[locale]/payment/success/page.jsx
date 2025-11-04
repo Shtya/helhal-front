@@ -94,7 +94,7 @@ export default function PaymentSuccessPage() {
 
         {/* Actions */}
         <div className="mt-8 flex flex-col  sm:flex-row justify-center gap-4">
-          <Link href="/orders">
+          <Link href="/my-orders">
             <Button name="Go to My Orders" color="green" />
           </Link>
           <Link href="/">

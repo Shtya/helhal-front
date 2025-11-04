@@ -147,7 +147,7 @@ const NotificationPopup = () => {
     }
   };
 
-  const goToTarget = n => (n.relatedEntityType === 'order' ? `/orders/${n.relatedEntityId}` : '/notifications');
+  const goToTarget = n => (n.relatedEntityType === 'order' ? `/my-orders/${n.relatedEntityId}` : '/notifications');
 
   return (
     <div className='' ref={btnRef}>
@@ -339,7 +339,7 @@ export default function Header() {
 
     const common = [
       { href: '/profile', label: 'My Profile', icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
-      { href: '/orders', label: 'My Orders', icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/orders'), order: 2 },
+      { href: '/my-orders', label: 'My Orders', icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
       { href: '/disputes', label: 'My Disputes', icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/disputes'), order: 4 },
       { href: '/my-billing', label: 'My Billing', icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
       { href: '/settings', label: 'Settings', icon: <Settings size={18} className='text-gray-500' />, active: pathname.startsWith('/settings'), order: 16 },
