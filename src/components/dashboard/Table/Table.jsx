@@ -48,6 +48,7 @@ export default function Table({
   const [isImageLoading, setIsImageLoading] = useState(true);
 
   const serverMode = typeof totalCount === 'number' && typeof page === 'number' && typeof onPageChange === 'function';
+
   const handlePageChange = p => {
     if (loading) return;
     if (serverMode) onPageChange(p);
@@ -78,6 +79,7 @@ export default function Table({
   const displayRows = loading ? Array.from({ length: rowsPerPage }).map((_, i) => ({ __skeleton: i })) : currentRows;
 
   const fullCount = serverMode ? totalCount ?? 0 : data.length;
+
   const totalPages = Math.max(1, Math.ceil(fullCount / rowsPerPage));
   const showingFrom = loading || fullCount === 0 ? 0 : Math.min((effectivePage - 1) * rowsPerPage + 1, fullCount);
   const showingTo = loading || fullCount === 0 ? 0 : Math.min(effectivePage * rowsPerPage, fullCount);
@@ -174,7 +176,7 @@ export default function Table({
             <Skeleton className='h-4 w-56' />
           ) : (
             <>
-              Showing {showingFrom}-{showingTo} of {data.length}
+              Showing {showingFrom}-{showingTo} of {fullCount}
             </>
           )}
         </span>

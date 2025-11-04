@@ -11,16 +11,25 @@ import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import Img from '@/components/atoms/Img';
+import UserMini from '@/components/dashboard/UserMini';
+import toast from 'react-hot-toast';
+import { useDebounce } from '@/hooks/useDebounce';
+
+const OrderStatus = {
+  PENDING: 'Pending',
+  ACCEPTED: 'Accepted',
+  DELIVERED: 'Delivered',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+  MISSING_DETAILS: 'Missing Details',
+  DISPUTED: 'Disputed',
+}
+
 
 export default function AdminOrdersDashboard() {
   const [activeTab, setActiveTab] = useState('all');
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  useEffect(() => {
-    const id = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
-    return () => clearTimeout(id);
-  }, [searchQuery]);
+
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -28,6 +37,14 @@ export default function AdminOrdersDashboard() {
     sortBy: 'created_at',
     sortOrder: 'DESC',
   });
+
+  function resetPage() {
+    setFilters(p => ({ ...p, page: 1 }))
+  }
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce({ value: searchQuery, onDebounce: () => resetPage() });
+
+  const [sort, setSort] = useState('newest');
 
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
@@ -84,37 +101,46 @@ export default function AdminOrdersDashboard() {
   const handleTabChange = tab => {
     const v = typeof tab === 'string' ? tab : tab?.value;
     setActiveTab(v);
-    setFilters(p => ({ ...p, page: 1 }));
+    resetPage()
   };
 
   const applySortPreset = opt => {
     const id = opt?.id ?? opt?.target?.value ?? opt;
-    if (id === 'newest') setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'DESC', page: 1 }));
-    if (id === 'oldest') setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'ASC', page: 1 }));
-    if (id === 'price_high') setFilters(p => ({ ...p, sortBy: 'totalAmount', sortOrder: 'DESC', page: 1 }));
-    if (id === 'price_low') setFilters(p => ({ ...p, sortBy: 'totalAmount', sortOrder: 'ASC', page: 1 }));
+    if (id === 'newest') { setSort(id); setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'DESC', page: 1 })) }
+    else if (id === 'oldest') { setSort(id); setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'ASC', page: 1 })) }
+    else if (id === 'price_high') { setSort(id); setFilters(p => ({ ...p, sortBy: 'totalAmount', sortOrder: 'DESC', page: 1 })) }
+    else if (id === 'price_low') { setSort(id); setFilters(p => ({ ...p, sortBy: 'totalAmount', sortOrder: 'ASC', page: 1 })) }
+    else return;
   };
 
-  const openView = async id => {
+  const openView = async order => {
     try {
-      setApiError(null);
-      const res = await api.get(`/orders/${id}`);
+      // setApiError(null);
+      // const res = await api.get(`/orders/${id}`);
       setMode('view');
-      setCurrent(res.data);
+      setCurrent(order);
       setModalOpen(true);
     } catch (e) {
       setApiError(e?.response?.data?.message || 'Failed to load order.');
     }
   };
-
   const updateOrderStatus = async (id, status) => {
+    const toastId = toast.loading(`Updating order status to ${status}...`);
+
     try {
       await api.put(`/orders/${id}/status`, { status });
+      toast.success(`Order status updated to ${status}`, {
+        id: toastId,
+      });
       await fetchOrders();
     } catch (e) {
-      alert(e?.response?.data?.message || 'Error updating order status.');
+      toast.error(e?.response?.data?.message || 'Error updating order status.', {
+        id: toastId,
+      });
+      console.error('Error updating order status:', e);
     }
   };
+
 
   // Columns
   const columns = [
@@ -167,26 +193,62 @@ export default function AdminOrdersDashboard() {
     { key: 'orderDate', label: 'Order Date', type: 'date' },
   ];
 
-  const Actions = ({ row }) => (
-    <div className='flex items-center gap-2'>
-      <button onClick={() => openView(row.id)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
-        <Eye size={16} />
-      </button>
-      <Select
-        value={row.status}
-        onChange={e => updateOrderStatus(row.id, e.target.value)}
-        options={[
-          { id: 'Pending', name: 'Set Pending' },
-          { id: 'Accepted', name: 'Accept' },
-          { id: 'Delivered', name: 'Mark Delivered' },
-          { id: 'Completed', name: 'Complete' },
-          { id: 'Cancelled', name: 'Cancel' },
-        ]}
-        className='!w-36 !text-xs'
-        variant='minimal'
-      />
-    </div>
-  );
+  const Actions = ({ row }) => {
+    const currentStatus = row.status;
+
+    const validTransitions = {
+      [OrderStatus.PENDING]: [OrderStatus.ACCEPTED, OrderStatus.CANCELLED],
+      [OrderStatus.ACCEPTED]: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
+      [OrderStatus.DELIVERED]: [OrderStatus.COMPLETED, OrderStatus.CANCELLED],
+    };
+
+    const statusLabels = {
+      [OrderStatus.PENDING]: 'Set Pending',
+      [OrderStatus.ACCEPTED]: 'Accept',
+      [OrderStatus.DELIVERED]: 'Mark Delivered',
+      [OrderStatus.COMPLETED]: 'Complete',
+      [OrderStatus.CANCELLED]: 'Cancel',
+      [OrderStatus.DISPUTED]: 'Disputed',
+    };
+
+    const allowed = validTransitions[currentStatus] || [];
+
+    const options = [
+      {
+        id: currentStatus,
+        name: `${statusLabels[currentStatus]}`,
+        disabled: true,
+      },
+      ...allowed.map(id => ({
+        id,
+        name: statusLabels[id],
+      })),
+    ];
+
+    return (
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => openView(row)}
+          className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+          title="View"
+        >
+          <Eye size={16} />
+        </button>
+
+        <Select
+          value={currentStatus}
+          onChange={opt => {
+            if (opt.id === currentStatus) return;
+            updateOrderStatus(row.id, opt.id)
+          }}
+          options={options}
+          className="!w-40 !text-xs"
+          variant="minimal"
+        />
+      </div>
+    );
+  };
+
 
   return (
     <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
@@ -200,6 +262,7 @@ export default function AdminOrdersDashboard() {
                 className='!w-fit'
                 onChange={applySortPreset}
                 placeholder='Order by'
+                value={sort}
                 options={[
                   { id: 'newest', name: 'Newest' },
                   { id: 'oldest', name: 'Oldest' },
@@ -237,6 +300,7 @@ export default function AdminOrdersDashboard() {
 function OrderView({ value, onClose }) {
   if (!value) return null;
 
+  console.log(value)
   return (
     <div className='space-y-6'>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -262,19 +326,23 @@ function OrderView({ value, onClose }) {
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Buyer</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{value.buyer?.username || 'N/A'}</div>
+          <div className='p-2 bg-slate-50 rounded-md'>
+            <UserMini user={value.buyer} href={`profile/${value.buyer.id}`} />
+          </div>
         </div>
 
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Seller</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{value.seller?.username || 'N/A'}</div>
+          <div className='p-2 bg-slate-50 rounded-md'>
+            <UserMini user={value.seller} href={`profile/${value.seller.id}`} />
+          </div>
         </div>
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>Total Amount</label>
-          <div className='p-2 bg-slate-50 rounded-md font-semibold'>${typeof value.totalAmount == "string" ? value.totalAmount?.toFixed(2) : value.totalAmount}</div>
+          <div className='p-2 bg-slate-50 rounded-md font-semibold'>${typeof value.totalAmount == "string" ? value?.totalAmount : value.totalAmount}</div>
         </div>
 
         <div>
