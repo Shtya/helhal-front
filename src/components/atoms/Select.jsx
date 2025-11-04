@@ -8,7 +8,7 @@ import InputSearch from './InputSearch';
 import FormErrorMessage from './FormErrorMessage';
 
 //options = [{ id: '1', name: 'Option 1' }, { id: '2', name: 'Option 2' }]
-const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder = 'Select an option', label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, ...props }, ref) => {
+const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder = 'Select an option', label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, selectkey, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [touched, setTouched] = useState(false);
@@ -250,7 +250,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
           aria-expanded={open}
           name={name}
           {...props}>
-          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated || placeholder}</span>
+          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated && selectkey ? `${selectkey}: ` : ''} {formated || placeholder}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
         </button>
       </div>
