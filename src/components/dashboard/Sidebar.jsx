@@ -1,10 +1,10 @@
 'use client';
 
-import { usePathname } from '@/i18n/navigation';
-import Link from 'next/link';
+import { Link, usePathname } from '@/i18n/navigation';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useMemo } from 'react';
 import { LayoutDashboard, Users, FolderTree, ShoppingBag, TrendingUp, Package, Wallet, FileText, HelpCircle, Newspaper, BookOpen, Scale, Settings, MessageSquare, BarChart3 } from 'lucide-react';
+import Image from 'next/image';
 
 export const menuItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, title: 'Dashboard', desc: 'KPIs, trends, and quick actions for your workspace.' },
@@ -19,7 +19,7 @@ export const menuItems = [
   { name: 'Level Up', href: '/dashboard/levelup', icon: TrendingUp, title: 'Level Up', desc: 'Growth tools, gamification, and performance boosts.' },
   { name: 'Blogs', href: '/dashboard/blogs', icon: Newspaper, title: 'Blogs', desc: 'Write, schedule, and manage blog posts and drafts.' },
   { name: 'Guides', href: '/dashboard/guides', icon: BookOpen, title: 'Guides', desc: 'Step-by-step tutorials and documentation for your product.' },
-   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare, title: 'Chat', desc: 'Conversations, support inbox, and real-time messages.' },
+  { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare, title: 'Chat', desc: 'Conversations, support inbox, and real-time messages.' },
   { name: 'Reports', href: '/dashboard/reports', icon: BarChart3, title: 'Reports', desc: 'Visual analytics and downloadable summaries.' },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings, title: 'Settings', desc: 'Account, preferences, integrations, and system options.' },
 ];
@@ -53,10 +53,15 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
       {/* Brand / Toggle strip */}
       <div className='h-16 px-3 flex items-center justify-between border-b border-slate-200/80 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/65'>
         <div className={`flex  ${!open && "!w-full flex-none justify-center"} items-center gap-3 overflow-hidden`}>
-          <div className={` grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-emerald-500 to-blue-600 text-white font-bold shadow-sm`}>A</div>
+          <Link href='/' >
+            <motion.div whileHover={{ rotate: -4, scale: 1.05 }} transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.6 }}
+              className='p-1'>
+              <Image src='/images/helhal-logo.png' alt='Logo' width={38} height={48} priority className='rounded-xl shadow-sm' />
+            </motion.div>
+          </Link>
           <div className={`leading-tight whitespace-nowrap ${!open && '!hidden '}`}>
-            <div className={`text-slate-900 font-semibold transition-[opacity,transform,width]  hidden lg:block`}>Admin Dashboard</div>
-            <div className={`text-xs text-slate-500 transition-[opacity,transform,width] hidden lg:block`}>Control Center</div>
+            <div className={`text-slate-900 font-semibold transition-[opacity,transform,width] `}>Admin Dashboard</div>
+            <div className={`text-xs text-slate-500 transition-[opacity,transform,width]`}>Control Center</div>
           </div>
         </div>
         {isMobile && (
@@ -87,7 +92,7 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
                     </span>
 
                     {/* Label (hide when collapsed) */}
-                    <span className={`relative z-10 text-sm font-medium transition-all duration-200 ${open ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'} hidden lg:block`}>{item.name}</span>
+                    <span className={`relative z-10 text-sm font-medium transition-all duration-200 ${open ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'} `}>{item.title}</span>
 
                     {/* Badge stays aligned to the right only when expanded */}
                     {item.badge != null && open && <span className='ml-auto relative z-10 rounded-full bg-slate-100 text-slate-700 text-xs px-2 py-0.5'>{item.badge}</span>}

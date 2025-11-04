@@ -7,7 +7,7 @@ import Header from '@/components/dashboard/Header';
 
 const DESKTOP_BREAKPOINT = 1024; // tailwind lg
 
-export default function DashboardLayout({ children, title , className }) {
+export default function DashboardLayout({ children, title, className }) {
   const [isMobile, setIsMobile] = useState(false);
   // On desktop: open = expanded (wide) vs collapsed (mini)
   // On mobile:  open = drawer visible
@@ -42,7 +42,7 @@ export default function DashboardLayout({ children, title , className }) {
   }, [computeIsMobile]);
 
   useEffect(() => {
-    const onKey = (e ) => {
+    const onKey = (e) => {
       if (e.key === 'Escape') setOpen(false);
     };
     window.addEventListener('keydown', onKey);
@@ -63,7 +63,7 @@ export default function DashboardLayout({ children, title , className }) {
                 {/* Backdrop */}
                 <motion.div key='backdrop' className='fixed inset-0 z-40 bg-black/30 lg:hidden' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)} />
                 {/* Drawer */}
-                <motion.aside key='drawer' initial={{ x: -320, opacity: 0.6 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -320, opacity: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }} className='fixed left-0 top-0 z-50 h-full w-[280px] bg-white border-r border-slate-200 shadow-xl'>
+                <motion.aside key='drawer' initial={{ x: -320, opacity: 0.6 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -320, opacity: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }} className='fixed left-0 top-0 z-50 h-full w-full max-w-[280px] bg-white border-r border-slate-200 shadow-xl'>
                   <Sidebar open={true} isMobile setOpen={setOpen} />
                 </motion.aside>
               </>
@@ -85,9 +85,9 @@ export default function DashboardLayout({ children, title , className }) {
             </div>
           </motion.header>
 
-           <motion.main layout className={`flex-1 overflow-y-auto overflow-x-hidden ${className}`}>
-             <div className='container  max-w-screen-xl !py-6 min-w-0'>
-               {children}
+          <motion.main layout className={`flex-1 overflow-y-auto overflow-x-hidden ${className}`}>
+            <div className='container  max-w-screen-xl !py-6 min-w-0'>
+              {children}
             </div>
           </motion.main>
         </div>

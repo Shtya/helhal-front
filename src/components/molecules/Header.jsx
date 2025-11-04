@@ -2,11 +2,9 @@
 
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
+import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useTranslations } from 'next-intl';
-import { Mail, Copy, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks } from 'lucide-react';
+import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
 import api from '@/lib/axios';
 import { localImageLoader } from '@/utils/helper';
@@ -321,6 +319,7 @@ export default function Header() {
           { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
         ],
       },
+      { href: '/dashboard', label: 'Dashboard', icon: <LucideLayoutDashboard className='h-4 w-4' /> },
     ];
 
 
