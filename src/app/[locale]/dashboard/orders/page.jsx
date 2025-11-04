@@ -78,7 +78,7 @@ export default function AdminOrdersDashboard() {
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
         status: activeTab === 'all' ? '' : activeTab,
-        search: debouncedSearch
+        search: debouncedSearch?.trim()
       };
 
       const res = await api.get('/orders/admin', { params: q });
@@ -92,7 +92,7 @@ export default function AdminOrdersDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
+  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 
   useEffect(() => {
     fetchOrders();

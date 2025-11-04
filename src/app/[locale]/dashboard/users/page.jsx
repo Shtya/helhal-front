@@ -60,7 +60,7 @@ export default function AdminUsersDashboard() {
       const params = {
         ...filters, status: filters.status === 'all' ? '' : filters.status,
         filter: activeTab === 'all' ? '' : activeTab,
-        search: debouncedSearch || undefined,
+        search: debouncedSearch?.trim() || undefined,
         sortBy: sortConfig.field,
         sortOrder: sortConfig.direction
       };
@@ -78,7 +78,7 @@ export default function AdminUsersDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder, filters.status, filters.role]);
+  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder, filters.status, filters.role]);
 
   useEffect(() => {
     fetchUsers();

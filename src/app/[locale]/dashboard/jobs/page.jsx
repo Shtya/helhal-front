@@ -58,7 +58,7 @@ export default function AdminJobsDashboard() {
         limit: filters.limit,
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
-        search: debouncedSearch,
+        search: debouncedSearch?.trim(),
         filters: { status: "" }
       };
       if (activeTab !== 'all') q.filters.status = activeTab;
@@ -74,7 +74,7 @@ export default function AdminJobsDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
+  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 
   useEffect(() => {
     fetchJobs();
