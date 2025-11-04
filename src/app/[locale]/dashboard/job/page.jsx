@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Eye, Trash2, Clock, CheckCircle, XCircle, Users, DollarSign, Settings as SettingsIcon } from 'lucide-react';
+import { Search, Eye, Trash2, Clock, CheckCircle, XCircle, Users, Settings as SettingsIcon } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -9,7 +9,6 @@ import { MetricBadge, Modal, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
-import { Switcher } from '@/components/atoms/Switcher';
 import toast from 'react-hot-toast';
 
 export default function AdminJobsDashboard() {
@@ -39,9 +38,6 @@ export default function AdminJobsDashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [current, setCurrent] = useState(null);
 
-  // Settings (inline toggle)
-  const [jobsRequireApproval, setJobsRequireApproval] = useState(true);
-  const [settingsLoading, setSettingsLoading] = useState(true);
 
   const tabs = [
     { value: 'all', label: 'All Jobs' },
@@ -52,30 +48,6 @@ export default function AdminJobsDashboard() {
     { value: 'completed', label: 'Completed' },
     { value: 'closed', label: 'Closed' },
   ];
-
-  const fetchSettings = useCallback(async () => {
-    try {
-      setSettingsLoading(true);
-      const res = await api.get('/settings');
-      setJobsRequireApproval(!!res?.data?.jobsRequireApproval);
-    } catch (e) {
-      toast.error(e?.response?.data?.message || 'Failed to load platform settings');
-    } finally {
-      setSettingsLoading(false);
-    }
-  }, []);
-
-  const updateJobsApproval = async autoPublishEnabled => {
-    const nextValue = !autoPublishEnabled;
-    try {
-      await api.put('/settings', { jobsRequireApproval: nextValue });
-      setJobsRequireApproval(nextValue);
-      toast.success(nextValue ? 'Jobs now require admin approval (status = pending on creation).' : 'Jobs will be auto-published on creation.');
-    } catch (e) {
-      console.error(e);
-      toast.error(e?.response?.data?.message || 'Failed to update job approval setting');
-    }
-  };
 
   const fetchJobs = useCallback(async () => {
     try {
@@ -104,10 +76,6 @@ export default function AdminJobsDashboard() {
       setLoading(false);
     }
   }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
-
-  useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
 
   useEffect(() => {
     fetchJobs();
@@ -271,23 +239,7 @@ export default function AdminJobsDashboard() {
             </div>
           </div>
 
-          {/* Inline jobs approval switch (admin-level) */}
-          <div className='mt-4 flex items-center justify-between rounded-lg bg-white/60 p-3'>
-            <div className='flex items-center gap-2'>
-              <SettingsIcon size={18} className='text-indigo-600' />
-              <div>
-                <div className='text-sm font-semibold text-slate-800'>Job Approval Required</div>
-                <div className='text-xs text-slate-600'>
-                  If ON, new jobs are saved as <b>pending</b> until an admin publishes them.
-                </div>
-              </div>
-            </div>
-            <Switcher
-              checked={!jobsRequireApproval} // checked = auto-publish
-              onChange={updateJobsApproval}
-              disabled={settingsLoading}
-            />
-          </div>
+
         </GlassCard>
 
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
