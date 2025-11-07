@@ -483,3 +483,16 @@ body {
   border-top-left-radius: 6px !important;
   border-top-right-radius: 6px !important;
 }
+
+.message-disabled {
+  cursor: not-allowed;
+  background-color: #f3f4f6
+}
+
+.message-disabled input {
+  background-color: #f3f4f6
+}
+
+.search-disputes input {
+  margin-right: 20px;
+}

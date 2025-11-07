@@ -32,3 +32,12 @@ export function updateUrlParams(pathname, params) {
 
 
 export const fmtMoney = n => `$${n?.toLocaleString()}`;
+
+
+export function initialsFromName(name) {
+    if (!name) return '?';
+    const parts = String(name).trim().split(/\s+/);
+    const first = parts[0]?.[0] || '';
+    const second = parts[1]?.[0] || parts[0]?.[1] || '' || '';
+    return (first + second).toUpperCase();
+}

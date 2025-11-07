@@ -14,19 +14,24 @@ import ActionsMenu from '@/components/common/ActionsMenu';
 import Input from '@/components/atoms/Input';;
 import { InputRadio } from '@/components/atoms/InputRadio';
 import { useAuth } from '@/context/AuthContext';
-const DisputeStatus = {
-  OPEN: 'open',
-  IN_REVIEW: 'in_review',
-  RESOLVED: 'resolved',
-  REJECTED: 'rejected',
-};
+import { useDebounce } from '@/hooks/useDebounce';
+import { GlassCard } from '@/components/dashboard/Ui';
+import Select from '@/components/atoms/Select';
+import DisputeStatusPill from '@/components/pages/disputes/DisputeStatusPill';
+import Img from '@/components/atoms/Img';
+import { DisputeStatus, disputeType } from '@/constants/dispute';
+import toast from 'react-hot-toast';
+import DisputeChat from '@/components/pages/disputes/DisputeChat';
+import { MdOutlineLockOpen } from 'react-icons/md';
+
 
 function UserMini({ user }) {
   const letter = (user?.username?.[0] || '?').toUpperCase();
   const img = user?.profileImage || user?.avatarUrl;
   return (
     <div className='flex items-center gap-2 min-w-[220px]'>
-      <div className='h-9 w-9 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-sm font-semibold'>{img ? <img src={img} alt={user?.username || 'user'} className='h-full w-full object-cover' /> : letter}</div>
+      <div className='h-9 w-9 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-sm font-semibold'>
+        {img ? <Img src={img} alt={user?.username || 'user'} altSrc='/no-user.png' className='h-full w-full object-cover' /> : letter}</div>
       <div className='leading-tight'>
         <h1 className='font-medium text-sm truncate max-w-[160px]'>{user?.username || '—'}</h1>
         <p className='text-xs text-gray-500 truncate max-w-[160px]'>{user?.email || ''}</p>
@@ -52,7 +57,7 @@ function nestMessages(list) {
 }
 
 function MessageNode({ node, onReply, level = 0 }) {
-  const { user } = useAuth();
+  const { user: me } = useAuth();
 
   const isMine = node?.sender?.id === me?.id;
 
@@ -71,11 +76,11 @@ function MessageNode({ node, onReply, level = 0 }) {
     </div>
   );
 }
-
 const TABS = [
   { label: 'All', value: 'all' },
   { label: 'Open', value: DisputeStatus.OPEN },
   { label: 'In review', value: DisputeStatus.IN_REVIEW },
+  { label: 'Closed (no payout)', value: DisputeStatus.CLOSED_NO_PAYOUT },
   { label: 'Resolved', value: DisputeStatus.RESOLVED },
   { label: 'Rejected', value: DisputeStatus.REJECTED },
 ];
@@ -83,7 +88,22 @@ const TABS = [
 export default function DisputesPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+    total: 9,
+    sortBy: 'created_at',
+    sortOrder: 'DESC',
+  });
+  function resetPage() {
+    setFilters(p => ({ ...p, page: 1 }))
+  }
+
+  const [sort, setSort] = useState('newest');
+  const debounced = useDebounce({ value: search, onDebounce: () => resetPage() });
+
   const [rows, setRows] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState({});
 
@@ -93,6 +113,7 @@ export default function DisputesPage() {
 
   const [selected, setSelected] = useState(null);
   const [orderDetail, setOrderDetail] = useState(null);
+  const [orderDetailLoading, setOrderDetailLoading] = useState(null);
 
   const [resNote, setResNote] = useState('');
   const [sellerAmount, setSellerAmount] = useState('');
@@ -104,9 +125,22 @@ export default function DisputesPage() {
   const [activity, setActivity] = useState(null);
   const [actLoading, setActLoading] = useState(false);
   const [actError, setActError] = useState('');
-  const [replyTo, setReplyTo] = useState(null);
-  const [actMsg, setActMsg] = useState('');
-  const [sending, setSending] = useState(false);
+
+
+  const handleTabChange = tab => {
+    const v = typeof tab === 'string' ? tab : tab?.value;
+    setActiveTab(v);
+    resetPage()
+  };
+
+
+  const applySortPreset = opt => {
+    const id = opt?.id ?? opt?.target?.value ?? opt;
+    if (id === 'newest') { setSort(id); setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'DESC', page: 1 })) }
+    else if (id === 'oldest') { setSort(id); setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'ASC', page: 1 })) }
+    else return;
+  };
+
 
   const columns = useMemo(
     () => [
@@ -137,8 +171,17 @@ export default function DisputesPage() {
     try {
       const qs = new URLSearchParams();
       if (activeTab !== 'all') qs.set('status', activeTab);
+      if (debounced?.trim()) qs.set('search', debounced?.trim());
+
+      if (filters.page) qs.set('page', filters.page);
+      if (filters.limit) qs.set('limit', filters.limit);
+
+      if (filters.sortBy) qs.set('sortBy', filters.sortBy);
+      if (filters.sortOrder) qs.set('sortdir', filters.sortOrder);
+
       const { data } = await api.get(`/disputes?${qs.toString()}`);
       const list = (data?.disputes ?? data) || [];
+      setFilters(p => ({ ...p, page: data?.pagination?.page, limit: data?.pagination?.limit, total: data?.pagination?.total }))
       setRows(
         list.map(d => ({
           _raw: d,
@@ -154,7 +197,7 @@ export default function DisputesPage() {
     } finally {
       setLoading(false);
     }
-  }, [activeTab]);
+  }, [activeTab, debounced?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 
   useEffect(() => {
     fetchDisputes();
@@ -166,6 +209,7 @@ export default function DisputesPage() {
   const setRowLoading = (idShort, val) => setActionLoading(p => ({ ...p, [idShort]: val }));
 
   async function loadOrder(orderId) {
+    setOrderDetailLoading(true);
     try {
       const { data } = await api.get(`/orders/${orderId}`);
       setOrderDetail(data);
@@ -176,6 +220,9 @@ export default function DisputesPage() {
       setCloseAs('completed');
     } catch (e) {
       setOrderDetail(null);
+    }
+    finally {
+      setOrderDetailLoading(false);
     }
   }
 
@@ -211,18 +258,24 @@ export default function DisputesPage() {
     setBuyerRefund('');
     setActivity(null);
     setActError('');
-    setReplyTo(null);
-    setActMsg('');
   }
 
   async function setStatus(row, status) {
+    const toastId = toast.loading(`Updating status to "${status}"…`);
     setRowLoading(row.id, status);
     try {
       const res = await api.put(`/disputes/${row._raw.id}/status`, { status });
       if (res?.status >= 200 && res?.status < 300) {
+        toast.success(`Status updated to "${status}" successfully.`, { id: toastId });
         patchRow(row.id, r => ({ ...r, status, _raw: { ...r._raw, status } }));
       }
-    } finally {
+    } catch (e) {
+      toast.error(
+        e?.response?.data?.message || `Failed to update status to "${status}".`,
+        { id: toastId }
+      );
+    }
+    finally {
       setRowLoading(row.id, null);
     }
   }
@@ -287,8 +340,12 @@ export default function DisputesPage() {
         }));
         closeAllModals();
       }
+
+      toast.success('Dispute resolved and payout completed.');
     } catch (e) {
-      setResError(e?.response?.data?.message || 'Resolve & payout failed.');
+      const msg = e?.response?.data?.message || 'Resolve & payout failed.';
+      setResError(msg);
+      toast.error(msg)
     } finally {
       setResSubmitting(false);
     }
@@ -299,8 +356,6 @@ export default function DisputesPage() {
     setActivityOpen(true);
     setActivity(null);
     setActError('');
-    setReplyTo(null);
-    setActMsg('');
     await fetchActivity(row?._raw?.id);
   }
 
@@ -311,32 +366,6 @@ export default function DisputesPage() {
     try {
       const { data } = await api.get(`/disputes/${disputeId}/activity`);
 
-      const parsed = (() => {
-        const r = data?.dispute?.resolution;
-        if (!r) return null;
-        if (typeof r !== 'string')
-          try {
-            return JSON.parse(r);
-          } catch {
-            return r;
-          }
-        try {
-          return JSON.parse(r);
-        } catch {
-          return r;
-        }
-      })();
-      if (parsed) {
-        const sysMsg = {
-          id: `sys-resolution-${data?.dispute?.id}`,
-          parentId: null,
-          system: true,
-          sender: { id: 'system', username: 'System' },
-          message: typeof parsed === 'string' ? `Proposed resolution: ${parsed}` : `Proposed resolution → Seller: ${parsed.sellerAmount} • Buyer refund: ${parsed.buyerRefund}${parsed.note ? ` • Note: ${parsed.note}` : ''}`,
-          created_at: data?.dispute?.updated_at || data?.dispute?.created_at || new Date().toISOString(),
-        };
-        data.messages = [sysMsg, ...(data.messages || [])];
-      }
       setActivity(data);
     } catch (e) {
       if (e?.response?.status === 404) {
@@ -362,113 +391,26 @@ export default function DisputesPage() {
     }
   }
 
-  const nowISO = () => new Date().toISOString();
-
-  function makeClientMessage({ text, parentId, me }) {
-    return {
-      id: `tmp-${Math.random().toString(36).slice(2)}`, // temp id
-      parentId: parentId || null,
-      system: false,
-      sender: { id: me?.id || 'admin', username: me?.username || 'Admin' },
-      message: text,
-      created_at: nowISO(),
-      _optimistic: true, // mark as optimistic
-    };
-  }
-
-  function replaceMessageById(list, id, next) {
-    return (list || []).map(m => (m.id === id ? next : m));
-  }
-  async function sendAdminMessage() {
-    const text = (actMsg || '').trim();
-    const disputeId = selected?._raw?.id;
-    const parentId = replyTo?.id || null;
-
-    if (!disputeId || !text) return;
-
-    // 1) optimistic add
-    const optimistic = makeClientMessage({ text, parentId, me: { id: 'admin', username: 'Admin' } });
-    setActivity(prev => (prev ? { ...prev, messages: [...(prev.messages || []), optimistic] } : prev));
-
-    // clear UI immediately
-    setActMsg('');
-    setReplyTo(null);
-    setSending(true);
-
-    try {
-      // 2) send to API
-      const res = await api.post(`/disputes/${disputeId}/messages`, {
-        message: text,
-        parentId,
-      });
-
-      // The API might return the created message object; try to use it
-      const serverMsg = res?.data?.message || res?.data || null;
-
-      // Build a safe fallback if server doesn't return a message
-      const finalized = serverMsg
-        ? {
-          id: serverMsg.id || optimistic.id, // keep id if not provided
-          parentId: serverMsg.parentId ?? parentId ?? null,
-          system: !!serverMsg.system,
-          sender: serverMsg.sender || optimistic.sender,
-          message: serverMsg.message ?? text,
-          created_at: serverMsg.created_at || nowISO(),
-        }
-        : {
-          ...optimistic,
-          _optimistic: false, // commit
-        };
-
-      // 3) replace optimistic with server version (or commit optimistic)
-      setActivity(prev => (prev ? { ...prev, messages: replaceMessageById(prev.messages || [], optimistic.id, finalized) } : prev));
-    } catch (e) {
-      // 4) rollback: remove optimistic + surface error
-      setActivity(prev => (prev ? { ...prev, messages: (prev.messages || []).filter(m => m.id !== optimistic.id) } : prev));
-      alert(e?.response?.data?.message || 'Failed to send message.');
-    } finally {
-      setSending(false);
-    }
-  }
 
   const renderActions = row => {
     const busy = !!actionLoading[row.id];
     const s = row.status;
+
     const canPropose = [DisputeStatus.OPEN, DisputeStatus.IN_REVIEW].includes(s);
-    const canResolve = s !== DisputeStatus.RESOLVED;
 
     const options = [
       { icon: <Eye className='h-4 w-4' />, label: 'View', onClick: () => openDetails(row), disabled: busy },
       { icon: <Activity className='h-4 w-4' />, label: 'Activity', onClick: () => openActivity(row), disabled: busy },
       { icon: <FilePlus className='h-4 w-4' />, label: 'Propose', onClick: () => openResolution(row), disabled: busy, hide: !canPropose },
+      { icon: <MdOutlineLockOpen className='h-4 w-4' />, label: 'Open Again', onClick: () => setStatus(row, DisputeStatus.OPEN), disabled: busy, hide: s === DisputeStatus.OPEN },
       { icon: <Search className='h-4 w-4' />, label: 'Mark In Review', onClick: () => setStatus(row, DisputeStatus.IN_REVIEW), disabled: busy, hide: s === DisputeStatus.IN_REVIEW },
-      { icon: <CheckCircle className='h-4 w-4' />, label: busy ? 'Marking…' : 'Mark Resolved', onClick: () => setStatus(row, DisputeStatus.RESOLVED), disabled: busy, hide: !canResolve },
-      { icon: <XCircle className='h-4 w-4' />, label: busy ? 'Rejecting…' : 'Reject', onClick: () => setStatus(row, DisputeStatus.REJECTED), disabled: busy, danger: true, hide: !canResolve },
+      { icon: <CheckCircle className='h-4 w-4' />, label: busy ? 'Closing' : 'Close (order continues)', onClick: () => setStatus(row, DisputeStatus.CLOSED_NO_PAYOUT), disabled: busy, hide: !canPropose },
+      { icon: <XCircle className='h-4 w-4' />, label: busy ? 'Rejecting…' : 'Reject', onClick: () => setStatus(row, DisputeStatus.REJECTED), disabled: busy, danger: true, hide: !canPropose },
     ];
 
     return <ActionsMenu options={options} align='right' />;
   };
 
-  const filtered = rows.filter(r => {
-    if (!search?.trim()) return true;
-    const s = search.toLowerCase();
-    return r.orderTitle?.toLowerCase().includes(s) || r.raisedBy?.toLowerCase().includes(s) || r.id?.toLowerCase().includes(s) || r.seller?.toLowerCase().includes(s) || r.buyer?.toLowerCase().includes(s);
-  });
-
-  const emptyMsgRef = useRef(null);
-
-  // Enter to send
-  const onEmptyInputKeyDown = useCallback(
-    e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if (!sending && (actMsg || '').trim()) {
-          sendAdminMessage();
-        }
-      }
-    },
-    [sending, actMsg, sendAdminMessage],
-  );
 
   const inv = orderDetail?.invoices?.[0];
   const subtotal = Number(inv?.subtotal || 0);
@@ -490,53 +432,88 @@ export default function DisputesPage() {
     });
   }, [threaded]);
 
+  const isDisputeClosed = activity?.dispute?.status === DisputeStatus.REJECTED || activity?.dispute?.status === DisputeStatus.RESOLVED; isDisputeClosed
   return (
     <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
-      <Tabs className='mb-8' setActiveTab={setActiveTab} activeTab={activeTab} tabs={TABS} />
-      <Table loading={loading} data={filtered} columns={columns} actions={renderActions} />
+
+      <GlassCard gradient='from-green-400 via-emerald-400 to-teal-400' className='mb-6 !overflow-visible'>
+        <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
+          <Tabs tabs={TABS} activeTab={activeTab} setActiveTab={handleTabChange} />
+          <div className='flex flex-wrap items-center gap-3'>
+            <Input iconLeft={<Search size={16} />} className='!w-fit' value={search} onChange={e => setSearch(e.target.value)} placeholder='Search disputes' />
+            <Select
+              className='!w-fit'
+              onChange={applySortPreset}
+              placeholder='Order by'
+              value={sort}
+              options={[
+                { id: 'newest', name: 'Newest' },
+                { id: 'oldest', name: 'Oldest' },
+              ]}
+            />
+          </div>
+        </div>
+      </GlassCard>
+      <Table
+        loading={loading}
+        data={rows}
+        columns={columns}
+        actions={renderActions}
+        rowsPerPage={filters.limit}
+        page={filters.page}
+        totalCount={filters.total}
+        onPageChange={p => setFilters(prev => ({ ...prev, page: p }))}
+      />
 
       {/* Details Modal */}
       {detailsOpen && (
-        <Modal title='Dispute details' onClose={closeAllModals}>
-          <div className='space-y-4'>
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-              <Info label='Order' value={selected?._raw?.order?.title || selected?._raw?.orderId} />
-              <Info label='Status' value={selected?._raw?.status} />
-              <Info label='Raised by' value={selected?._raw?.raisedBy?.username || selected?._raw?.raisedById} />
-              <Info label='Reason' value={selected?._raw?.reason} />
-            </div>
+        <Modal title="Dispute details" onClose={closeAllModals}>
+          <div className="space-y-4">
+            {/* Dispute Info Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Info label="Order" value={selected?._raw?.order?.title || selected?._raw?.orderId} />
+              <Info label="Raised by" value={selected?._raw?.raisedBy?.username || selected?._raw?.raisedById} />
+              <Info label="Subject" value={selected?._raw?.subject} />
+              <Info
+                label="Type"
+                value={
+                  disputeType.find((type) => type.id === selected?._raw?.type)?.name ?? '—'
+                }
+              />
 
-            <div className='rounded-lg border border-gray-200 p-3'>
-              <h4 className='font-medium mb-2'>Invoice</h4>
-              {!orderDetail ? (
-                <div className='space-y-2'>
-                  <Shimmer className='h-4 w-32' />
-                  <Shimmer className='h-4 w-24' />
-                  <Shimmer className='h-4 w-40' />
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 font-medium">Status:</span>
+                <DisputeStatusPill status={selected?._raw?.status} />
+              </div>
+            </div>
+            <Info label="Reason" value={selected?._raw?.reason} />
+
+            {/* Invoice Section */}
+            <div className="rounded-lg border border-gray-200 p-3">
+              <h4 className="font-medium mb-2">Invoice</h4>
+              {orderDetailLoading ? (
+                <div className="space-y-2">
+                  <Shimmer className="h-4 w-32" />
+                  <Shimmer className="h-4 w-24" />
+                  <Shimmer className="h-4 w-40" />
                 </div>
               ) : inv ? (
-                <div className='text-sm'>
-                  <div className='flex justify-between'>
+                <div className="text-sm space-y-1">
+                  <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>
-                      {subtotal.toFixed(2)} {currency}
-                    </span>
+                    <span>{subtotal.toFixed(2)} {currency}</span>
                   </div>
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <span>Service fee</span>
-                    <span>
-                      {serviceFee.toFixed(2)} {currency}
-                    </span>
+                    <span>{serviceFee.toFixed(2)} {currency}</span>
                   </div>
-                  <div className='flex justify-between font-medium'>
+                  <div className="flex justify-between font-medium">
                     <span>Total</span>
-                    <span>
-                      {total.toFixed(2)} {currency}
-                    </span>
+                    <span>{total.toFixed(2)} {currency}</span>
                   </div>
                 </div>
               ) : (
-                <p className='text-sm text-gray-500'>No invoice found.</p>
+                <p className="text-sm text-gray-500">No invoice found.</p>
               )}
             </div>
           </div>
@@ -587,12 +564,36 @@ export default function DisputesPage() {
             </div>
 
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-              <Field label='Seller amount (payout)'>
-                <input type='number' step='0.01' className='w-full rounded-lg border border-gray-300 p-2' value={sellerAmount} onChange={e => setSellerAmount(e.target.value)} />
+              <Field label="Seller amount (payout)">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  value={sellerAmount}
+                  onChange={e => {
+                    const val = Number(e.target.value);
+                    const safeVal = isNaN(val) || val < 0 ? 0 : val;
+                    setSellerAmount(safeVal);
+                    setBuyerRefund(Math.max(0, Number((subtotal - safeVal).toFixed(2))));
+                  }}
+                />
               </Field>
-              <Field label='Buyer refund (credit)'>
-                <input type='number' step='0.01' className='w-full rounded-lg border border-gray-300 p-2' value={buyerRefund} onChange={e => setBuyerRefund(e.target.value)} />
+
+              <Field label="Buyer refund (credit)">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  value={buyerRefund}
+                  onChange={e => {
+                    const val = Number(e.target.value);
+                    const safeVal = isNaN(val) || val < 0 ? 0 : val;
+                    setBuyerRefund(safeVal);
+                    setSellerAmount(Math.max(0, Number((subtotal - safeVal).toFixed(2))));
+                  }}
+                />
               </Field>
+
             </div>
 
             <div className='rounded-lg border border-gray-200 p-3'>
@@ -625,69 +626,8 @@ export default function DisputesPage() {
               <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{actError}</div>
             ) : activity ? (
               <>
-                <div className='rounded-xl border border-gray-200 p-3'>
-                  <div className='text-sm font-semibold mb-3'>Thread</div>
-                  <div ref={scrollRef} className=' max-h-[300px] flex-1 min-h-0 overflow-y-auto px-4 pt-3 pb-2 space-y-3 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]'>
-                    {/* <div className='space-y-3 max-h-[300px] overflow-auto pr-1'> */}
-                    {threaded.length ? (
-                      threaded.map(node => <MessageNode key={node.id} node={node} onReply={setReplyTo} />)
-                    ) : (
-                      <div className='flex flex-col items-center justify-center py-6 text-center text-gray-500 border border-dashed border-gray-200 rounded-lg bg-gray-50'>
-                        <MessageSquare className='h-6 w-6 mb-2 text-gray-400' />
-                        <p className='text-sm font-medium'>No messages yet</p>
-                        <p className='text-xs text-gray-400 mt-1'>Start the conversation by sending the first message.</p>
-                      </div>
-                    )}
-                  </div>
-                  {/* Composer (send on Enter) */}
-                  <div className='mt-3 flex items-center gap-2'>
-                    <Input
-                      name='thread-message'
-                      placeholder='Write a message to both parties…'
-                      value={actMsg}
-                      onChange={e => setActMsg(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          if (!sending && (actMsg || '').trim()) sendAdminMessage();
-                        }
-                      }}
-                    />
-                    <Button loading={sending} icon={<Send className='h-4 w-4' />} color='black' onClick={sendAdminMessage} disabled={sending || !(actMsg || '').trim()} className='!h-[40px] !w-auto px-4' />
-                  </div>
-                </div>
+                <DisputeChat detail={activity} selectedId={activity?.dispute?.id} setDetail={setActivity} />
 
-                {/* <div className='rounded-xl border border-gray-200 p-3'>
-                  <div className='text-sm font-semibold mb-3'>Thread</div>
-                  <div className='space-y-3 max-h-[300px] overflow-auto pr-1'>
-                    {threaded.length ? (
-                      threaded.map(node => <MessageNode key={node.id} node={node} onReply={setReplyTo} />)
-                    ) : (
-                      <div className='flex flex-col items-center justify-center py-6 text-center text-gray-500 border border-dashed border-gray-200 rounded-lg bg-gray-50'>
-                        <MessageSquare className='h-6 w-6 mb-2 text-gray-400' />
-                        <p className='text-sm font-medium'>No messages yet</p>
-                        <p className='text-xs text-gray-400 mt-1'>Start the conversation by sending the first message.</p>
-                      </div>
-                    )}
-                  </div> 
-                  {replyTo ? (
-                    <div className='mt-3 rounded-lg bg-gray-50 border border-gray-200 p-2 text-xs flex items-center justify-between'>
-                      <div className='truncate'>
-                        Replying to <b>{replyTo?.sender?.username || 'User'}</b>: <span className='text-gray-600'>{replyTo?.message?.slice(0, 80)}</span>
-                      </div>
-                      <button onClick={() => setReplyTo(null)} className='text-gray-500 hover:text-gray-700'>
-                        Cancel
-                      </button>
-                    </div>
-                  ) : null}
-
-                  <div className='mt-3 flex items-center gap-2'>
-                    <input value={actMsg} onChange={e => setActMsg(e.target.value)} placeholder='Write a message to both parties…' className='flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black/10' />
-                    <button onClick={sendAdminMessage} disabled={sending || !actMsg.trim()} className={`rounded-lg px-4 py-2 text-white ${sending ? 'bg-gray-400' : 'bg-black hover:bg-black/90'}`}>
-                      {sending ? 'Sending…' : 'Send'}
-                    </button>
-                  </div>
-                </div> */}
               </>
             ) : null}
           </div>
@@ -714,3 +654,5 @@ function Field({ label, children }) {
     </label>
   );
 }
+
+

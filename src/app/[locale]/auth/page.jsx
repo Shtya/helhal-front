@@ -649,7 +649,7 @@ export default function AuthPage() {
   return (
     <AuthFormContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess }}>
       <div className='min-h-screen !px-0 flex justify-center  bg-gray-100 '>
-        <div className='max-w-screen-2xl m-0 sm:m-10   sm:rounded-lg flex justify-center flex-1 overflow-hidden bg-white'>
+        <div className='relative max-w-screen-2xl m-0 sm:m-10   sm:rounded-lg flex justify-center flex-1 overflow-hidden bg-white'>
 
 
           {/* left hero */}
@@ -671,11 +671,11 @@ export default function AuthPage() {
           </div>
 
           {/* right panel: forms */}
-          <div className='w-full lg:max-w-[500px] flex items-center flex-col justify-center p-6 lg:px-10 '>
-            <div className='flex justify-center items-center'>
+          <div className='relative w-full lg:max-w-[500px] flex items-center flex-col justify-center p-6 lg:px-10 '>
+            <div className='flex justify-center items-center absolute top-10 start-10'>
               <Logo textHideMobile={false} />
             </div>
-            <motion.div className='w-full  max-lg:p-8 lg:py-8'>
+            <motion.div className='w-full max-lg:p-8 lg:py-8'>
               <TitleByTab view={view} activeTab={activeTab} />
               <AuthTabs setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} />
               <AnimatePresence mode='wait'>

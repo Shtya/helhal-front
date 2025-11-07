@@ -83,7 +83,7 @@ export default function ActionsMenu({ options = [], align = 'right', buttonClass
   }, [open, computePos, close]);
 
 
-	useEffect(() => {
+  useEffect(() => {
     if (!open) return;
     const handler = e => {
       if (menuRef.current?.contains(e.target)) return;

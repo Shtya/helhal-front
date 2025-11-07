@@ -11,14 +11,14 @@ import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
 import Button from '@/components/atoms/Button';
-import api, { baseImg } from '@/lib/axios';
-import { CreditCard, MessageCircle } from 'lucide-react';
-import { Modal } from '@/components/common/Modal';
+import api from '@/lib/axios';
+import { MessageCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from '@/i18n/navigation';
-import Img from '@/components/atoms/Img';
 import toast from 'react-hot-toast';
 import UserMini from '@/components/dashboard/UserMini';
+import { DisputeModal } from '@/components/pages/my-orders/DisputeForm';
+import { OrderStatus } from '@/constants/order';
 
 // Animation
 export const tabAnimation = {
@@ -27,17 +27,6 @@ export const tabAnimation = {
   exit: { opacity: 0, y: -10, scale: 0.985, transition: { duration: 0.18, ease: [0.4, 0, 0.2, 1] } },
 };
 
-// Status constants
-const OrderStatus = {
-  PENDING: 'Pending',
-  ACCEPTED: 'Accepted',
-  ACTIVE: 'Active', // Pending +  Accepted
-  DELIVERED: 'Delivered',
-  COMPLETED: 'Completed',
-  CANCELLED: 'Cancelled',
-  MISSING_DETAILS: "Missing Details",
-  DISPUTED: 'Disputed',
-};
 
 const TABS = [
   { label: 'All', value: 'all' },
@@ -235,52 +224,16 @@ export default function Page() {
   // Dispute modal state
   const [disputeOpen, setDisputeOpen] = useState(false);
   const [disputeRow, setDisputeRow] = useState(null);
-  const [disputeReason, setDisputeReason] = useState('');
-  const [disputeError, setDisputeError] = useState('');
-  const [disputeSubmitting, setDisputeSubmitting] = useState(false);
 
   function openDisputeModal(row) {
     setDisputeRow(row);
-    setDisputeReason('');
-    setDisputeError('');
     setDisputeOpen(true);
   }
 
 
   function closeDisputeModal() {
-    if (disputeSubmitting) return;
     setDisputeOpen(false);
     setDisputeRow(null);
-    setDisputeReason('');
-    setDisputeError('');
-  }
-
-  async function disputeOrder() {
-    if (!disputeRow) return;
-    const reason = (disputeReason || '').trim();
-    if (!reason || reason.length < 8) {
-      setDisputeError('Please describe the issue (at least 8 characters).');
-      return;
-    }
-
-    setRowLoading(disputeRow.id, 'dispute');
-    setDisputeSubmitting(true);
-    try {
-      const res = await api.post(`/disputes`, { orderId: disputeRow.id, reason });
-      if (res && res.status >= 200 && res.status < 300) {
-        patchOrderRow(disputeRow.id, r => ({
-          ...r,
-          status: OrderStatus.DISPUTED, // <—
-          _raw: { ...r._raw, status: OrderStatus.DISPUTED, hasOpenDispute: true, disputeStatus: 'open' },
-        }));
-        closeDisputeModal();
-      }
-    } catch (e) {
-      setDisputeError(e?.response?.data?.message || 'Failed to open dispute');
-    } finally {
-      setDisputeSubmitting(false);
-      setRowLoading(disputeRow?.id || '', null);
-    }
   }
 
   async function deliverOrder(row) {
@@ -327,7 +280,7 @@ export default function Page() {
   function renderActions(row) {
     const s = row.status;
 
-    const hasOpenDispute = !!(row?._raw?.hasOpenDispute || row?._raw?.disputeStatus === 'open' || row?._raw?.disputeStatus === 'in_review');
+    const hasOpenDispute = !!(s === 'Disputed' || s === 'in_review');
 
     const canSellerDeliver = isSeller && s === OrderStatus.ACCEPTED && !hasOpenDispute;
     const canBuyerReceive = isBuyer && s === OrderStatus.DELIVERED && !hasOpenDispute;
@@ -354,6 +307,16 @@ export default function Page() {
             loading={loadingAction === 'dispute'}
           />
         )}
+
+        {hasOpenDispute && (
+          <Button
+            color="outline"
+            name="View Dispute"
+            className="!w-fit !h-[35px]"
+            href={`/my-disputes?dispute=${row?._raw?.disputeId}`}
+          />
+        )}
+
         {isBuyer && row.status === OrderStatus.PENDING && (
           <>
             <Button
@@ -374,7 +337,7 @@ export default function Page() {
           className="!w-fit !h-[35px]"
 
         />)}
-        {hasOpenDispute && <Button color='outline' name='In Dispute' className='!w-fit !h-[35px] pointer-events-none opacity-60' disabled />}
+
       </div>
     );
   }
@@ -394,43 +357,8 @@ export default function Page() {
           <Table loading={loading} data={orders} columns={columns} actions={renderActions} page={pagination.page} rowsPerPage={pagination.limit} totalCount={pagination.total} onPageChange={onPageChange} />
         </motion.div>
       </AnimatePresence>
+      <DisputeModal disputeOpen={disputeOpen} closeDisputeModal={closeDisputeModal} disputeRow={disputeRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
 
-      {disputeOpen && (
-        <Modal title='Open a Dispute' onClose={closeDisputeModal}>
-          <div className='space-y-4'>
-            <div className='rounded-md bg-gray-50 p-3 text-sm text-gray-700'>
-              Order: <span className='font-medium'>{disputeRow?._raw?.title || disputeRow?._raw?.service?.title || disputeRow?.id}</span>
-            </div>
-
-            <label className='block'>
-              <span className='text-sm font-medium text-gray-700'>Describe the issue</span>
-              <textarea
-                className='mt-1 w-full resize-y rounded-lg border border-gray-300 p-3 outline-none focus:ring-2 focus:ring-black/10'
-                rows={5}
-                value={disputeReason}
-                onChange={e => {
-                  setDisputeReason(e.target.value);
-                  if (disputeError) setDisputeError('');
-                }}
-                placeholder="Explain what went wrong, what's missing, and what outcome you want…"
-                maxLength={2000}
-              />
-              <div className='mt-1 text-xs text-gray-500'>{disputeReason.length}/2000</div>
-            </label>
-
-            {disputeError ? <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{disputeError}</div> : null}
-
-            <div className='flex items-center justify-end gap-2'>
-              <button onClick={closeDisputeModal} className='rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50' disabled={disputeSubmitting}>
-                Cancel
-              </button>
-              <button onClick={disputeOrder} className={`rounded-lg px-4 py-2 text-white ${disputeSubmitting ? 'bg-gray-400' : 'bg-red-600 hover:bg-red-700'}`} disabled={disputeSubmitting}>
-                {disputeSubmitting ? 'Submitting…' : 'Submit Dispute'}
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
     </div>
   );
 }
