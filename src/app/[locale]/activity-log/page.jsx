@@ -5,7 +5,7 @@ import Tabs from '@/components/common/Tabs';
 import ActivityTab from '@/components/pages/ActivityLogs/ActivityTab';
 import DetialsTab from '@/components/pages/ActivityLogs/DetialsTab';
 import RequirementsTab from '@/components/pages/ActivityLogs/RequirmentsTab';
-import { tabAnimation } from '../orders/page';
+import { tabAnimation } from '../my-orders/page';
 
 
 export default function Page() {

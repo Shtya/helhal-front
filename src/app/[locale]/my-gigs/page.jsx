@@ -2,7 +2,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { tabAnimation } from '../orders/page';
+import { tabAnimation } from '../my-orders/page';
 import { apiService } from '@/services/GigServices';
 import Button from '@/components/atoms/Button';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
