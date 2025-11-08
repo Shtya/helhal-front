@@ -1,0 +1,114 @@
+import { useEffect, useState } from 'react';
+import { Modal } from '@/components/common/Modal';
+import AttachmentList from '@/components/common/AttachmentList';
+import { formatDate } from '@/utils/date';
+import api from '@/lib/axios';
+
+export default function ChangeRequestReviewModel({
+    open,
+    onClose,
+    selectedRow,
+}) {
+    const [loading, setLoading] = useState(true);
+    const [request, setRequest] = useState(null);
+
+    useEffect(() => {
+        if (!selectedRow?.id) return;
+
+        const fetchChangeRequest = async () => {
+            setLoading(true);
+            try {
+                const res = await api.get(`/orders/${selectedRow.id}/last-change-request`);
+                setRequest(res.data);
+
+                // Mocked response
+                // const twoDaysAgo = new Date(Date.now() - 2 * 86400000).toISOString();
+                // const mockData = {
+                //     created_at: twoDaysAgo,
+                //     message: `Hi ${selectedRow?._raw?.seller?.username},\n\nThanks for the delivery! I’d like a few adjustments before we proceed.`,
+                //     files: [
+                //         {
+                //             name: 'revision-notes.pdf',
+                //             url: 'https://example.com/mock/revision-notes.pdf',
+                //         },
+                //         {
+                //             name: 'reference-screenshot.png',
+                //             url: 'https://example.com/mock/reference-screenshot.png',
+                //         },
+                //     ],
+                // };
+
+                // await new Promise((res) => setTimeout(res, 500));
+                // setRequest(mockData);
+            } catch (error) {
+                setRequest(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchChangeRequest();
+    }, [selectedRow?.id]);
+
+    if (!open) return null;
+
+    const orderTitle = selectedRow?._raw?.title;
+    const clientName = selectedRow?._raw?.buyer?.username;
+
+    return (
+        <Modal title="Change Request" onClose={onClose}>
+            <div className="space-y-4">
+                <p className="text-sm text-slate-600">
+                    Order: <strong>{orderTitle}</strong>
+                </p>
+                <p className="text-sm text-slate-600">
+                    Requested by <strong>{clientName}</strong>
+                </p>
+
+                {loading ? (
+                    <ModalSkeleton />
+                ) : request ? (
+                    <>
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">
+                                Message
+                            </label>
+                            <p className="text-sm text-slate-800 whitespace-pre-line bg-slate-50 p-3 rounded">
+                                {request.message}
+                            </p>
+                        </div>
+
+                        {request.files?.length > 0 && (
+                            <div className="space-y-2">
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Files
+                                </label>
+                                <AttachmentList attachments={request.files} variant="list" />
+                            </div>
+                        )}
+
+                        <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
+                            This change request was submitted on <strong>{formatDate(request.created_at)}</strong>.
+                        </div>
+                    </>
+                ) : (
+                    <p className="text-sm text-red-600">No change request found.</p>
+                )}
+            </div>
+        </Modal>
+    );
+}
+
+function ModalSkeleton() {
+    return (
+        <div className="space-y-4 animate-pulse">
+            <div className="h-6 w-1/2 bg-slate-200 rounded" />
+            <div className="h-4 w-3/4 bg-slate-200 rounded" />
+            <div className="h-4 w-2/3 bg-slate-200 rounded" />
+            <div className="space-y-2">
+                <div className="h-4 w-1/3 bg-slate-200 rounded" />
+                <div className="h-24 w-full bg-slate-200 rounded" />
+            </div>
+        </div>
+    );
+}

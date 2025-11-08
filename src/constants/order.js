@@ -6,6 +6,7 @@ export const OrderStatus = {
     ACCEPTED: 'Accepted',
     ACTIVE: 'Active', // Pending +  Accepted
     DELIVERED: 'Delivered',
+    CHANGES_REQUESTED: 'Change Requested',
     COMPLETED: 'Completed',
     CANCELLED: 'Cancelled',
     MISSING_DETAILS: "Missing Details",

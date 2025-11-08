@@ -11,3 +11,12 @@ export function getDateAgo(date) {
     const days = Math.floor(hours / 24);
     return `${days} ${days === 1 ? 'day' : 'days'} ago`;
 }
+
+
+export function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    });
+}

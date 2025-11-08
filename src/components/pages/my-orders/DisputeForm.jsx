@@ -12,53 +12,56 @@ import { useAuth } from "@/context/AuthContext";
 import { Link } from "@/i18n/navigation";
 import { OrderStatus } from "@/constants/order";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 
 
-export function DisputeModal({ disputeRow, disputeOpen, closeDisputeModal, patchOrderRow, setRowLoading }) {
+export function DisputeModal({ selectedRow, open, onClose, patchOrderRow, setRowLoading }) {
     const [submitting, setSubmitting] = useState(false);
     const router = useRouter()
     const [apiError, setApiError] = useState(null);
 
     async function handleDisputeSubmit(values) {
-        if (!disputeRow) return;
+        if (!selectedRow) return;
 
-        setRowLoading(disputeRow.id, 'dispute');
+        setRowLoading(selectedRow.id, 'dispute');
         setSubmitting(true);
         setApiError(null);
 
         try {
             const res = await api.post(`/disputes`, {
-                orderId: disputeRow.id,
+                orderId: selectedRow.id,
                 type: values.type,
                 subject: values.subject,
                 reason: values.message,
             });
 
             if (res.status >= 200 && res.status < 300) {
-                patchOrderRow(disputeRow.id, r => ({
+                patchOrderRow(selectedRow.id, r => ({
                     ...r,
                     status: OrderStatus.DISPUTED,
                     _raw: { ...r._raw, status: OrderStatus.DISPUTED, hasOpenDispute: true, disputeStatus: 'open' },
                 }));
-                closeDisputeModal();
+                toast.success('Dispute opened successfully');
+
+                onClose();
                 router.push(`my-disputes?dispute=${res.data.id}`)
             }
         } catch (e) {
             setApiError(e?.response?.data?.message || 'Failed to open dispute');
         } finally {
             setSubmitting(false);
-            setRowLoading(disputeRow?.id || '', null);
+            setRowLoading(selectedRow?.id || '', null);
         }
     }
 
-    if (!disputeOpen) return;
+    if (!open) return;
     return (
-        <Modal title="Open a Dispute" onClose={() => { setApiError(''); closeDisputeModal() }}>
+        <Modal title="Open a Dispute" onClose={() => { setApiError(''); onClose() }}>
             <div className="space-y-4">
                 <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">
                     Order: <span className="font-medium">
-                        {disputeRow?._raw?.title || disputeRow?._raw?.service?.title || disputeRow?.id}
+                        {selectedRow?._raw?.title || selectedRow?._raw?.service?.title || selectedRow?.id}
                     </span>
                 </div>
 
@@ -68,7 +71,7 @@ export function DisputeModal({ disputeRow, disputeOpen, closeDisputeModal, patch
                     </div>
                 )}
 
-                <DisputeForm submitting={submitting} onSubmit={handleDisputeSubmit} disputeRow={disputeRow} />
+                <DisputeForm submitting={submitting} onSubmit={handleDisputeSubmit} selectedRow={selectedRow} />
             </div>
         </Modal>
     );
@@ -93,7 +96,7 @@ const disputeSchema = z.object({
 
 
 
-function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, disputeRow }) {
+function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, selectedRow }) {
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
         resolver: zodResolver(disputeSchema),
         defaultValues,
@@ -103,7 +106,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, di
     const isBuyer = role === 'buyer';
 
     // Extract counterpart info
-    const counterpart = isBuyer ? disputeRow?._raw?.seller : disputeRow?._raw?.buyer;
+    const counterpart = isBuyer ? selectedRow?._raw?.seller : selectedRow?._raw?.buyer;
     const counterpartRole = isBuyer ? 'freelancer' : 'client';
 
     return (
@@ -116,7 +119,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, di
                     <Link href={`/profile/${counterpart.id}`} className="font-medium text-slate-900 hover:underline">@{counterpart?.username}</Link> for the order:
                 </p>
                 <p className="mt-1 font-medium text-slate-800">
-                    {disputeRow?._raw?.title} — ${disputeRow?._raw?.totalAmount}
+                    {selectedRow?._raw?.title} — ${selectedRow?._raw?.totalAmount}
                 </p>
             </div>
 

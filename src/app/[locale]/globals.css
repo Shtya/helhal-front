@@ -496,3 +496,7 @@ body {
 .search-disputes input {
   margin-right: 20px;
 }
+
+.deliver-file {
+  display: block;
+}

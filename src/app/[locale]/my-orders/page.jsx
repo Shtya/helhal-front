@@ -12,7 +12,7 @@ import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
-import { AlertTriangle, CheckCircle, CreditCard, FileWarning, MessageCircle, Package, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, CreditCard, FileText, FileWarning, MessageCircle, MessageSquare, Package, XCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from '@/i18n/navigation';
 import toast from 'react-hot-toast';
@@ -20,6 +20,9 @@ import UserMini from '@/components/dashboard/UserMini';
 import { DisputeModal } from '@/components/pages/my-orders/DisputeForm';
 import { OrderStatus } from '@/constants/order';
 import ActionsMenu from '@/components/common/ActionsMenu';
+import DeliverModel from '@/components/pages/my-orders/DeliverModel';
+import ReviewSubmissionModel from '@/components/pages/my-orders/ReviewSubmissionModel';
+import ChangeRequestReviewModel from '@/components/pages/my-orders/ChangeRequestReviewModel';
 
 // Animation
 export const tabAnimation = {
@@ -129,6 +132,7 @@ export default function Page() {
           [OrderStatus.CANCELLED, 'text-rose-600'],
           [OrderStatus.MISSING_DETAILS, 'text-orange-600'],
           [OrderStatus.DISPUTED, 'text-purple-700'], // <—
+          [OrderStatus.CHANGES_REQUESTED, 'text-pink-600'],
         ],
       },
     ],
@@ -222,39 +226,23 @@ export default function Page() {
       setRowLoading(row.id, null);
     }
   }
-  // Dispute modal state
-  const [disputeOpen, setDisputeOpen] = useState(false);
-  const [disputeRow, setDisputeRow] = useState(null);
+  const [selectedRow, setSelectedRow] = useState(null);
 
-  function openDisputeModal(row) {
-    setDisputeRow(row);
-    setDisputeOpen(true);
+  //
+  const [openModal, setOpenModal] = useState(false);
+
+  function handleOpenModal(row, model) {
+    setSelectedRow(row);
+    setOpenModal(model);
   }
 
 
-  function closeDisputeModal() {
-    setDisputeOpen(false);
-    setDisputeRow(null);
+  function handleCloseModal() {
+    setSelectedRow(null);
+    setOpenModal(null);
   }
 
-  async function deliverOrder(row) {
-    setRowLoading(row.id, 'deliver');
-    try {
-      const res = await api.post(`/orders/${row.id}/deliver`);
-      if (res && res.status >= 200 && res.status < 300) {
-        patchOrderRow(row.id, r => ({
-          ...r,
-          status: OrderStatus.DELIVERED,
-          _raw: { ...r._raw, status: OrderStatus.DELIVERED, deliveredAt: new Date().toISOString() },
-        }));
-      }
-    } catch (e) {
-      const msg = e?.response?.data?.message || 'Failed to deliver order';
-      alert(msg);
-    } finally {
-      setRowLoading(row.id, null);
-    }
-  }
+
 
   const handleCancel = async (row) => {
     const confirmed = window.confirm('Are you sure you want to cancel this order?');
@@ -283,10 +271,12 @@ export default function Page() {
 
     const hasOpenDispute = !!(s === 'Disputed' || s === 'in_review');
 
-    const canSellerDeliver = isSeller && s === OrderStatus.ACCEPTED && !hasOpenDispute;
+    const canSellerDeliver = isSeller && s === (OrderStatus.ACCEPTED || OrderStatus.CHANGES_REQUESTED) && !hasOpenDispute;
     const canBuyerReceive = isBuyer && s === OrderStatus.DELIVERED && !hasOpenDispute;
-    const canDispute = (isBuyer || isSeller) && [OrderStatus.ACCEPTED, OrderStatus.DELIVERED].includes(s) && !hasOpenDispute;
+    const canDispute = (isBuyer || isSeller) && [OrderStatus.ACCEPTED, OrderStatus.DELIVERED, OrderStatus.CHANGES_REQUESTED].includes(s) && !hasOpenDispute;
 
+    const isCompleted = s === OrderStatus.COMPLETED;
+    const isChangesRequested = s === OrderStatus.CHANGES_REQUESTED;
     const loadingAction = actionLoading[row.id]; // "deliver" | "receive" | "dispute" | "cancel" | null
     const isBusy = !!loadingAction;
 
@@ -300,23 +290,39 @@ export default function Page() {
         disabled: isBusy,
       },
       {
+        icon: <FileText className="h-4 w-4" />,
+        label: "Review Submission",
+        onClick: () => handleOpenModal(row, "submission"),
+        disabled: isBusy,
+        hide: !isCompleted,
+      },
+      {
+        icon: <MessageSquare className="h-4 w-4" />,
+        label: "View Change Request",
+        onClick: () => handleOpenModal(row, "changes-requested"),
+        disabled: isBusy,
+        hide: !isChangesRequested,
+      },
+      {
         icon: <Package className="h-4 w-4" />,
         label: loadingAction === 'deliver' ? 'Delivering…' : 'Deliver',
-        onClick: () => deliverOrder(row),
+        // onClick: () => deliverOrder(row),
+        onClick: () => handleOpenModal(row, "deliver"),
         disabled: isBusy || loadingAction === 'deliver',
         hide: !canSellerDeliver,
       },
       {
         icon: <CheckCircle className="h-4 w-4" />,
-        label: loadingAction === 'receive' ? 'Submitting…' : 'Mark as Received',
-        onClick: () => completeOrder(row),
+        label: loadingAction === 'receive' ? 'Submitting…' : 'Receive',
+        // onClick: () => completeOrder(row),
+        onClick: () => handleOpenModal(row, 'receive'),
         disabled: isBusy || loadingAction === 'receive',
         hide: !canBuyerReceive,
       },
       {
         icon: <AlertTriangle className="h-4 w-4" />,
         label: loadingAction === 'dispute' ? 'Opening…' : 'Open Dispute',
-        onClick: () => openDisputeModal(row),
+        onClick: () => handleOpenModal(row, 'dispute'),
         disabled: isBusy || loadingAction === 'dispute',
         hide: !canDispute,
         danger: true,
@@ -362,8 +368,10 @@ export default function Page() {
           <Table loading={loading} data={orders} columns={columns} actions={renderActions} page={pagination.page} rowsPerPage={pagination.limit} totalCount={pagination.total} onPageChange={onPageChange} />
         </motion.div>
       </AnimatePresence>
-      <DisputeModal disputeOpen={disputeOpen} closeDisputeModal={closeDisputeModal} disputeRow={disputeRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
-
+      <DisputeModal open={openModal === 'dispute'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
+      <DeliverModel open={openModal === 'deliver'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
+      <ReviewSubmissionModel open={openModal === 'receive' || openModal === 'submission'} readOnly={openModal === 'submission'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
+      <ChangeRequestReviewModel open={openModal === 'changes-requested'} onClose={handleCloseModal} selectedRow={selectedRow} />
     </div>
   );
 }
