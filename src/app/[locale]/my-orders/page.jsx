@@ -12,13 +12,14 @@ import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
-import { MessageCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, CreditCard, FileWarning, MessageCircle, Package, XCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Link } from '@/i18n/navigation';
 import toast from 'react-hot-toast';
 import UserMini from '@/components/dashboard/UserMini';
 import { DisputeModal } from '@/components/pages/my-orders/DisputeForm';
 import { OrderStatus } from '@/constants/order';
+import ActionsMenu from '@/components/common/ActionsMenu';
 
 // Animation
 export const tabAnimation = {
@@ -289,57 +290,61 @@ export default function Page() {
     const loadingAction = actionLoading[row.id]; // "deliver" | "receive" | "dispute" | "cancel" | null
     const isBusy = !!loadingAction;
 
-    return (
-      <div className='flex gap-2 w-fit'>
-        <Button href={isBuyer ? `/chat?userId=${row?._raw?.sellerId}` : `/chat?userId=${row?._raw?.buyerId}`} icon={<MessageCircle size={18} />} className='!w-fit h-[35px]' disabled={isBusy} />
+    const options = [
+      {
+        icon: <MessageCircle className="h-4 w-4" />,
+        label: 'Chat',
+        href: isBuyer
+          ? `/chat?userId=${row?._raw?.sellerId}`
+          : `/chat?userId=${row?._raw?.buyerId}`,
+        disabled: isBusy,
+      },
+      {
+        icon: <Package className="h-4 w-4" />,
+        label: loadingAction === 'deliver' ? 'Delivering…' : 'Deliver',
+        onClick: () => deliverOrder(row),
+        disabled: isBusy || loadingAction === 'deliver',
+        hide: !canSellerDeliver,
+      },
+      {
+        icon: <CheckCircle className="h-4 w-4" />,
+        label: loadingAction === 'receive' ? 'Submitting…' : 'Mark as Received',
+        onClick: () => completeOrder(row),
+        disabled: isBusy || loadingAction === 'receive',
+        hide: !canBuyerReceive,
+      },
+      {
+        icon: <AlertTriangle className="h-4 w-4" />,
+        label: loadingAction === 'dispute' ? 'Opening…' : 'Open Dispute',
+        onClick: () => openDisputeModal(row),
+        disabled: isBusy || loadingAction === 'dispute',
+        hide: !canDispute,
+        danger: true,
+      },
+      {
+        icon: <FileWarning className="h-4 w-4" />,
+        label: 'View Dispute',
+        href: `/my-disputes?dispute=${row?._raw?.disputeId}`,
+        hide: !hasOpenDispute,
+      },
+      {
+        icon: <CreditCard className="h-4 w-4" />,
+        label: 'Pay',
+        href: `/payment?orderId=${row.id}`,
+        disabled: isBusy,
+        hide: !(isBuyer && s === OrderStatus.PENDING),
+      },
+      {
+        icon: <XCircle className="h-4 w-4" />,
+        label: loadingAction === 'cancel' ? 'Cancelling…' : 'Cancel Order',
+        onClick: () => handleCancel(row),
+        disabled: isBusy || loadingAction === 'cancel',
+        hide: !(isBuyer && [OrderStatus.PENDING, OrderStatus.ACCEPTED].includes(s)),
+        danger: true,
+      },
+    ];
 
-        {canSellerDeliver && <Button color='outline' name={loadingAction === 'deliver' ? 'Delivering…' : 'Deliver'} className='!w-fit !h-[35px]' onClick={() => deliverOrder(row)} disabled={loadingAction === 'deliver' || isBusy} loading={loadingAction === 'deliver'} />}
-
-        {canBuyerReceive && <Button color='green' name={loadingAction === 'receive' ? 'Submitting…' : 'Received'} className='!w-fit !h-[35px]' onClick={() => completeOrder(row)} disabled={loadingAction === 'receive' || isBusy} loading={loadingAction === 'receive'} />}
-
-        {canDispute && (
-          <Button
-            color='red'
-            name={loadingAction === 'dispute' ? 'Opening…' : 'Dispute'}
-            className='!w-fit !h-[35px]'
-            onClick={() => openDisputeModal(row)} // <- open modal instead of prompt
-            disabled={loadingAction === 'dispute' || isBusy}
-            loading={loadingAction === 'dispute'}
-          />
-        )}
-
-        {hasOpenDispute && (
-          <Button
-            color="outline"
-            name="View Dispute"
-            className="!w-fit !h-[35px]"
-            href={`/my-disputes?dispute=${row?._raw?.disputeId}`}
-          />
-        )}
-
-        {isBuyer && row.status === OrderStatus.PENDING && (
-          <>
-            <Button
-              href={`/payment?orderId=${row.id}`}
-              name="Pay"
-              color="green"
-              className="!w-fit !h-[35px]"
-              disabled={isBusy}
-            />
-          </>
-        )}
-
-        {isBuyer && [OrderStatus.PENDING, OrderStatus.ACCEPTED].includes(row.status) && (<Button
-          name="Cancel"
-          onClick={() => handleCancel(row)}
-          disabled={loadingAction === 'cancel' || isBusy} loading={loadingAction === 'cancel'}
-          color="red"
-          className="!w-fit !h-[35px]"
-
-        />)}
-
-      </div>
-    );
+    return <ActionsMenu options={options} align="right" />;
   }
 
   return (

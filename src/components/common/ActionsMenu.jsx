@@ -4,11 +4,12 @@ import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { MoreHorizontal } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 /**
  * Reusable actions menu (3-dots) rendered via portal to avoid clipping.
  * Props:
- *  - options: [{ icon, label, onClick, danger, disabled, hide }]
+ *  - options: [{ icon, label, onClick,href, danger, disabled, hide }]
  *  - align: "right" | "left" (default "right")
  *  - buttonClassName: optional class for the trigger button
  */
@@ -106,24 +107,51 @@ export default function ActionsMenu({ options = [], align = 'right', buttonClass
             {visibleOptions.length === 0 ? (
               <div className='px-3 py-2 text-sm text-slate-400'>No actions</div>
             ) : (
-              visibleOptions.map((opt, i) => (
-                <button
-                  key={i}
-                  type='button'
-                  role='menuitem'
-                  disabled={opt.disabled}
-                  onClick={() => {
-                    if (opt.disabled) return;
-                    close();
-                    opt.onClick && opt.onClick();
-                  }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-50 text-left
+              visibleOptions.map((opt, i) => {
+                const className = `w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-50 text-left
                     ${opt.danger ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-700'}
-                    ${opt.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                  {opt.icon ? <span className='h-4 w-4'>{opt.icon}</span> : null}
-                  <span className='truncate'>{opt.label}</span>
-                </button>
-              ))
+                    ${opt.disabled ? 'opacity-50 cursor-not-allowed' : ''}`;
+
+                const content = (
+                  <>
+                    {opt.icon ? <span className='h-4 w-4'>{opt.icon}</span> : null}
+                    <span className='truncate'>{opt.label}</span>
+                  </>)
+
+                function handleClick() {
+                  if (opt.disabled) return;
+                  close();
+                  opt?.onClick?.();
+                }
+
+                if (opt.href) {
+                  return (
+                    <Link
+                      key={i}
+                      href={opt.href}
+                      disabled={opt.disabled}
+                      role="menuitem"
+                      className={className}
+                      onClick={handleClick}
+                    >
+                      {content}
+                    </Link>
+                  );
+                }
+
+                return (
+                  <button
+                    key={i}
+                    type='button'
+                    role='menuitem'
+                    disabled={opt.disabled}
+                    className={className}
+                    onClick={handleClick}
+                  >
+                    {content}
+                  </button>
+                )
+              })
             )}
           </div>,
           document.body,
