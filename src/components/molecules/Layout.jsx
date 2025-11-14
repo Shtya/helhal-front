@@ -27,8 +27,8 @@ export default function Layout({ children, params }) {
   }, [toasts])
 
   return (
-    <GlobalProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <GlobalProvider>
         <AuthInterceptorWrapper>
           <ProgressProvider
             height="2px"
@@ -43,8 +43,8 @@ export default function Layout({ children, params }) {
             <Toaster position='top-center' />
           </ProgressProvider>
         </AuthInterceptorWrapper>
-      </AuthProvider>
-    </GlobalProvider>
+      </GlobalProvider>
+    </AuthProvider>
   );
 }
 

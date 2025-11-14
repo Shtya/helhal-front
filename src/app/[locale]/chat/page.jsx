@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 import { getUserIdFromAccessToken } from '@/utils/api';
 import { showNotification } from '@/utils/notifications';
 import { isErrorAbort } from '@/utils/helper';
+import { useValues } from '@/context/GlobalContext';
 
 
 /** ───────────────────────────────── SOCKET REF ───────────────────────────────── */
@@ -117,6 +118,7 @@ const useChat = () => {
   const threadsRef = useRef([]);
   const socketRef = useRef(null);
   const { user } = useAuth();
+  const { setUnreadChatCount } = useValues();
 
   useEffect(() => {
     activeThreadIdRef.current = activeThreadId;
@@ -657,9 +659,16 @@ const useChat = () => {
 
   const markAsRead = async conversationId => {
     try {
+      const thread = threadsRef.current.find(t => t.id === conversationId);
+      const unreadCount = thread?.unreadCount || 0;
+
       await api.post(`/conversations/${conversationId}/read`);
       setThreads(prev => prev.map(t => (t.id === conversationId ? { ...t, unreadCount: 0 } : t)));
 
+      // Decrease global unread count by the number of messages marked as read
+      if (unreadCount > 0) {
+        setUnreadChatCount(prev => Math.max(0, prev - unreadCount));
+      }
     } catch (error) {
       console.error('Error marking as read:', error);
     }

@@ -10,6 +10,7 @@ import api from '@/lib/axios';
 import { localImageLoader } from '@/utils/helper';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 import { useAuth } from '@/context/AuthContext';
+import { useValues } from '@/context/GlobalContext';
 import Img from '../atoms/Img';
 import Logo from '../common/Logo';
 
@@ -245,6 +246,7 @@ export default function Header() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { user, logout, role } = useAuth();
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
+  const { unreadChatCount } = useValues();
 
   const isGuest = role === 'guest';
   useEffect(() => {
@@ -409,7 +411,11 @@ export default function Header() {
             <>
               <Link href='/chat' aria-label='Go to chat' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
                 <MessageCircle className='h-5 w-5 text-slate-600' />
-                <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center'>2</span>
+                {unreadChatCount > 0 && (
+                  <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center font-semibold'>
+                    {unreadChatCount > 99 ? '99+' : unreadChatCount}
+                  </span>
+                )}
               </Link>
 
               <NotificationPopup />
