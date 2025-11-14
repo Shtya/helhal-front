@@ -190,3 +190,20 @@ export async function updateSettings(settings) {
     data: settings,
   });
 }
+
+
+
+export function getUserIdFromAccessToken() {
+  const token = localStorage.getItem('accessToken');
+  if (!token) return null;
+
+  try {
+    const payloadBase64 = token.split('.')[1];
+    const payloadJson = atob(payloadBase64);
+    const payload = JSON.parse(payloadJson);
+    return payload.id || null;
+  } catch (error) {
+    console.error('Failed to decode accessToken:', error);
+    return null;
+  }
+}

@@ -32,13 +32,6 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
         }
     }, [detail]);
 
-    useEffect(() => {
-
-        return () => {
-            console.log("distroyed")
-        }
-    }, [])
-
     // Add a system "resolution" message to head (dedup by id)
     const threadWithResolution = useMemo(() => {
         const base = detail?.messages || [];

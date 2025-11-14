@@ -7,43 +7,40 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import io from 'socket.io-client';
 import { Star } from 'lucide-react';
 import api, { baseImg } from '@/lib/axios';
-
 import { AllMessagesPanel } from '@/components/pages/chat/AllMessagesPanel';
 import { ChatThread } from '@/components/pages/chat/ChatThread';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useAuth } from '@/context/AuthContext';
+import toast from 'react-hot-toast';
+import { getUserIdFromAccessToken } from '@/utils/api';
+import { showNotification } from '@/utils/notifications';
+import { isErrorAbort } from '@/utils/helper';
+
 
 /** ───────────────────────────────── SOCKET REF ───────────────────────────────── */
-let socket;
+// Socket is now managed via useRef inside useChat hook
 
 /* ------------------------------ SKELETONS ------------------------------ */
-export const Shimmer = ({ className = '' }) => (
-  <div className={`relative overflow-hidden rounded-lg bg-slate-200/60 ${className}`}>
+export const Shimmer = ({ className = '', animated = false }) => (
+  <div className={`${animated ? "animate-pulse bg-slate-200" : "bg-slate-200/60 "} relative overflow-hidden rounded-lg ${className}`}>
     <div className='absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent' />
   </div>
 );
 
-export const MessageSkeletonBubble = ({ me = false }) => (
+export const MessageSkeletonBubble = ({ me = false, animated = false }) => (
   <div className={`flex gap-4 ${me ? 'flex-row-reverse' : ''}`}>
-    <Shimmer className="h-10 w-10 rounded-full flex-shrink-0" />
+    <Shimmer className="h-10 w-10 rounded-full flex-shrink-0" animated={animated} />
     <div className="flex flex-col gap-2 w-full max-w-[calc(100%-3.5rem)]">
-      <Shimmer className="h-3 w-[40%] sm:w-24" />
-      <div className={`${me ? 'bg-emerald-500/30' : 'bg-slate-200/70'} rounded-2xl p-3`}>
-        <Shimmer className="h-4 w-full max-w-[80%] mb-2" />
-        <Shimmer className="h-4 w-full max-w-[60%]" />
+      <Shimmer className="h-3 w-[40%] sm:w-24" animated={animated} />
+      <div className={`${animated ? me ? 'animate-pulse bg-emerald-500/50' : 'animate-pulse bg-slate-200/90' : me ? 'bg-emerald-500/30' : 'bg-slate-200/70'} rounded-2xl p-3`}>
+        <Shimmer className="h-4 w-full max-w-[80%] mb-2" animated={animated} />
+        <Shimmer className="h-4 w-full max-w-[60%]" animated={animated} />
       </div>
     </div>
   </div>
 );
 
 
-/* ------------------------------ NOTIFICATION FUNCTION ------------------------------ */
-const showNotification = (message, type = 'success') => {
-  console.log(`${type.toUpperCase()}: ${message}`);
-  if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-    new Notification(message);
-  }
-};
 
 /* ------------------------------ CHAT LOGIC ------------------------------ */
 
@@ -71,19 +68,40 @@ const pickOtherParty = (conv, meId) => {
 
 const useChat = () => {
   const [threads, setThreads] = useState([]);
+
+  const [userPagination, setUserPagination] = useState({
+    page: 1,
+    pages: 1
+  })
   const [activeThreadId, setActiveThreadId] = useState(null);
-  const [messagesByThread, setMessagesByThread] = useState({});
+  const [messagesByThread, setMessagesByThread] = useState(() => new Map());
+  const [messagesPaginationByThread, setMessagesPaginationByThread] = useState(() => new Map());
+
   const [aboutUser, setAboutUser] = useState({});
   const [query, setQuery] = useState('');
   const [isConnected, setIsConnected] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  //initail user id from access token to able detect me messges when user not fetched yet
+  const [currentUser, setCurrentUser] = useState({ id: getUserIdFromAccessToken() });
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [activeTab, setActiveTab] = useState('all');
-  const [favoriteThreads, setFavoriteThreads] = useState(new Set());
-  const [pinnedThreads, setPinnedThreads] = useState(new Set());
-  const [archivedThreads, setArchivedThreads] = useState(new Set());
+
+  const [favoriteThreads, setFavoriteThreads] = useState(() => {
+    const fav = localStorage.getItem('favoriteThreads');
+    return fav ? new Set(JSON.parse(fav)) : new Set();
+  });
+
+  const [pinnedThreads, setPinnedThreads] = useState(() => {
+    const pin = localStorage.getItem('pinnedThreads');
+    return pin ? new Set(JSON.parse(pin)) : new Set();
+  });
+
+  const [archivedThreads, setArchivedThreads] = useState(() => {
+    const arch = localStorage.getItem('archivedThreads');
+    return arch ? new Set(JSON.parse(arch)) : new Set();
+  });
+
   const [loading, setLoading] = useState(true);
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
@@ -94,8 +112,10 @@ const useChat = () => {
   // live refs so socket handlers always see latest values
   const activeThreadIdRef = useRef(null);
   const currentUserIdRef = useRef(null);
-  const messagesByThreadRef = useRef({});
+  const messagesByThreadRef = useRef(new Map());
+  const messagesPaginationByThreadRef = useRef(new Map());
   const threadsRef = useRef([]);
+  const socketRef = useRef(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -111,8 +131,21 @@ const useChat = () => {
   }, [messagesByThread]);
 
   useEffect(() => {
+    messagesPaginationByThreadRef.current = messagesPaginationByThread;
+  }, [messagesPaginationByThread]);
+
+  useEffect(() => {
     threadsRef.current = threads;
   }, [threads]);
+
+  const conversationMap = useMemo(() => {
+    const map = new Map();
+    for (const thread of threads) {
+      map.set(thread.id, thread);
+    }
+    return map;
+  }, [threads]);
+
 
   const formatTime = useCallback(dateString => {
     if (!dateString) return 'Just now';
@@ -140,7 +173,7 @@ const useChat = () => {
     const me = String(senderId) === String(currentUserId);
     const createdRaw = m.created_at || m.createdAt;
     const atts = Array.isArray(m.attachments) ? m.attachments : [];
-    const attUrls = atts.map(a => (a.url ? (a.url.startsWith('http') ? a.url : baseImg + a.url) : a));
+    // const attUrls = atts.map(a => (a.url ? (a.url.startsWith('http') ? a.url : baseImg + a.url) : a));
     return {
       id: m.id,
       clientMessageId: m.clientMessageId,
@@ -148,69 +181,164 @@ const useChat = () => {
       authorName: me ? 'You' : (m.sender && m.sender.username) || m.authorName || 'User',
       authorAvatar: me ? (m.sender && m.sender.profileImage) || m.authorAvatar : (m.sender && m.sender.profileImage) || m.authorAvatar,
       text: m.message || m.text || '',
-      attachments: attUrls,
+      attachments: atts,
       createdAt: createdRaw ? new Date(createdRaw).toLocaleString() : new Date().toLocaleString(),
       me,
     };
   }, []);
 
   // ── INIT ──
+
   useEffect(() => {
-    const token = user.accessToken;
-    if (!socket) {
-      socket = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
+    const token = user?.accessToken;
+    const userId = user?.id;
+
+    // Don't initialize socket without token
+    if (!token || !userId) {
+      return;
+    }
+
+    // Disconnect existing socket if token changed
+    if (socketRef.current) {
+      const oldToken = socketRef.current.auth?.token;
+      if (oldToken !== token) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    }
+
+    // Create new socket if doesn't exist
+    if (!socketRef.current) {
+      socketRef.current = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
         auth: { token },
         transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        reconnectionAttempts: Infinity,
       });
     }
 
-    socket.on('connect', () => {
-      setIsConnected(true);
-      socket.emit('join_user', user.id);
-    });
+    const socket = socketRef.current;
 
-    socket.on('disconnect', () => {
+    const handleConnect = () => {
+
+      setIsConnected(true);
+    };
+
+    const handleDisconnect = (reason) => {
       setIsConnected(false);
-    });
+      // If disconnected due to authentication error, don't reconnect
+      if (reason === 'io server disconnect' || reason === 'transport close') {
+        // Server closed connection, will attempt to reconnect
+        console.log('Socket disconnected:', reason);
+      }
+    };
+
+    const handleReconnect = (attemptNumber) => {
+      console.log('Socket reconnecting, attempt:', attemptNumber);
+      // Update token on reconnect if it changed
+      if (socket.auth?.token !== token) {
+        socket.auth = { token };
+      }
+    };
+
+    const handleReconnectError = (error) => {
+      console.error('Socket reconnection error:', error);
+      // If token is invalid, stop reconnecting
+      if (error?.message?.includes('auth') || error?.message?.includes('token')) {
+        socket.disconnect();
+        showNotification('Authentication failed. Please refresh the page.', 'error');
+      }
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    socket.on('reconnect', handleReconnect);
+    socket.on('reconnect_error', handleReconnectError);
 
     // 🟢 NEW MESSAGE HANDLER: de-dupe, update messages, keep unread in sync, handle unknown conversations
     const handleNewMessage = serverMsg => {
       const currentUserId = currentUserIdRef.current;
+      const cid = serverMsg?.conversationId;
+      const other = serverMsg?.sender;
       const uiMsg = normalizeMessage(serverMsg, currentUserId);
-      const cid = serverMsg.conversationId;
 
-      setMessagesByThread(prev => {
-        const list = prev[cid] || [];
-
-        const isDuplicate = list.some(m => (m.id && m.id === uiMsg.id) || (m.clientMessageId && m.clientMessageId === uiMsg.clientMessageId));
-        if (isDuplicate) return prev;
-
-        if (uiMsg.clientMessageId) {
-          const optimisticIndex = list.findIndex(m => m.clientMessageId === uiMsg.clientMessageId);
-          if (optimisticIndex !== -1) {
-            const next = [...list];
-            next[optimisticIndex] = { ...uiMsg, pending: false };
-            return { ...prev, [cid]: next };
+      //show conversation item at top regardless of pagination when conversation not exist at currunt shown conversations.
+      if (other.id !== user?.id && !threadsRef.current.some(c => c.id === serverMsg?.conversationId)) {
+        const conversationId = serverMsg?.conversationId;
+        setThreads(prev => {
+          const newConversation = {
+            id: conversationId,
+            name: other?.username || 'User',
+            email: other?.email,
+            avatar: other?.profileImage || '/default-avatar.png',
+            active: false,
+            time: formatTime(serverMsg?.created_at),
+            unreadCount: 1,
+            about: {
+              name: other?.username || '—',
+              from: formatDate(serverMsg?.created_at),
+              onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',
+              languages: other?.languages?.join(', ') || '—',
+              level: other?.sellerLevel ? other?.sellerLevel : '—',
+              responseRate: other?.responseTime ? `${other.responseTime} hrs` : '—',
+              ordersCompleted: other?.ordersCompleted ?? 0,
+              role: other?.role ?? 'member',
+              topRated: other?.topRated ?? false,
+            }
+            ,
+            otherUserId: other?.id,
+            isFavorite: false,
+            isPinned: false,
+            isArchived: false,
+            lastMessageAt: serverMsg?.created_at,
           }
-        }
+          return sortThreads([newConversation, ...prev])
+        })
 
-        return { ...prev, [cid]: [...list, { ...uiMsg, pending: false }] };
-      });
+        // Trigger highlight animation after DOM update
+        setTimeout(() => {
+          const el = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+          if (el) el.classList.add("highlight");
+        }, 50);
 
+        return;
+      }
+
+      //only add message if messages for this conversation already loaded
+      if (messagesByThreadRef.current.has(id)) {
+        setMessagesByThread(prev => {
+          const updated = new Map(prev);
+          const list = updated.get(cid) || [];
+
+          const isDuplicate = list.some(m => (m.id && m.id === uiMsg.id) || (m.clientMessageId && m.clientMessageId === uiMsg.clientMessageId));
+          if (isDuplicate) return prev;
+
+          if (uiMsg.clientMessageId) {
+            const optimisticIndex = list.findIndex(m => m.clientMessageId === uiMsg.clientMessageId);
+            if (optimisticIndex !== -1) {
+              const next = [...list];
+              next[optimisticIndex] = { ...uiMsg, pending: false };
+              updated.set(cid, next);
+              return updated;
+            }
+          }
+
+          updated.set(cid, [...list, { ...uiMsg, pending: false }]);
+          return updated;
+        });
+      }
       const isForOpenThread = activeThreadIdRef.current === cid;
-      const fromOther = (serverMsg.senderId || (serverMsg.sender && serverMsg.sender.id)) !== currentUserId;
+      const fromOther = (serverMsg?.senderId || (serverMsg?.sender && serverMsg?.sender.id)) !== currentUserId;
 
       if (isForOpenThread && fromOther) {
         markAsRead(cid);
-      } else {
+      }
+
+      // Update the existing thread's unread/lastMessageAt; sorting will react to lastMessageAt
+      if (!isForOpenThread && fromOther) {
         setThreads(prev => {
-          const exists = prev.some(t => t.id === cid);
-          if (!exists) {
-            // Unknown conversation -> fetch full list (keeps sort & metadata correct)
-            queueMicrotask(() => fetchConversations());
-            return prev;
-          }
-          // Update the existing thread's unread/lastMessageAt; sorting will react to lastMessageAt
           const updated = prev.map(t =>
             t.id === cid
               ? {
@@ -223,61 +351,62 @@ const useChat = () => {
           return sortThreads(updated);
         });
       }
+
     };
 
     socket.on('new_message', handleNewMessage);
 
-    // Some backends emit a lighter notification event too
-    socket.on('message_notification', n => {
-      const cid = n.conversationId;
-      setThreads(prev => {
-        const exists = prev.some(t => t.id === cid);
-        if (!exists) {
-          queueMicrotask(() => fetchConversations());
-          return prev;
-        }
-        const updated = prev.map(t => (t.id === cid ? { ...t, unreadCount: (t.unreadCount || 0) + 1, lastMessageAt: new Date().toISOString() } : t));
-        return sortThreads(updated);
-      });
-    });
 
-    // Optional: support server-side creation events
-    socket.on('new_conversation', () => {
-      fetchConversations();
-    });
-
-    socket.on('error', error => {
+    const handleError = (error) => {
       console.error('Socket error:', error);
       showNotification(error.message || 'Connection error', 'error');
-    });
+    };
+
+    socket.on('error', handleError);
 
     // initial loads
     fetchTotalUnreadCount();
-    fetchConversations();
 
-    const fav = localStorage.getItem('favoriteThreads');
-    if (fav) setFavoriteThreads(new Set(JSON.parse(fav)));
-    const pin = localStorage.getItem('pinnedThreads');
-    if (pin) setPinnedThreads(new Set(JSON.parse(pin)));
-    const arch = localStorage.getItem('archivedThreads');
-    if (arch) setArchivedThreads(new Set(JSON.parse(arch)));
-
+    // Cleanup function
     return () => {
       if (socket) {
+        socket.off('connect', handleConnect);
+        socket.off('disconnect', handleDisconnect);
+        socket.off('reconnect', handleReconnect);
+        socket.off('reconnect_error', handleReconnectError);
         socket.off('new_message', handleNewMessage);
-        socket.off('message_notification');
-        socket.off('new_conversation');
-        socket.off('error');
-        // do not disconnect here if you reuse this component often; safe to keep
+        socket.off('error', handleError);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, normalizeMessage]);
+  }, [user?.accessToken, user?.id, router, normalizeMessage]);
+
+  // Cleanup socket on component unmount
+  useEffect(() => {
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
+  //initial fetch conversations
+
+  useEffect(() => {
+    const sortUserId = user?.id;
+    if (sortUserId) {
+      fetchConversations(userPagination.page);
+    }
+  }, [user?.id, userPagination.page]);
+
 
   const fetchTotalUnreadCount = async () => {
     try {
-      const { data } = await api.get('/conversations/unread/count');
-      setTotalUnreadCount(data.unreadCount || 0);
+      //comment it untill reach the count part 
+      // const { data } = await api.get('/conversations/unread/count');
+      // setTotalUnreadCount(data.unreadCount || 0);
+      setTotalUnreadCount(0);
     } catch (error) {
       console.error('Error fetching unread count:', error);
     }
@@ -293,23 +422,24 @@ const useChat = () => {
 
   // Auto-select target user if provided
   useEffect(() => {
-    if (targetUserId && currentUser && threads.length) {
-      const existing = threads.find(t => String(t.otherUserId) === String(targetUserId));
-      if (existing) {
-        if (activeThreadId !== existing.id) selectThread(existing.id);
-      } else {
-        createConversation(targetUserId).then(created => {
-          if (created?.id) selectThread(created.id);
-        });
+    async function create() {
+      if (targetUserId && currentUser && threads.length) {
+        const existing = threads.find(t => String(t.otherUserId) === String(targetUserId));
+        if (existing) {
+          if (activeThreadId !== existing.id) selectThread(existing.id);
+        } else {
+          await createConversation(targetUserId)
+        }
       }
     }
+    create();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetUserId, currentUser, threads.length, activeThreadId]);
 
   useEffect(() => {
-    setCurrentUser(user);
+    setCurrentUser(user || {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user?.id]);
 
   const sortThreads = useCallback(
     list => {
@@ -319,53 +449,101 @@ const useChat = () => {
         isPinned: pinnedThreads.has(t.id),
         isArchived: archivedThreads.has(t.id),
       }));
-      return withLocal.sort((a, b) => {
-        if (a.isPinned && !b.isPinned) return -1;
-        if (!a.isPinned && b.isPinned) return 1;
-        if (a.isFavorite && !b.isFavorite) return -1;
-        if (!a.isFavorite && b.isFavorite) return 1;
-        return new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0);
-      });
+
+      return sortByThreadPriority(withLocal);
     },
+
     [favoriteThreads, pinnedThreads, archivedThreads],
   );
 
-  const fetchConversations = async (page = 1) => {
+  function sortByThreadPriority(list) {
+    const getPriority = t => {
+      if (t.isPinned && t.isFavorite) return 3;
+      if (t.isPinned) return 2;
+      if (t.isFavorite) return 1;
+      return 0;
+    };
 
-    const meId = user.id;
+    return list.sort((a, b) => {
+      const priorityA = getPriority(a);
+      const priorityB = getPriority(b);
+
+      if (priorityA !== priorityB) return priorityB - priorityA;
+
+      return new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0);
+    });
+  }
+
+  const formatConversation = useCallback((conv) => {
+    const meId = user?.id || getUserIdFromAccessToken();
+
+    if (!meId) {
+      console.warn('No user ID available to fetch conversations.');
+      return;
+    }
+
+    const other = pickOtherParty(conv, meId);
+
+    return {
+      id: conv.id,
+      name: other?.username || 'User',
+      email: other?.email,
+      avatar: other?.profileImage || '/default-avatar.png',
+      active: false,
+      time: formatTime(conv.lastMessageAt),
+      unreadCount: conv.unreadCount || 0,
+      about: {
+        name: other?.username || '—',
+        from: formatDate(conv.lastMessageAt),
+        onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',
+        languages: other?.languages?.join(', ') || '—',
+        level: other?.sellerLevel ? other?.sellerLevel : '—',
+        responseRate: other?.responseTime ? `${other.responseTime} hrs` : '—',
+        ordersCompleted: other?.ordersCompleted ?? 0,
+        role: other?.role ?? 'member',
+        topRated: other?.topRated ?? false,
+      }
+      ,
+      otherUserId: other?.id || (String(conv.buyerId) !== String(meId) ? conv.buyerId : conv.sellerId),
+      isFavorite: conv.isFavorite || false,
+      isPinned: false,
+      isArchived: false,
+      lastMessageAt: conv.lastMessageAt,
+    };
+  }, [user])
+
+  const conversationsApiRef = useRef(null)
+  const fetchConversations = useCallback(async (page = 1, options = { silent: false }) => {
+    const meId = user?.id || getUserIdFromAccessToken();
+
+    if (!meId) {
+      console.warn('No user ID available to fetch conversations.');
+      return;
+    }
+
+    // Cancel previous request
+    if (conversationsApiRef.current) {
+      conversationsApiRef.current.abort();
+    }
+    conversationsApiRef.current = new AbortController();
 
     try {
-      setLoading(true);
-      const { data } = await api.get(`/conversations?page=${page}`);
-      const list = data.conversations || data || [];
+      // Only show loading spinner if not silent
+      if (!options.silent) {
+        setLoading(true);
+      }
+      const { data } = await api.get(`/conversations?page=${page}`, {
+        signal: conversationsApiRef.current.signal
+      });
+      const list = data.conversations || [];
 
+      setUserPagination((p) => ({
+        ...p,
+        page: data?.pagination?.page || 1,
+        pages: data?.pagination?.pages || 1
+      }))
       const formatted = list.map(conv => {
-        const other = pickOtherParty(conv, meId);
-
-        return {
-          id: conv.id,
-          name: other?.username || 'User',
-          email: other?.email,
-          avatar: other?.profileImage || '/default-avatar.png',
-          active: false,
-          time: formatTime(conv.lastMessageAt),
-          unreadCount: conv.unreadCount || 0,
-          about: {
-            name: other?.username || '—',
-            from: formatDate(conv.lastMessageAt),
-            onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',
-            english: 'Intermediate',
-            otherLang: 'Native language',
-            level: 'Level 1',
-            responseRate: '3.4 hrs',
-            rating: '5 (1)',
-          },
-          otherUserId: other?.id || (String(conv.buyerId) !== String(meId) ? conv.buyerId : conv.sellerId),
-          isFavorite: conv.isFavorite || false,
-          isPinned: false,
-          isArchived: false,
-          lastMessageAt: conv.lastMessageAt,
-        };
+        return formatConversation(conv);
       });
 
       setThreads(prev => {
@@ -380,31 +558,108 @@ const useChat = () => {
         return sortThreads(merged);
       });
     } catch (error) {
-      console.error('Error fetching conversations:', error);
-      showNotification('Failed to load conversations', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (!isErrorAbort(error)) {
 
-  const fetchMessages = async (conversationId, page = 1) => {
-    try {
-      const { data } = await api.get(`/conversations/${conversationId}/messages?page=${page}`);
-      const msgs = (data.messages || data || []).map(m => normalizeMessage(m, currentUser?.id));
-      setMessagesByThread(prev => ({ ...prev, [conversationId]: msgs }));
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      showNotification('Failed to load messages', 'error');
+        console.error('Error fetching conversations:', error);
+        showNotification('Failed to load conversations', 'error');
+      }
+    } finally {
+      conversationsApiRef.current = null;
+      if (!options.silent) {
+        setLoading(false);
+      }
     }
-  };
+  }, [user]);
+
+  const [loadingMessagesId, setLaodingMessagesId] = useState(false)
+  const [loadingOlderThreads, setLoadingOlderThreads] = useState(() => new Set());
+
+  const messagesApiRef = useRef(null)
+  const fetchMessages = useCallback(async (conversationId, page = 1, { append = false } = {}) => {
+    try {
+      if (messagesApiRef.current) {
+        messagesApiRef.current.abort();
+      }
+      messagesApiRef.current = new AbortController();
+
+
+      if (append) {
+        setLoadingOlderThreads(prev => {
+          const next = new Set(prev);
+          next.add(conversationId);
+          return next;
+        });
+      } else {
+        setLaodingMessagesId(conversationId);
+      }
+
+      const { data } = await api.get(`/conversations/${conversationId}/messages?page=${page}`, {
+        signal: messagesApiRef.current.signal
+      });
+      const currentUserId = currentUserIdRef.current ?? currentUser?.id;
+      const msgs = (data.messages || data || []).map(m => normalizeMessage(m, currentUserId));
+
+      setMessagesByThread(prev => {
+        const updated = new Map(prev);
+        if (append) {
+          const existing = updated.get(conversationId) || [];
+          const combined = [...msgs, ...existing];
+          const seen = new Set();
+          const deduped = combined.filter(msg => {
+            const key = msg.id || msg.clientMessageId || `${msg.authorId}-${msg.createdAt}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          updated.set(conversationId, deduped);
+        } else {
+          updated.set(conversationId, msgs);
+        }
+        return updated;
+      });
+
+      setMessagesPaginationByThread(prev => {
+        const updated = new Map(prev);
+        const pagination = data?.pagination || { page, pages: page, total: msgs.length, limit: msgs.length };
+        updated.set(conversationId, pagination);
+        return updated;
+      });
+
+    } catch (error) {
+      if (!isErrorAbort(error)) {
+        console.error('Error fetching messages:', error);
+        showNotification('Failed to load messages', 'error');
+      }
+    } finally {
+      messagesApiRef.current = null;
+      if (append) {
+        setLoadingOlderThreads(prev => {
+          const next = new Set(prev);
+          next.delete(conversationId);
+          return next;
+        });
+      } else {
+        setLaodingMessagesId(null);
+      }
+    }
+  }, [currentUser?.id, normalizeMessage]);
+
+  const loadOlderMessages = useCallback(conversationId => {
+    if (loadingOlderThreads.has(conversationId)) return;
+    const pagination =
+      messagesPaginationByThreadRef.current.get(conversationId) ||
+      messagesPaginationByThread.get(conversationId);
+    const currentPage = pagination?.page || 1;
+    const totalPages = pagination?.pages || 1;
+    if (currentPage >= totalPages) return;
+    fetchMessages(conversationId, currentPage + 1, { append: true });
+  }, [fetchMessages, loadingOlderThreads, messagesPaginationByThread]);
 
   const markAsRead = async conversationId => {
     try {
       await api.post(`/conversations/${conversationId}/read`);
       setThreads(prev => prev.map(t => (t.id === conversationId ? { ...t, unreadCount: 0 } : t)));
-      if (socket) {
-        socket.emit('mark_as_read', conversationId);
-      }
+
     } catch (error) {
       console.error('Error marking as read:', error);
     }
@@ -416,11 +671,15 @@ const useChat = () => {
       setShowSearchResults(false);
       return;
     }
+    if (q.trim().length < 2) {
+      return;
+    }
     setIsSearching(true);
+    setShowSearchResults(true);
     try {
       const { data } = await api.get(`/conversations/search/users?query=${encodeURIComponent(q)}`);
       setSearchResults(data);
-      setShowSearchResults(true);
+
     } catch (error) {
       console.error('Error searching users:', error);
       showNotification('Failed to search users', 'error');
@@ -444,12 +703,11 @@ const useChat = () => {
   };
 
   const handleSearchResultClick = async user => {
-    const existing = threadsRef.current.find(t => t.otherUserId === user.id);
-    if (existing) {
+    const existing = threadsRef.current.find(t => t.otherUserId === user?.id);
+    if (!existing) {
       selectThread(existing.id);
     } else {
-      const created = await createConversation(user.id);
-      if (created?.id) selectThread(created.id);
+      await createConversation(user?.id);
     }
     setQuery('');
     setShowSearchResults(false);
@@ -462,34 +720,40 @@ const useChat = () => {
       setThreads(prev => prev.map(t => ({ ...t, active: t.id === id })));
       const selected = threadsRef.current.find(t => t.id === id);
       if (selected) setAboutUser(selected.about || {});
-      if (socket) socket.emit('join_conversation', id);
-      fetchMessages(id);
+
+      if (!messagesByThreadRef.current.has(id)) {
+        fetchMessages(id);
+      }
       markAsRead(id); // mark read on open
+
       if (targetUserId) router.replace('/en/chat', { scroll: false });
     },
-    [targetUserId, router],
+    [targetUserId, router, fetchMessages],
   );
 
   const sendMessage = async (conversationId, messageData, files = []) => {
     const clientMessageId = crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+
 
     const optimisticMessage = {
       ...messageData,
       clientMessageId,
       pending: true,
       id: clientMessageId,
-      attachments: files.map(file => file.url || file.path || ''),
+      attachments: files,
       createdAt: new Date().toLocaleString(),
       me: true,
       authorName: 'You',
       authorAvatar: currentUser?.profileImage,
       authorId: currentUser?.id,
     };
-
     setMessagesByThread(prev => {
-      const list = prev[conversationId] || [];
-      return { ...prev, [conversationId]: [...list, optimisticMessage] };
+      const updated = new Map(prev);
+      const list = updated.get(conversationId) || [];
+      updated.set(conversationId, [...list, optimisticMessage]);
+      return updated;
     });
+
 
     try {
       const payload = {
@@ -501,15 +765,25 @@ const useChat = () => {
     } catch (error) {
       console.error('Error sending message:', error);
       setMessagesByThread(prev => {
-        const list = prev[conversationId] || [];
-        const updatedList = list.map(msg => (msg.clientMessageId === clientMessageId ? { ...msg, pending: false, failed: true } : msg));
-        return { ...prev, [conversationId]: updatedList };
+        const updated = new Map(prev);
+        const list = updated.get(conversationId) || [];
+
+        const updatedList = list.map(msg =>
+          msg.clientMessageId === clientMessageId
+            ? { ...msg, pending: false, failed: true }
+            : msg
+        );
+
+        updated.set(conversationId, updatedList);
+        return updated;
       });
+
       showNotification('Failed to send message', 'error');
     }
   };
 
   const createConversation = async (otherUserId, serviceId, orderId, initialMessage) => {
+    const toastId = showNotification('Creating conversation...', 'loading');
     try {
       const { data } = await api.post(`/conversations`, {
         otherUserId,
@@ -517,18 +791,41 @@ const useChat = () => {
         orderId,
         initialMessage,
       });
-      // Refresh list so both browsers get it
-      fetchConversations();
-      showNotification('Conversation created successfully', 'success');
+      const newConversation = formatConversation(data)
+      const conversationId = newConversation?.id;
+      setThreads(prev => {
+        const exists = prev.some(t => t.id === conversationId);
+
+        if (!exists) {
+          const updated = [newConversation, ...prev];
+          return sortThreads(updated);
+        }
+
+        return prev;
+      })
+
+      selectThread(conversationId);
+
+      setTimeout(() => {
+        const el = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+        if (el) el.classList.add("highlight");
+      }, 50);
+
+
+      showNotification('Conversation created successfully', 'success', toastId);
       return data;
     } catch (error) {
       console.error('Error creating conversation:', error);
-      showNotification('Failed to create conversation', 'error');
+      showNotification('Failed to create conversation', 'error', toastId);
       return null;
     }
   };
 
   const toggleFavorite = async threadId => {
+    const thread = conversationMap.get(threadId);
+    const name = thread?.name || 'contact';
+    const toastId = toast.loading(`Updating favorite for ${name}...`);
+
     try {
       const { data } = await api.post(`/conversations/${threadId}/favorite`);
       setThreads(prev => prev.map(t => (t.id === threadId ? { ...t, isFavorite: data.isFavorite } : t)));
@@ -538,10 +835,15 @@ const useChat = () => {
         localStorage.setItem('favoriteThreads', JSON.stringify([...next]));
         return next;
       });
-      showNotification(data.isFavorite ? 'Added to favorites' : 'Removed from favorites', 'success');
+
+      toast.success(
+        data.isFavorite
+          ? `Added ${name} to favorites`
+          : `Removed ${name} from favorites`,
+        { id: toastId });
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      showNotification('Failed to update favorites', 'error');
+      toast.error(`Failed to update favorite for ${name}`, { id: toastId });
     }
   };
 
@@ -568,20 +870,39 @@ const useChat = () => {
     });
   };
 
+  const [adminId, setAdminId] = useState(null);
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  useEffect(() => {
+    const resolveAdminId = async () => {
+      setAdminLoading(true);
+      try {
+        const { data: settings } = await api.get('/settings');
+        let id = settings?.platformAccountUserId;
+
+        if (!id) {
+          const { data: adminUser } = await api.get('/users/admin');
+          id = adminUser?.id;
+        }
+
+        if (!id) {
+          id = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
+        }
+
+        setAdminId(id || null);
+      } catch (err) {
+        console.error('Error resolving adminId:', err);
+        setAdminId(null);
+      } finally {
+        setAdminLoading(false);
+      }
+    };
+
+    resolveAdminId();
+  }, []);
+
   const contactAdmin = async () => {
     try {
-      const { data: settings } = await api.get('/settings');
-      let adminId = settings?.platformAccountUserId;
-
-      if (!adminId) {
-        const { data: adminUser } = await api.get('/users/admin');
-        adminId = adminUser?.id;
-      }
-
-      if (!adminId) {
-        adminId = process.env.NEXT_PUBLIC_ADMIN_USER_ID;
-      }
-
       if (!adminId) {
         showNotification('Admin contact unavailable.', 'error');
         return;
@@ -591,8 +912,7 @@ const useChat = () => {
       if (existing) {
         selectThread(existing.id);
       } else {
-        const created = await createConversation(adminId);
-        if (created?.id) selectThread(created.id);
+        await createConversation(adminId);
       }
     } catch (error) {
       console.error('Error contacting admin:', error);
@@ -612,17 +932,15 @@ const useChat = () => {
       pool = pool.filter(t => !archivedThreads.has(t.id)); // "all" excludes archived
     }
 
-    return pool.sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      if (a.isFavorite && !b.isFavorite) return -1;
-      if (!a.isFavorite && b.isFavorite) return 1;
-      return new Date(b.lastMessageAt || 0).getTime() - new Date(a.lastMessageAt || 0).getTime();
-    });
+    return sortByThreadPriority(pool);
   }, [threads, query, activeTab, favoriteThreads, archivedThreads]);
 
   return {
     threads: filteredThreads,
+    messagesPaginationByThread,
+    userPagination,
+    setUserPagination,
+    loadingMessagesId,
     activeThreadId,
     messagesByThread,
     aboutUser,
@@ -647,9 +965,12 @@ const useChat = () => {
     archivedThreads,
     loading,
     fetchConversations,
+    loadOlderMessages,
+    loadingOlderThreads,
     contactAdmin,
     totalUnreadCount,
     fetchTotalUnreadCount,
+    adminLoading
   };
 };
 
@@ -681,29 +1002,47 @@ const ChatApp = () => {
   const t = useTranslation('Chat');
   useKeyboardShortcuts();
 
-  const { threads, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin, totalUnreadCount } = useChat();
+  const { threads, adminLoading, messagesPaginationByThread, userPagination, setUserPagination, loadingMessagesId, loadingOlderThreads, loadOlderMessages, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin, totalUnreadCount } = useChat();
 
   const activeThread = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
 
   return (
     <div className='divider'>
-      <div className='container  grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)_300px] md:grid-cols-1'>
+      <div className='container  grid gap-6 xl:grid-cols-[350px_minmax(0,1fr)_350px] md:grid-cols-1'>
         {/* Left Panel - Conversations List */}
         <div className=' '>
-          <Panel>
+          <Panel className="h-full" cdCard="h-full !p-0">
             {/* Example: unread badge spot if you want it in your UI header
             {totalUnreadCount > 0 && <span>{totalUnreadCount > 99 ? '99+' : totalUnreadCount}</span>}
             */}
-            <AllMessagesPanel items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={() => fetchConversations()} onContactAdmin={contactAdmin} />
+            <AllMessagesPanel adminLoading={adminLoading} userPagination={userPagination} setUserPagination={setUserPagination} items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={() => fetchConversations()} onContactAdmin={contactAdmin} />
           </Panel>
         </div>
 
         {/* Middle Panel - Chat Thread */}
-        <Panel>
+        <Panel cdCard="flex items-stretch h-full" className="h-full">
           {activeThreadId && activeThread ? (
-            <ChatThread key={activeThread.id} thread={activeThread} messages={messagesByThread[activeThreadId] || []} onSend={(msg, files) => sendMessage(activeThreadId, msg, files)} t={t} isFavorite={favoriteThreads.has(activeThreadId)} isPinned={pinnedThreads.has(activeThreadId)} isArchived={archivedThreads.has(activeThreadId)} toggleFavorite={() => toggleFavorite(activeThreadId)} togglePin={() => togglePin(activeThreadId)} toggleArchive={() => toggleArchive(activeThreadId)} isConnected={isConnected} currentUser={currentUser} />
+            <ChatThread
+              key={activeThread.id}
+              loadingMessagesId={loadingMessagesId}
+              loadingOlder={loadingOlderThreads.has(activeThreadId)}
+              onLoadOlder={() => loadOlderMessages(activeThreadId)}
+              thread={activeThread}
+              pagination={messagesPaginationByThread.get(activeThreadId) || {}}
+              messages={messagesByThread.get(activeThreadId) || []}
+              onSend={(msg, files) => sendMessage(activeThreadId, msg, files)}
+              t={t}
+              isFavorite={favoriteThreads.has(activeThreadId)}
+              isPinned={pinnedThreads.has(activeThreadId)}
+              isArchived={archivedThreads.has(activeThreadId)}
+              toggleFavorite={() => toggleFavorite(activeThreadId)}
+              togglePin={() => togglePin(activeThreadId)}
+              toggleArchive={() => toggleArchive(activeThreadId)}
+              isConnected={isConnected}
+              currentUser={currentUser}
+            />
           ) : (
-            <div className='max-h-[490px]  flex flex-col items-center justify-center h-full p-6 text-center'>
+            <div className='flex-1  max-h-[540px] h-full flex flex-col items-center justify-center p-6 text-center'>
               <Image src='/icons/chat-placeholder.png' alt='Start a conversation' width={200} height={200} />
               <p className='text-gray-600 text-lg -mt-4 mb-1'>Select a conversation to start chatting</p>
               <p className='text-gray-400 text-sm'>Or search for users above to start a new conversation</p>
@@ -726,32 +1065,42 @@ const ChatApp = () => {
   );
 };
 
-export function Panel({ children }) {
+export function Panel({ children, cdCard, className }) {
   return (
-    <div className='card-glow rounded-xl bg-white border border-slate-200 shadow-custom h-fit'>
-      <div className='h-fit min-h-[400px] rounded-xl bg-slate-50 p-6'>{children}</div>
+    <div className={`card-glow rounded-xl bg-white border border-slate-200 shadow-custom h-fit ${className}`}>
+      <div className={`h-fit min-h-[400px] rounded-xl bg-slate-50 p-6 ${cdCard}`}>{children}</div>
     </div>
   );
 }
 
 /* ------------------------------- ABOUT ------------------------------- */
-export function AboutPanel({ about = {}, t }) {
+export function AboutPanel({ about = {} }) {
   return (
-    <div className='w-full'>
-      <h2 className='text-2xl font-semibold'>{t('about', { name: about.name || 'Contact' })}</h2>
-      <div className='mt-3 h-px w-full bg-slate-200' />
-      <dl className='mt-4 space-y-4'>
-        <Row label={t('labels.from')} value={about.from || '—'} />
-        <Row label={t('labels.onPlatform')} value={about.onPlatform || '—'} />
-        <Row label={t('labels.english')} value={about.english || '—'} />
-        {about.otherLang && <Row label={t('labels.otherLanguage')} value={about.otherLang} />}
-        <Row label={t('labels.level')} value={about.level || '—'} />
-        <Row label={t('labels.responseRate')} value={about.responseRate || '—'} />
-        <Row label={t('labels.rating')} value={<Rating value={about.rating || '—'} />} />
+    <div className="w-full">
+      <h2 className="text-2xl font-semibold flex flex-wrap items-center justify-between gap-2 min-w-0">
+        <span className="truncate">{`About ${about.name || 'Contact'}`}</span>
+        {about.topRated && (
+          <span className="shrink-0 text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
+            Top Rated
+          </span>
+        )}
+      </h2>
+
+
+      <div className="mt-3 h-px w-full bg-slate-200" />
+      <dl className="mt-4 space-y-4">
+        <Row label="Last message" value={about.from || '—'} />
+        <Row label="On platform" value={about.onPlatform || '—'} />
+        <Row label="Languages" value={about.languages || '—'} />
+        <Row label="Level" value={about.level || '—'} />
+        <Row label="Response rate" value={about.responseRate || '—'} />
+        <Row label="Orders completed" value={about.ordersCompleted ?? '—'} />
+        <Row label="Role" value={about.role || '—'} />
       </dl>
     </div>
   );
 }
+
 
 function Row({ label, value }) {
   return (

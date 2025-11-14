@@ -2,10 +2,11 @@ import ReactDOM from 'react-dom';
 import { FiUpload, FiX } from 'react-icons/fi';
 import { FaSpinner } from 'react-icons/fa';
 import { File, FileText, ImageIcon, Music, Video } from 'lucide-react';
- 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'; 
-import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy } from 'lucide-react'; 
+
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy } from 'lucide-react';
 import api, { baseImg } from '@/lib/axios';
+import { showNotification } from '@/utils/notifications';
 
 
 /** Get file icon based on type */

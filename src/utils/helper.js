@@ -41,3 +41,9 @@ export function initialsFromName(name) {
     const second = parts[1]?.[0] || parts[0]?.[1] || '' || '';
     return (first + second).toUpperCase();
 }
+
+export function isErrorAbort(error) {
+    const isAbort = error?.name === 'AbortError' || error?.code === 'ERR_CANCELED' || error?.message?.toLowerCase?.().includes('canceled');
+
+    return isAbort;
+}

@@ -6,17 +6,40 @@ import api, { baseImg } from '@/lib/axios';
 import { MessageSkeletonBubble } from '@/app/[locale]/chat/page';
 import { AttachFilesButton } from './AttachFilesButton';
 import { FaSpinner } from 'react-icons/fa';
+import { HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
+import Link from 'next/link';
 
-export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, isArchived, toggleFavorite, togglePin, toggleArchive, isConnected, currentUser }) {
+export const NoMessagesPlaceholder = () => (
+  <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 text-slate-500 rounded-xl p-6">
+    <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400" />
+    <p className="text-sm max-w-xs">
+      No messages yet. Once you start chatting, your conversation will appear here.
+    </p>
+  </div>
+);
+
+const emojiRange = Array.from({ length: 80 }, (_, i) => String.fromCodePoint(0x1F600 + i));
+
+export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, loadingOlder, onLoadOlder, thread, messages, onSend, t, isFavorite, isPinned, isArchived, toggleFavorite, togglePin, toggleArchive, isConnected, currentUser }) {
   const [text, setText] = useState('');
   const [assets, setAssets] = useState([]);
   const [sending, setSending] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState(null);
+  const [showBottom, setShowBottom] = useState(false);
 
   const inputRef = useRef(null);
   const bodyRef = useRef(null);
   const emojiRef = useRef(null);
+
+  const isInitialLoadRef = useRef(true);
+  const previousMessagesLengthRef = useRef(0);
+
+  const conversationId = thread.id;
+
+  const hasMore =
+    (pagination?.page || 1) < (pagination?.pages || 1);
+
 
   const addEmoji = emoji => {
     setText(prev => prev + emoji);
@@ -27,10 +50,27 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
   const scrollBodyToBottom = (behavior = 'smooth') => {
     if (!bodyRef.current) return;
     bodyRef.current.scrollTo({ top: bodyRef.current.scrollHeight, behavior });
+    // Hide the button when scrolling to bottom
+    if (behavior === 'smooth' || behavior === 'auto') {
+      setShowBottom(false);
+    }
+  };
+
+  const checkIfAtBottom = useCallback(() => {
+    if (!bodyRef.current) return false;
+    const { scrollTop, scrollHeight, clientHeight } = bodyRef.current;
+    // Check if user is within 50px of the bottom (threshold for "at bottom")
+    return scrollHeight - scrollTop - clientHeight < 50;
+  }, []);
+
+  const handleScrollToBottom = () => {
+    scrollBodyToBottom('smooth');
+    setShowBottom(false);
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
+
     if ((!text.trim() && assets.length === 0) || sending) return;
 
     setSending(true);
@@ -67,11 +107,59 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
 
   useEffect(() => {
     scrollBodyToBottom('auto');
+    // Reset initial load flag when thread changes
+    isInitialLoadRef.current = true;
+    previousMessagesLengthRef.current = 0;
+    setShowBottom(false);
   }, [thread?.id]);
 
   useEffect(() => {
-    scrollBodyToBottom('smooth');
-  }, [messages.length]);
+    const lastMessage = messages[messages.length - 1];
+    const isNewMessage = messages.length > previousMessagesLengthRef.current;
+
+    // On initial load, always scroll to bottom
+    if (isInitialLoadRef.current) {
+      if (messages.length > 0) {
+        scrollBodyToBottom('auto');
+        isInitialLoadRef.current = false;
+      }
+      previousMessagesLengthRef.current = messages.length;
+      return;
+    }
+
+    // For subsequent new messages
+    if (isNewMessage && lastMessage && lastMessage?.authorId !== currentUser?.id) {
+      // Only show button if user is not at bottom
+      if (!checkIfAtBottom()) {
+        setShowBottom(true);
+      } else {
+        setShowBottom(false);
+        scrollBodyToBottom('smooth');
+      }
+    } else if (isNewMessage) {
+      // User's own message - always scroll
+      scrollBodyToBottom('smooth');
+    }
+
+    previousMessagesLengthRef.current = messages.length;
+  }, [messages.length, currentUser?.id, checkIfAtBottom]);
+
+  // Listen to scroll events to hide/show the button
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+
+    const handleScroll = () => {
+      if (checkIfAtBottom()) {
+        setShowBottom(false);
+      }
+    };
+
+    body.addEventListener('scroll', handleScroll);
+    return () => {
+      body.removeEventListener('scroll', handleScroll);
+    };
+  }, [checkIfAtBottom]);
 
   useEffect(() => {
     const handleClickOutside = e => {
@@ -98,8 +186,9 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  //w-[calc(100%+20px)] rtl:mr-[-10px] ltr:ml-[-10px]  
   return (
-    <div className='w-[calc(100%+20px)] rtl:mr-[-10px] ltr:ml-[-10px]  max-h-[490px] h-full flex flex-col'>
+    <div className='relative flex-1 w-full max-h-[540px] h-full flex flex-col'>
       {/* Header */}
       <div className='flex  flex-wrap items-start justify-between gap-4 border-b border-b-slate-200 pb-2 mb-2'>
         <div className='flex items-center gap-3'>
@@ -133,16 +222,75 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
         </div>
       </div>
       {/* Messages Body */}
-      <div ref={bodyRef} className='  !w-[calc(100%+30px)] rtl:mr-[-15px] ltr:ml-[-15px]  flex-1 px-4 nice-scroll space-y-5 pb-4 overflow-y-auto' style={{ maxHeight: 'calc(100vh - 400px)' }}>
-        {messages.length === 0 ? (
+      <div ref={bodyRef} className='h-full  !w-[calc(100%+30px)] rtl:mr-[-15px] ltr:ml-[-15px] p-4 flex-1 nice-scroll space-y-5 pb-4 overflow-y-auto' style={{ maxHeight: 'calc(100vh - 400px)' }}>
+        {conversationId && conversationId === loadingMessagesId ? (
           <div className='space-y-4'>
-            <MessageSkeletonBubble />
-            <MessageSkeletonBubble me />
-            <MessageSkeletonBubble />
+            <MessageSkeletonBubble animated />
+            <MessageSkeletonBubble me animated />
+            <MessageSkeletonBubble animated />
+            <MessageSkeletonBubble me animated />
           </div>
         ) : (
-          messages.map(m => <Message key={m.id || m.clientMessageId} avatar={m.authorAvatar} avatarBg='bg-slate-300' name={m.authorName} text={m.text} attachments={m.attachments ?? []} me={m.me} createdAt={m.createdAt} pending={m.pending} failed={m.failed} onZoomImage={src => setLightboxSrc(src)} />)
+          <>
+            {hasMore && (
+              <div className='text-center'>
+                {loadingOlder ? (
+                  <FaSpinner className='mx-auto h-5 w-5 animate-spin text-emerald-500' />
+                ) : (
+                  <button
+                    type='button'
+                    onClick={() => onLoadOlder?.()}
+                    className='text-blue-500 text-sm hover:underline'
+                  >
+                    Load older messages ↑
+                  </button>
+                )}
+              </div>
+            )}
+            {messages.length === 0 ? (
+              <NoMessagesPlaceholder />
+            ) : (
+              messages.map(m => (
+                <Message key={m.id || m.clientMessageId} avatar={m.authorAvatar} avatarBg='bg-slate-300' name={m.authorName} text={m.text} attachments={m.attachments ?? []} me={m.me} createdAt={m.createdAt} pending={m.pending} failed={m.failed} onZoomImage={src => setLightboxSrc(src)} />
+              ))
+            )}
+          </>
         )}
+        {/* New Message Button */}
+        <AnimatePresence>
+          {showBottom && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10"
+            >
+              <AccessibleButton
+                onClick={handleScrollToBottom}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-colors text-sm font-medium"
+                ariaLabel="New message - scroll to bottom"
+                title="New message - scroll to bottom"
+              >
+                <span>New message</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 5v14" />
+                  <path d="m19 12-7 7-7-7" />
+                </svg>
+              </AccessibleButton>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       {/* Selected assets preview */}
       {assets.length > 0 && (
@@ -156,10 +304,10 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
                 {isImage ? (
                   <img src={absolute} alt={f.filename} className='h-20 w-24 rounded-xl object-cover ring-1 ring-slate-200' />
                 ) : (
-                  <div className='h-20 w-40 rounded-xl ring-1 ring-slate-200 bg-slate-50 p-3 flex items-center gap-2 text-xs'>
+                  <a href={absolute} target='_blank' className='hover:underline cursor-pointer h-20 w-40 rounded-xl ring-1 ring-slate-200 bg-slate-50 p-3 flex items-center gap-2 text-xs'>
                     <Paperclip size={16} />
                     <span className='line-clamp-2'>{f.filename}</span>
-                  </div>
+                  </a>
                 )}
                 <button onClick={() => setAssets(prev => prev.filter((_, idx) => idx !== i))} className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors' aria-label='Remove attachment'>
                   <X size={14} />
@@ -185,8 +333,9 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
 
             <AnimatePresence>
               {showEmoji && (
-                <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.15 }} className='absolute w-[210px] right-0 bottom-10 z-50 grid grid-cols-7 gap-1.5 rounded-xl border border-slate-200 bg-white p-2 shadow-xl'>
-                  {['😀', '😁', '😂', '🤣', '😊', '😍', '😅', '🤩', '🤔', '👍', '👏', '🙏', '🔥', '🚀', '✅', '❗', '💡', '📎'].map(e => (
+                <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.15 }} className='max-h-[150px] overflow-y-auto absolute w-[210px] right-0 bottom-10 z-50 grid grid-cols-7 gap-1.5 rounded-xl border border-slate-200 bg-white p-2 shadow-xl'>
+                  {/* {['😀', '😁', '😂', '🤣', '😊', '😍', '😅', '🤩', '🤔', '👍', '👏', '🙏', '🔥', '🚀', '✅', '❗', '💡', '📎'] */}
+                  {emojiRange.map(e => (
                     <AccessibleButton key={e} type='button' className='text-lg hover:scale-110 transition' onClick={() => addEmoji(e)} ariaLabel={`Emoji: ${e}`}>
                       {e}
                     </AccessibleButton>
@@ -205,7 +354,7 @@ export function ChatThread({ thread, messages, onSend, t, isFavorite, isPinned, 
         {lightboxSrc && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className='fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4' onClick={() => setLightboxSrc(null)}>
             <img src={lightboxSrc} alt='preview' className='max-h-[90vh] max-w-[90vw] rounded-xl' onClick={e => e.stopPropagation()} />
-            <AccessibleButton className='absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2' onClick={() => setLightboxSrc(null)} ariaLabel={t('close')} title={t('close')}>
+            <AccessibleButton className='absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p- w-[32px] h-[32px]' onClick={() => setLightboxSrc(null)} ariaLabel={t('close')} title={t('close')}>
               ✕
             </AccessibleButton>
           </motion.div>
@@ -229,19 +378,77 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
           {text && <p className='max-w-4xl text-sm leading-5 break-words whitespace-pre-wrap'>{text}</p>}
 
           {attachments.length > 0 && (
-            <div className='mt-3 grid grid-cols-2 gap-3'>
-              {attachments.map((src, i) => (
-                <div key={i} className='relative group'>
-                  <img src={src} alt='attachment' className='h-24 w-28 rounded-xl object-cover ring-1 ring-slate-200' />
-                  <AccessibleButton type='button' title='View' ariaLabel='View' className='absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 bg-black/50 text-white rounded-full p-1 transition-opacity' onClick={() => onZoomImage?.(src)}>
-                    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-                      <circle cx='11' cy='11' r='8' /> <path d='m21 21-4.3-4.3' />
-                    </svg>
-                  </AccessibleButton>
-                </div>
-              ))}
+            <div className="mt-2 space-y-2">
+              {/* Images */}
+              <div className="flex flex-wrap gap-2 justify-end">
+                {attachments
+                  .filter((f) => f.mimeType?.startsWith?.('image/'))
+                  .map((f, idx) => {
+                    const url = f.url || f.path || '';
+                    const absolute = url ? (url.startsWith('http') ? url : baseImg + url) : '';
+                    // const absolute = '/images/clients/client1.jpg';
+                    return (
+                      <div key={idx} className="relative group w-24 h-20">
+                        <img
+                          src={absolute}
+                          alt={f.filename}
+                          onClick={() => onZoomImage?.(absolute)}
+                          className="w-full h-full object-cover rounded-lg cursor-pointer border ring-1 ring-slate-200 hover:opacity-90 transition"
+                        />
+                        <button
+                          type="button"
+                          title="Preview"
+                          aria-label="Preview"
+                          onClick={() => onZoomImage?.(absolute)}
+                          className="absolute bottom-1 right-1 opacity-0 group-hover:opacity-100 bg-black/50 text-white rounded-full p-1 transition-opacity"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width="16"
+                            height="16"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                          </svg>
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              {/* Files */}
+              <div className="flex flex-wrap gap-2 justify-end">
+                {attachments
+                  .filter((f) => !f.mimeType?.startsWith?.('image/'))
+                  .map((f, idx) => {
+                    const url = f.url || f.path || '';
+                    const absolute = url ? (url.startsWith('http') ? url : baseImg + url) : '';
+                    return (
+                      <a
+                        key={idx}
+                        href={absolute}
+                        target="_blank"
+                        title={f.filename}
+                        className={`text-xs px-3 py-2 rounded-md inline-flex items-center gap-2 ${me
+                          ? 'bg-emerald-600/20 hover:bg-emerald-600/40'
+                          : 'bg-gray-100 hover:bg-gray-200'
+                          }`}
+                      >
+                        📎
+                        <span className="truncate max-w-[160px]">{f.filename}</span>
+                      </a>
+                    );
+                  })}
+              </div>
             </div>
           )}
+
         </div>
 
         <div className={`mt-1 text-xs text-slate-400 ${me ? 'text-right' : 'text-left'}`}>

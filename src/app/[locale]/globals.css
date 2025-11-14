@@ -500,3 +500,23 @@ body {
 .deliver-file {
   display: block;
 }
+
+.highlight {
+  animation: highlightFade 1s ease;
+}
+
+@keyframes highlightFade {
+  0% {
+    background: #dbeafe;
+    transform: translateY(-6px);
+  }
+
+  50% {
+    background: #eff6ff;
+    transform: translateY(0);
+  }
+
+  100% {
+    background: white;
+  }
+}
