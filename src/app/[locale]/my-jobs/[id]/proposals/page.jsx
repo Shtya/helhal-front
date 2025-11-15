@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
@@ -14,6 +14,7 @@ import api from '@/lib/axios';
 import { useDebounce } from '@/hooks/useDebounce';
 import Select from '@/components/atoms/Select';
 import InputSearch from '@/components/atoms/InputSearch';
+import { isErrorAbort } from '@/utils/helper';
 
 // ----------------------------
 // API Helpers
@@ -25,7 +26,8 @@ export const getJobProposals = async (
     search = '',
     status = '',
     sortBy = '',
-    sortdir = ''
+    sortdir = '',
+    signal
   }
 ) => {
   const params = new URLSearchParams();
@@ -37,7 +39,9 @@ export const getJobProposals = async (
   if (sortBy) params.append('sortBy', sortBy);
   if (sortdir) params.append('sortdir', sortdir);
 
-  const res = await api.get(`/jobs/${jobId}/proposals?${params.toString()}`);
+  const res = await api.get(`/jobs/${jobId}/proposals?${params.toString()}`, {
+    signal
+  });
   return res.data;
 };
 
@@ -369,23 +373,31 @@ export default function JobProposalsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingAcceptId, setPendingAcceptId] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const controllerRef = useRef();
 
   const loadProposals = useCallback(
     async () => {
+      if (controllerRef.current) controllerRef.current.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
       try {
         const { sortBy, sortdir } = SORT_CONFIG[sortKey] || {};
         setLoading(true);
         const response = await getJobProposals({
-          jobId, page: pagination.page, limit: pagination.limit, search: debouncedQuery, sortBy, sortBy, sortdir, status: statusFilter === 'all' ? '' : statusFilter
+          jobId, page: pagination.page, limit: pagination.limit, search: debouncedQuery, sortBy, sortBy, sortdir, status: statusFilter === 'all' ? '' : statusFilter,
+          signal: controller.signal
         });
         setProposals(response.proposals || []);
         setJob(response.job || null);
         setPagination(response.pagination || {});
       } catch (error) {
-        console.error('Error loading proposals:', error);
-        toast.error('Failed to load proposals');
+        if (!isErrorAbort(error)) {
+          console.error('Error loading proposals:', error);
+          toast.error('Failed to load proposals');
+        }
       } finally {
-        setLoading(false);
+        if (controllerRef.current === controller)
+          setLoading(false);
       }
     },
     [jobId, debouncedQuery, sortKey, statusFilter, pagination.page, pagination.limit],

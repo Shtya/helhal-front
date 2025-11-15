@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, Eye, Trash2, Clock, CheckCircle, XCircle, Users, Settings as SettingsIcon } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
@@ -14,6 +14,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { getDateAgo } from '@/utils/date';
 import Client from '@/components/pages/jobs/Client';
 import StatusBadge from '@/components/pages/jobs/StatusBadge';
+import { isErrorAbort } from '@/utils/helper';
 
 export default function AdminJobsDashboard() {
   const [activeTab, setActiveTab] = useState('all');
@@ -48,7 +49,12 @@ export default function AdminJobsDashboard() {
     { value: 'closed', label: 'Closed' },
   ];
 
+  const controllerRef = useRef();
   const fetchJobs = useCallback(async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     try {
       setLoading(true);
       setApiError(null);
@@ -63,16 +69,19 @@ export default function AdminJobsDashboard() {
       };
       if (activeTab !== 'all') q.filters.status = activeTab;
 
-      const res = await api.get('/jobs', { params: q });
+      const res = await api.get('/jobs', { params: q, signal: controller.signal });
 
       const data = res.data || {};
       setRows(Array.isArray(data.records) ? data.records : []);
       setTotalCount(Number(data.total_records || 0));
     } catch (e) {
-      console.error('Error fetching jobs:', e);
-      setApiError(e?.response?.data?.message || 'Failed to fetch jobs.');
+      if (!isErrorAbort(e)) {
+        console.error('Error fetching jobs:', e);
+        setApiError(e?.response?.data?.message || 'Failed to fetch jobs.');
+      }
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 

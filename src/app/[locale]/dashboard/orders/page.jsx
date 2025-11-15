@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MoreVertical, Eye, Edit, RefreshCw, Clock, CheckCircle, XCircle, Truck, Package } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
@@ -14,6 +14,7 @@ import Img from '@/components/atoms/Img';
 import UserMini from '@/components/dashboard/UserMini';
 import toast from 'react-hot-toast';
 import { useDebounce } from '@/hooks/useDebounce';
+import { isErrorAbort } from '@/utils/helper';
 
 const OrderStatus = {
   PENDING: 'Pending',
@@ -65,8 +66,11 @@ export default function AdminOrdersDashboard() {
     { value: 'Completed', label: 'Completed' },
     { value: 'Cancelled', label: 'Cancelled' },
   ];
-
+  const controllerRef = useRef();
   const fetchOrders = useCallback(async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
     try {
       setLoading(true);
       setApiError(null);
@@ -81,16 +85,19 @@ export default function AdminOrdersDashboard() {
         search: debouncedSearch?.trim()
       };
 
-      const res = await api.get('/orders/admin', { params: q });
+      const res = await api.get('/orders/admin', { params: q, signal: controller.signal });
 
       const data = res.data || {};
       setRows(Array.isArray(data.records) ? data.records : []);
       setTotalCount(Number(data.total_records || 0));
     } catch (e) {
-      console.error('Error fetching orders:', e);
-      setApiError(e?.response?.data?.message || 'Failed to fetch orders.');
+      if (!isErrorAbort(e)) {
+        console.error('Error fetching orders:', e);
+        setApiError(e?.response?.data?.message || 'Failed to fetch orders.');
+      }
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 

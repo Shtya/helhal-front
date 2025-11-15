@@ -18,7 +18,7 @@ import { motion } from 'framer-motion';
 import { SlidersHorizontal } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { updateUrlParams } from '@/utils/helper';
+import { isErrorAbort, updateUrlParams } from '@/utils/helper';
 
 const defaultFilters = {
 
@@ -160,20 +160,20 @@ export default function FilterServices({ category = 'all' }) {
         if (controllerRef.current) {
             controllerRef.current.abort();
         }
-        controllerRef.current = new AbortController();
+        const controller = new AbortController();
+        controllerRef.current = controller;
         setLoading(true);
 
         try {
             const q = buildQuery({ ...formData, search: debounced?.trim() }, pagination);
-            const res = await apiService.getServices(category, q, { signal: controllerRef.current.signal }); // <-- uses your /services/me
+            const res = await apiService.getServices(category, q, { signal: controller.signal }); // <-- uses your /services/me
             // expect shape: { services: [], pagination: { page, limit, total, pages } }
             if (res?.services) setServices(res.services);
             if (res?.pagination) setPagination(res.pagination);
             setCategorydata(res?.category)
         } catch (err) {
             // ignore aborts
-            const isAbort = err?.name === 'AbortError' || err?.code === 'ERR_CANCELED' || err?.message?.toLowerCase?.().includes('canceled');
-            if (!isAbort) {
+            if (!isErrorAbort(err)) {
                 console.error('Error fetching services:', err);
                 setServices([]);
                 setCategorydata(null)
@@ -181,8 +181,8 @@ export default function FilterServices({ category = 'all' }) {
             }
 
         } finally {
-            setLoading(false);
-            controllerRef.current = null;
+            if (controllerRef.current === controller)
+                setLoading(false);
         }
     }, [debounced?.trim(), formData, pagination.page, pagination.limit]);
 

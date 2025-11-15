@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Eye } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
@@ -21,6 +21,7 @@ import { validateUsername, validatPhone } from '@/utils/profile';
 import { useTranslations } from 'next-intl';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import { Divider } from '@/components/UI/ui';
+import { isErrorAbort } from '@/utils/helper';
 
 
 export default function AdminUsersDashboard() {
@@ -49,8 +50,12 @@ export default function AdminUsersDashboard() {
     { value: 'seller', label: 'Sellers' },
     { value: 'admin', label: 'Admins' },
   ];
-
+  const controllerRef = useRef();
   const fetchUsers = useCallback(async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     try {
       setLoading(true);
 
@@ -64,7 +69,7 @@ export default function AdminUsersDashboard() {
         sortBy: sortConfig.field,
         sortOrder: sortConfig.direction
       };
-      const res = await api.get('/auth/users', { params });
+      const res = await api.get('/auth/users', { params, signal: controller.signal });
       // SERVER PAGINATION: use API payload fields
       setUsers(res?.data?.records || []);
       setTotalUsers(res?.data?.total_records ?? 0);
@@ -74,9 +79,13 @@ export default function AdminUsersDashboard() {
         limit: res?.data?.per_page ?? prev.limit,
       }));
     } catch (e) {
-      console.error(e);
+      if (!isErrorAbort(e)) {
+        console.error(e);
+      }
     } finally {
-      setLoading(false);
+
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder, filters.status, filters.role]);
 

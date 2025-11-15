@@ -1,7 +1,7 @@
 // MyJobsPage.jsx (light mode focused)
 'use client';
 import { AnimatePresence, motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { deleteJob, getMyJobs, updateJob } from '@/services/jobService';
 
 import NoResults from '@/components/common/NoResults';
@@ -11,7 +11,7 @@ import { Modal } from '@/components/common/Modal';
 import Tabs from '@/components/common/Tabs';
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'next/navigation';
-import { fmtMoney, updateUrlParams } from '@/utils/helper';
+import { fmtMoney, isErrorAbort, updateUrlParams } from '@/utils/helper';
 import { usePathname } from '@/i18n/navigation';
 import JobCard, { JobSkeleton } from '@/components/pages/my-jobs/JobCard';
 import { useAuth } from '@/context/AuthContext';
@@ -89,21 +89,27 @@ export default function MyJobsPage() {
 
     handleChangeTab(paramsTab);
   }, [paramsTab]);
-
+  const controllerRef = useRef();
   useEffect(() => {
     loadJobs(currentPage);
   }, [currentPage, itemsPerPage, activeTab]);
 
   const loadJobs = async (page = 1) => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     try {
       setLoading(true);
-      const response = await getMyJobs(activeTab === 'all' ? '' : activeTab, page, itemsPerPage);
+      const response = await getMyJobs(activeTab === 'all' ? '' : activeTab, page, itemsPerPage, controller.signal);
       setJobs(response.records);
       setTotalPages(Math.ceil(response.total_records / response.per_page));
     } catch (e) {
-      console.error('Error loading jobs:', e);
+      if (!isErrorAbort(e))
+        console.error('Error loading jobs:', e);
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   };
 

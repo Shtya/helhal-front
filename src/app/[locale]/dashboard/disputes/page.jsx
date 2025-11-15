@@ -23,6 +23,7 @@ import { DisputeStatus, disputeType } from '@/constants/dispute';
 import toast from 'react-hot-toast';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
 import { MdOutlineLockOpen } from 'react-icons/md';
+import { isErrorAbort } from '@/utils/helper';
 
 
 function UserMini({ user }) {
@@ -166,7 +167,12 @@ export default function DisputesPage() {
     [],
   );
 
+  const controllerRef = useRef();
   const fetchDisputes = useCallback(async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     setLoading(true);
     try {
       const qs = new URLSearchParams();
@@ -179,7 +185,7 @@ export default function DisputesPage() {
       if (filters.sortBy) qs.set('sortBy', filters.sortBy);
       if (filters.sortOrder) qs.set('sortdir', filters.sortOrder);
 
-      const { data } = await api.get(`/disputes?${qs.toString()}`);
+      const { data } = await api.get(`/disputes?${qs.toString()}`, { signal: controller.signal });
       const list = (data?.disputes ?? data) || [];
       setFilters(p => ({ ...p, page: data?.pagination?.page, limit: data?.pagination?.limit, total: data?.pagination?.total }))
       setRows(
@@ -195,7 +201,8 @@ export default function DisputesPage() {
         })),
       );
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [activeTab, debounced?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 
@@ -208,10 +215,24 @@ export default function DisputesPage() {
   };
   const setRowLoading = (idShort, val) => setActionLoading(p => ({ ...p, [idShort]: val }));
 
+  const orderControllerRef = useRef();
   async function loadOrder(orderId) {
+    if (!orderId) return;
+
+    // Abort previous request
+    if (orderControllerRef.current) {
+      orderControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    orderControllerRef.current = controller;
+
     setOrderDetailLoading(true);
     try {
-      const { data } = await api.get(`/orders/${orderId}`);
+      const { data } = await api.get(`/orders/${orderId}`, {
+        signal: controller.signal
+      });
+
       setOrderDetail(data);
       const inv = data?.invoices?.[0];
       const subtotal = Number(inv?.subtotal || 0);
@@ -219,10 +240,13 @@ export default function DisputesPage() {
       setBuyerRefund('0');
       setCloseAs('completed');
     } catch (e) {
-      setOrderDetail(null);
+      if (!isErrorAbort(e))
+        setOrderDetail(null);
     }
     finally {
-      setOrderDetailLoading(false);
+      if (orderControllerRef.current === controller) {
+        setOrderDetailLoading(false);
+      }
     }
   }
 
@@ -359,35 +383,56 @@ export default function DisputesPage() {
     await fetchActivity(row?._raw?.id);
   }
 
+  const activityControllerRef = useRef(null);
+
   async function fetchActivity(disputeId) {
     if (!disputeId) return;
+
+    // abort previous request
+    if (activityControllerRef.current) {
+      activityControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    activityControllerRef.current = controller;
     setActLoading(true);
     setActError('');
     try {
-      const { data } = await api.get(`/disputes/${disputeId}/activity`);
+      const { data } = await api.get(`/disputes/${disputeId}/activity`, { signal: controller.signal });
 
-      setActivity(data);
+      // Only update state if this request is still active
+      if (activityControllerRef.current === controller) {
+        setActivity(data);
+      }
     } catch (e) {
-      if (e?.response?.status === 404) {
+      if (!isErrorAbort(e) && e?.response?.status === 404) {
         try {
-          const { data: d2 } = await api.get(`/disputes/${disputeId}`);
-          setActivity({
-            dispute: d2,
-            order: d2?.order || null,
-            invoice: null,
-            messages: [],
-            events: [{ type: 'opened', at: d2?.created_at, by: d2?.raisedBy?.username || d2?.raisedById }],
-          });
+          const { data: d2 } = await api.get(`/disputes/${disputeId}`, { signal: controller.signal });
+          if (activityControllerRef.current === controller)
+            setActivity({
+              dispute: d2,
+              order: d2?.order || null,
+              invoice: null,
+              messages: [],
+              events: [{ type: 'opened', at: d2?.created_at, by: d2?.raisedBy?.username || d2?.raisedById }],
+            });
         } catch (e2) {
-          setActError(e2?.response?.data?.message || 'Unable to load activity.');
-          setActivity(null);
+          if (!isErrorAbort(e2)) {
+
+            setActError(e2?.response?.data?.message || 'Unable to load activity.');
+            setActivity(null);
+          }
         }
       } else {
-        setActError(e?.response?.data?.message || 'Failed to load activity.');
-        setActivity(null);
+        if (controllerRef.current === controller) {
+
+          setActError(e?.response?.data?.message || 'Failed to load activity.');
+          setActivity(null);
+        }
       }
     } finally {
-      setActLoading(false);
+      if (controllerRef.current === controller)
+        setActLoading(false);
     }
   }
 

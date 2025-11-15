@@ -9,7 +9,6 @@ import { getLink } from '@/components/common/NotificationPopup';
 import { MoveRight } from 'lucide-react';
 import NoResults from '@/components/common/NoResults';
 import TabsPagination from '@/components/common/TabsPagination';
-import { useValues } from '@/context/GlobalContext';
 import { useNotifications } from '@/context/NotificationContext';
 import { isErrorAbort } from '@/utils/helper';
 
@@ -28,14 +27,16 @@ const NotificationsPage = () => {
   const notificationsApiRef = useRef(null)
   const loadNotifications = useCallback(async () => {
     // Cancel previous request
+    console.log(notificationsApiRef.current, pagination.page)
     if (notificationsApiRef.current) {
       notificationsApiRef.current.abort();
     }
-    notificationsApiRef.current = new AbortController();
+    const controller = new AbortController();
+    notificationsApiRef.current = controller;
 
     try {
       setLoading(true);
-      const response = await notificationService.getNotifications(pagination.page, pagination.limit, notificationsApiRef.current.signal);
+      const response = await notificationService.getNotifications(pagination.page, pagination.limit, controller.signal);
       const records = response.data.records || [];
       setPageNotifications(records);
       setPagination({
@@ -50,8 +51,9 @@ const NotificationsPage = () => {
         toast.error('Failed to load notifications');
       }
     } finally {
-      notificationsApiRef.current = null;
-      setLoading(false);
+      // Only clear loading if THIS request is still the active one
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [pagination.page, pagination.limit]);
   useEffect(() => {

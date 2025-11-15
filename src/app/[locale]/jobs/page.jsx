@@ -18,7 +18,7 @@ import FavoriteButton from '@/components/atoms/FavoriteButton';
 import UserAvatar from '@/components/common/UserAvatar';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useAuth } from '@/context/AuthContext';
-import { fmtMoney, updateUrlParams } from '@/utils/helper';
+import { fmtMoney, isErrorAbort, updateUrlParams } from '@/utils/helper';
 import { usePathname } from '@/i18n/navigation';
 import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdown';
 import CategorySelect from '@/components/atoms/CategorySelect';
@@ -52,7 +52,7 @@ function buildQuery({ page = 1, limit = 12, q = '', filters = {} } = {}) {
   return out;
 }
 
-async function listPublishedJobs({ page = 1, limit = 12, q = '', category, budgetType, max7days, withAttachments, customBudget, priceRange, sortBy = 'newest' } = {}) {
+async function listPublishedJobs({ page = 1, limit = 12, q = '', category, budgetType, max7days, withAttachments, customBudget, priceRange, sortBy = 'newest' } = {}, { signal }) {
   const res = await api.get('/jobs', {
     params: {
       page,
@@ -67,6 +67,7 @@ async function listPublishedJobs({ page = 1, limit = 12, q = '', category, budge
       // sortBy, return it when backend add it 
       filters: { status: 'published' },
     },
+    signal
   });
   // JobsService.getJobs returns { jobs, pagination }
   return res.data?.jobs
@@ -266,37 +267,40 @@ export default function SellerJobsPage() {
     updateUrlParams(pathname, params);
   }, [page, limit, debouncedQ?.trim(), filters, pathname, selectedJobId]);
 
-
+  const controllerRef = useRef();
   // Fetch jobs
   useEffect(() => {
-    let isMounted = true;
 
     async function fetchJobs() {
+      if (controllerRef.current) controllerRef.current.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
       try {
         if (skipDebouncedRef.current) {
           skipDebouncedRef.current = false;
           return; // skip this fetch triggered by debounce reset
         }
 
+
         setLoading(true);
         const query = buildQuery({ page, limit, q: debouncedQ?.trim(), filters });
 
-        const res = await listPublishedJobs(query);
-        if (!isMounted) return;
+        const res = await listPublishedJobs(query, { signal: controller.signal });
+
         setJobs(res.jobs || []);
         setPages(res.pagination?.pages || 1);
       } catch (e) {
-        console.error(e);
-        toast.error('Failed to load jobs');
+        if (!isErrorAbort(e)) {
+          console.error(e);
+          toast.error('Failed to load jobs');
+        }
       } finally {
-        if (isMounted) setLoading(false);
+        // Only clear loading if THIS request is still the active one
+        if (controllerRef.current === controller)
+          setLoading(false);
       }
     }
     fetchJobs();
-
-    return () => {
-      isMounted = false;
-    };
   }, [page, limit, debouncedQ?.trim(), filters]);
 
 

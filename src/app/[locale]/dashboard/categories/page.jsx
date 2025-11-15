@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Search, Eye, Edit, Trash2, Plus } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import toast from 'react-hot-toast';
+import { isErrorAbort } from '@/utils/helper';
 
 export default function AdminCategoriesDashboard() {
   const [activeTab, setActiveTab] = useState('all');
@@ -55,7 +56,11 @@ export default function AdminCategoriesDashboard() {
     { value: 'subcategory', label: 'Subcategories' },
   ];
 
+  const controllerRef = useRef();
   const fetchCategories = useCallback(async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
     try {
       setLoading(true);
       setApiError(null);
@@ -69,7 +74,7 @@ export default function AdminCategoriesDashboard() {
       if (debouncedSearch?.trim()) q.search = debouncedSearch?.trim();
       if (activeTab !== 'all') q.type = activeTab; // ✅ send type, not filters
 
-      const res = await api.get('/categories', { params: q });
+      const res = await api.get('/categories', { params: q, signal: controller.signal });
       const data = res.data;
 
       // Support both the new paginated shape and a legacy array response
@@ -81,10 +86,14 @@ export default function AdminCategoriesDashboard() {
         setTotalCount(Number(data.total_records ?? 0)); // ✅ use total
       }
     } catch (e) {
-      console.error('Error fetching categories:', e);
-      setApiError(e?.response?.data?.message || 'Failed to fetch categories.');
+      if (!isErrorAbort(e)) {
+        console.error('Error fetching categories:', e);
+        setApiError(e?.response?.data?.message || 'Failed to fetch categories.');
+      }
     } finally {
-      setLoading(false);
+      // Only clear loading if THIS request is still the active one
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 

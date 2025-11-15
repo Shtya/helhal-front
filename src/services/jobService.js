@@ -16,19 +16,19 @@ export const getJob = async id => {
   return response.data;
 };
 
-export const getMyJobs = async (status, page = 1 , limit = 10) => {
+export const getMyJobs = async (status, page = 1, limit = 10, signal) => {
   let url = '/jobs/my-jobs';
   const params = {};
-	params.limit = limit
+  params.limit = limit
 
   if (status) params.search = status;
   if (page !== 1) params.page = page;
-  
+
   const queryString = new URLSearchParams(params).toString();
 
   if (queryString) url += `?${queryString}`;
-  
-  const response = await api.get(url);
+
+  const response = await api.get(url, { signal });
   return response.data;
 };
 

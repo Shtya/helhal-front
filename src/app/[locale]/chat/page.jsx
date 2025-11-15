@@ -527,7 +527,8 @@ const useChat = () => {
     if (conversationsApiRef.current) {
       conversationsApiRef.current.abort();
     }
-    conversationsApiRef.current = new AbortController();
+    const controller = new AbortController();
+    conversationsApiRef.current = controller;
 
     try {
       // Only show loading spinner if not silent
@@ -535,7 +536,7 @@ const useChat = () => {
         setLoading(true);
       }
       const { data } = await api.get(`/conversations?page=${page}`, {
-        signal: conversationsApiRef.current.signal
+        signal: controller.signal
       });
       const list = data.conversations || [];
 
@@ -566,10 +567,9 @@ const useChat = () => {
         showNotification('Failed to load conversations', 'error');
       }
     } finally {
-      conversationsApiRef.current = null;
-      if (!options.silent) {
+      // Only clear loading if THIS request is still the active one
+      if (controllerRef.current === controller && !options.silent)
         setLoading(false);
-      }
     }
   }, [user]);
 

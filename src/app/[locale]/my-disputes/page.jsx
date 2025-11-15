@@ -16,7 +16,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import TabsPagination from '@/components/common/TabsPagination';
 import { MdInfoOutline } from "react-icons/md";
 import { useSearchParams } from 'next/navigation';
-import { initialsFromName, updateUrlParams } from '@/utils/helper';
+import { initialsFromName, isErrorAbort, updateUrlParams } from '@/utils/helper';
 import { DisputeStatus, disputeType } from '@/constants/dispute';
 import DisputeStatusPill from '@/components/pages/disputes/DisputeStatusPill';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
@@ -115,8 +115,13 @@ export default function MyDisputesPage() {
     updateUrlParams(pathname, params);
   }, [selectedId]);
 
+  const controllerRef = useRef();
 
   const fetchList = useCallback(async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     setLoadingList(true);
     try {
       const params = {
@@ -125,7 +130,8 @@ export default function MyDisputesPage() {
         page: pagination.page
       }
       const { data } = await api.get('/disputes/my-disputes', {
-        params
+        params,
+        signal: controller.signal
       });
       const list = data?.disputes || [];
       setDisputes(list);
@@ -142,35 +148,81 @@ export default function MyDisputesPage() {
     }
   }, [debounced?.trim(), pagination.limit, pagination.page]);
 
+
+  const detailsControllerRef = useRef(null);
+
   const fetchDetail = useCallback(async disputeId => {
     if (!disputeId) return;
+
+    // Abort previous request
+    if (detailsControllerRef.current) {
+      detailsControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    detailsControllerRef.current = controller;
+
     setLoadingDetail(true);
     setErrDetail('');
+
     try {
-      const { data } = await api.get(`/disputes/${disputeId}/activity`);
-      setDetail(data);
+      const { data } = await api.get(
+        `/disputes/${disputeId}/activity`,
+        { signal: controller.signal }
+      );
+
+      // Only update state if still the active request
+      if (detailsControllerRef.current === controller) {
+        setDetail(data);
+      }
+
     } catch (e) {
+      if (isErrorAbort(e)) return; // ignore abort silently
+
+      // -------- 404 fallback --------
       if (e?.response?.status === 404) {
         try {
-          const { data: d2 } = await api.get(`/disputes/${disputeId}`);
-          setDetail({
-            dispute: d2,
-            order: d2?.order || null,
-            invoice: null,
-            messages: [],
-            events: [{ type: 'opened', at: d2?.created_at, by: d2?.raisedBy?.username || d2?.raisedById }],
-          });
+          const { data: d2 } = await api.get(
+            `/disputes/${disputeId}`,
+            { signal: controller.signal }
+          );
+
+          if (detailsControllerRef.current === controller) {
+            setDetail({
+              dispute: d2,
+              order: d2?.order || null,
+              invoice: null,
+              messages: [],
+              events: [{
+                type: 'opened',
+                at: d2?.created_at,
+                by: d2?.raisedBy?.username || d2?.raisedById
+              }]
+            });
+          }
+
         } catch (e2) {
-          setErrDetail(e2?.response?.data?.message || 'Unable to load dispute.');
+          if (!isErrorAbort(e2) && detailsControllerRef.current === controller) {
+            setErrDetail(e2?.response?.data?.message || 'Unable to load dispute.');
+            setDetail(null);
+          }
+        }
+
+      } else {
+        // ---------- normal error ----------
+        if (detailsControllerRef.current === controller) {
+          setErrDetail(e?.response?.data?.message || 'Failed to load activity.');
           setDetail(null);
         }
-      } else {
-        setErrDetail(e?.response?.data?.message || 'Failed to load activity.');
-        setDetail(null);
       }
+
     } finally {
-      setLoadingDetail(false);
+      // Only stop loading if this request is still active
+      if (detailsControllerRef.current === controller) {
+        setLoadingDetail(false);
+      }
     }
+
   }, []);
 
   useEffect(() => {
@@ -232,8 +284,6 @@ export default function MyDisputesPage() {
                     const isActive = selectedId === d.id;
                     return (
                       <li key={d.id} className={`p-4 cursor-pointer group transition ${isActive ? 'bg-emerald-50/40' : 'bg-white'} hover:bg-emerald-50/30`} onClick={() => {
-                        // setReplyTo(null);
-                        // setMsg('');
                         setSelectedId(d?.id);
                       }}>
                         <div className='flex items-start justify-between gap-3'>

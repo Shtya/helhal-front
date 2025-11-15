@@ -1,7 +1,7 @@
 // app/seller/proposals/page.jsx — "My Proposals" (Light mode, animated, JS)
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api from '@/lib/axios';
 import Button from '@/components/atoms/Button';
@@ -13,17 +13,19 @@ import { Banknote, CalendarDays, Clock, FolderOpen, User2, ArrowLeftRight, Showe
 import AttachmentList from '@/components/common/AttachmentList';
 import toast from 'react-hot-toast';
 import Tabs from '@/components/common/Tabs';
+import { isErrorAbort } from '@/utils/helper';
 
 // -------------------------------------------------
 // Service helper — GET /jobs/my-proposals
 // -------------------------------------------------
-async function listMyProposals({ status = '', page = 1, limit = 12 } = {}) {
+async function listMyProposals({ status = '', page = 1, limit = 12 } = {}, { signal }) {
   const res = await api.get('/jobs/my-proposals', {
     params: {
       status: status || undefined, // backend expects string or undefined
       page,
+      limit
     },
-  });
+  }, { signal });
   return res.data; // { proposals, pagination }
 }
 
@@ -59,26 +61,32 @@ export default function SellerProposalsPage() {
 
   const [tab, setTab] = useState('submitted');
   const [viewer, setViewer] = useState({ open: false, job: null });
+  const controllerRef = useRef();
 
   useEffect(() => {
-    let mounted = true;
+
     (async () => {
+      if (controllerRef.current) controllerRef.current.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
       try {
+
+
         setLoading(true);
-        const res = await listMyProposals({ status: tab, page, limit });
-        if (!mounted) return;
+        const res = await listMyProposals({ status: tab, page, limit }, { signal: controller.signal });
         setItems(res?.proposals || []);
         setPages(res?.pagination?.pages || 1);
       } catch (e) {
-        console.error(e);
-        toast.error('Failed to load proposals');
+        if (!isErrorAbort(e)) {
+          console.error(e);
+          toast.error('Failed to load proposals');
+        }
       } finally {
-        if (mounted) setLoading(false);
+        // Only clear loading if THIS request is still the active one
+        if (controllerRef.current === controller)
+          setLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
   }, [page, limit, tab]);
 
   return (

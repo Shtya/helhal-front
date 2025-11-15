@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
@@ -23,6 +23,7 @@ import ActionsMenu from '@/components/common/ActionsMenu';
 import DeliverModel from '@/components/pages/my-orders/DeliverModel';
 import ReviewSubmissionModel from '@/components/pages/my-orders/ReviewSubmissionModel';
 import ChangeRequestReviewModel from '@/components/pages/my-orders/ChangeRequestReviewModel';
+import { isErrorAbort } from '@/utils/helper';
 
 // Animation
 export const tabAnimation = {
@@ -58,7 +59,7 @@ export default function Page() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
-  const { user, role } = useAuth();
+  const { role } = useAuth();
   const isSeller = role === 'seller';
   const isBuyer = role === 'buyer';
   const [actionLoading, setActionLoading] = useState({});
@@ -160,12 +161,22 @@ export default function Page() {
     return params.toString();
   }, [activeTab, search, pagination.page, pagination.limit]);
 
+
+  const controllerRef = useRef();
+
   const fetchOrders = useCallback(async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     setLoading(true);
     setErr('');
+
     try {
       const qs = buildQuery();
-      const { data } = await api.get(`/orders?${qs}`);
+      const { data } = await api.get(`/orders?${qs}`, {
+        signal: controller.signal
+      });
       const list = data?.records;
 
       const rows = list.map(o => {
@@ -186,11 +197,14 @@ export default function Page() {
 
       setOrders(rows);
     } catch (e) {
-      console.error(e);
-      setErr(e?.response?.data?.message || 'Failed to load orders.');
+      if (!isErrorAbort(e)) {
+        console.error(e);
+        setErr(e?.response?.data?.message || 'Failed to load orders.');
+      }
       setOrders([]);
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [buildQuery]);
 
