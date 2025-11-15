@@ -13,6 +13,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useValues } from '@/context/GlobalContext';
 import Img from '../atoms/Img';
 import Logo from '../common/Logo';
+import { getLink } from '../common/NotificationPopup';
+import { useNotifications } from '@/context/NotificationContext';
 
 /* =========================================================
    Animations
@@ -61,35 +63,73 @@ const RowSkeleton = () => (
 
 const NotificationPopup = () => {
   const [open, setOpen] = useState(false);
-  const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [badge, setBadge] = useState(0); // unread count from /unread-count
   const [meta, setMeta] = useState({ total_records: 0, per_page: 10, current_page: 1 });
   const btnRef = useRef(null);
   const menuRef = useRef(null);
   const menuStyle = useDropdownPosition(open, btnRef);
+  const [notifications, setNotifications] = useState([]);
+  const {
+    unreadNotificationCount,
+    markOneAsRead,
+    markAllAsRead,
+    subscribe, } = useNotifications();
+
+  useEffect(() => {
+    const unsubscribe = subscribe((action) => {
+      switch (action.type) {
+
+        case "NEW_NOTIFICATION":
+          setNotifications(prev => {
+            const exists = prev.some(n => n.id === action.payload.id);
+            if (exists) return prev;
+            return [action.payload, ...prev];
+          });
+          break;
+
+        case "MARK_ONE_AS_READ":
+          setNotifications(prev =>
+            prev.map(n =>
+              n.id === action.payload.id ? { ...n, isRead: true } : n
+            )
+          );
+          break;
+
+        case "REVERT_MARK_ONE":
+          setNotifications(prev =>
+            prev.map(n =>
+              n.id === action.payload.id ? { ...n, isRead: false } : n
+            )
+          );
+          break;
+
+        case "MARK_ALL_AS_READ":
+          setNotifications(prev =>
+            prev.map(n => ({ ...n, isRead: true }))
+          );
+          break;
+
+        case "REVERT_MARK_ALL":
+          // Simply re-fetch from server
+          fetchList();
+          break;
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
 
   // ---- fetch helpers ----
-  const fetchUnreadCount = async () => {
-    try {
-      const res = await api.get('/notifications/unread-count');
-      // endpoint returns CRUD.findAll style payload
-      const count = Number(res?.data?.total_records ?? 0);
-      setBadge(count);
-    } catch {
-      // keep existing badge on error
-    }
-  };
-
   const fetchList = async () => {
     setLoading(true);
     try {
       const res = await api.get('/notifications');
       const { records = [], total_records, per_page, current_page } = res.data || {};
-      setRecords(records);
+      setNotifications(records);
       setMeta({ total_records, per_page, current_page });
     } catch {
-      setRecords([]);
+      setNotifications([]);
       setMeta({ total_records: 0, per_page: 10, current_page: 1 });
     } finally {
       setLoading(false);
@@ -99,9 +139,9 @@ const NotificationPopup = () => {
   useEffect(() => {
     let mounted = true;
 
-    // initial fetches
+    // initial fetch
     (async () => {
-      await Promise.all([fetchUnreadCount(), fetchList()]);
+      await fetchList();
       if (!mounted) return;
     })();
 
@@ -116,37 +156,6 @@ const NotificationPopup = () => {
     };
   }, []);
 
-  // ---- actions ----
-  const markOneAsRead = async id => {
-    // optimistic UI
-    setRecords(prev => prev.map(n => (n.id === id ? { ...n, isRead: true } : n)));
-    setBadge(b => Math.max(0, b - 1));
-    try {
-      await api.put(`/notifications/read/${id}`);
-    } catch {
-      // revert on error
-      setRecords(prev => prev.map(n => (n.id === id ? { ...n, isRead: false } : n)));
-      setBadge(b => b + 1);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    // optimistic UI
-    const unread = records.some(n => !n.isRead);
-    if (!unread && badge === 0) return;
-    setRecords(prev => prev.map(n => ({ ...n, isRead: true })));
-    const prevBadge = badge;
-    setBadge(0);
-    try {
-      await api.put('/notifications/read-all');
-    } catch {
-      // revert on error
-      setBadge(prevBadge);
-      setRecords(prev => prev); // we can't easily restore previous flags → refetch
-      fetchList();
-      fetchUnreadCount();
-    }
-  };
 
   const goToTarget = n => (n.relatedEntityType === 'order' ? `/my-orders/${n.relatedEntityId}` : '/notifications');
 
@@ -154,7 +163,7 @@ const NotificationPopup = () => {
     <div className='' ref={btnRef}>
       <motion.button onClick={() => setOpen(v => !v)} className='relative  inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
         <Bell className='h-5 w-5 text-slate-700' />
-        {badge > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-emerald-600 px-1 text-[11px] text-white'>{badge > 99 ? '99+' : badge}</span>}
+        {unreadNotificationCount > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-emerald-600 px-1 text-[11px] text-white font-semibold'>{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}</span>}
       </motion.button>
 
       <AnimatePresence>
@@ -179,7 +188,7 @@ const NotificationPopup = () => {
                   <RowSkeleton />
                   <RowSkeleton />
                 </>
-              ) : records.length === 0 ? (
+              ) : notifications.length === 0 ? (
                 <div className='px-6 py-10 text-center text-slate-500'>
                   <div className='mx-auto mb-2 grid h-10 w-10 place-items-center rounded-xl bg-slate-100'>
                     <Bell className='h-5 w-5 text-slate-500' />
@@ -187,31 +196,56 @@ const NotificationPopup = () => {
                   <div className='text-sm'>You’re all caught up!</div>
                 </div>
               ) : (
-                records.map(n => (
-                  <div key={n.id} className={`px-4 py-3 hover:bg-slate-50 ${!n.isRead ? 'bg-emerald-50/30' : ''}`}>
-                    <div className='flex items-start gap-3'>
-                      <div className='grid h-8 w-8 place-items-center rounded-lg bg-emerald-50'>
+                notifications.map(n => (
+                  <div
+                    key={n.id}
+                    data-notification-id={`${n.id}`}
+                    className={`px-4 py-3 hover:bg-slate-50 transition ${!n.isRead ? 'bg-emerald-50/30' : ''}`}
+                  >
+                    <div className="flex items-start gap-3">
+
+                      {/* icon */}
+                      <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50">
                         <TypeIcon type={n.type} />
                       </div>
 
-                      <div className='min-w-0 flex-1'>
-                        <div className='flex items-center justify-between gap-2'>
-                          <div className='truncate text-sm font-medium text-slate-900'>{n.title}</div>
-                          <div className='shrink-0 text-[11px] text-slate-500'>{relTime(n.created_at)}</div>
+                      <div className="min-w-0 flex-1">
+
+                        {/* Title + timestamp + View link */}
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="truncate text-sm font-medium text-slate-900">{n.title}</div>
+
+                          <div className="flex items-center gap-3 shrink-0">
+                            {getLink(n.relatedEntityType, n.relatedEntityId) && (
+                              <Link
+                                href={getLink(n.relatedEntityType, n.relatedEntityId)}
+                                className="text-[11px] text-blue-600 hover:text-blue-700 font-medium"
+                              >
+                                View
+                              </Link>
+                            )}
+                            <div className="text-[11px] text-slate-500">{relTime(n.created_at)}</div>
+                          </div>
                         </div>
 
-                        <div className='mt-0.5 line-clamp-2 text-sm text-slate-600'>{n.message}</div>
+                        {/* Message */}
+                        <div className="mt-0.5 line-clamp-2 text-sm text-slate-600">
+                          {n.message}
+                        </div>
 
-                        <div className='mt-2 flex items-center gap-2'>
+                        {/* Bottom actions */}
+                        <div className="mt-2 flex items-center gap-2">
                           {!n.isRead && (
-                            <span className='inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800'>
-                              New <ChevronRight className='h-3 w-3' />
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+                              New <ChevronRight className="h-3 w-3" />
                             </span>
                           )}
 
-                          {/* actions */}
                           {!n.isRead && (
-                            <button onClick={() => markOneAsRead(n.id)} className='text-[11px] text-slate-600 underline-offset-2 hover:underline'>
+                            <button
+                              onClick={() => markOneAsRead(n.id)}
+                              className="text-[11px] text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline"
+                            >
                               Mark as read
                             </button>
                           )}
@@ -220,6 +254,7 @@ const NotificationPopup = () => {
                     </div>
                   </div>
                 ))
+
               )}
             </div>
 

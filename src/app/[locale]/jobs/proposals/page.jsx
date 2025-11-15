@@ -117,7 +117,7 @@ export default function SellerProposalsPage() {
       </motion.div>
 
       <div className='mt-8'>
-        <TabsPagination currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => setLimit(sz)} itemsPerPage={limit} />
+        <TabsPagination loading={loading} currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => setLimit(sz)} itemsPerPage={limit} />
       </div>
 
       <AnimatePresence>

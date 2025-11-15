@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DropdownItem   } from '../molecules/Header';
+import { DropdownItem } from '../molecules/Header';
 import { useTranslations } from 'next-intl';
 import { notificationService } from '@/services/notificationService';
 import { toast } from 'react-hot-toast';
@@ -11,7 +11,7 @@ export const getLink = (relatedEntityType, relatedEntityId) => {
   if (relatedEntityType === 'proposal') {
     return `/my-jobs/${relatedEntityId}/proposals`; // Proposal link
   } else if (relatedEntityType === 'order') {
-    return `/my-jobs/${relatedEntityId}/orders`; // Order link (adjust this route as necessary)
+    return `/my-orders?order=${relatedEntityId}`; // Order link (adjust this route as necessary)
   } else {
     return null; // Return null if no matching type is found
   }
@@ -169,7 +169,7 @@ const NotificationPopup = () => {
                           <div className='mt-3'>
                             <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>
                               <span className='text-xs'>{notification.relatedEntityType === 'proposal' ? 'View Proposal' : 'View Order'}</span>
-                              <span className='text-blue-600 text-sm'> <MoveRight size={16} /> </span>  
+                              <span className='text-blue-600 text-sm'> <MoveRight size={16} /> </span>
                             </Link>
                           </div>
                         )}

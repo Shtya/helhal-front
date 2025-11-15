@@ -195,7 +195,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
       <div className=' mt-8 py-4 px-4 border-t border-t-slate-200'>
 
         <div className='md:hidden'>
-          <TabsPagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} className="max-md:flex-1" />
+          <TabsPagination loading={loading} currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} className="max-md:flex-1" />
         </div>
         <div className='hidden md:flex justify-between items-center'>
           <span className='text-sm text-gray-500'>

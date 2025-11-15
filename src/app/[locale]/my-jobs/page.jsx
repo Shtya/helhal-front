@@ -233,7 +233,7 @@ export default function MyJobsPage() {
         )}
       </div>
 
-      <TabsPagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={itemsPerPage} />
+      <TabsPagination loading={loading} currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={itemsPerPage} />
 
       {isConfirmDelete && (
         <Modal onClose={() => setIsConfirmDelete(false)} title={'Are you sure you want to delete this job?'}>

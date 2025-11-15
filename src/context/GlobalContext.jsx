@@ -4,6 +4,7 @@ import api from '@/lib/axios';
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import io from 'socket.io-client';
+import { useNotifications } from './NotificationContext';
 
 const GlobalContext = createContext();
 
@@ -13,9 +14,12 @@ export const GlobalProvider = ({ children }) => {
   const [cart, setCart] = useState();
   const [loadingCategory, setLoadingCategory] = useState(true);
   const [loadingCart, setLoadingCart] = useState(true);
+
+
   const [unreadChatCount, setUnreadChatCount] = useState(0);
   const socketRef = useRef(null);
   const { user } = useAuth();
+  const { addIncoming } = useNotifications()
 
   const fetchCategories = async () => {
     try {
@@ -50,7 +54,6 @@ export const GlobalProvider = ({ children }) => {
       setUnreadChatCount(0);
     }
   };
-
   // Initialize socket connection for message notifications
   useEffect(() => {
     const token = user?.accessToken;
@@ -89,17 +92,20 @@ export const GlobalProvider = ({ children }) => {
       setUnreadChatCount(prev => prev + 1);
     };
 
+
     socket.on('message_notification', handleMessageNotification);
+    socket.on('new_notification', addIncoming);
 
     // Cleanup
     return () => {
       if (socket) {
         socket.off('message_notification', handleMessageNotification);
+        socket.off('new_notification', addIncoming);
       }
     };
   }, [user?.accessToken, user?.id]);
 
-  // Fetch unread count on mount and when user changes
+  // Fetch unread counts on mount and when user changes
   useEffect(() => {
     if (user?.id) {
       fetchUnreadChatCount();
@@ -120,7 +126,7 @@ export const GlobalProvider = ({ children }) => {
     loadingCart,
     unreadChatCount,
     setUnreadChatCount,
-    fetchUnreadChatCount
+    fetchUnreadChatCount,
   }}>{children}</GlobalContext.Provider>;
 };
 

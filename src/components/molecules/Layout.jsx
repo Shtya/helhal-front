@@ -9,6 +9,7 @@ import { ProgressProvider } from '@bprogress/next/app';
 import { AuthProvider } from '@/context/AuthContext';
 import { useAuthInterceptor } from '@/hooks/useAuthInterceptor';
 import { useEffect } from 'react';
+import { NotificationProvider } from '@/context/NotificationContext';
 
 export default function Layout({ children, params }) {
 
@@ -28,22 +29,24 @@ export default function Layout({ children, params }) {
 
   return (
     <AuthProvider>
-      <GlobalProvider>
-        <AuthInterceptorWrapper>
-          <ProgressProvider
-            height="2px"
-            color="#0070f3"
-            options={{ showSpinner: false }}
-            shallowRouting
-          >
-            {!isAuthRoute && <Header />}
-            <div className='  ' >{children}</div>
-            {!isAuthRoute && <Footer />}
-            <ConfigAos />
-            <Toaster position='top-center' />
-          </ProgressProvider>
-        </AuthInterceptorWrapper>
-      </GlobalProvider>
+      <NotificationProvider>
+        <GlobalProvider>
+          <AuthInterceptorWrapper>
+            <ProgressProvider
+              height="2px"
+              color="#0070f3"
+              options={{ showSpinner: false }}
+              shallowRouting
+            >
+              {!isAuthRoute && <Header />}
+              <div className='  ' >{children}</div>
+              {!isAuthRoute && <Footer />}
+              <ConfigAos />
+              <Toaster position='top-center' />
+            </ProgressProvider>
+          </AuthInterceptorWrapper>
+        </GlobalProvider>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

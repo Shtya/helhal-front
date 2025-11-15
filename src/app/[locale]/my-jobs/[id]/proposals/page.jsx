@@ -522,9 +522,9 @@ export default function JobProposalsPage() {
         </div>
       )}
 
-      {!loading && proposals.length > 0 && (
+      {proposals.length > 0 && (
         <div className='mt-8'>
-          <TabsPagination currentPage={pagination.page} totalPages={pagination.pages} onPageChange={page => setPagination(prev => ({ ...prev, page }))}
+          <TabsPagination loading={loading} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={page => setPagination(prev => ({ ...prev, page }))}
             onItemsPerPageChange={limit => setPagination(prev => ({ ...prev, limit }))}
             itemsPerPage={pagination.limit} />
         </div>

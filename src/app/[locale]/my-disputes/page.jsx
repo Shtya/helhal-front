@@ -262,7 +262,7 @@ export default function MyDisputesPage() {
             </div>
             <div className='p-4'>
 
-              <TabsPagination currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} className="max-md:flex-1" />
+              <TabsPagination loading={loadingList} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} className="max-md:flex-1" />
             </div>
           </div>
         </aside>

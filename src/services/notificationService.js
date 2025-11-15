@@ -3,8 +3,10 @@ import api from '@/lib/axios';
 
 export const notificationService = {
   // Get notifications with pagination
-  getNotifications: (page = 1 , limit) => {
-    return api.get(`/notifications?limit=${limit}&page=${page}`);
+  getNotifications: (page = 1, limit, signal) => {
+    return api.get(`/notifications?limit=${limit}&page=${page}`, {
+      signal: signal
+    });
   },
 
   // Get unread count

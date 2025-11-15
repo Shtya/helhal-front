@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import Select from '../atoms/Select';
 
-const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage, className }) => {
+const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage, className }) => {
 
 
   useEffect(() => {
@@ -10,7 +10,7 @@ const TabsPagination = ({ currentPage, totalPages, onPageChange, onItemsPerPageC
   }, [currentPage])
   return (
     totalPages > 1 && ( // Only show pagination if there is more than one page
-      <div className={`flex flex-col xs:flex-row items-center xs:justify-between w-full gap-4 mt-6` + (className ? ` ${className}` : '')}>
+      <div className={`flex flex-col xs:flex-row items-center xs:justify-between w-full gap-4 mt-6 ${loading ? 'opacity-60 pointer-events-none' : ''}` + (className ? ` ${className}` : '')}>
         {/* Prev / Next */}
         <div className={`flex items-center space-x-1 xs:space-x-2  ${onItemsPerPageChange ? 'justify-center xs:justify-start' : 'flex-1 justify-between'}`}>
           <button

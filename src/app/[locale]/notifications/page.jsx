@@ -1,7 +1,7 @@
 // app/notifications/page.jsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { notificationService } from '@/services/notificationService';
 import { toast } from 'react-hot-toast';
 import { Link } from '@/i18n/navigation';
@@ -9,23 +9,35 @@ import { getLink } from '@/components/common/NotificationPopup';
 import { MoveRight } from 'lucide-react';
 import NoResults from '@/components/common/NoResults';
 import TabsPagination from '@/components/common/TabsPagination';
+import { useValues } from '@/context/GlobalContext';
+import { useNotifications } from '@/context/NotificationContext';
+import { isErrorAbort } from '@/utils/helper';
 
 const NotificationsPage = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
+  const [pageNotifications, setPageNotifications] = useState([]);
+  const {
+    unreadNotificationCount,
+    subscribe,
+    markOneAsRead,
+    markAllAsRead
+  } = useNotifications(); // << use the new context
 
-  useEffect(() => {
-    loadNotifications();
-    loadUnreadCount();
-  }, [pagination.page, pagination.limit]);
 
-  const loadNotifications = async () => {
+  const notificationsApiRef = useRef(null)
+  const loadNotifications = useCallback(async () => {
+    // Cancel previous request
+    if (notificationsApiRef.current) {
+      notificationsApiRef.current.abort();
+    }
+    notificationsApiRef.current = new AbortController();
+
     try {
       setLoading(true);
-      const response = await notificationService.getNotifications(pagination.page, pagination.limit);
-      setNotifications(response.data.records || []);
+      const response = await notificationService.getNotifications(pagination.page, pagination.limit, notificationsApiRef.current.signal);
+      const records = response.data.records || [];
+      setPageNotifications(records);
       setPagination({
         page: response.data.current_page,
         limit: response.data.per_page,
@@ -33,47 +45,66 @@ const NotificationsPage = () => {
         pages: Math.ceil(response.data.total_records / pagination.limit),
       });
     } catch (error) {
-      console.error('Error loading notifications:', error);
-      toast.error('Failed to load notifications');
+      if (!isErrorAbort(error)) {
+        console.error('Error loading notifications:', error);
+        toast.error('Failed to load notifications');
+      }
     } finally {
+      notificationsApiRef.current = null;
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit]);
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
-  const loadUnreadCount = async () => {
-    try {
-      const response = await notificationService.getUnreadCount();
-      setUnreadCount(response.data || 0);
-    } catch (error) {
-      console.error('Error loading unread count:', error);
-    }
-  };
+  useEffect(() => {
+    const unsubscribe = subscribe((action) => {
+      switch (action.type) {
 
-  const handleMarkAsRead = async notificationId => {
-    try {
-      await notificationService.markAsRead(notificationId);
-      // Update local state
-      setNotifications(prev => prev.map(n => (n.id === notificationId ? { ...n, isRead: true } : n)));
-      setUnreadCount(prev => Math.max(0, prev - 1));
-      toast.success('Notification marked as read');
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-      toast.error('Failed to mark notification as read');
-    }
-  };
+        case "NEW_NOTIFICATION":
+          setPageNotifications(prev => {
+            const exists = prev.some(n => n.id === action.payload.id);
+            if (exists) return prev;
+            return [
+              action.payload,
+              ...prev.slice(0, pagination.limit - 1)
+            ];
+          });
+          break;
 
-  const handleMarkAllAsRead = async () => {
-    try {
-      await notificationService.markAllAsRead();
-      // Update local state
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-      setUnreadCount(0);
-      toast.success('All notifications marked as read');
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-      toast.error('Failed to mark all notifications as read');
-    }
-  };
+        case "MARK_ONE_AS_READ":
+          setPageNotifications(prev =>
+            prev.map(n =>
+              n.id === action.payload.id ? { ...n, isRead: true } : n
+            )
+          );
+          break;
+
+        case "REVERT_MARK_ONE":
+          setPageNotifications(prev =>
+            prev.map(n =>
+              n.id === action.payload.id ? { ...n, isRead: false } : n
+            )
+          );
+          break;
+
+        case "MARK_ALL_AS_READ":
+          setPageNotifications(prev =>
+            prev.map(n => ({ ...n, isRead: true }))
+          );
+          break;
+
+        case "REVERT_MARK_ALL":
+          loadNotifications();
+          break;
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
 
   const formatDate = dateString => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -130,7 +161,7 @@ const NotificationsPage = () => {
     }));
   };
 
-  if (loading && notifications.length === 0) {
+  if (loading && pageNotifications.length === 0) {
     return (
       <div className='container mx-auto px-4 py-8 max-w-4xl'>
         <div className='animate-pulse space-y-4'>
@@ -146,26 +177,27 @@ const NotificationsPage = () => {
     );
   }
 
+
   return (
     <div className=' !my-8 container  '>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-bold text-gray-900'>Notifications</h1>
-        {unreadCount > 0 && (
-          <button onClick={handleMarkAllAsRead} className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'>
-            Mark all as read ({unreadCount})
+        {unreadNotificationCount > 0 && (
+          <button onClick={markAllAsRead} className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'>
+            Mark all as read ({unreadNotificationCount})
           </button>
         )}
       </div>
 
-      {notifications.length === 0 ? (
+      {pageNotifications.length === 0 ? (
         <div className='text-center py-12'>
           <NoResults mainText={'No notifications yet'} additionalText={"We'll notify you when something arrives."} />
         </div>
       ) : (
         <div className='bg-white shadow-sm rounded-lg overflow-hidden'>
           <div className='divide-y divide-gray-200'>
-            {notifications.map(notification => (
-              <div key={notification.id} className={`p-4 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}>
+            {pageNotifications.map(notification => (
+              <div key={notification.id} data-notification-id={notification.id} className={`p-4 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}>
                 <div className='flex gap-4'>
                   <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${getNotificationColor(notification.type)}`}>
                     <img src={getNotificationIcon(notification.type)} alt={notification.type} className='w-5 h-5' />
@@ -191,7 +223,7 @@ const NotificationsPage = () => {
                 </div>
                 {!notification.isRead && (
                   <div className='mt-3'>
-                    <button onClick={() => handleMarkAsRead(notification.id)} className='text-xs text-blue-600 hover:text-blue-800 font-medium'>
+                    <button onClick={() => markOneAsRead(notification.id)} className='text-xs text-blue-600 hover:text-blue-800 font-medium'>
                       Mark as read
                     </button>
                   </div>
@@ -202,7 +234,7 @@ const NotificationsPage = () => {
         </div>
       )}
 
-      <TabsPagination currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={pagination.limit} />
+      <TabsPagination loading={loading} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={pagination.limit} />
     </div>
   );
 };
