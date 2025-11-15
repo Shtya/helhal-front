@@ -182,10 +182,13 @@ const NotificationsPage = () => {
 
   return (
     <div className=' !my-8 container  '>
-      <div className='flex justify-between items-center mb-6'>
-        <h1 className='text-2xl font-bold text-gray-900'>Notifications</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Notifications</h1>
         {unreadNotificationCount > 0 && (
-          <button onClick={markAllAsRead} className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors'>
+          <button
+            onClick={markAllAsRead}
+            className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base"
+          >
             Mark all as read ({unreadNotificationCount})
           </button>
         )}
