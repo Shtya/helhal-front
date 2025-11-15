@@ -20,3 +20,14 @@ export function formatDate(dateString) {
         year: 'numeric',
     });
 }
+
+export function formatDateTime(dateString) {
+    return new Date(dateString).toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true, // set to false if you prefer 24-hour format
+    });
+}

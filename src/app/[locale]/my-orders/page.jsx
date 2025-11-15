@@ -10,11 +10,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
-import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
-import { AlertTriangle, CheckCircle, CreditCard, FileText, FileWarning, MessageCircle, MessageSquare, Package, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, CreditCard, FileText, FileWarning, MessageCircle, MessageSquare, Package, XCircle, Eye } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import toast from 'react-hot-toast';
 import UserMini from '@/components/dashboard/UserMini';
 import { DisputeModal } from '@/components/pages/my-orders/DisputeForm';
@@ -23,7 +22,9 @@ import ActionsMenu from '@/components/common/ActionsMenu';
 import DeliverModel from '@/components/pages/my-orders/DeliverModel';
 import ReviewSubmissionModel from '@/components/pages/my-orders/ReviewSubmissionModel';
 import ChangeRequestReviewModel from '@/components/pages/my-orders/ChangeRequestReviewModel';
+import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 import { isErrorAbort } from '@/utils/helper';
+import { useSearchParams } from 'next/navigation';
 
 // Animation
 export const tabAnimation = {
@@ -63,6 +64,10 @@ export default function Page() {
   const isSeller = role === 'seller';
   const isBuyer = role === 'buyer';
   const [actionLoading, setActionLoading] = useState({});
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderIdFromParams = searchParams.get('orderId');
 
 
   function onPageChange(page) {
@@ -248,13 +253,43 @@ export default function Page() {
   function handleOpenModal(row, model) {
     setSelectedRow(row);
     setOpenModal(model);
+
+    // If opening order details, update search params
+    if (model === 'details' && row?.id) {
+      router.push(`/my-orders?orderId=${row.id}`, { scroll: false });
+    }
   }
 
 
   function handleCloseModal() {
     setSelectedRow(null);
     setOpenModal(null);
+
+    // Remove orderId from search params when closing details modal
+    if (orderIdFromParams) {
+      router.push('/my-orders', { scroll: false });
+    }
   }
+
+  // Monitor search params for orderId changes
+  useEffect(() => {
+    if (orderIdFromParams) {
+      // Find the order in the current list
+      const orderInList = orders.find(o => o.id === orderIdFromParams);
+      if (orderInList) {
+        setSelectedRow(orderInList);
+        setOpenModal('details');
+      } else {
+        // Order not in current list, fetch it
+        setSelectedRow({ id: orderIdFromParams });
+        setOpenModal('details');
+      }
+    } else if (openModal === 'details') {
+      // If orderId removed from params but modal is still open, close it
+      setSelectedRow(null);
+      setOpenModal(null);
+    }
+  }, [orderIdFromParams, orders]);
 
 
 
@@ -295,6 +330,12 @@ export default function Page() {
     const isBusy = !!loadingAction;
 
     const options = [
+      {
+        icon: <Eye className="h-4 w-4" />,
+        label: 'View Details',
+        onClick: () => handleOpenModal(row, 'details'),
+        disabled: isBusy,
+      },
       {
         icon: <MessageCircle className="h-4 w-4" />,
         label: 'Chat',
@@ -386,6 +427,11 @@ export default function Page() {
       <DeliverModel open={openModal === 'deliver'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
       <ReviewSubmissionModel open={openModal === 'receive' || openModal === 'submission'} readOnly={openModal === 'submission'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
       <ChangeRequestReviewModel open={openModal === 'changes-requested'} onClose={handleCloseModal} selectedRow={selectedRow} />
+      <OrderDetailsModal
+        open={openModal === 'details'}
+        onClose={handleCloseModal}
+        orderId={orderIdFromParams || selectedRow?.id}
+      />
     </div>
   );
 }

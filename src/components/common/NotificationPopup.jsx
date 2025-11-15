@@ -11,7 +11,7 @@ export const getLink = (relatedEntityType, relatedEntityId) => {
   if (relatedEntityType === 'proposal') {
     return `/my-jobs/${relatedEntityId}/proposals`; // Proposal link
   } else if (relatedEntityType === 'order') {
-    return `/my-orders?order=${relatedEntityId}`; // Order link (adjust this route as necessary)
+    return `/my-orders?orderId=${relatedEntityId}`; // Order link (adjust this route as necessary)
   } else {
     return null; // Return null if no matching type is found
   }
