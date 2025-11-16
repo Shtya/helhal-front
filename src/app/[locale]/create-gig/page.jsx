@@ -134,7 +134,13 @@ export const useGigCreation = () => {
     const savedData = sessionStorage.getItem('gigCreationData');
     const savedStep = sessionStorage.getItem('gigCreationStep');
 
-    if (savedData) setFormData(JSON.parse(savedData));
+    // If the session draft includes an 'id', it came from Edit mode.
+    // Do NOT reuse this data in Create mode
+    const parsedData = JSON.parse(savedData);
+    const savedId = parsedData?.id;
+    if (savedId) return;
+
+    if (savedData) setFormData(parsedData);
     if (savedStep) setStep(parseInt(savedStep));
   };
 
@@ -367,7 +373,7 @@ const step5Schema = yup.object({
 
 export default function GigCreationWizard() {
   const { step, formData, loadingServices, setFormData, loading, error, nextStep, prevStep, handleSubmit } = useGigCreation();
-
+  const searchParams = useSearchParams()
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [step]);
@@ -394,11 +400,29 @@ export default function GigCreationWizard() {
     }
   };
 
+  const gigSlug = searchParams.get('slug');
+  const isEditMode = Boolean(gigSlug);
+
+  // Base steps
+  const steps = [
+    {
+      label: 'Overview',
+      title: isEditMode ? 'Edit Your Gig' : 'Create Your Gig',   // ← updated
+      description: "Let's start by choosing a category for your service"
+    },
+    { label: 'Pricing', title: 'Packages & Pricing', description: 'Set up your service packages and pricing options' },
+    { label: 'Description & FAQ', title: 'Frequently Asked Questions.', description: 'Provide the answer frequently asked questions.' },
+    { label: 'Requirements', title: 'Buyer Requirements', description: 'Specify what information you need from buyers to get started' },
+    { label: 'Gallery', title: 'Gallery & Media', description: 'Showcase your previous work to attract new buyers.' },
+    { label: 'Publish', title: 'Publish', description: 'Finalize and publish your project.' },
+  ];
+
+
   return (
     <div className='container !mt-8 !mb-12'>
       <div className='mx-auto max-w-[1200px] w-full'>
         {/* Progress Header */}
-        <ProgressBar step={step} />
+        <ProgressBar step={step} steps={steps} />
 
         {/* Step Content */}
         <div className=''>
