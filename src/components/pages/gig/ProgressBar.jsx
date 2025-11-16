@@ -54,7 +54,7 @@ export default function ProgressBar({
 
               return (
                 <li key={idx} className='flex min-w-0 flex-1 items-center gap-3'>
-                  <button type='button' onClick={onStepChange ? handleClick : undefined} aria-current={isActive ? 'step' : undefined} aria-label={`Go to step ${idx}: ${s.label}`} className='group flex max-lg:flex-col items-center gap-1 w-fit'>
+                  <button type='button' onClick={onStepChange ? handleClick : undefined} aria-current={isActive ? 'step' : undefined} aria-label={`Go to step ${idx}: ${s.label}`} className={` ${onStepChange ? "cursor-pointer" : "!cursor-default"} group flex max-lg:flex-col items-center gap-1 w-fit`}>
                     <span className={[baseDot, isDone ? doneDot : isActive ? activeDot : idleDot, onStepChange ? 'cursor-pointer' : 'cursor-default', 'flex-none'].join(' ')}>{isDone ? <CheckIcon className='h-4 w-4' /> : <span className='text-sm font-semibold'>{idx}</span>}</span>
 
                     <div className=' truncate !w-fit block  overflow-hidden'>
