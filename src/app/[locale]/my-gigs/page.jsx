@@ -180,7 +180,7 @@ export default function Page() {
 
   const handleEdit = row => {
     const index = services.findIndex(e => e.id == row.id);
-    router.push(`/create-gig?gigId=${services[index].id}`);
+    router.push(`/create-gig?slug=${services[index].slug}`);
   };
 
   const confirmDelete = async () => {

@@ -109,7 +109,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
     const q = (query || '').trim().toLowerCase();
     const excludeIds = new Set(excludes); // assuming excludes is an array of ids
 
-    if (!q && excludeIds.size === 0) return;
+    if (!q && excludeIds.size === 0) return items;
 
     return items.filter(i => {
       const matchesQuery = !q || (i.name || '').toLowerCase().includes(q);
@@ -195,7 +195,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
             {/* Search / Create */}
             <div className='p-2 border-b border-gray-200'>
               <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder={`Search ${type}…`} className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500' />
-              {canCreate && filtered.length === 0 && (
+              {canCreate && filtered?.length === 0 && (
                 <button onClick={createIfNotExists} disabled={creating || (type === 'subcategory' && !parentId)} className='mt-2 w-full flex items-center gap-2 px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50 disabled:opacity-60'>
                   {creating ? <Loader2 className='w-4 h-4 animate-spin' /> : <Plus className='w-4 h-4' />}
                   Create “{query.trim()}”
@@ -211,11 +211,11 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
                     <div key={i} className='h-4 bg-slate-200 rounded animate-pulse w-3/4' />
                   ))}
                 </div>
-              ) : filtered.length === 0 ? (
+              ) : filtered?.length === 0 ? (
                 <div className='p-3 text-sm text-gray-500'>No {type}s found</div>
               ) : (
                 <ul className='divide-y divide-gray-100'>
-                  {filtered.map(opt => (
+                  {filtered?.map(opt => (
                     <li key={opt.id}>
                       <button onClick={() => handleSelect(opt)} className={`w-full text-left px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-emerald-500 to-emerald-400 hover:text-white'}`}>
                         {opt.name}

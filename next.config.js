@@ -4,7 +4,7 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig = {
   devIndicators: false,
-  reactStrictMode: false, 
+  reactStrictMode: false,
   images: {
     remotePatterns: [
       {

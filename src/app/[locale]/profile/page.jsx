@@ -13,8 +13,7 @@ import { StatCard } from '@/components/dashboard/Ui';
 
 import { Card, Divider, Pill, SkeletonLine, SkeletonAvatar, BlockSkeleton } from '@/components/UI/ui';
 import Img from '@/components/atoms/Img';
-import toast from 'react-hot-toast';
-import z from 'zod';
+import toast from 'react-hot-toast'
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import { validateUsername, validatPhone } from '@/utils/profile';
 import { useTranslations } from 'next-intl';

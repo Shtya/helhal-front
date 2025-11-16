@@ -4,7 +4,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, Pencil, ArrowUp, ArrowDown, Search, Plus, Trash2, X, HelpCircle } from 'lucide-react';
+import { Check, ChevronLeft, Pencil, ArrowUp, ArrowDown, Search, Plus, Trash2, X, HelpCircle, ChevronRight } from 'lucide-react';
 import ProgressBar from '@/components/pages/gig/ProgressBar';
 import InputList from '@/components/atoms/InputList';
 import Textarea from '@/components/atoms/Textarea';
@@ -21,6 +21,12 @@ import toast from 'react-hot-toast';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import CategorySelect from '@/components/atoms/CategorySelect';
+import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+
+const normalizeFile = (file) => ({
+  ...file,
+  filename: file.filename || file.fileName || '',
+});
 
 export const useGigCreation = () => {
   const [step, setStep] = useState(1);
@@ -52,49 +58,72 @@ export const useGigCreation = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const gigId = searchParams.get('gigId');
-    const savedData = sessionStorage.getItem('gigCreationData');
-    const savedStep = sessionStorage.getItem('gigCreationStep');
-    if (savedStep) {
-      setStep(parseInt(savedStep, 10));
-    }
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        if (parsed.id === gigId) {
-          setFormData(parsed);
-          return;
-        }
-      } catch (err) {
-        console.error('Error parsing saved session data', err);
-      }
-    }
-    apiService.getService(gigId).then(res => {
-      const newData = {
-        id: res.id,
-        category: res.category,
-        subcategory: res.subcategory,
-        tags: res.searchTags,
-        title: res.title,
-        brief: res.brief,
-        packages: res.packages,
-        extraFastDelivery: res.extraFastDelivery,
-        additionalRevision: res.additionalRevision,
-        faqs: res.faq,
-        questions: res.requirements,
-        images: res.gallery?.filter(e => e.type === 'image'),
-        video: res.gallery?.filter(e => e.type === 'video'),
-        documents: res.gallery?.filter(e => e.type === 'document'),
-      };
+    const fetchGigData = async () => {
+      const gigSlug = searchParams.get('slug');
+      const savedData = sessionStorage.getItem('gigCreationData');
+      const savedStep = sessionStorage.getItem('gigCreationStep');
 
-      setFormData(newData);
-      sessionStorage.setItem('gigCreationData', JSON.stringify(newData));
-    });
+      if (!gigSlug) return;
+      if (savedStep) {
+        setStep(parseInt(savedStep, 10));
+      }
+
+      if (savedData) {
+        try {
+          const parsed = JSON.parse(savedData);
+          if (parsed.slug === gigSlug) {
+            setFormData(parsed);
+            return; // ✅ stop here if we already have matching saved data
+          }
+        } catch (err) {
+          console.error('Error parsing saved session data', err);
+        }
+      }
+
+
+      try {
+        const res = await apiService.getService(gigSlug);
+
+        const newData = {
+          id: res.id,
+          slug: res.slug,
+          category: res.category,
+          subcategory: res.subcategory,
+          tags: res.searchTags,
+          title: res.title,
+          brief: res.brief,
+          packages: res.packages,
+          extraFastDelivery: res.extraFastDelivery,
+          additionalRevision: res.additionalRevision,
+          faqs: res.faq,
+          questions: res.requirements,
+          images: res.gallery
+            ?.filter(e => e.type === 'image')
+            .map(normalizeFile),
+
+          video: res.gallery
+            ?.filter(e => e.type === 'video')
+            .map(normalizeFile),
+
+          documents: res.gallery
+            ?.filter(e => e.type === 'document')
+            .map(normalizeFile),
+        };
+
+        setFormData(newData);
+        sessionStorage.setItem('gigCreationData', JSON.stringify(newData));
+      } catch (err) {
+        console.error('Error fetching gig data', err);
+      }
+    };
+
+    fetchGigData();
   }, [searchParams]);
 
+
   useEffect(() => {
-    const gigId = searchParams.get('gigId');
-    if (!gigId) {
+    const gigSlug = searchParams.get('slug');
+    if (!gigSlug) {
       loadSavedData();
     }
   }, []);
@@ -120,14 +149,13 @@ export const useGigCreation = () => {
   const prevStep = () => step > 1 && setStep(step - 1);
 
   const handleSubmit = async () => {
-    const gigId = searchParams.get('gigId');
+    const gigSlug = searchParams.get('slug');
 
     try {
       setLoadingServices(true);
-      console.log("here");
 
       const serviceData = {
-        title: formData.packages[0]?.title,
+        title: formData.title,
         brief: formData.brief,
         searchTags: formData.tags,
         categoryId: formData.category?.id,
@@ -146,7 +174,8 @@ export const useGigCreation = () => {
 
       console.log(serviceData);
 
-      if (gigId) {
+      if (gigSlug) {
+        const gigId = formData?.id;
         await apiService.updateService(gigId, serviceData);
         toast.success('Service updated successfully');
       } else {
@@ -158,11 +187,11 @@ export const useGigCreation = () => {
         sessionStorage.removeItem('gigCreationData');
         sessionStorage.removeItem('gigCreationStep');
       }
-      setTimeout(() => {
-        router.push('/my-gigs');
-      }, 500);
+      router.push('/my-gigs');
     } catch (error) {
-      toast.error('Failed to create gig. Please try again.');
+      const meg = error?.message;
+
+      toast.error(meg || 'Failed to create gig. Please try again.');
     } finally {
       setLoadingServices(false);
     }
@@ -184,11 +213,20 @@ export const useGigCreation = () => {
 
 // --- VALIDATION SCHEMAS ---
 const step1Schema = yup.object({
-  title: yup.string().required('Gig title is required').max(100, "Gig title can't exceed 100 characters"),
-  brief: yup.string().required('Gig brief is required').max(500, "Gig brief can't exceed 500 characters"),
+  title: yup.string().trim().required('Gig title is required').max(100, "Gig title can't exceed 100 characters"),
+  brief: yup.string().trim().required('Gig brief is required').max(500, "Gig brief can't exceed 500 characters"),
   category: yup.object().required('Category is required'),
-  subcategory: yup.object().nullable().required('Subcategory is required'),
-  tags: yup.array().min(1, 'At least one tag is required').max(5, 'Maximum 5 tags allowed').of(yup.string().required('Tag is required')),
+  subcategory: yup.object().nullable().notRequired(),
+  tags: yup.array()
+    .of(
+      yup.string()
+        .trim()
+        .max(50, 'Tag must be 50 characters or fewer')
+        .matches(/^[A-Za-z0-9]+$/, 'Tags can only contain letters and numbers')
+        .required('Tag is required')
+    )
+    .min(1, 'At least one tag is required')
+    .max(5, 'Maximum 5 tags allowed'),
 });
 
 const step2Schema = yup.object({
@@ -197,13 +235,13 @@ const step2Schema = yup.object({
     .of(
       yup.object({
         type: yup.string().oneOf(['basic', 'standard', 'premium']).required(),
-        title: yup.string().required('Package title is required').max(60, 'Max 60 characters'),
-        description: yup.string().required('Package description is required').max(220, 'Max 220 characters'),
-        deliveryTime: yup.number().typeError('Delivery time is required').required().min(1, 'Min 1 day'),
+        title: yup.string().trim().required('Package title is required').max(60, 'Max 60 characters'),
+        description: yup.string().trim().required('Package description is required').max(220, 'Max 220 characters'),
+        deliveryTime: yup.number().typeError('Delivery time is required').required().min(1, 'Min 1 day').max(1200, 'Maximum delivery time is 1200 days'),
         revisions: yup.number().typeError('Revisions is required').required().min(0, 'Cannot be negative').max(20, 'Be realistic'),
-        price: yup.number().typeError('Price is required').required().min(0, 'Price cannot be negative').max(100000, 'Too high'),
+        price: yup.number().typeError('Price is required').required().min(1, 'Price must be at least 1').max(100000, 'Price must not exceed 100,000'),
         test: yup.boolean().required('Test field is required'),
-        features: yup.array().of(yup.string().trim().required('Feature is required')).min(3, 'At least 3 features').max(5, 'At most 5 features'),
+        features: yup.array().of(yup.string().trim().required('Feature is required').max(50, 'Feature must be 50 characters or fewer')).min(3, 'At least 3 features').max(5, 'At most 5 features'),
       }),
     )
     .min(1, 'At least one package is required'),
@@ -212,33 +250,119 @@ const step2Schema = yup.object({
 });
 
 const step3Schema = yup.object({
-  faqs: yup.array().of(
-    yup.object({
-      question: yup.string().required('Question is required'),
-      answer: yup.string().required('Answer is required'),
-    }),
-  ),
+  faqs: yup.array()
+    .of(
+      yup.object({
+        question: yup.string().trim()
+          .required('Question is required')
+          .max(200, 'Question must be 200 characters or fewer'),
+        answer: yup.string().trim()
+          .required('Answer is required')
+          .max(1000, 'Answer must be 1000 characters or fewer'),
+      })
+    )
+    .max(12, 'You can add up to 12 questions only'),
 });
+
 
 const step4Schema = yup.object({
   questions: yup.array().of(
     yup.object({
-      question: yup.string().required('Question is required'),
+      question: yup.string().trim().required('Question is required').max(200, 'Question must be 200 characters or fewer'),
       requirementType: yup.string().oneOf(['text', 'multiple_choice', 'file']).required('Question type is required'),
       isRequired: yup.boolean().default(false),
       options: yup.array().when('requirementType', {
         is: 'multiple_choice',
-        then: schema => schema.min(1, 'At least one option is required for multiple choice'),
+        then: schema => schema
+          .of(
+            yup.string()
+              .trim()
+              .max(100, 'Option must be 100 characters or fewer')
+              .required('Option is required')
+          )
+          .min(1, 'At least one option is required for multiple choice')
+          .max(10, 'You can add up to 10 options only'),
         otherwise: schema => schema.optional(),
       }),
     }),
-  ),
+  ).max(12, 'You can add up to 12 questions only'),
 });
 
+
+const MAX_IMAGE_SIZE_MB = 5;   // example
+const MAX_VIDEO_SIZE_MB = 50; // example
+const MAX_PORTFOLIO_SIZE_MB = 25;
+
+const ALLOWED_PORTFOLIO_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/plain',
+];
+
+
+const fileSchema = yup.object({
+  id: yup.string().optional(),
+  filename: yup.string().required(),
+  url: yup.string().required(),
+  type: yup.string().oneOf(['image', 'video', 'document']).required(),
+  mimeType: yup.string().optional(),
+  size: yup.number().optional(),
+});
+
+// Main schema
 const step5Schema = yup.object({
-  images: yup.array(),
-  video: yup.array().max(1, 'Only one video allowed'),
-  documents: yup.array().max(2, 'Maximum 2 documents allowed'),
+  images: yup.array()
+    .of(fileSchema.test(
+      'image-validation',
+      'Each file must be a valid image (JPEG, PNG, WEBP, etc.) and under 5MB in size.',
+      file => {
+        if (!file) return true;
+
+        if (file?.assetId) return file.type === 'image';
+
+        if (!file.mimeType.startsWith('image/')) return false;
+        if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) return false;
+        return true;
+      }
+    ))
+    .max(3, 'You can upload up to 3 images'),
+
+  video: yup.array()
+    .of(fileSchema.test(
+      'video-validation',
+      'The video must be in a supported format (MP4, MOV, AVI, etc.) and under 50MB.',
+      file => {
+        if (!file) return true;
+
+        if (file?.assetId) return file.type === 'document';
+
+        if (!file.mimeType.startsWith('video/')) return false;
+        if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) return false;
+        return true;
+      }
+    ))
+    .max(1, 'You can upload only 1 video'),
+
+  documents: yup.array()
+    .of(fileSchema.test(
+      'document-validation',
+      'Documents must be PDF, Word, PowerPoint, Excel, or TXT format and under 25MB.',
+      file => {
+        if (!file) return true;
+
+        if (file?.assetId) return file.type === 'video';
+
+        const isAllowedType = ALLOWED_PORTFOLIO_TYPES.includes(file.mimeType);
+        const isTooLarge = file.size > MAX_PORTFOLIO_SIZE_MB * 1024 * 1024;
+        return isAllowedType && !isTooLarge;
+      }
+    ))
+    .max(2, 'You can upload up to 2 documents'),
 });
 
 export default function GigCreationWizard() {
@@ -349,6 +473,7 @@ function Step1({ formData, setFormData, nextStep }) {
   const titleVal = watch('title') || '';
   const briefVal = watch('brief') || '';
 
+
   const onSubmit = async data => {
     const isValid = await trigger();
     if (!isValid) return;
@@ -365,7 +490,7 @@ function Step1({ formData, setFormData, nextStep }) {
 
   const handleCategoryChange = value => {
     setValue('category', value);
-    console.log(formData)
+
     setFormData({ ...formData, title: titleVal, brief: briefVal, category: value, subcategory: null }); // clear sub when main changes
   };
 
@@ -390,7 +515,6 @@ function Step1({ formData, setFormData, nextStep }) {
           <h2 className='text-2xl font-semibold text-slate-900'>Basic Details</h2>
           <p className='mt-1 text-sm text-slate-500'>Set a compelling foundation for your gig.</p>
         </div>
-        <div className='hidden md:block rounded-xl bg-slate-50 px-4 py-2 text-xs text-slate-600'>Step 1 of 3</div>
       </div>
 
       <div className='mx-auto max-w-5xl space-y-8'>
@@ -408,11 +532,16 @@ function Step1({ formData, setFormData, nextStep }) {
         <Field className='pt-8 border-t border-slate-200' title='Category' desc='Pick the most accurate category and subcategory.' required error={errors?.category?.message || errors?.subcategory?.message}>
           <div className='grid gap-4 md:grid-cols-2'>
             <div className='mb-4'>
-              <Controller name='categoryId' control={control} render={({ field }) => <CategorySelect type='category' label='Category' value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder='Select a category' />} />
+              <Controller name='categoryId' control={control} render={({ field }) => (
+                <CategorySelect type='category' label='Category' value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder='Select a category' />
+              )} />
             </div>
 
             <div className='mb-4'>
-              <Controller name='subcategoryId' control={control} render={({ field }) => <CategorySelect type='subcategory' parentId={watch('category')?.id} label='SubCategory' value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? 'Select a subcategory' : 'Select a category first'} />} />
+              <Controller name='subcategoryId' control={control} render={({ field }) =>
+              (
+                <CategorySelect type='subcategory' parentId={watch('category')?.id} label='SubCategory' value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? 'Select a subcategory' : 'Select a category first'} />
+              )} />
             </div>
 
             {/* <Select label='Category' options={categories} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} required />
@@ -466,11 +595,6 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
   const fieldArrays = [fa0, fa1, fa2];
 
   const values = watch();
-
-  // keep outer wizard state in sync
-  useEffect(() => {
-    setFormData(prev => ({ ...prev, ...values }));
-  }, [values, setFormData]);
 
   const onSubmit = async data => {
     const ok = await trigger();
@@ -588,7 +712,7 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
 
       {/* Footer actions */}
       <div className='flex justify-end gap-2 pt-4'>
-        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronLeft className='ltr:scale-x-[-1]' />} className='!w-fit' />
+        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
         <Button type='button' onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8' />
       </div>
     </form>
@@ -665,7 +789,7 @@ function normalizeDefaults(formData) {
       revisions: 3,
       price: 120,
       test: false,
-      features: ['3 Concepts', '3 Revisions', 'Vector Files Included'],
+      features: ['3 Concepts', '2 Revisions', 'Vector Files Included'],
     },
     {
       type: 'premium',
@@ -675,7 +799,7 @@ function normalizeDefaults(formData) {
       revisions: 10,
       price: 250,
       test: false,
-      features: ['5 Concepts', 'Unlimited Revisions', 'Brand Guide'],
+      features: ['5 Concepts', '3 Revisions', 'Brand Guide'],
     },
   ];
 
@@ -732,6 +856,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
   const faqs = watch('faqs') || [];
 
   const filteredFaqs = useMemo(() => (faqs || []).filter(f => (f?.question || '').toLowerCase().includes(query.toLowerCase()) || (f?.answer || '').toLowerCase().includes(query.toLowerCase())), [faqs, query]);
+
 
   const onSubmit = async data => {
     const isValid = await trigger();
@@ -807,7 +932,16 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
     if (faqs.some(f => f.question.trim().toLowerCase() === preset.question.trim().toLowerCase())) return;
     setValue('faqs', [...faqs, preset], { shouldValidate: true });
   };
+  // Flatten all possible messages (question + answer), skip nulls
+  const firstFaqError = useMemo(() => {
+    if (!errors?.faqs) return null;
 
+    const messages = errors?.faqs?.flatMap(faq =>
+      faq ? [faq.question?.message, faq.answer?.message] : []
+    );
+
+    return messages.find(Boolean) || null;
+  }, [errors?.faqs]);
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       {/* FAQ Section */}
@@ -835,13 +969,17 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
               const isEditing = editingIndex === realIndex;
               return (
                 <li key={`${faq.question}-${realIndex}`} className='group p-4'>
-                  <div className={`flex items-start justify-between gap-3 ${isEditing ? "flex-col sm  :flex-row" : ""}`}>
-                    <div className='w-full'>
-                      {isEditing ? <input value={editingTemp.question} onChange={e => setEditingTemp(s => ({ ...s, question: e.target.value }))} className='w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm' /> : <h4 className='truncate text-sm font-semibold text-slate-900'>{faq.question}</h4>}
-                      <div className='mt-2'>{isEditing ? <textarea value={editingTemp.answer} onChange={e => setEditingTemp(s => ({ ...s, answer: e.target.value }))} rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm' /> : <p className='text-sm text-slate-700'>{faq.answer}</p>}</div>
+                  <div className={`flex-1 flex items-start justify-between gap-3 ${isEditing ? "flex-col" : ""}`}>
+                    <div className={`flex-1 ${isEditing ? "w-full" : "min-w-0"}`}>
+                      {isEditing ?
+                        <input value={editingTemp.question} onChange={e => setEditingTemp(s => ({ ...s, question: e.target.value }))} className='w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm' />
+                        : <h4 className='truncate text-sm font-semibold text-slate-900'>{faq.question}</h4>}
+                      <div className='mt-2'>{isEditing ?
+                        <textarea value={editingTemp.answer} onChange={e => setEditingTemp(s => ({ ...s, answer: e.target.value }))} rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm' />
+                        : <p className='text-sm text-slate-700'>{faq.answer}</p>}</div>
                     </div>
 
-                    <div className='shrink-0'>
+                    <div className="shrink-0 sm:w-32">
                       {isEditing ? (
                         <div className='flex items-center gap-1'>
                           <button type='button' onClick={() => saveEdit(realIndex)} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-emerald-50'>
@@ -879,9 +1017,10 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
         <div className='border-t border-slate-200 p-4'>
           <div className='mb-3 text-sm font-medium text-slate-700'>Add New FAQ</div>
           <div className='grid gap-3 md:grid-cols-2'>
-            <input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} placeholder='Question' className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm' />
+            <input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} placeholder='Question' className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
             <textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} placeholder='Answer' rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
           </div>
+          <FormErrorMessage message={firstFaqError} />
 
           <div className='mt-3 flex flex-col sm :flex-row gap-4 items-center justify-between'>
             <div className='flex flex-wrap gap-2'>
@@ -899,13 +1038,14 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
 
       {/* Navigation Buttons */}
       <div className='flex justify-end gap-2 pt-2'>
-        <Button name={'Back'} onClick={prevStep} className='!w-fit !px-4' color='outline' icon={<ChevronLeft className='h-4 w-4 ltr:scale-x-[-1]  ' />} />
+        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
         <Button name={'Continue'} onClick={handleSubmit(onSubmit)} className='!w-fit !px-4' />
       </div>
     </form>
   );
 }
 
+const MAX_QUES = 12;
 function Step4({ formData, setFormData, nextStep, prevStep }) {
   const {
     register,
@@ -931,6 +1071,8 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
   });
 
   const onSubmit = async data => {
+    if (questions.length >= MAX_QUES) return;
+
     const isValid = await trigger();
     if (isValid) {
       setFormData({ ...formData, ...data });
@@ -938,10 +1080,12 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
     }
   };
   const addQuestion = () => {
+    if (questions.length >= MAX_QUES) return;
+
     if (newQuestion.question) {
       const currentQuestions = watch('questions') || [];
       setValue('questions', [...currentQuestions, newQuestion], { shouldValidate: true });
-      setNewQuestion({ question: '', type: 'multiple_choice', options: [] });
+      setNewQuestion({ question: '', requirementType: 'text', options: [] });
     }
   };
 
@@ -968,16 +1112,37 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
     setNewQuestion(q => ({ ...q, options: q.options.filter((val) => val !== op) }));
   };
 
+  const firstQuesError = useMemo(() => {
+    if (!errors?.questions) return null;
+
+    const messages = errors.questions.flatMap(ques => {
+      if (!ques) return [];
+
+      const optionMessage = Array.isArray(ques.options)
+        ? ques.options.find(opt => opt?.message)?.message
+        : ques.options?.message;
+
+      return [
+        ques.question?.message,
+        ques.requirementType?.message,
+        optionMessage,
+      ];
+    });
+
+    return messages.find(Boolean) || null;
+  }, [errors?.questions]);
+
+
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-8'>
       {/* Existing questions list */}
       <div className='rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm'>
         <div className='flex items-center justify-between px-5 py-4 border-b border-slate-100'>
           <div className='flex items-center gap-2'>
-            <div className='inline-flex h-8 items-center rounded-full bg-emerald-50 px-3 text-sm font-medium text-emerald-700 border border-emerald-100'>
-              {questions.length} {questions.length === 1 ? 'Question' : 'Questions'}
-            </div>
-            {errors?.questions && <span className='text-[13px] text-red-600'>{errors.questions.message}</span>}
+            <h3 className='text-base font-semibold text-slate-900'>Questions</h3>
+            <span className='ml-2 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-600'>
+              {questions.length}/{MAX_QUES}
+            </span>
           </div>
           <div className='text-xs text-slate-500'>Drag-free • Minimal • Clean</div>
         </div>
@@ -1024,6 +1189,9 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
               </div>
             </div>
           ))}
+
+          <FormErrorMessage message={firstQuesError} />
+
         </div>
       </div>
 
@@ -1116,12 +1284,39 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
 
       {/* Navigation */}
       <div className='flex justify-end gap-2 pt-4'>
-        <Button icon={<ChevronLeft />} type='button' name='Back' color='outline' onClick={prevStep} className='!w-fit !px-6 py-2 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-100' />
+        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
         <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8 py-2 rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 shadow-[0_8px_24px_-8px_rgba(16,138,0,0.55)]' />
       </div>
     </form>
   );
 }
+
+const getFirstFileError = (errors, type) => {
+  if (!errors?.[type]) return null;
+
+  // errors[type] can be an array of objects or a direct message
+  const arr = errors[type];
+
+  // If Yup put a message directly on the array (like max length)
+  if (arr?.message) return arr.message;
+
+  // Otherwise, loop through array items and find first message
+  if (Array.isArray(arr)) {
+    for (const item of arr) {
+      if (!item) continue;
+
+      // Check nested messages (like mimeType/size validation)
+      const msg =
+        item?.message ||
+        item?.mimeType?.message ||
+        item?.type?.message;
+      if (msg) return msg;
+    }
+  }
+
+  return null;
+};
+
 
 function Step5({ formData, setFormData, nextStep, prevStep }) {
   const {
@@ -1134,9 +1329,15 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     reset,
   } = useForm({
     resolver: yupResolver(step5Schema),
+    defaultValues: {
+      images: formData?.images || [],
+      video: formData?.video || [],
+      documents: formData?.documents || [],
+    },
   });
 
   const onSubmit = async data => {
+
     const isValid = await trigger();
     if (isValid) {
       setFormData({ ...formData, ...data });
@@ -1146,6 +1347,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
 
   const handleFileSelection = (files, type) => {
     let limitedFiles = [];
+
 
     if (type === 'images') {
       limitedFiles = files.slice(0, 3);
@@ -1163,61 +1365,104 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     }));
   };
 
+  // 🔴 Remove file helper
+  const removeFile = (type, index) => {
+    const updated = [...formData[type]];
+    updated.splice(index, 1);
+    setValue(type, updated);
+    setFormData(prev => ({
+      ...prev,
+      [type]: updated,
+    }));
+  };
+
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
-      <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Images (up to 3)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
-        <div className='flex flex-wrap gap-3 justify-end'>
-          {formData?.images?.map((e, i) => (
-            <div className='  flex items-center justify-center flex-col w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
-              {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+      <div>
 
-              <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]  '>{e?.filename}</h4>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Images (up to 3)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
+          <div className='flex flex-wrap gap-3 justify-end'>
+            {formData?.images?.map((e, i) => (
+              <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
+                {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+
+                <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]' title={e?.filename}>{e?.filename}</h4>
+                <button
+                  type="button"
+                  onClick={() => removeFile("images", i)}
+                  className="absolute top-2 right-2 rounded-full bg-red-500 text-white p-1 hover:bg-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+            <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
+              <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
+              <div className=''><span className='text-[#108A00] font-[500]'>Browse</span> Images</div>
+              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} />
             </div>
-          ))}
-          <div className=' overflow-hidden w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
-            <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-            Drag & drop a Photo or <div className='text-[#108A00] font-[500] '> Browse</div>
-            <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} />
           </div>
-        </div>
-      </LabelWithInput>
+        </LabelWithInput>
+        <FormErrorMessage message={getFirstFileError(errors, 'images')} className="mt-4" />
+      </div>
 
-      <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Video (One Only)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
-        <div className='flex flex-wrap gap-3 justify-end'>
-          {formData?.video?.map((e, i) => (
-            <div className='  flex items-center justify-center flex-col w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
-              {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+      <div>
 
-              <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]  '>{e.filename}</h4>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Video (One Only)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
+          <div className='flex flex-wrap gap-3 justify-end'>
+            {formData?.video?.map((e, i) => (
+              <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
+                {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+
+                <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]' title={e?.filename}>{e.filename}</h4>
+                <button
+                  type="button"
+                  onClick={() => removeFile("video", i)}
+                  className="absolute top-2 right-2 rounded-full bg-red-500 text-white p-1 hover:bg-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+            <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
+              <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
+              <div className=''><span className='text-[#108A00] font-[500]'>Browse</span> video</div>
+              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} />
             </div>
-          ))}
-          <div className=' overflow-hidden w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
-            <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-            Drag & drop a video or <div className='text-[#108A00] font-[500] '> Browse</div>
-            <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} />
           </div>
-        </div>
-      </LabelWithInput>
+        </LabelWithInput>
+        <FormErrorMessage message={getFirstFileError(errors, 'video')} className="mt-4" />
+      </div>
 
-      <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Document (up to 2)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
-        <div className='flex flex-wrap gap-3 justify-end'>
-          {formData?.documents?.map((e, i) => (
-            <div className='  flex items-center justify-center flex-col w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
-              {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+      <div>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Document (up to 2)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
+          <div className='flex flex-wrap gap-3 justify-end'>
+            {formData?.documents?.map((e, i) => (
+              <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
+                {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
 
-              <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]  '>{e.filename}</h4>
+                <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]  ' title={e?.filename} >{e.filename}</h4>
+                <button
+                  type="button"
+                  onClick={() => removeFile("documents", i)}
+                  className="absolute top-2 right-2 rounded-full bg-red-500 text-white p-1 hover:bg-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+            <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
+              <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
+              <div className=''><span className='text-[#108A00] font-[500]'>Browse</span> documents</div>
+              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} />
             </div>
-          ))}
-          <div className=' overflow-hidden w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
-            <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-            Drag & drop a documents or <div className='text-[#108A00] font-[500] '> Browse</div>
-            <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} />
           </div>
-        </div>
-      </LabelWithInput>
+        </LabelWithInput>
+        <FormErrorMessage message={getFirstFileError(errors, 'documents')} className="mt-4" />
+      </div>
 
       <div className='flex justify-end gap-2 pt-6'>
-        <Button icon={<ChevronLeft />} type='button' name='Back' color='secondary' onClick={prevStep} className='!w-fit !px-6 py-2 text-gray-600 border-2 border-gray-300 rounded-lg hover:bg-gray-200 transition-colors' />
+        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
         <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors' />
       </div>
     </form>
@@ -1226,9 +1471,9 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
 
 function Step6({ formData, handleSubmit, prevStep, loading }) {
   const searchParams = useSearchParams();
-  const gigId = searchParams.get('gigId'); // check if gigId exists
+  const gigSlug = searchParams.get('slug'); // check if gigSlug exists
 
-  const isUpdate = Boolean(gigId); // true if updating
+  const isUpdate = Boolean(gigSlug); // true if updating
 
   return (
     <div className='text-center space-y-8 py-8'>
@@ -1247,7 +1492,7 @@ function Step6({ formData, handleSubmit, prevStep, loading }) {
       </div>
 
       <div className='flex flex-col xs:flex-row justify-center gap-4 pt-4'>
-        <Button type='button' icon={<ChevronLeft />} name='Back to Edit' color='secondary' onClick={prevStep} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
+        <Button type='button' icon={<ChevronLeft />} name='Back to Edit' color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
         <Button type='button' name={isUpdate ? 'Update Gig' : 'Publish Gig'} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
       </div>
     </div>

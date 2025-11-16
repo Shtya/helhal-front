@@ -21,7 +21,7 @@ export default function ProgressBar({
   return (
     <div className='w-full '>
       {/* Mobile mini-header */}
-      <div className='max-sm:hidden  mb-4 flex items-center justify-between sm:hidden'>
+      <div className='mb-4 flex items-center justify-between sm:hidden'>
         <span className='text-sm font-medium text-slate-700'>
           Step {clampedStep} of {total}
         </span>

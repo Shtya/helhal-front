@@ -219,7 +219,7 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
         {/* tags */}
         {tags.map((t, i) => (
           <span key={`${t}-${i}`} className=' border border-slate-200 group inline-flex items-center gap-1 rounded-xl bg-emerald-100  text-emerald-800 px-2.5 py-1 text-sm'>
-            {t}
+            <span className='break-all'>{t}</span>
             <button type='button' data-chip onClick={() => handleRemove(t)} title='Remove' className='cursor-pointer  text-emerald-600 hover:text-emerald-800 transition'>
               <X size={13} />
             </button>

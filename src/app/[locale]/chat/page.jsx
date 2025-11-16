@@ -568,7 +568,7 @@ const useChat = () => {
       }
     } finally {
       // Only clear loading if THIS request is still the active one
-      if (controllerRef.current === controller && !options.silent)
+      if (conversationsApiRef.current === controller && !options.silent)
         setLoading(false);
     }
   }, [user]);
