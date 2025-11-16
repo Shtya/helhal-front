@@ -188,7 +188,7 @@ export default function Table({
 
       {selectedImage && !loading && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div className={`relative  rounded-xl  shadow-xl `}>
+          <div className={`relative  rounded-xl `}>
             <button onClick={closeImagePreview} className='w-9 h-9 inline-flex items-center justify-center z-[52] absolute -top-3 -right-3 text-white bg-slate-900 rounded-full shadow hover:opacity-90'>
               {!isImageLoading ? <X /> :
                 <span className="relative flex h-6 w-6">

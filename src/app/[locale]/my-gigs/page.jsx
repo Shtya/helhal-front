@@ -1,12 +1,12 @@
 // pages/my-gigs.jsx
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { tabAnimation } from '../my-orders/page';
 import { apiService } from '@/services/GigServices';
 import Button from '@/components/atoms/Button';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
-import { useRouter } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { baseImg } from '@/lib/axios';
 import { Modal } from '@/components/common/Modal';
 import toast from 'react-hot-toast';
@@ -27,7 +27,12 @@ export default function Page() {
     pages: 1,
   });
 
+  const controllerRef = useRef();
   const fetchServices = async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     try {
       setLoading(true);
       const params = {
@@ -36,7 +41,7 @@ export default function Page() {
         status: activeTab === 'All' ? '' : activeTab,
       };
 
-      const response = await apiService.getMyServices(params);
+      const response = await apiService.getMyServices(params, { signal: controller.signal });
 
       setServices(response.services);
 
@@ -57,9 +62,11 @@ export default function Page() {
         return newPagination;
       });
     } catch (error) {
-      console.error('Error fetching services:', error);
+      if (!isErrorAbort(error))
+        console.error('Error fetching services:', error);
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   };
 
@@ -100,16 +107,8 @@ export default function Page() {
       label: 'Clicks',
     },
     {
-      key: 'impressions',
-      label: 'Impressions',
-    },
-    {
       key: 'ordersCount',
       label: 'Orders Count',
-    },
-    {
-      key: 'cancellations',
-      label: 'Cancellations',
     },
     {
       key: 'packages',
@@ -156,15 +155,16 @@ export default function Page() {
   const renderActions = row => {
     const baseStyle = 'w-8 h-8 flex items-center justify-center rounded-md border transition cursor-pointer';
 
+    const index = services.findIndex(e => e.id == row.id);
     return (
       <div className='flex space-x-2 mx-auto w-fit'>
-        <button className={`${baseStyle} border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800`} onClick={() => handleView(row)}>
+        <Link href={`/services/${services[index].category.slug}/${services[index].slug}`} className={`${baseStyle} border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800`} >
           <Eye className='w-4 h-4' />
-        </button>
+        </Link>
 
-        <button className={`${baseStyle} border-green-200 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800`} onClick={() => handleEdit(row)}>
+        <Link href={`/create-gig?slug=${services[index].slug}`} className={`${baseStyle} border-green-200 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800`} >
           <Pencil className='w-4 h-4' />
-        </button>
+        </Link>
 
         <button className={`${baseStyle} border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800`} onClick={() => handleDelete(row)}>
           <Trash2 className='w-4 h-4' />
@@ -173,28 +173,23 @@ export default function Page() {
     );
   };
 
-  const handleView = row => {
-    const index = services.findIndex(e => e.id == row.id);
-    router.push(`/services/${services[index].category.slug}/${services[index].slug}`);
-  };
-
-  const handleEdit = row => {
-    const index = services.findIndex(e => e.id == row.id);
-    router.push(`/create-gig?slug=${services[index].slug}`);
-  };
-
   const confirmDelete = async () => {
     if (!deleteTarget) return;
 
     try {
       setDeleting(true);
-      await apiService.deleteService(deleteTarget.id);
-      toast.success('Gig deleted successfully');
+      await toast.promise(
+        apiService.deleteService(deleteTarget.id),
+        {
+          loading: `Deleting "${deleteTarget.title}"...`,
+          success: `"${deleteTarget.title}" deleted successfully`,
+          error: `Failed to delete "${deleteTarget.title}"`,
+        }
+      );
       setServices(prev => prev.filter(s => s.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (err) {
       console.error('Delete failed', err);
-      toast.error('Failed to delete gig');
     } finally {
       setDeleting(false);
     }
@@ -230,8 +225,7 @@ export default function Page() {
       {/* Table */}
       <AnimatePresence exitBeforeEnter>
         <motion.div key={activeTab} {...tabAnimation}>
-          {/* <TableData data={formatTableData(services)} columns={columns} actions={renderActions} onPageChange={handlePageChange} onLimitChange={handleLimitChange} loading={loading} pagination={pagination} /> */}
-          <Table loading={loading} data={formatTableData(services)} columns={columns} actions={renderActions} />
+          <Table loading={loading} data={formatTableData(services)} columns={columns} actions={renderActions} onPageChange={handlePageChange} page={pagination.page} rowsPerPage={pagination.limit} totalCount={pagination.total} />
         </motion.div>
       </AnimatePresence>
 

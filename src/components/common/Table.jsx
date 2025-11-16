@@ -45,7 +45,7 @@ function EmptyState({ title = 'No results found', subtitle = 'Try adjusting filt
 
 const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage = 5, totalCount = 0, onPageChange }) => {
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
   const handlePageChange = page => {
@@ -60,7 +60,10 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
   };
 
   const handleImageClick = imageSrc => {
-    if (!loading) setSelectedImage(imageSrc);
+    if (!loading) {
+      setIsImageLoading(true)
+      setSelectedImage(imageSrc)
+    };
   };
 
   const closeImagePreview = () => setSelectedImage(null);
@@ -217,11 +220,15 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
 
       {selectedImage && !loading && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div className='relative bg-white p-4 rounded-md'>
-            <button onClick={closeImagePreview} className='w-[45px] h-[45px] flex items-center justify-center cursor-pointer hover:opacity-90 hover:scale-[1.05] duration-300 absolute top-2 right-2 text-white bg-black rounded-full p-2'>
-              <X />
+          <div className='relative rounded-xl'>
+            <button onClick={closeImagePreview} className='w-9 h-9 inline-flex items-center justify-center z-[52] absolute -top-3 -right-3 text-white bg-slate-900 rounded-full shadow hover:opacity-90'>
+              {!isImageLoading ? <X /> :
+                <span className="relative flex h-6 w-6">
+                  <span className="absolute h-full w-full rounded-full border-4 border-white/30 border-t-white animate-spin"></span>
+                  <span className="absolute h-full w-full rounded-full border-4 border-transparent border-r-white animate-spin-slow"></span>
+                </span>}
             </button>
-            <Img src={selectedImage} alt='Preview' className='max-w-[90vw] max-h-[90vh]' />
+            <Img src={selectedImage} alt='Preview' className={`${!isImageLoading && 'bg-white ring-1 ring-slate-200'}   p-4 max-w-[80vw] max-h-[80vh] rounded-md  `} onLoad={() => setIsImageLoading(false)} />
           </div>
         </div>
       )}

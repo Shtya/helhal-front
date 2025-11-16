@@ -329,10 +329,10 @@ const step5Schema = yup.object({
       file => {
         if (!file) return true;
 
-        if (file?.assetId) return file.type === 'image';
+        if (file?.type) return file?.type === 'image';
+        if (file?.mimeType) return file?.mimeType.startsWith('image/');
+        if (file?.size) return file?.size <= MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
-        if (!file.mimeType.startsWith('image/')) return false;
-        if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) return false;
         return true;
       }
     ))
@@ -345,10 +345,10 @@ const step5Schema = yup.object({
       file => {
         if (!file) return true;
 
-        if (file?.assetId) return file.type === 'document';
+        if (file?.type) return file?.type === 'video';
+        if (file?.mimeType) return file?.mimeType.startsWith('video/');
+        if (file?.size) return file?.size <= MAX_VIDEO_SIZE_MB * 1024 * 1024;
 
-        if (!file.mimeType.startsWith('video/')) return false;
-        if (file.size > MAX_VIDEO_SIZE_MB * 1024 * 1024) return false;
         return true;
       }
     ))
@@ -361,11 +361,11 @@ const step5Schema = yup.object({
       file => {
         if (!file) return true;
 
-        if (file?.assetId) return file.type === 'video';
+        if (file?.type) return file?.type === 'document';
+        if (file?.mimeType) return ALLOWED_PORTFOLIO_TYPES.includes(file.mimeType);
+        if (file?.size) return file?.size <= MAX_PORTFOLIO_SIZE_MB * 1024 * 1024;
 
-        const isAllowedType = ALLOWED_PORTFOLIO_TYPES.includes(file.mimeType);
-        const isTooLarge = file.size > MAX_PORTFOLIO_SIZE_MB * 1024 * 1024;
-        return isAllowedType && !isTooLarge;
+        return truee;
       }
     ))
     .max(2, 'You can upload up to 2 documents'),

@@ -7,7 +7,7 @@ export default function Img({ src, altSrc, alt = '', className = 'h-full w-full 
   const altSrcFinal = altSrc || fallback;
   const [errored, setErrored] = useState(false);
 
-  useEffect
+
   const resolved = useMemo(() => {
     if (src === null || src === undefined) return altSrcFinal;
     if (typeof src !== 'string') return altSrcFinal;
