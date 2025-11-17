@@ -18,6 +18,8 @@ import { Link } from '@/i18n/navigation';
 import ReactPlayer from 'react-player';
 import AttachmentList from '@/components/common/AttachmentList';
 import { useAuth } from '@/context/AuthContext';
+import AttachFilesButton from '@/components/atoms/AttachFilesButton';
+import Textarea from '@/components/atoms/Textarea';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -120,61 +122,62 @@ export default function ServiceDetailsPage({ params }) {
       try {
         setLoading(true);
 
-        let res = await apiService.getService(service);
+        const res = await apiService.getService(service);
 
-        res.requirements = [
-          {
-            id: 1,
-            question: "Please describe your business (name, industry, and main services).",
-            requirementType: "text",
-            isRequired: true,
-            options: []
-          },
-          {
-            id: 2,
-            requirementType: "text",
-            options: [],
-            isRequired: false,
-            question: "Do you have any preferred colors, styles, or reference websites?"
-          },
-          {
-            id: 3,
-            question: "Upload your business logo.",
-            requirementType: "file",
-            options: [],
-            isRequired: true
-          },
-          {
-            id: 4,
-            requirementType: "file",
-            options: [],
-            isRequired: false,
-            question: "Upload your small  business logo."
-          },
-          {
-            id: 5,
-            question: "What is the main purpose of your website?",
-            requirementType: "multiple_choice",
-            options: [
-              "Showcase business information",
-              "Sell products/services online",
-              "Collect leads/contact requests",
-              "Other"
-            ],
-            isRequired: true
-          },
-          {
-            id: 6,
-            requirementType: "multiple_choice",
-            options: [
-              "WordPress",
-              "Custom React/Next.js",
-              "No preference"
-            ],
-            isRequired: false,
-            question: "Do you have a preferred platform for your website?"
-          }
-        ]
+        //Just for a test 
+        // res.requirements = [
+        //   {
+        //     id: 1,
+        //     question: "Please describe your business (name, industry, and main services).",
+        //     requirementType: "text",
+        //     isRequired: true,
+        //     options: []
+        //   },
+        //   {
+        //     id: 2,
+        //     requirementType: "text",
+        //     options: [],
+        //     isRequired: false,
+        //     question: "Do you have any preferred colors, styles, or reference websites?"
+        //   },
+        //   {
+        //     id: 3,
+        //     question: "Upload your business logo.",
+        //     requirementType: "file",
+        //     options: [],
+        //     isRequired: true
+        //   },
+        //   {
+        //     id: 4,
+        //     requirementType: "file",
+        //     options: [],
+        //     isRequired: false,
+        //     question: "Upload your small  business logo."
+        //   },
+        //   {
+        //     id: 5,
+        //     question: "What is the main purpose of your website?",
+        //     requirementType: "multiple_choice",
+        //     options: [
+        //       "Showcase business information",
+        //       "Sell products/services online",
+        //       "Collect leads/contact requests",
+        //       "Other"
+        //     ],
+        //     isRequired: true
+        //   },
+        //   {
+        //     id: 6,
+        //     requirementType: "multiple_choice",
+        //     options: [
+        //       "WordPress",
+        //       "Custom React/Next.js",
+        //       "No preference"
+        //     ],
+        //     isRequired: false,
+        //     question: "Do you have a preferred platform for your website?"
+        //   }
+        // ]
 
         setServiceData(res);
 
@@ -1063,14 +1066,6 @@ function RequirementsSection({ triedSubmit, requirements, answers, onChange, val
 
   const firstInvalidId = useMemo(() => getFirstInvalidRequirementId(requirements, answers), [requirements, answers]);
 
-  const handleSubmit = () => {
-    setTriedSubmit(true);
-    if (firstInvalidId) {
-      scrollToRequirement(firstInvalidId);
-      return;
-    }
-    onComplete();
-  };
 
   return (
     <section className='relative mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-custom '>
@@ -1096,72 +1091,141 @@ function RequirementsSection({ triedSubmit, requirements, answers, onChange, val
       <div className='px-6 py-6'>
         <div className='space-y-6'>
           {requirements.map((req, idx) => {
-            const val = answers?.[req.id];
-            const missing = req.isRequired && (req.requirementType === 'file' ? !val : !String(val ?? '').trim());
-            const showErr = triedSubmit && (missing || !!validationErrors?.[req.id]);
-            const errMsg = triedSubmit && (validationErrors?.[req.id] || triedSubmit && missing ? 'This field is required' : '');
-
-
             return (
-              <motion.div key={req.id} id={`requirement-${req.id}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className=' '>
-                <div className='flex items-start justify-between gap-4'>
-                  <label className='block text-base font-semibold text-slate-900'>
-                    {idx + 1}. {req.question}
-                    {req.isRequired && <span className='ml-1 text-red-500'>*</span>}
-                  </label>
-
-                  {/* {!req.isRequired && (
-                    <button onClick={() => setExpanded(e => ({ ...e, [req.id]: !e[req.id] }))} className='inline-flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900'>
-                      {expanded[req.id] ? 'Hide' : 'Details'} <ChevronDown className={`h-3.5 w-3.5 transition ${expanded[req.id] ? 'rotate-180' : ''}`} />
-                    </button>
-                  )} */}
-                </div>
-
-                {/* TEXT */}
-                {req.requirementType === 'text' && <div className='mt-3'>{String(val ?? '').length > 80 ? <textarea rows={4} placeholder='Type your answer…' value={val || ''} onChange={e => onChange(req.id, e.target.value)} className={`w-full transition  `} /> : <Input type='text' placeholder='Your answer' value={val || ''} onChange={e => onChange(req.id, e.target.value)} required={req.isRequired} showMsgError={false} />}</div>}
-
-                {/* MULTIPLE CHOICE */}
-                {req.requirementType === 'multiple_choice' && Array.isArray(req.options) && <MultipleChoiceFancy req={req} value={val} onSelect={val => onChange(req.id, val)} />}
-
-                {/* FILE */}
-                {req.requirementType === 'file' && (
-                  <div className='mt-3'>
-                    <label
-                      className={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed bg-slate-50 p-6 transition hover:bg-slate-100
-                      ${showErr ? 'border-red-300' : 'border-slate-300'}`}>
-                      <div className='text-center'>
-                        <UploadCloud className='mx-auto h-7 w-7 text-slate-500' />
-                        <p className='mt-2 text-sm text-slate-700'>
-                          <span className='font-medium'>Click to upload</span> or drag & drop
-                        </p>
-                        <p className='text-xs text-slate-500'>Any file type</p>
-                      </div>
-                      <input type='file' className='hidden' onChange={e => onChange(req.id, e.target.files?.[0] || null)} />
-                    </label>
-
-                    {!!val && (
-                      <div className='mt-2 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700'>
-                        <CheckCircle2 className='h-4 w-4 text-emerald-600' />
-                        Selected: <span className='font-medium'>{val?.name || String(val)}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {showErr && (
-                  <p className='mt-2 inline-flex items-center gap-1.5 text-sm text-red-600'>
-                    <AlertCircle className='h-4 w-4' />
-                    {errMsg}
-                  </p>
-                )}
-
-                {/* {!req.isRequired && expanded[req.id] && <p className='mt-3 text-sm text-slate-500'>Optional input—add any extra notes that help tailor your request.</p>} */}
-              </motion.div>
-            );
+              <RequirementField
+                key={req.id}
+                idx={idx}
+                answers={answers}
+                requirement={req}
+                triedSubmit={triedSubmit}
+                onChange={onChange}
+                validationErrors={validationErrors}
+              />
+            )
           })}
         </div>
       </div>
     </section>
+  );
+}
+
+
+function RequirementField({ idx, answers, requirement, triedSubmit, validationErrors, onChange }) {
+  const req = requirement;
+  const val = answers?.[req.id];
+  const missing = req.isRequired && (req.requirementType === 'file' ? !val : !String(val ?? '').trim());
+  const showErr = triedSubmit && (missing || !!validationErrors?.[req.id]);
+  const errMsg = triedSubmit && (validationErrors?.[req.id] || missing ? 'This field is required' : '');
+
+  // local state for text editing
+  const [localVal, setLocalVal] = useState(val);
+
+  const inputRef = useRef(null);
+  const textareaRef = useRef(null);
+
+  //for autofocus
+  useEffect(() => {
+    if (req?.requirementType === 'text') {
+      if (localVal?.length > 80 && textareaRef.current) {
+        const el = textareaRef.current;
+        el.focus();
+        // move cursor to end
+        el.setSelectionRange(el.value.length, el.value.length);
+
+      }
+      else if (localVal?.length <= 80 && inputRef.current) {
+        const el = inputRef.current;
+        el.focus();
+        el.setSelectionRange(el.value.length, el.value.length);
+      }
+    }
+  }, [localVal?.length, req?.requirementType]);
+
+  return (
+    <motion.div key={req.id} id={`requirement-${req.id}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className=' '>
+      <div className='flex items-start justify-between gap-4'>
+        <label className='block text-base font-semibold text-slate-900'>
+          {idx + 1}. {req.question}
+          {req.isRequired && <span className='ml-1 text-red-500'>*</span>}
+        </label>
+
+        {/* {!req.isRequired && (
+                    <button onClick={() => setExpanded(e => ({ ...e, [req.id]: !e[req.id] }))} className='inline-flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900'>
+                      {expanded[req.id] ? 'Hide' : 'Details'} <ChevronDown className={`h-3.5 w-3.5 transition ${expanded[req.id] ? 'rotate-180' : ''}`} />
+                    </button>
+                  )} */}
+      </div>
+
+      {/* TEXT */}
+      {req.requirementType === 'text' && <div className='mt-3'>{String(localVal ?? '').length > 80 ?
+        (
+          <div className="relative">
+            <Textarea
+              ref={textareaRef}
+              rows={4}
+              placeholder='Type your answer…'
+              value={localVal}
+              onChange={e => setLocalVal(e.target.value.slice(0, 3000))}
+              onBlur={() => onChange(req.id, localVal)}
+              className={`w-full transition  `}
+            />
+            <div className="absolute right-0 mt-1 text-xs text-slate-500">
+              {localVal.length}/3000
+            </div>
+          </div>
+        ) :
+        <Input
+          ref={inputRef}
+          type='text'
+          placeholder='Your answer'
+          value={localVal}
+          onChange={e => setLocalVal(e.target.value.slice(0, 3000))}
+          onBlur={() => onChange(req.id, localVal)}
+          required={req.isRequired}
+          showMsgError={false}
+        />}</div>
+      }
+
+      {/* MULTIPLE CHOICE */}
+      {req.requirementType === 'multiple_choice' && Array.isArray(req.options) && <MultipleChoiceFancy req={req} value={val} onSelect={val => onChange(req.id, val)} />}
+
+      {/* FILE */}
+      {req.requirementType === 'file' && (
+        <div className='mt-3 relative'>
+          <label
+            className={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed bg-slate-50 p-6 transition hover:bg-slate-100
+                      ${showErr ? 'border-red-300' : 'border-slate-300'}`}>
+            <div className='text-center'>
+              <UploadCloud className='mx-auto h-7 w-7 text-slate-500' />
+              <p className='mt-2 text-sm text-slate-700'>
+                <span className='font-medium'>Click to upload</span> or drag & drop
+              </p>
+              <p className='text-xs text-slate-500'>Any file type</p>
+            </div>
+            {/* <input type='file' className='hidden' onChange={e => onChange(req.id, e.target.files?.[0] || null)} /> */}
+            <AttachFilesButton cnBtn={'absolute inset-0  opacity-0 '} maxSelection={1} hiddenFiles={true} onChange={files => {
+              onChange(req.id, files?.[0])
+            }} />
+          </label>
+
+          {!!val && (
+            <div className='mt-2 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700'>
+              <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+              Selected: <span className='font-medium'>{val?.name || val?.filename || String(val)}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {showErr && (
+        <p className='mt-2 inline-flex items-center gap-1.5 text-sm text-red-600'>
+          <AlertCircle className='h-4 w-4' />
+          {errMsg}
+        </p>
+      )}
+
+      {/* {!req.isRequired && expanded[req.id] && <p className='mt-3 text-sm text-slate-500'>Optional input—add any extra notes that help tailor your request.</p>} */}
+    </motion.div>
   );
 }
 
@@ -1707,8 +1771,18 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
       {isOther && (
         <div className='mt-3'>
           <label className='mb-1 block text-sm font-medium text-slate-900'>Please specify</label>
-          <input type='text' onBlur={() => UpdateOtherText(otherText)} value={otherText} onChange={e => setOtherText(e.target.value)} placeholder='Type here…' className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
-          <div className='mt-1 text-[11px] text-slate-500'>We’ll include this with your selection.</div>
+          <input
+            type="text"
+            value={otherText}
+            placeholder="Type here…"
+            onChange={e => setOtherText(e.target.value.slice(0, 500))} // enforce max length
+            onBlur={() => UpdateOtherText(otherText)}
+            maxLength={500} // browser-level enforcement
+            className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100'
+          />
+          <div className="mt-1 text-[11px] text-slate-500">
+            {otherText.length}/500 • We’ll include this with your selection.
+          </div>
         </div>
       )}
     </div>
@@ -1824,7 +1898,7 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
             <PriceTag price={selectedPackage?.price ?? 0} className='!text-xl font-bold' />
           </div>
 
-          <Button name='Continue to Requirements' loading={loadingSubmit} className='w-full' onClick={() => onComplete()} iconRight={<ChevronRight className='ml-1 h-4 w-4' />} />
+          <Button name='Continue to Requirements' loading={loadingSubmit} className='w-full' onClick={() => onComplete(notes)} iconRight={<ChevronRight className='ml-1 h-4 w-4' />} />
         </div>
       </aside>
     </div>

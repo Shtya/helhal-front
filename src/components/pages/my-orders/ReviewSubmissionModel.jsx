@@ -134,11 +134,11 @@ export default function ReviewSubmissionModel({
                     )}
 
                     {!readOnly && <>
-                        <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
+                        {submission && <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
                             This delivery was submitted on <strong>{formatDate(submission?.created_at)}</strong>.
                             If you don’t take action by <strong>{formatDate(releaseDate)}</strong>, a payment of <strong>${amount}</strong> will be automatically released to <strong>{sellerName}</strong>.
                         </div>
-
+                        }
                         <div className="flex gap-3 pt-2">
                             <Button
                                 type="button"

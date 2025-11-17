@@ -16,7 +16,8 @@ export const getFileIcon = mimeType => {
   return <File className='w-10 h-10 text-gray-400' />;
 };
 
-export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange, value }) {
+
+export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange, value, cnBtn, maxSelection = undefined }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [loadedOnce, setLoadedOnce] = useState(false);
@@ -98,6 +99,17 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
           return mm;
         });
       } else {
+
+        if (maxSelection && next.size >= maxSelection) {
+          const oldestId = next.values().next().value;
+          next.delete(oldestId);
+          setSelectedMap(m => {
+            const mm = new Map(m);
+            mm.delete(oldestId);
+            return mm;
+          });
+        }
+
         next.add(file.id);
         setSelectedMap(m => {
           const mm = new Map(m);
@@ -152,13 +164,23 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
       setSelectedIds(prev => {
         const next = new Set(prev);
         const mapNext = new Map(selectedMap);
-        newFiles.forEach(f => {
+
+        // calculate remaining slots
+        const remaining =
+          typeof maxSelection === "number" ? Math.max(0, maxSelection - next.size) : Infinity;
+
+        // only take up to remaining slots
+        const filesToAdd = newFiles.slice(0, remaining);
+
+        filesToAdd.forEach(f => {
           next.add(f.id);
           mapNext.set(f.id, f);
         });
+
         setSelectedMap(mapNext);
         return next;
       });
+
     } catch {
       // toast error if you want
     } finally {
@@ -266,7 +288,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
     <div className={className || ''}>
       {/* Trigger + selected chips */}
       <div className='flex flex-col md:flex-row  md:items-center gap-4 mt-6 mb-6'>
-        <button onClick={openModal} className={[iconOnly ? '!w-fit !px-2 !rounded-md' : 'px-10', 'flex-none flex items-center gap-2 py-2 rounded-lg border border-emerald-500 text-emerald-500 cursor-pointer hover:bg-emerald-50'].join(' ')}>
+        <button onClick={openModal} className={[iconOnly ? '!w-fit !px-2 !rounded-md' : 'px-10', 'flex-none flex items-center gap-2 py-2 rounded-lg border border-emerald-500 text-emerald-500 cursor-pointer hover:bg-emerald-50', cnBtn].join(' ')}>
           <img src='/icons/attachment-green.svg' alt='' className='w-5 h-5' />
           <span className={iconOnly ? 'hidden' : 'font-medium'}>Attach Files</span>
         </button>
