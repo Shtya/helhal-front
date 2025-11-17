@@ -59,10 +59,12 @@ export default function SellerProposalsPage() {
   const [pages, setPages] = useState(1);
   const [limit, setLimit] = useState(12);
 
-  const [tab, setTab] = useState('submitted');
+  const [tab, setTab] = useState('all');
   const [viewer, setViewer] = useState({ open: false, job: null });
   const controllerRef = useRef();
-
+  function resetPage() {
+    setPage(1)
+  }
   useEffect(() => {
 
     (async () => {
@@ -73,7 +75,14 @@ export default function SellerProposalsPage() {
 
 
         setLoading(true);
-        const res = await listMyProposals({ status: tab, page, limit }, { signal: controller.signal });
+        const params = {
+          page,
+          limit,
+          ...(tab !== 'all' && { status: tab }),
+        };
+
+        const res = await listMyProposals(params, { signal: controller.signal });
+
         setItems(res?.proposals || []);
         setPages(res?.pagination?.pages || 1);
       } catch (e) {
@@ -99,11 +108,12 @@ export default function SellerProposalsPage() {
 
         <Tabs
           tabs={[
+            { label: 'All', value: 'all' },
             { label: 'submitted', value: 'submitted' },
             { label: 'accepted', value: 'accepted' },
             { label: 'rejected', value: 'rejected' },
           ]}
-          setActiveTab={setTab}
+          setActiveTab={tab => { setTab(tab); resetPage() }}
           activeTab={tab}
         />
       </div>
@@ -125,12 +135,19 @@ export default function SellerProposalsPage() {
       </motion.div>
 
       <div className='mt-8'>
-        <TabsPagination loading={loading} currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => setLimit(sz)} itemsPerPage={limit} />
+        <TabsPagination loading={loading} currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => { setLimit(sz); resetPage() }} itemsPerPage={limit}
+          options={[
+            { id: 5, name: '5' },
+            { id: 10, name: '10' },
+            { id: 12, name: '12' },
+            { id: 20, name: '20' },
+            { id: 50, name: '50' },
+          ]} />
       </div>
 
       <AnimatePresence>
         {viewer.open && viewer.job && (
-          <Modal title={viewer.job?.title || 'Job details'} onClose={() => setViewer({ open: false, job: null })}>
+          <Modal title={'Job details'} onClose={() => setViewer({ open: false, job: null })}>
             <JobDetails job={viewer.job} />
           </Modal>
         )}
@@ -143,6 +160,7 @@ export default function SellerProposalsPage() {
 // Cards
 // -------------------------------------------------
 function ProposalCard({ proposal, onOpenJob }) {
+  const [expanded, setExpanded] = useState(false);
   const submitted = (proposal?.submittedAt || proposal?.created_at || '').split('T')[0];
   const buyerName = proposal?.job?.buyer?.username || '—';
   const buyerInitials = useMemo(
@@ -155,6 +173,20 @@ function ProposalCard({ proposal, onOpenJob }) {
         .join(''),
     [buyerName],
   );
+
+
+  // Split portfolio string into array of links
+  const portfolioLinks = useMemo(() => {
+    if (!proposal?.portfolio) return [];
+    return proposal.portfolio
+      .split('\n')
+      .map(link => link.trim())
+      .filter(Boolean);
+  }, [proposal?.portfolio]);
+
+  // Decide if we need the toggle button
+  const needsToggle = proposal?.coverLetter && proposal.coverLetter.length > 200;
+
 
   return (
     <motion.article className={cardBase} whileHover={{ y: -2 }} transition={spring}>
@@ -169,7 +201,24 @@ function ProposalCard({ proposal, onOpenJob }) {
           </span>
         </header>
 
-        {proposal?.coverLetter && <p className='mt-2 line-clamp-3 text-slate-600'>{proposal.coverLetter}</p>}
+        {proposal?.coverLetter && (
+          <div className="mt-2">
+            <p
+              className={`text-slate-600 ${expanded ? '' : 'line-clamp-3'}`}
+            >
+              {proposal.coverLetter}
+            </p>
+            {needsToggle && (
+              <button
+                type="button"
+                onClick={() => setExpanded(!expanded)}
+                className="mt-1 text-xs text-emerald-600 hover:underline"
+              >
+                {expanded ? 'Show less' : 'Show more'}
+              </button>
+            )}
+          </div>
+        )}
 
         <div className='mt-5 flex flex-wrap items-center gap-3'>
           <span className={chip}>
@@ -183,6 +232,27 @@ function ProposalCard({ proposal, onOpenJob }) {
           </span>
         </div>
 
+        {/* Portfolio Links */}
+        {portfolioLinks.length > 0 && (
+          <div className="mt-4 space-y-1">
+            <p className="text-sm font-medium text-slate-700">Portfolio</p>
+            <ul className="space-y-1">
+              {portfolioLinks.map((url, idx) => (
+                <li key={idx}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-emerald-600 hover:underline break-all"
+                  >
+                    {url}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className='flex items-center justify-between mt-4 '>
           <div className=' flex items-center gap-3'>
             <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200'>
@@ -190,7 +260,8 @@ function ProposalCard({ proposal, onOpenJob }) {
             </div>
             <div>
               <div className='text-sm font-semibold text-slate-900 flex items-center gap-2'>
-                <User2 className='h-4 w-4' /> {buyerName}
+                <User2 className='h-4 w-4' />
+                <a className='hover:underline' href={`/profile/${proposal?.job?.buyer?.id}`}>{buyerName}</a>
               </div>
               <div className='text-sm text-slate-500'>{proposal?.job?.buyer?.country || ''}</div>
             </div>
@@ -239,10 +310,7 @@ function JobDetails({ job }) {
   return (
     <section>
       <div className='flex items-start justify-between gap-3'>
-        <h3 className='text-xl font-semibold text-slate-900'>{job?.title}</h3>
-        <span className={chip}>
-          <span className='h-2 w-2 rounded-full bg-emerald-500' /> Live
-        </span>
+        <a href={`/jobs?job=${job?.id}`} className='text-xl font-semibold text-slate-900 hover:underline'>{job?.title}</a>
       </div>
       {job?.description && <p className='mt-2 text-slate-700'>{job.description}</p>}
 

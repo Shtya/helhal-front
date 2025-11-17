@@ -59,7 +59,7 @@ export default function MyJobsPage() {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
   const [jobToDelete, setJobToDelete] = useState(null);
@@ -239,7 +239,14 @@ export default function MyJobsPage() {
         )}
       </div>
 
-      <TabsPagination loading={loading} currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={itemsPerPage} />
+      <TabsPagination loading={loading} currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={itemsPerPage}
+        options={[
+          { id: 5, name: '5' },
+          { id: 10, name: '10' },
+          { id: 12, name: '12' },
+          { id: 20, name: '20' },
+          { id: 50, name: '50' },
+        ]} />
 
       {isConfirmDelete && (
         <Modal onClose={() => setIsConfirmDelete(false)} title={'Are you sure you want to delete this job?'}>

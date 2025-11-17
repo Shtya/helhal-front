@@ -530,14 +530,50 @@ function JobCardSkeleton() {
 // -------------------------------------------------
 // Drawer (Details + Apply)
 // -------------------------------------------------
+
 const applySchema = yup.object({
-  coverLetter: yup.string().min(20, 'Min 20 chars').required('Required'),
-  bidAmount: yup.number().typeError('Enter a number').positive().required('Required'),
-  deliveryDays: yup.number().typeError('Enter a number').positive().integer().required('Required'),
-  portfolioUrls: yup.string().optional(),
-  milestoneTitle: yup.string().optional(),
-  milestoneAmount: yup.number().typeError('Enter a number').positive().optional(),
+  coverLetter: yup
+    .string()
+    .trim()
+    .min(20, 'Min 20 characters')
+    .max(3000, 'Max 3000 characters')
+    .required('Required'),
+
+  bidAmount: yup
+    .number()
+    .typeError('Enter a number')
+    .positive('Must be positive')
+    .required('Required')
+    .max(100000, 'Bid amount must not exceed 100,000'),
+
+  deliveryDays: yup
+    .number()
+    .typeError('Enter a number')
+    .positive('Must be positive')
+    .integer('Must be an integer')
+    .required('Required')
+    .max(1200, 'Maximum delivery time is 1200 days'),
+
+  portfolioUrls: yup
+    .array()
+    .transform((value) => {
+      if (!value) return [];
+      return value
+        .split('\n')          // split by line
+        .map((url) => url.trim())
+        .filter((url) => url.length > 0);
+    })
+    .test('is-array', 'Invalid portfolio URLs', (value) => Array.isArray(value))
+    .test('max-links', 'You can add up to 10 portfolio links', (value) => value.length <= 10)
+    .test('valid-urls', 'Each link must be a valid URL', (value) =>
+      value.every((url) => yup.string().url().isValidSync(url))
+    )
+    .test('max-length', 'Each link must not exceed 500 characters', (value) =>
+      value.every((url) => url.length <= 500)
+    )
+    .optional(),
 });
+
 
 
 
@@ -601,13 +637,18 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
   const submit = async values => {
     if (!canSubmitProposal) return;
-    await onSubmitProposal?.(values);
+    const payload = {
+      ...values,
+      portfolioUrls: values?.portfolioUrls.join('\n')
+    }
+    await onSubmitProposal?.(payload);
     reset();
     onClose?.();
   };
 
 
-  const canSubmitProposal = role === 'seller' && localJob?.buyer?.id !== user?.id;
+  const canSubmitProposal = user && role === 'seller' && localJob?.buyer?.id !== user?.id;
+
   const buyer = localJob?.buyer || {};
   const country = buyer?.country || '—';
   const budget = localJob?.budget ?? localJob?.estimatedBudget;
@@ -616,6 +657,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
 
   const created = (localJob?.created_at || '').split('T')[0];
+
 
   return (
     <AnimatePresence>
@@ -764,6 +806,9 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                       <div>
                         <label className='block text-sm font-medium text-slate-700'>Portfolio links (one per line)</label>
                         <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={'https://…\nhttps://…'} {...register('portfolioUrls')} />
+                        {errors.portfolioUrls && (
+                          <p className="mt-1 text-xs text-rose-600">{errors.portfolioUrls.message}</p>
+                        )}
                       </div>
 
                       <div className='flex items-center justify-end gap-2'>

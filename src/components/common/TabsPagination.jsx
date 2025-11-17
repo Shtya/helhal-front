@@ -2,7 +2,13 @@
 import React, { useEffect } from 'react';
 import Select from '../atoms/Select';
 
-const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage, className }) => {
+const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage, className,
+  options = [
+    { id: 5, name: '5' },
+    { id: 10, name: '10' },
+    { id: 20, name: '20' },
+    { id: 50, name: '50' },
+  ] }) => {
 
 
   useEffect(() => {
@@ -32,12 +38,7 @@ const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItem
 
         {/* Items per page selector */}
         {onItemsPerPageChange && <Select
-          options={[
-            { id: 5, name: '5' },
-            { id: 10, name: '10' },
-            { id: 20, name: '20' },
-            { id: 50, name: '50' },
-          ]}
+          options={options}
           value={itemsPerPage}
           onChange={selectedOption => onItemsPerPageChange(Number(selectedOption.name))}
           placeholder="Select items per page"
