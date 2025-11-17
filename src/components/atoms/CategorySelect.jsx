@@ -76,7 +76,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
     if (!open && !value) return;
     fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, scopeKey]);
+  }, [open, value, scopeKey]);
 
   // Close on outside click / Esc
   useEffect(() => {

@@ -3,8 +3,7 @@
 import { useEffect, useState, use, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Timer, FileText, Info, Tag as TagIcon, CheckCircle2, Crown, AlertCircle, UploadCloud, Table2, LayoutGrid, ChevronDown, MessageCircle, Zap, Repeat, Eye, MousePointer2, ShieldCheck, Gauge, Star, Clock, Box, Shield, ChevronRight, Globe, Calendar, MapPin, Award, ChevronLeft, Maximize2, X, GraduationCap, ExternalLink, Image as ImageIcon, Clock3, Globe2, BadgeCheck, FolderTree, Layers, Images } from 'lucide-react';
-
+import { Timer, FileText, Info, Tag as TagIcon, CheckCircle2, Crown, AlertCircle, UploadCloud, Table2, LayoutGrid, ChevronDown, MessageCircle, Zap, Repeat, Eye, MousePointer2, ShieldCheck, Gauge, Star, Clock, Box, Shield, ChevronRight, Globe, Calendar, MapPin, Award, ChevronLeft, Maximize2, X, GraduationCap, ExternalLink, Image as ImageIcon, Clock3, Globe2, BadgeCheck, FolderTree, Layers, Images, PlayCircle, Beaker } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import PriceTag from '@/components/atoms/priceTag';
 import Input from '@/components/atoms/Input';
@@ -16,14 +15,46 @@ import FAQSection from '@/components/common/Faqs';
 import api, { baseImg } from '@/lib/axios';
 import { getInitials } from '@/components/molecules/Header';
 import { Link } from '@/i18n/navigation';
+import ReactPlayer from 'react-player';
+import AttachmentList from '@/components/common/AttachmentList';
+import { useAuth } from '@/context/AuthContext';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
-  const answers = (serviceData?.requirements || []).map(req => ({
-    questionId: req.id,
-    type: req.requirementType,
-    answer: req.requirementType === 'file' ? requirementAnswers[req.id]?.name || requirementAnswers[req.id] || '' : requirementAnswers[req.id] ?? '',
-  }));
+
+  const answers = (serviceData?.requirements || []).map(req => {
+    const baseAnswer =
+      req.requirementType === 'file'
+        ? requirementAnswers[req.id]?.url || ''
+        : req.requirementType === 'multiple_choice'
+          ? requirementAnswers[req.id]?.option
+          : requirementAnswers[req.id] ?? '';
+
+    const obj = {
+      questionId: req.id,
+      type: req.requirementType,
+      answer: baseAnswer,
+    };
+
+    // ✅ Only add otherAnswer if it exists
+    if (
+      req.requirementType === 'multiple_choice' &&
+      requirementAnswers[req.id]?.option?.toLowerCase() === 'other' &&
+      requirementAnswers[req.id]?.otherText
+    ) {
+      obj.otherAnswer = requirementAnswers[req.id].otherText;
+    }
+
+    // Add filename if it file
+    if (
+      req.requirementType === 'file' &&
+      requirementAnswers[req.id]?.filename
+    ) {
+      obj.filename = requirementAnswers[req.id]?.filename;
+    }
+
+    return obj;
+  });
 
   return {
     serviceId: serviceData.id,
@@ -55,35 +86,115 @@ const scrollToRequirement = id => {
 
 export default function ServiceDetailsPage({ params }) {
   const { service } = use(params);
+  const { user, role } = useAuth()
   const [serviceData, setServiceData] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [requirementAnswers, setRequirementAnswers] = useState({});
   const [validationErrors, setValidationErrors] = useState({});
-  const [notes, setNotes] = useState('');
 
+  const canOrder = user?.id != serviceData?.seller?.id && role === 'buyer' && serviceData?.status === 'Active';
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const router = useRouter();
 
+  // ✅ Separate useEffect to increase click count
   useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    apiService
-      .getService(service)
-      .then(res => {
-        if (!mounted) return;
-        setServiceData(res);
-        const firstPkg = Array.isArray(res?.packages) && res.packages.length ? res.packages[0] : null;
-        setSelectedPackage(firstPkg);
-      })
-      .catch(err => console.error('Error fetching service:', err))
-      .finally(() => mounted && setLoading(false));
-    return () => {
-      mounted = false;
+    const increaseClick = async () => {
+      try {
+
+        await apiService.increaseServiceClick({
+          slug: service,
+        });
+      } catch (err) {
+        console.error("Error increasing service click:", err);
+      }
     };
+
+    increaseClick();
   }, [service]);
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        setLoading(true);
+
+        let res = await apiService.getService(service);
+
+        res.requirements = [
+          {
+            id: 1,
+            question: "Please describe your business (name, industry, and main services).",
+            requirementType: "text",
+            isRequired: true,
+            options: []
+          },
+          {
+            id: 2,
+            requirementType: "text",
+            options: [],
+            isRequired: false,
+            question: "Do you have any preferred colors, styles, or reference websites?"
+          },
+          {
+            id: 3,
+            question: "Upload your business logo.",
+            requirementType: "file",
+            options: [],
+            isRequired: true
+          },
+          {
+            id: 4,
+            requirementType: "file",
+            options: [],
+            isRequired: false,
+            question: "Upload your small  business logo."
+          },
+          {
+            id: 5,
+            question: "What is the main purpose of your website?",
+            requirementType: "multiple_choice",
+            options: [
+              "Showcase business information",
+              "Sell products/services online",
+              "Collect leads/contact requests",
+              "Other"
+            ],
+            isRequired: true
+          },
+          {
+            id: 6,
+            requirementType: "multiple_choice",
+            options: [
+              "WordPress",
+              "Custom React/Next.js",
+              "No preference"
+            ],
+            isRequired: false,
+            question: "Do you have a preferred platform for your website?"
+          }
+        ]
+
+        setServiceData(res);
+
+        const firstPkg =
+          Array.isArray(res?.packages) && res.packages.length
+            ? res.packages[0]
+            : null;
+        setSelectedPackage(firstPkg);
+      } catch (err) {
+        console.error('Error fetching service:', err);
+      } finally {
+        setLoading(false); // fixed typo: etLoading → setLoading
+      }
+    };
+
+    if (service) {
+      fetchService();
+    }
+  }, [service]);
+
 
   useEffect(() => {
     if (!serviceData?.requirements?.length) return;
@@ -109,8 +220,17 @@ export default function ServiceDetailsPage({ params }) {
     }
   };
 
+  const [triedSubmit, setTriedSubmit] = useState(false);
+
   const tryOpenOrderOptions = () => {
+    if (!canOrder) return;
+    if (!user) {
+      router.push('/auth?tab=login');
+      return;
+    }
     const firstInvalidId = getFirstInvalidRequirementId(serviceData?.requirements, requirementAnswers);
+
+    setTriedSubmit(true)
     if (firstInvalidId) {
       setIsSidebarOpen(false);
       scrollToRequirement(firstInvalidId);
@@ -121,8 +241,13 @@ export default function ServiceDetailsPage({ params }) {
   };
 
   const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const handleCompleteOrder = async () => {
-    if (!serviceData || !selectedPackage) return;
+
+  const handleCompleteOrder = async (notes) => {
+    if (!user) {
+      router.push('/auth?tab=login');
+      return;
+    }
+    if (!serviceData || !selectedPackage || !canOrder) return;
 
     const firstInvalidId = getFirstInvalidRequirementId(serviceData?.requirements, requirementAnswers);
     if (firstInvalidId) {
@@ -130,6 +255,7 @@ export default function ServiceDetailsPage({ params }) {
       setValidationErrors(v => ({ ...v, [firstInvalidId]: 'This field is required' }));
       return;
     }
+
 
     // Build payload (JSON for now). If you need to send files, switch to FormData here.
     const orderData = buildOrderPayload({
@@ -153,6 +279,8 @@ export default function ServiceDetailsPage({ params }) {
   if (loading) return <SkeletonPage />;
   if (!serviceData) return <NotFound />;
 
+
+
   return (
     <div className='min-h-screen'>
       <div className='container'>
@@ -162,11 +290,13 @@ export default function ServiceDetailsPage({ params }) {
             <HeaderPanel serviceData={serviceData} />
 
             <MediaGallery images={serviceData.gallery} />
+            <VedioPlayer gallery={serviceData.gallery} />
+            <DocumentViewer gallery={serviceData.gallery} />
             <AboutService serviceData={serviceData} />
 
             {!!serviceData.packages?.length && <PackagesSection packages={serviceData.packages} selectedPackage={selectedPackage} setSelectedPackage={setSelectedPackage} />}
 
-            {!!serviceData.requirements?.length && <RequirementsSection requirements={serviceData.requirements} answers={requirementAnswers} onChange={handleRequirementChange} validationErrors={validationErrors} />}
+            {!!serviceData.requirements?.length && <RequirementsSection triedSubmit={triedSubmit} requirements={serviceData.requirements} answers={requirementAnswers} onChange={handleRequirementChange} validationErrors={validationErrors} />}
 
             <AboutSeller serviceData={serviceData} />
 
@@ -178,7 +308,7 @@ export default function ServiceDetailsPage({ params }) {
           </div>
 
           {/* Sidebar */}
-          <PurchaseSidebar selectedPackage={selectedPackage} setIsSidebarOpen={setIsSidebarOpen} handleContactSeller={() => router.push(`/chat?userId=${serviceData?.seller?.id}`)} serviceData={serviceData} onTryOpenOrderOptions={tryOpenOrderOptions} />
+          <PurchaseSidebar canOrder={canOrder} selectedPackage={selectedPackage} setIsSidebarOpen={setIsSidebarOpen} serviceData={serviceData} onTryOpenOrderOptions={tryOpenOrderOptions} />
         </div>
 
         <div className=' mt-8 bg-white rounded-xl  border border-slate-200  shadow-custom  p-6'>
@@ -194,7 +324,7 @@ export default function ServiceDetailsPage({ params }) {
               <p className='text-xs text-gray-500'>{selectedPackage.name} Package</p>
             </div>
             <div className='flex gap-2'>
-              <Button name='Contact' variant='outline' className='text-sm' onClick={() => router.push(`/chat?userId=${serviceData?.seller?.id}`)} icon={<MessageCircle size={14} className='mr-1' />} />
+              <Link href={`/chat?userId=${serviceData?.seller?.id}`} className='text-sm' onClick={() => router.push(`/chat?userId=${serviceData?.seller?.id}`)} icon={<MessageCircle size={14} className='mr-1' />} />
               <Button name='Continue' className='text-sm' onClick={tryOpenOrderOptions} />
             </div>
           </div>
@@ -202,7 +332,7 @@ export default function ServiceDetailsPage({ params }) {
       )}
 
       {/* Drawer */}
-      <OrderOptions loadingSubmit={loadingSubmit} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} serviceData={serviceData} selectedPackage={selectedPackage} onComplete={handleCompleteOrder} notes={notes} setNotes={setNotes} />
+      <OrderOptions loadingSubmit={loadingSubmit} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} serviceData={serviceData} selectedPackage={selectedPackage} onComplete={handleCompleteOrder} />
     </div>
   );
 }
@@ -230,6 +360,7 @@ const countryFlag = code => {
 };
 
 function HeaderPanel({ serviceData = {}, Img }) {
+  const { user } = useAuth()
   const seller = serviceData?.seller || {};
   const rating = Number(serviceData?.rating ?? 0);
   const ratingFmt = rating.toFixed(1);
@@ -245,22 +376,23 @@ function HeaderPanel({ serviceData = {}, Img }) {
           text: String(serviceData.seller.sellerLevel).toUpperCase(),
           classes: 'border-amber-200 bg-amber-50 text-amber-800',
         },
-        serviceData?.fastDelivery && {
-          icon: <Zap className='h-3.5 w-3.5' />,
-          text: 'Fast delivery',
-          classes: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-        },
-        serviceData?.additionalRevision && {
-          icon: <Repeat className='h-3.5 w-3.5' />,
-          text: 'Extra revisions',
-          classes: 'border-slate-200 bg-slate-50 text-slate-700',
-        },
+        // serviceData?.fastDelivery && {
+        //   icon: <Zap className='h-3.5 w-3.5' />,
+        //   text: 'Fast delivery',
+        //   classes: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+        // },
+        // serviceData?.additionalRevision && {
+        //   icon: <Repeat className='h-3.5 w-3.5' />,
+        //   text: 'Extra revisions',
+        //   classes: 'border-slate-200 bg-slate-50 text-slate-700',
+        // },
       ].filter(Boolean),
     [serviceData],
   );
 
-  const features = [
-    {
+  let features = []
+  if (seller?.topRated) {
+    features.push({
       title: 'Top Rated',
       desc: 'Consistently delivers high-quality service meeting our strict standards.',
       Icon: (
@@ -273,42 +405,37 @@ function HeaderPanel({ serviceData = {}, Img }) {
       border: 'border-blue-100/80',
       iconWrap: 'bg-blue-100 text-blue-700',
       glow: ' ',
-    },
-    {
-      title: 'Verified Quality',
-      desc: 'Individually selected after meeting benchmarks for excellence and trust.',
-      Icon: (
-        <svg width='48' className='stroke-emerald-600' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
-          {' '}
-          <path d='M8.52344 22.0399V31.9799C8.52344 35.6199 8.52344 35.6199 11.9634 37.9399L21.4234 43.3999C22.8434 44.2199 25.1634 44.2199 26.5834 43.3999L36.0434 37.9399C39.4834 35.6199 39.4834 35.6199 39.4834 31.9799V22.0399C39.4834 18.3999 39.4834 18.3999 36.0434 16.0799L26.5834 10.6199C25.1634 9.79988 22.8434 9.79988 21.4234 10.6199L11.9634 16.0799C8.52344 18.3999 8.52344 18.3999 8.52344 22.0399Z' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' /> <path d='M35 15.26V10C35 6 33 4 29 4H19C15 4 13 6 13 10V15.12' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' /> <path d='M25.2635 21.9799L26.4035 23.7599C26.5835 24.0399 26.9835 24.3199 27.2835 24.3999L29.3235 24.9199C30.5835 25.2399 30.9235 26.3199 30.1035 27.3199L28.7635 28.9399C28.5635 29.1999 28.4035 29.6599 28.4235 29.9799L28.5435 32.0799C28.6235 33.3799 27.7035 34.0399 26.5035 33.5599L24.5435 32.7799C24.2435 32.6599 23.7435 32.6599 23.4435 32.7799L21.4835 33.5599C20.2835 34.0399 19.3635 33.3599 19.4435 32.0799L19.5635 29.9799C19.5835 29.6599 19.4235 29.1799 19.2235 28.9399L17.8835 27.3199C17.0635 26.3199 17.4035 25.2399 18.6635 24.9199L20.7035 24.3999C21.0235 24.3199 21.4235 24.0199 21.5835 23.7599L22.7235 21.9799C23.4435 20.8999 24.5635 20.8999 25.2635 21.9799Z' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />{' '}
-        </svg>
-      ),
-      accent: 'from-emerald-50 to-green-50',
-      border: 'border-emerald-100/80',
-      iconWrap: 'bg-emerald-100 text-emerald-700',
-      glow: ' ',
-    },
-  ];
+    })
+  }
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} className='relative mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-custom hover:shadow-md'>
+
+      {/* ✅ Preview Tag */}
+      {serviceData?.seller?.id === user?.id && serviceData?.status !== 'Active' && (
+        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-2 text-sm text-amber-700 flex items-center gap-2">
+          <Eye className="h-4 w-4 text-amber-600" />
+          <span>This page is in preview mode and not published. Only visible to you.</span>
+        </div>
+      )}
       {/* Title + Chips */}
       <div className='relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
         <div className='min-w-0'>
           <div className='flex flex-wrap items-center gap-2'>
             <h1 className='text-[22px] leading-tight md:text-3xl font-extrabold tracking-tight text-slate-900'>{serviceData?.title || 'Untitled Service'}</h1>
             {chips.map((c, i) => (
-              <Chip key={i} icon={c.icon} text={c.text} className={c.classes} />
+              <Chip key={i} icon={c.icon} label={c.text} className={c.classes} />
             ))}
           </div>
 
           {/* Meta */}
           <div className='mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-700'>
-            <span className='inline-flex items-center' aria-label={`Rating ${ratingFmt} out of 5`} title='Rating'>
+            {!!rating && <span className='inline-flex items-center' aria-label={`Rating ${ratingFmt} out of 5`} title='Rating'>
               <Star className='mr-1 h-4 w-4 text-amber-500 fill-current' />
               <span className='font-semibold'>{ratingFmt}</span>
               <span className='ml-1 text-slate-500'>({reviewsCount})</span>
-            </span>
+            </span>}
 
             <Separator />
 
@@ -381,9 +508,9 @@ function HeaderPanel({ serviceData = {}, Img }) {
       </div>
 
       {/* Features */}
-      <div className='mt-5 grid grid-cols-1 gap-4 md:grid-cols-2'>
+      <div className='mt-5 flex gap-4 '>
         {features.map(f => (
-          <div key={f.title} className={`group relative rounded-xl border ${f.border} bg-[#f9fbfd] p-5  transition-shadow hover:shadow-md`}>
+          <div key={f.title} className={`flex-1 group relative rounded-xl border ${f.border} bg-[#f9fbfd] p-5  transition-shadow hover:shadow-md`}>
             <div className='flex items-start gap-3'>
               <div className={`shrink-0 rounded-xl p-2 ring-1 ring-white/60 ${f.iconWrap}`}>{f.Icon}</div>
               <div className='min-w-0'>
@@ -398,8 +525,89 @@ function HeaderPanel({ serviceData = {}, Img }) {
   );
 }
 
+
+function DocumentViewer({ gallery }) {
+  // get all files that are not images or videos
+  const documents = useMemo(() => {
+    return Array.isArray(gallery)
+      ? gallery.filter(gal => gal.type !== 'image' && gal.type !== 'video').map(gal => ({
+        ...gal,
+        filename: gal.fileName
+      }))
+
+      : [];
+  }, [gallery]);
+
+  if (!documents.length) return null;
+
+  return (
+    <div className="relative rounded-xl border border-slate-200 bg-white shadow-custom overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 pt-6">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
+            <FileText className="h-4 w-4" />
+          </span>
+          <h2 id="documents-title" className="text-xl font-semibold text-slate-900">
+            Attached Documents
+          </h2>
+        </div>
+      </div>
+
+      {/* Document List */}
+      <div className="p-4">
+        <AttachmentList attachments={documents} />
+      </div>
+    </div>
+  );
+}
+
+function VedioPlayer({ gallery }) {
+  // find first video in gallery 
+  const vedio = useMemo(() => {
+    return gallery?.find(gal => gal.type === 'video')
+  }, [gallery]);
+
+  if (!vedio) return null;
+
+  return (
+    <div className="relative rounded-xl border border-slate-200 bg-white shadow-custom overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 pt-6">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700">
+            <PlayCircle className="h-4 w-4" />
+          </span>
+          <h2 id="video-title" className="text-xl font-semibold text-slate-900">
+            Video Preview
+          </h2>
+        </div>
+      </div>
+
+      {/* Video Player */}
+      <div className="p-4 aspect-video relative">
+        <ReactPlayer
+          src={vedio?.url?.startsWith('http') ? vedio?.url : baseImg + vedio?.url}
+          controls
+          width="100%"
+          height="100%"
+        />
+      </div>
+    </div>
+  );
+}
+
 function MediaGallery({ images = [], initialIndex = 0 }) {
-  const safeImages = useMemo(() => (Array.isArray(images) && images.length ? images : [{ url: '/images/placeholder.png', alt: 'No image' }]), [images]);
+  const safeImages = useMemo(() => {
+    if (Array.isArray(images) && images.length) {
+      const onlyImages = images.filter(img => img.type === 'image')
+      return onlyImages.length
+        ? onlyImages
+        : [{ url: '/images/placeholder.png', alt: 'No image' }];
+    }
+    return [{ url: '/images/placeholder.png', alt: 'No image' }];
+  }, [images]);
+
 
   const [active, setActive] = useState(Math.min(initialIndex, safeImages.length - 1));
   const [loaded, setLoaded] = useState(false);
@@ -423,7 +631,7 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
   };
 
   return (
-    <div className='relative p-4 rounded-xl border border-slate-200 bg-white shadow-custom  overflow-hidden'>
+    <div className='mb-8 relative p-4 rounded-xl border border-slate-200 bg-white shadow-custom  overflow-hidden'>
       <div className='relative group outline-none' tabIndex={0} role='region' aria-label='Service gallery' onKeyDown={onKeyDown}>
         <div className='relative w-full aspect-[16/9] bg-slate-100'>
           {!loaded && <div className='absolute inset-0 animate-pulse bg-slate-100' />}
@@ -678,7 +886,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                 const active = selectedName === pkg.type;
                 const recommended = index === recommendedIndex;
                 return (
-                  <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} onClick={() => setSelectedPackage(pkg)} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-emerald-300 bg-emerald-50/30 ring-1 ring-emerald-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
+                  <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-emerald-300 bg-emerald-50/30 ring-1 ring-emerald-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
                     <div className='mb-2 flex flex-wrap w-full items-start justify-between gap-1'>
                       <div className='flex items-center flex-wrap gap-2'>
                         <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type}</h3>
@@ -687,10 +895,21 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                             <Crown className='h-3.5 w-3.5' /> Recommended
                           </span>
                         )}
+                        {/* ✅ Show Test flag if pkg.test is true */}
+                        {pkg.test && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-800">
+                            <Beaker className="h-3.5 w-3.5" /> Test
+                          </span>
+                        )}
                       </div>
                       <PriceTag price={pkg.price} className='!text-lg !font-bold !text-slate-900' />
                     </div>
-
+                    {/* Second title */}
+                    {pkg.title && (
+                      <h4 className="mb-2 text-base font-semibold text-slate-800">
+                        {pkg.title}
+                      </h4>
+                    )}
                     {/* Description */}
                     {pkg.description && <p className='mb-4 line-clamp-2 text-sm leading-6 text-slate-600'>{pkg.description}</p>}
 
@@ -747,9 +966,32 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                         className={`rounded-xl px-4 py-3 text-center text-sm font-semibold uppercase tracking-wide
                           ${active ? 'border border-emerald-500 bg-emerald-50 text-emerald-900' : 'border border-slate-200 bg-white text-slate-900'}`}>
                         {p.type}
+                        {p.title && (
+                          <div className="mt-1 text-xs font-medium text-slate-600 normal-case">
+                            {p.title}
+                          </div>
+                        )}
+
                       </div>
                     );
                   })}
+
+                  {/* ✅ New Test row */}
+                  <div className="py-3 pl-2 text-sm text-slate-600">Test</div>
+                  {list.map((p, i) => (
+                    <div
+                      key={"test" + i}
+                      className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm"
+                    >
+                      {p.test ? (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-800">
+                          <Beaker className="h-3 w-3" /> Yes
+                        </span>
+                      ) : (
+                        <span className="text-slate-500">No</span>
+                      )}
+                    </div>
+                  ))}
 
                   {/* Price */}
                   <div className='py-3 pl-2 text-sm text-slate-600'>Price</div>
@@ -786,10 +1028,11 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                   {/* CTA row */}
                   <div className='py-2 pl-2' />
                   {list.map((p, i) => {
-                    const active = selectedName === p.name;
+                    const active = selectedName === p.type;
                     return (
                       <div key={'cta' + i} className='px-2 py-2 text-center'>
-                        <Button name={active ? 'Selected' : 'Select'} className={`w-full transition  ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`} onClick={() => setSelectedPackage(p)} />
+                        <Button name={active ? 'Selected' : 'Select'} className={`w-full transition  
+                          ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`} onClick={() => setSelectedPackage(p)} />
                       </div>
                     );
                   })}
@@ -803,9 +1046,8 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
   );
 }
 
-function RequirementsSection({ requirements, answers, onChange, validationErrors = {}, onComplete }) {
+function RequirementsSection({ triedSubmit, requirements, answers, onChange, validationErrors = {}, onComplete }) {
   const [expanded, setExpanded] = useState({});
-  const [triedSubmit, setTriedSubmit] = useState(false);
 
   const total = requirements.length;
   const answered = useMemo(
@@ -856,8 +1098,9 @@ function RequirementsSection({ requirements, answers, onChange, validationErrors
           {requirements.map((req, idx) => {
             const val = answers?.[req.id];
             const missing = req.isRequired && (req.requirementType === 'file' ? !val : !String(val ?? '').trim());
-            const showErr = (triedSubmit && missing) || !!validationErrors?.[req.id];
-            const errMsg = validationErrors?.[req.id] || (triedSubmit && missing ? 'This field is required' : '');
+            const showErr = triedSubmit && (missing || !!validationErrors?.[req.id]);
+            const errMsg = triedSubmit && (validationErrors?.[req.id] || triedSubmit && missing ? 'This field is required' : '');
+
 
             return (
               <motion.div key={req.id} id={`requirement-${req.id}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className=' '>
@@ -867,11 +1110,11 @@ function RequirementsSection({ requirements, answers, onChange, validationErrors
                     {req.isRequired && <span className='ml-1 text-red-500'>*</span>}
                   </label>
 
-                  {!req.isRequired && (
+                  {/* {!req.isRequired && (
                     <button onClick={() => setExpanded(e => ({ ...e, [req.id]: !e[req.id] }))} className='inline-flex items-center gap-1 text-xs text-slate-600 hover:text-slate-900'>
                       {expanded[req.id] ? 'Hide' : 'Details'} <ChevronDown className={`h-3.5 w-3.5 transition ${expanded[req.id] ? 'rotate-180' : ''}`} />
                     </button>
-                  )}
+                  )} */}
                 </div>
 
                 {/* TEXT */}
@@ -912,7 +1155,7 @@ function RequirementsSection({ requirements, answers, onChange, validationErrors
                   </p>
                 )}
 
-                {!req.isRequired && expanded[req.id] && <p className='mt-3 text-sm text-slate-500'>Optional input—add any extra notes that help tailor your request.</p>}
+                {/* {!req.isRequired && expanded[req.id] && <p className='mt-3 text-sm text-slate-500'>Optional input—add any extra notes that help tailor your request.</p>} */}
               </motion.div>
             );
           })}
@@ -1005,7 +1248,7 @@ function AboutSeller({ serviceData }) {
 
         {/* quick stats */}
         <div className='mt-4 flex flex-wrap items-center gap-2 text-xs'>
-          <StatPill icon={<Star className='h-3.5 w-3.5 text-amber-600' />} label='Rating' value={(serviceData?.rating ?? 0).toFixed(1)} />
+          {!!serviceData?.rating && <StatPill icon={<Star className='h-3.5 w-3.5 text-amber-600' />} label='Rating' value={(serviceData?.rating ?? 0).toFixed(1)} />}
           <StatPill icon={<Calendar className='h-3.5 w-3.5' />} label='Orders' value={String(serviceData?.ordersCount ?? 0)} />
         </div>
       </div>
@@ -1129,7 +1372,8 @@ function AboutSeller({ serviceData }) {
   );
 }
 
-function PurchaseSidebar({ selectedPackage, handleContactSeller, serviceData, onTryOpenOrderOptions }) {
+function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrderOptions }) {
+  const { user } = useAuth();
   const [showAllFeatures, setShowAllFeatures] = useState(false);
   const features = Array.isArray(selectedPackage?.features) ? selectedPackage.features : [];
   const featuresPreview = features.slice(0, showAllFeatures ? features.length : 3);
@@ -1155,13 +1399,18 @@ function PurchaseSidebar({ selectedPackage, handleContactSeller, serviceData, on
               </div>
 
               <div className='mb-3 flex items-center justify-between'>
-                <span className='text-slate-600'>Price</span>
+                <div>
+                  <span className='text-slate-600'> {selectedPackage.title}</span>
+                </div>
                 <PriceTag price={selectedPackage.price} className='!text-xl font-bold' />
               </div>
 
               <div className='mb-4 flex flex-wrap items-center gap-2 text-xs text-slate-500'>
                 <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>{valueMeta.count} features</span>
                 <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>~ {valueMeta.perFeature} / feature</span>
+                {selectedPackage.test && <span className='flex gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5'>
+                  <Beaker className="h-3.5 w-3.5" /> Test</span>
+                }
                 {serviceData?.fastDelivery && (
                   <span className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-800'>
                     <Zap className='h-3.5 w-3.5' /> Fast delivery
@@ -1201,10 +1450,10 @@ function PurchaseSidebar({ selectedPackage, handleContactSeller, serviceData, on
 
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
-                <Button name='Continue' className='flex-1' onClick={onTryOpenOrderOptions} />
-                <button type='button' onClick={handleContactSeller} aria-label='Chat with seller' className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+                <Button name='Continue' className='flex-1' disabled={!canOrder} onClick={onTryOpenOrderOptions} />
+                {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label='Chat with seller' className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500'>
                   <MessageCircle size={18} />
-                </button>
+                </Link>}
               </div>
 
               <div className='mt-4 flex items-center justify-center text-xs text-slate-500'>
@@ -1349,6 +1598,7 @@ function SkeletonPage() {
 }
 
 function MultipleChoiceFancy({ req, value, onSelect }) {
+  const val = typeof value === 'string' ? value : value?.option;
   const { options = [], isRequired } = req || {};
   const containerRef = useRef(null);
 
@@ -1365,11 +1615,11 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
   // keyboard nav (←/→/↑/↓, 1..9, enter/space)
   const currentIndex = Math.max(
     0,
-    normalized.findIndex(o => o.value === value),
+    normalized.findIndex(o => o.value === val),
   );
   const focusMove = dir => {
     const next = (currentIndex + dir + normalized.length) % normalized.length;
-    onSelect(normalized[next].value);
+    onSelect({ option: normalized[next].value, otherText });
   };
 
   const onKeyDown = e => {
@@ -1384,20 +1634,27 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
     }
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onSelect(value || normalized[0].value);
+      onSelect({ option: val || normalized[0].value, otherText });
     }
     if (/^[1-9]$/.test(e.key)) {
       const idx = Number(e.key) - 1;
       if (idx < normalized.length) {
         e.preventDefault();
-        onSelect(normalized[idx].value);
+        onSelect({ option: normalized[idx].value, otherText });
       }
     }
   };
 
   // is "Other" selected?
-  const isOther = typeof value === 'string' && value.toLowerCase() === 'other';
+  const isOther = typeof val === 'string' && val.toLowerCase() === 'other';
   const [otherText, setOtherText] = useState('');
+
+  function UpdateOtherText() {
+    if (!isOther) return;
+    onSelect({ option: val, otherText });
+  }
+
+
   useEffect(() => {
     if (!isOther) setOtherText('');
   }, [isOther]);
@@ -1406,14 +1663,14 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
     <div className='mt-3'>
       <div ref={containerRef} role='radiogroup' aria-required={isRequired ? 'true' : 'false'} aria-label={req?.question || 'Multiple choice'} tabIndex={0} onKeyDown={onKeyDown} className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 outline-none'>
         {normalized.map((opt, i) => {
-          const active = value === opt.value;
+          const active = val === opt.value;
           return (
             <motion.button
               key={opt._k}
               type='button'
               role='radio'
               aria-checked={active}
-              onClick={() => onSelect(opt.value)}
+              onClick={() => onSelect({ option: opt.value, otherText })}
               whileHover={{ y: 0 }}
               whileTap={{ scale: 0.98 }}
               className={`group cursor-pointer relative text-left rounded-xl border px-3.5 py-3 transition
@@ -1450,7 +1707,7 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
       {isOther && (
         <div className='mt-3'>
           <label className='mb-1 block text-sm font-medium text-slate-900'>Please specify</label>
-          <input type='text' value={otherText} onChange={e => setOtherText(e.target.value)} placeholder='Type here…' className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
+          <input type='text' onBlur={() => UpdateOtherText(otherText)} value={otherText} onChange={e => setOtherText(e.target.value)} placeholder='Type here…' className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
           <div className='mt-1 text-[11px] text-slate-500'>We’ll include this with your selection.</div>
         </div>
       )}
@@ -1458,10 +1715,10 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
   );
 }
 
-function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplete, setIsSidebarOpen, serviceData, selectedPackage }) {
+function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOpen, serviceData, selectedPackage }) {
   const drawerRef = useRef(null);
   const firstFocusRef = useRef(null);
-
+  const [notes, setNotes] = useState('');
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   useEffect(() => {
@@ -1484,7 +1741,7 @@ function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplet
     () => [
       {
         icon: <FileText className='h-4 w-4' />,
-        label: `${selectedPackage?.name ?? ''} Package`,
+        label: `${selectedPackage?.title ?? ''} Package`,
       },
       {
         icon: <Timer className='h-4 w-4' />,
@@ -1535,8 +1792,11 @@ function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplet
                 <FileText className='h-4 w-4 text-slate-500' />
                 Special instructions (optional)
               </label>
-              <textarea rows={4} value={notes} onChange={e => setNotes(e.target.value)} placeholder='Anything the seller should know…' className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
-              <div className='mt-1 text-right text-xs text-slate-500'>{notes.length} chars</div>
+              <textarea rows={4} value={notes} onChange={e => {
+                if (e.target.value.length <= 750) setNotes(e.target.value);
+              }}
+                maxLength={750} placeholder='Anything the seller should know…' className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
+              <div className='mt-1 text-right text-xs text-slate-500'> {notes.length}/750 chars</div>
             </div>
 
             {/* Summary card */}
@@ -1552,7 +1812,7 @@ function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplet
                   ))}
                 </div>
               </div>
-              <div className='mt-4 text-sm text-slate-600'>You can always modify these options later in your order management.</div>
+              {/* <div className='mt-4 text-sm text-slate-600'>You can always modify these options later in your order management.</div> */}
             </div>
           </div>
         </div>
@@ -1564,7 +1824,7 @@ function OrderOptions({ notes, loadingSubmit, setNotes, isSidebarOpen, onComplet
             <PriceTag price={selectedPackage?.price ?? 0} className='!text-xl font-bold' />
           </div>
 
-          <Button name='Continue to Requirements' loading={loadingSubmit} className='w-full' onClick={onComplete} iconRight={<ChevronRight className='ml-1 h-4 w-4' />} />
+          <Button name='Continue to Requirements' loading={loadingSubmit} className='w-full' onClick={() => onComplete()} iconRight={<ChevronRight className='ml-1 h-4 w-4' />} />
         </div>
       </aside>
     </div>

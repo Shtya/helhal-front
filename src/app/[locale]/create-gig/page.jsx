@@ -174,8 +174,8 @@ export const useGigCreation = () => {
           ...formData.video.map(vid => ({ type: 'video', url: vid.url, fileName: vid.filename, assetId: vid.id })),
           ...formData.documents.map(doc => ({ type: 'document', url: doc.url, fileName: doc.filename, assetId: doc.id }))],
         requirements: formData.questions,
-        fastDelivery: formData.extraFastDelivery,
-        additionalRevision: formData.additionalRevision,
+        // fastDelivery: formData.extraFastDelivery,
+        // additionalRevision: formData.additionalRevision,
       };
 
       console.log(serviceData);
@@ -251,8 +251,8 @@ const step2Schema = yup.object({
       }),
     )
     .min(1, 'At least one package is required'),
-  extraFastDelivery: yup.boolean(),
-  additionalRevision: yup.boolean(),
+  // extraFastDelivery: yup.boolean(),
+  // additionalRevision: yup.boolean(),
 });
 
 const step3Schema = yup.object({
@@ -336,6 +336,7 @@ const step5Schema = yup.object({
         return true;
       }
     ))
+    .min(1, 'You must upload at least 1 image')
     .max(3, 'You can upload up to 3 images'),
 
   video: yup.array()
@@ -531,6 +532,8 @@ function Step1({ formData, setFormData, nextStep }) {
     });
   };
 
+
+
   return (
     <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 bg-white/60 p-6 md:p-10'>
       {/* Header */}
@@ -716,7 +719,7 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
       </div>
 
       {/* Extra Services */}
-      <div className='rounded-xl bg-slate-50 p-6'>
+      {/* <div className='rounded-xl bg-slate-50 p-6'>
         <h3 className='mb-4 text-lg font-semibold'>Extra Services</h3>
 
         <Row>
@@ -732,7 +735,7 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
             <Switcher checked={watch('additionalRevision')} onChange={v => setValue('additionalRevision', v, { shouldDirty: true })} />
           </ColRight>
         </Row>
-      </div>
+      </div> */}
 
       {/* Footer actions */}
       <div className='flex justify-end gap-2 pt-4'>
@@ -844,8 +847,8 @@ function normalizeDefaults(formData) {
 
   return {
     packages: merged,
-    extraFastDelivery: !!formData?.extraFastDelivery,
-    additionalRevision: !!formData?.additionalRevision,
+    // extraFastDelivery: !!formData?.extraFastDelivery,
+    // additionalRevision: !!formData?.additionalRevision,
   };
 }
 

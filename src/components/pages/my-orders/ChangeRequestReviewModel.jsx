@@ -13,7 +13,7 @@ export default function ChangeRequestReviewModel({
     const [request, setRequest] = useState(null);
 
     useEffect(() => {
-        if (!selectedRow?.id) return;
+        if (!selectedRow?.id || !open) return;
 
         const fetchChangeRequest = async () => {
             setLoading(true);

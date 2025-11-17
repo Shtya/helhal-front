@@ -23,7 +23,7 @@ export default function ReviewSubmissionModel({
     const [showRequestModal, setShowRequestModal] = useState(false);
 
     useEffect(() => {
-        if (!selectedRow?.id) return;
+        if (!selectedRow?.id || !open) return;
 
         const fetchSubmission = async () => {
             setLoading(true);

@@ -145,6 +145,16 @@ class ApiService {
     });
   }
 
+  increaseServiceClick({ slug }, extra = {}) {
+    return this.request({
+      method: 'PUT',
+      url: `/services/${slug}/clicks`,
+      ...extra,
+    });
+  }
+
+
+
   updateService(id, serviceData, extra = {}) {
     return this.request({
       method: 'PUT',
@@ -242,6 +252,8 @@ class ApiService {
       ...extra,
     });
   }
+
+
 }
 
 export const apiService = new ApiService();

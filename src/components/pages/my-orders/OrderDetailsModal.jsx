@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Modal } from '@/components/common/Modal';
 import api from '@/lib/axios';
 import UserMini from '@/components/dashboard/UserMini';
@@ -12,7 +12,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!open || !orderId) {
+    if (!orderId || !open) {
       setOrder(null);
       setError(null);
       return;
@@ -35,6 +35,15 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
 
     fetchOrder();
   }, [open, orderId]);
+  const requirements = order?.service?.requirements;
+
+  const requirementsMap = useMemo(() => {
+    const map = new Map();
+    (requirements || []).forEach(req => {
+      map.set(req.id, req);
+    });
+    return map;
+  }, [requirements]);
 
   if (!open) return null;
 
@@ -221,15 +230,59 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
             <div className="pt-4 border-t border-slate-200">
               <h4 className="text-lg font-semibold text-slate-900 mb-3">Requirements</h4>
               <div className="space-y-3">
-                {order.requirementsAnswers.map((req, idx) => (
-                  <div key={idx} className="bg-slate-50 rounded-lg p-3">
-                    {req.question && <p className="text-sm font-medium text-slate-700 mb-1">{req.question}</p>}
-                    <p className="text-sm text-slate-600">{req.answer || '—'}</p>
-                  </div>
-                ))}
+                {order.requirementsAnswers.map((req, idx) => {
+                  const mainReq = requirementsMap.get(req.questionId);
+                  return (
+                    <div key={idx} className="bg-slate-50 rounded-lg p-3">
+                      {/* Question */}
+                      {mainReq?.question && (
+                        <p className="text-sm font-medium text-slate-700 mb-1">
+                          {mainReq.question}
+                        </p>
+                      )}
+
+                      {/* Main Answer */}
+                      {mainReq?.requirementType === 'file' ? (
+                        req.answer ? (
+                          <a
+                            href={req.answer}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-emerald-600 underline hover:text-emerald-700"
+                          >
+                            {req.fileName || 'Download file'}
+                          </a>
+                        ) : (
+                          <span className="text-sm text-slate-500">—</span>
+                        )
+                      ) : (
+                        <p className="text-sm text-slate-600">{req.answer || '—'}</p>
+                      )}
+                      {/* ✅ Show Other Answer if it exists */}
+                      {req.otherAnswer && (
+                        <p className="mt-1 text-sm text-slate-500 italic">
+                          Other: {req.otherAnswer}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+
               </div>
             </div>
           )}
+
+          {order.notes && (
+            <div className="pt-4 border-t border-slate-200">
+              <h4 className="text-lg font-semibold text-slate-900 mb-3">
+                Special instructions
+              </h4>
+              <p className="text-sm text-slate-700 whitespace-pre-line">
+                {order.notes}
+              </p>
+            </div>
+          )}
+
 
           {/* Timeline */}
           {/* {order.timeline && order.timeline.length > 0 && (
