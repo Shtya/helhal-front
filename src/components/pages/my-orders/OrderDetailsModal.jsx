@@ -5,6 +5,7 @@ import UserMini from '@/components/dashboard/UserMini';
 import { formatDate, formatDateTime } from '@/utils/date';
 import { OrderStatus } from '@/constants/order';
 import { Package, DollarSign, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
+import OrderDeliveryTimer from './OrderDeliveryTimer';
 
 export default function OrderDetailsModal({ open, onClose, orderId }) {
   const [order, setOrder] = useState(null);
@@ -72,6 +73,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
         return <Clock className="h-4 w-4 text-slate-600" />;
     }
   };
+
 
   return (
     <Modal title="Order Details" onClose={onClose} className="!max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -152,6 +154,9 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
               </div>
             </div>
           </div>
+
+
+          <OrderDeliveryTimer order={order} />
 
           {/* Dates */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-200">

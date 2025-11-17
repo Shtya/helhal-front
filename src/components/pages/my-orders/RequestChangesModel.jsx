@@ -21,7 +21,8 @@ const schema = z.object({
         .refine((files) => !files || files.length <= 10, 'You can upload up to 10 files')
         .refine(
             (files) =>
-                !files || Array.from(files).every((f) => f.size <= 25 * 1024 * 1024),
+                !files ||
+                Array.from(files).every((f) => !f.size || f.size <= 25 * 1024 * 1024),
             'Each file  must be less than 25MB'
         )
         .optional(),
@@ -51,7 +52,7 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
         const formData = new FormData();
         formData.append('message', data.message);
         for (const file of data.files || []) {
-            formData.append('files', file);
+            formData.append('files', file.id);
         }
 
         try {

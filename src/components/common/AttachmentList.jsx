@@ -37,7 +37,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
   };
 
   const handleOpenInNewTab = file => {
-    window.open(baseImg + (file?.url || file?.path || ''), '_blank');
+    window.open(file?.startsWith('http') ? file?.url : baseImg + (file?.url || file?.path || ''), '_blank');
   };
 
   // Helper to get extension label
@@ -122,7 +122,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                 <div className="flex-shrink-0 h-12 w-16 rounded-md overflow-hidden bg-slate-100 flex items-center justify-center">
                   {isImageFile(f) ? (
                     <Img
-                      src={baseImg + (f?.url || f?.path || '')}
+                      src={f?.startsWith('http') ? f?.url : baseImg + (f?.url || f?.path || '')}
                       alt={f?.name || f?.filename || 'attachment'}
                       className="h-full w-full object-cover"
                     />
@@ -153,7 +153,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
             <div>
               {isImageLoading && <div className="animate-pulse bg-gray-200 rounded-md w-full" style={{ height: '464px' }} />}
               <Img
-                src={baseImg + (selectedFile?.url || selectedFile?.path || '')}
+                src={selectedFile?.startsWith('http') ? selectedFile?.url : baseImg + (selectedFile?.url || selectedFile?.path || '')}
                 alt={selectedFile?.name || selectedFile?.filename}
                 className="w-full rounded"
                 onLoad={() => setIsImageLoading(false)}
@@ -167,7 +167,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                   Open in New Tab
                 </button>
                 <a
-                  href={baseImg + (selectedFile?.url || selectedFile?.path || '')}
+                  href={selectedFile?.startsWith('http') ? selectedFile?.url : baseImg + (selectedFile?.url || selectedFile?.path || '')}
                   target="_blank"
                   rel="noreferrer"
                   download={selectedFile?.name || selectedFile?.filename}

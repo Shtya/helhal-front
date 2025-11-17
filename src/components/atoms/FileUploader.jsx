@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react';
 import Button from './Button';
 import { useRef } from 'react';
+import AttachFilesButton from './AttachFilesButton';
 
 export default function FileUploader({
     label,
@@ -12,10 +13,10 @@ export default function FileUploader({
 }) {
     const inputRef = useRef(null);
 
-    function handleFileChange(e) {
-        const selected = Array.from(e.target.files || []);
-        const combined = [...files, ...selected].slice(0, maxFiles);
-        const valid = combined.filter((f) => f.size <= maxSizeMB * 1024 * 1024);
+    function handleFileChange(selectedFiles) {
+        const combined = selectedFiles.slice(0, maxFiles);
+        console.log(combined)
+        const valid = combined.filter((f) => !f.size || f.size <= maxSizeMB * 1024 * 1024);
         onChange(valid);
         // clear input so same file can be re-selected (optional)
         if (inputRef.current) inputRef.current.value = '';
@@ -28,24 +29,15 @@ export default function FileUploader({
     }
 
     return (
-        <div className="space-y-2 min-w-0 w-full">
+        <div className=" space-y-2 min-w-0 w-full">
             {label && <label className="block text-sm font-medium text-slate-700">{label}</label>}
 
-            <Button
-                type="button"
-                name="Attach Files"
-                color="outline"
-                className="!w-fit !py-[4px] text-base"
-                onClick={() => inputRef.current?.click()}
-            />
+            <div className='relative w-fit h-fit'>
 
-            <input
-                ref={inputRef}
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                className="hidden"
-            />
+                <AttachFilesButton maxSelection={10} hiddenFiles={true} onChange={files => {
+                    handleFileChange(files)
+                }} />
+            </div>
 
             <p className="text-xs text-slate-500">
                 You can upload up to {maxFiles} files. Each file must be under {maxSizeMB}MB.
@@ -60,11 +52,11 @@ export default function FileUploader({
                             key={i}
                             className=" flex items-center gap-2 border rounded px-3 py-2 bg-slate-50 w-full"
                         >
-                            <div className="min-w-0 flex-1 flex">
+                            <a href={file.url} target='_blank' className="min-w-0 flex-1 flex hover:underline cursor-pointer">
                                 <span className="truncate block min-w-0">
-                                    {file.name}
+                                    {file.name || file.filename}
                                 </span>
-                            </div>
+                            </a>
 
                             <button
                                 type="button"

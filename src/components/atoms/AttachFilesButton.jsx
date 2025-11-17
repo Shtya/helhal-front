@@ -207,7 +207,12 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
         <div className='px-5 py-4 border-b border-slate-200 flex items-center justify-between'>
           <div className='flex items-center gap-3'>
             <span className='text-lg font-semibold text-slate-800'>Your Library</span>
-            {selectedIds.size > 0 && <span className='px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200'>{selectedIds.size} selected</span>}
+            {selectedIds.size > 0 && (
+              <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                {selectedIds.size}
+                {typeof maxSelection === "number" && ` / ${maxSelection}`} selected
+              </span>
+            )}
           </div>
           <button onClick={closeModal} className='p-2 rounded-md hover:bg-slate-100'>
             <FiX className='w-5 h-5 text-slate-500' />
