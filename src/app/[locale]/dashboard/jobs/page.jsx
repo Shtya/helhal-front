@@ -201,7 +201,10 @@ export default function AdminJobsDashboard() {
       </button>
       <Select
         value={row?.status}
-        onChange={e => updateJobStatus(row.id, e.id)}
+        onChange={e => {
+          if (row?.status !== e.id)
+            updateJobStatus(row.id, e.id)
+        }}
         options={[
           { id: 'pending', name: 'Set Pending' },
           { id: 'published', name: 'Publish' }, // calls /publish
