@@ -641,6 +641,9 @@
     "forClients": {
       "title": "For Clients",
       "yourAccount": "Your Account",
+      "shareYourJob": "Share Your Job",
+      "becomeSeller": "Become a Seller",
+      "topServices": "Top Services",
       "careers": "Careers",
       "pressNews": "Press & News",
       "partnerships": "Partnerships",
@@ -649,14 +652,17 @@
     "company": {
       "title": "Company",
       "contact": "Contact",
-      "inviteFriend": "Refer a Friend",
       "privacyPolicy": "Privacy Policy",
       "termsOfService": "Terms of Service",
+      "inviteFriend": "Refer a Friend",
       "guides": "Guides",
       "helpSupport": "Help & Support"
     },
     "forFreelancers": {
       "title": "For Freelancers",
+      "createService": "Create a Service",
+      "jobs": "Find a Job",
+      "yourProposals": "Your Proposals",
       "trustSafety": "Trust & Safety",
       "buying": "Buying on Helhal",
       "selling": "Selling on Helhal"

@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { ChevronDown, ChevronUp, Globe2, BadgeCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { localImageLoader } from '@/utils/helper';
+import { useValues } from '@/context/GlobalContext';
 
 /* ===================== DATA ===================== */
 export const CATEGORY_LINKS = [
@@ -33,52 +34,7 @@ export const SOCIAL_LINKS = [
   { name: 'Facebook', href: '/', icon: '/images/facebook.png' },
 ];
 
-const FOOTER_NAVIGATION_STRUCTURE = [
-  {
-    titleKey: 'categories.importantLinks',
-    links: CATEGORY_LINKS.map(category => ({
-      key: `categories.${category.key}`,
-      href: category.href,
-    })),
-  },
-  {
-    titleKey: 'navigation_sections.forClients.title',
-    links: [
-      { key: 'navigation_sections.forClients.yourAccount', href: '/' },
-      { key: 'navigation_sections.forClients.careers', href: '/' },
-      { key: 'navigation_sections.forClients.pressNews', href: '/' },
-      { key: 'navigation_sections.forClients.partnerships', href: '/' },
-      { key: 'navigation_sections.forClients.ipClaims', href: '/' },
-    ],
-  },
-  {
-    titleKey: 'navigation_sections.company.title',
-    links: [
-      { key: 'navigation_sections.company.contact', href: '/' },
-      { key: 'navigation_sections.company.inviteFriend', href: '/refer-a-friend' },
-      { key: 'navigation_sections.company.privacyPolicy', href: '/' },
-      { key: 'navigation_sections.company.termsOfService', href: '/' },
-      { key: 'navigation_sections.company.guides', href: '/' },
-      { key: 'navigation_sections.company.helpSupport', href: '/' },
-    ],
-  },
-  {
-    titleKey: 'navigation_sections.forFreelancers.title',
-    links: [
-      { key: 'navigation_sections.forFreelancers.trustSafety', href: '/' },
-      { key: 'navigation_sections.forFreelancers.buying', href: '/' },
-      { key: 'navigation_sections.forFreelancers.selling', href: '/' },
-    ],
-  },
-  {
-    titleKey: 'navigation_sections.businessSolutions.title',
-    links: [
-      { key: 'navigation_sections.businessSolutions.events', href: '/' },
-      { key: 'navigation_sections.businessSolutions.communityStandards', href: '/' },
-      { key: 'navigation_sections.businessSolutions.podcast', href: '/' },
-    ],
-  },
-];
+
 
 /* ===================== SMALL UI ===================== */
 function Pill({ children, className = '' }) {
@@ -91,12 +47,12 @@ function Pill({ children, className = '' }) {
 }
 
 /* ===================== LINKS SECTION (Accordion mobile / Columns desktop) ===================== */
-function LinksSection({ titleKey, links }) {
+function LinksSection({ titleKey, links, directTexts = false }) {
   const t = useTranslations();
   const [expanded, setExpanded] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
-  const visibleLinks = showMore ? links : links.slice(0, 5);
+  const visibleLinks = showMore ? links : links?.slice(0, 4);
 
   return (
     <div className='w-full md:w-auto flex-1 min-w-[200px]'>
@@ -113,7 +69,7 @@ function LinksSection({ titleKey, links }) {
             {visibleLinks.map(item => (
               <li key={item.key}>
                 <Link href={item.href} className='text-[15px] py-2 text-gray-700 hover:text-emerald-700 hover:ps-1 transition block'>
-                  {t(item.key)}
+                  {directTexts ? item.key : t(item.key)}
                 </Link>
               </li>
             ))}
@@ -131,7 +87,7 @@ function LinksSection({ titleKey, links }) {
         {visibleLinks.map(item => (
           <li key={item.key}>
             <Link href={item.href} className='text-[15px] py-1.5 text-gray-700 hover:text-emerald-700 hover:ps-1 transition block'>
-              {t(item.key)}
+              {directTexts ? item.key : t(item.key)}
             </Link>
           </li>
         ))}
@@ -200,8 +156,66 @@ function TrustRow() {
 /* ===================== FOOTER ===================== */
 export function Footer() {
   const t = useTranslations();
+  const { categories, loadingCategory } = useValues();
   const locale = useLocale();
   const year = new Date().getFullYear();
+  // Build top 10 category links
+  const categoryLinks = categories ? (categories)
+    ?.slice(0, 10)
+    .map(cat => ({
+      key: cat.name, // translation key
+      href: `/services/${cat.slug}`, // link path
+    })) : [];
+
+  const FOOTER_NAVIGATION_STRUCTURE = [
+    {
+      titleKey: 'categories.importantLinks',
+      directTexts: true,
+      links: categoryLinks,
+    },
+    {
+      titleKey: 'navigation_sections.forClients.title',
+      links: [
+        { key: 'navigation_sections.forClients.yourAccount', href: '/profile' },
+        { key: 'navigation_sections.forClients.shareYourJob', href: '/share-job-description' },
+        { key: 'navigation_sections.forClients.becomeSeller', href: '/become-seller' },
+        { key: 'navigation_sections.forClients.topServices', href: '/explore' },
+        // { key: 'navigation_sections.forClients.careers', href: '/' },
+        // { key: 'navigation_sections.forClients.pressNews', href: '/' },
+        // { key: 'navigation_sections.forClients.partnerships', href: '/' },
+        // { key: 'navigation_sections.forClients.ipClaims', href: '/' },
+      ],
+    },
+    {
+      titleKey: 'navigation_sections.company.title',
+      links: [
+        { key: 'navigation_sections.company.contact', href: '/contact' },
+        { key: 'navigation_sections.company.privacyPolicy', href: '/privacy-policy' },
+        { key: 'navigation_sections.company.termsOfService', href: '/terms' },
+        { key: 'navigation_sections.company.inviteFriend', href: '/invite' },
+        // { key: 'navigation_sections.company.guides', href: '/' },
+        // { key: 'navigation_sections.company.helpSupport', href: '/' },
+      ],
+    },
+    {
+      titleKey: 'navigation_sections.forFreelancers.title',
+      links: [
+        { key: 'navigation_sections.forFreelancers.createService', href: '/create-gig' },
+        { key: 'navigation_sections.forFreelancers.jobs', href: '/jobs' },
+        { key: 'navigation_sections.forFreelancers.yourProposals', href: '/jobs/proposals' },
+        //       { key: 'navigation_sections.forFreelancers.buying', href: '/' },
+        // { key: 'navigation_sections.forFreelancers.selling', href: '/' },
+      ],
+    },
+    // {
+    //   titleKey: 'navigation_sections.businessSolutions.title',
+    //   links: [
+    //     { key: 'navigation_sections.businessSolutions.events', href: '/' },
+    //     { key: 'navigation_sections.businessSolutions.communityStandards', href: '/' },
+    //     { key: 'navigation_sections.businessSolutions.podcast', href: '/' },
+    //   ],
+    // },
+  ];
 
   return (
     <footer className='relative mt-22'>
@@ -245,8 +259,9 @@ export function Footer() {
           {/* Links grid */}
           <div className='px-6 md:px-10 py-8'>
             <div className='flex flex-col md:flex-row flex-wrap justify-between gap-6 md:gap-12'>
+              { }
               {FOOTER_NAVIGATION_STRUCTURE.map((section, idx) => (
-                <LinksSection key={idx} titleKey={section.titleKey} links={section.links} />
+                <LinksSection key={idx} titleKey={section.titleKey} links={section.links} directTexts={section?.directTexts} />
               ))}
             </div>
           </div>
