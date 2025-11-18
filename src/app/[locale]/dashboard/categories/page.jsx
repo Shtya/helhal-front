@@ -4,14 +4,12 @@ import { Search, Eye, Edit, Trash2, Plus } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 import { Modal, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import ImagePicker from '@/components/atoms/ImagePicker';
 import Textarea from '@/components/atoms/Textarea';
-import { useDebounce } from '@/hooks/useDebounce';
 import z from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -217,7 +215,7 @@ export default function AdminCategoriesDashboard() {
   );
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
       <div className='p-6'>
         <GlassCard gradient='from-sky-400 via-blue-400 to-indigo-400' className='mb-6 !overflow-visible'>
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
@@ -252,7 +250,7 @@ export default function AdminCategoriesDashboard() {
           <CategoryForm mode={mode} value={current} onSubmit={onSubmit} onCancel={() => setModalOpen(false)} submitting={submitting} apiError={apiError} />
         </Modal>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
 

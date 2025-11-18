@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart3, Download, Filter, Calendar, DollarSign, Users, ShoppingCart, TrendingUp } from 'lucide-react';
 import api from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 import { GlassCard, MetricBadge, KPIGrid } from '@/components/dashboard/Ui';
 import Button from '@/components/atoms/Button';
 import Input from '@/components/atoms/Input';
@@ -223,7 +222,7 @@ export default function AdminReportsDashboard() {
   };
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
       <div className='p-6'>
         <GlassCard gradient='from-indigo-400 via-blue-400 to-cyan-400' className='mb-6'>
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
@@ -279,6 +278,6 @@ export default function AdminReportsDashboard() {
 
         {renderReportContent()}
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Save, RefreshCw, DollarSign, Shield, Globe, Mail, Phone, Image as ImageIcon, Wallet, Info } from 'lucide-react';
 
 import api from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import Textarea from '@/components/atoms/Textarea';
@@ -227,7 +226,7 @@ export default function AdminSettingsDashboard() {
 
   if (loading) {
     return (
-      <DashboardLayout>
+      <div>
         <div className='p-6'>
           <div className=''>
             <div className='shimmer mb-6 h-8 w-1/4 rounded bg-slate-200'></div>
@@ -238,12 +237,12 @@ export default function AdminSettingsDashboard() {
             </div>
           </div>
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
+    <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
       <div className='p-6'>
         {/* Header */}
         <GlassCard gradient='from-indigo-500 via-fuchsia-500 to-rose-500' className='mb-6'>
@@ -436,7 +435,7 @@ export default function AdminSettingsDashboard() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
 

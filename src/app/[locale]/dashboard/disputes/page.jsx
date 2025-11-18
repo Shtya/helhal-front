@@ -5,7 +5,6 @@ import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
 import Button from '@/components/atoms/Button';
-import DashboardLayout from '@/components/dashboard/Layout';
 import api from '@/lib/axios';
 import { Modal } from '@/components/common/Modal';
 import { Eye, Activity, FilePlus, CheckCircle, XCircle, Search, MoreHorizontal, MessageSquare, Send } from 'lucide-react';
@@ -482,7 +481,7 @@ export default function DisputesPage() {
 
   const isDisputeClosed = activity?.dispute?.status === DisputeStatus.REJECTED || activity?.dispute?.status === DisputeStatus.RESOLVED; isDisputeClosed
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
 
       <GlassCard gradient='from-green-400 via-emerald-400 to-teal-400' className='mb-6 !overflow-visible'>
         <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
@@ -681,7 +680,7 @@ export default function DisputesPage() {
           </div>
         </Modal>
       )}
-    </DashboardLayout>
+    </div>
   );
 }
 

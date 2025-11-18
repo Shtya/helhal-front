@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import DashboardLayout from '@/components/dashboard/Layout';
 import DataTable from '@/components/dashboard/ui/DataTable';
 import api from '@/lib/axios';
 import { ArrowDownRight, ArrowUpRight, Wallet, Banknote, Clock } from 'lucide-react';
@@ -125,7 +124,7 @@ export default function WithdrawManagement() {
   );
 
   return (
-    <DashboardLayout title='Money & Withdrawals'>
+    <div>
       {/* KPIs */}
       <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         <KpiCard icon={Wallet} label='Available Balance' value={formatMoney(balance.availableBalance)} hint='Ready to withdraw' iconBg='bg-emerald-50 text-emerald-600' />
@@ -160,7 +159,7 @@ export default function WithdrawManagement() {
         }}
         emptyContent={<div className='rounded-xl border border-slate-200 bg-slate-50 p-8 text-center text-slate-600'>No records.</div>}
       />
-    </DashboardLayout>
+    </div>
   );
 }
 

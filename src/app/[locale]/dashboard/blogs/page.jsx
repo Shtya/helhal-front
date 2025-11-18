@@ -1,7 +1,6 @@
 'use client';
 import React, { useState } from 'react';
 import { CreditCard, AlertTriangle, FileText, PieChart, UserX, Flag, BarChart3, DollarSign } from 'lucide-react';
-import DashboardLayout from '@/components/dashboard/Layout';
 import { GlassCard, MetricBadge } from '@/components/dashboard/Ui';
 import Button from '@/components/atoms/Button';
 
@@ -136,7 +135,7 @@ export default function AdminManagementDashboard() {
   };
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
       <div className='p-6'>
         <GlassCard gradient='from-gray-400 via-slate-400 to-slate-500' className='mb-6'>
           <h1 className='text-2xl font-bold text-white'>Management Dashboard</h1>
@@ -165,6 +164,6 @@ export default function AdminManagementDashboard() {
           <div className='lg:col-span-3'>{renderSectionContent()}</div>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

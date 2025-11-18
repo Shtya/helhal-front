@@ -6,11 +6,9 @@ import { Edit, Eye } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api, { baseImg } from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 import { MetricBadge, GlassCard, Modal } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
-import { useDebounce } from '@/hooks/useDebounce';
 import ActionMenuPortal from '@/components/dashboard/Table/ActionMenuPortal';
 import Img from '@/components/atoms/Img';
 import toast from 'react-hot-toast';
@@ -290,7 +288,7 @@ export default function AdminUsersDashboard() {
 
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
       <div className=' '>
         {/* Controls */}
         <GlassCard gradient='from-rose-400 via-orange-400 to-amber-400' className='mt-6 mb-6'>
@@ -470,6 +468,6 @@ export default function AdminUsersDashboard() {
 
         </Modal>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }

@@ -127,7 +127,7 @@ function useAdminChat() {
   // init socket & auth (same stable deps style you liked)
   useEffect(() => {
     if (!me) { router.push('/auth'); return; }
-    const token = JSON.parse(me)?.accessToken;
+    const token = me?.accessToken;
 
     socket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001', { auth: { token } });
     socket.on('connect', () => setIsConnected(true));
@@ -152,7 +152,6 @@ function useAdminChat() {
       }
     });
 
-    fetchMe();
     fetchAdminConversations();
 
     const fav = localStorage.getItem('admin_favorites'); if (fav) setFavoriteIds(new Set(JSON.parse(fav)));

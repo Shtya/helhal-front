@@ -1,6 +1,5 @@
 "use client"
 import { useState, useEffect } from 'react';
-import Layout from '@/components/dashboard/Layout';
 import DataTable from '@/components/dashboard/ui/DataTable';
 import Modal from '@/components/dashboard/ui/Modal';
 import { getGuides, createGuide, updateGuide, deleteGuide } from '@/utils/api';
@@ -73,9 +72,9 @@ export default function Guides() {
   ];
 
   return (
-    <Layout>
+    <div>
       <div className="py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div className="mx-auto px-4 sm:px-6 md:px-8">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold text-gray-900">Guides Management</h1>
             <button
@@ -86,7 +85,7 @@ export default function Guides() {
             </button>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div className="mx-auto px-4 sm:px-6 md:px-8">
           <div className="py-4">
             <DataTable
               columns={columns}
@@ -118,7 +117,7 @@ export default function Guides() {
                 id="title"
                 required
                 value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
@@ -131,7 +130,7 @@ export default function Guides() {
                 required
                 rows={6}
                 value={formData.content}
-                onChange={(e) => setFormData({...formData, content: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
@@ -144,7 +143,7 @@ export default function Guides() {
                 id="category"
                 required
                 value={formData.category}
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               />
             </div>
@@ -170,6 +169,6 @@ export default function Guides() {
           </form>
         </div>
       </Modal>
-    </Layout>
+    </div>
   );
 }

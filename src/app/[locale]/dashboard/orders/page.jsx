@@ -5,7 +5,6 @@ import { Search, MoreVertical, Eye, Edit, RefreshCw, Clock, CheckCircle, XCircle
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 import { MetricBadge, Modal, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
@@ -262,7 +261,7 @@ export default function AdminOrdersDashboard() {
 
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
       <div className='p-6'>
         <GlassCard gradient='from-green-400 via-emerald-400 to-teal-400' className='mb-6 !overflow-visible'>
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
@@ -304,7 +303,7 @@ export default function AdminOrdersDashboard() {
           <OrderView value={current} onClose={() => setModalOpen(false)} />
         </Modal>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
 

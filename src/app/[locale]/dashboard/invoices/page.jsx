@@ -1,6 +1,5 @@
 "use client"
 import { useState, useEffect } from 'react';
-import DashboardLayout from '@/components/dashboard/Layout';
 import DataTable from '@/components/dashboard/ui/DataTable';
 import { getInvoices } from '@/utils/api';
 
@@ -28,106 +27,101 @@ export default function InvoicesManagement() {
 
   const columns = [
     { key: 'invoiceNumber', title: 'Invoice Number' },
-    { 
-      key: 'order', 
+    {
+      key: 'order',
       title: 'Order ID',
       render: (value) => value.id
     },
-    { 
-      key: 'buyer', 
+    {
+      key: 'buyer',
       title: 'Buyer',
       render: (value) => value.username
     },
-    { 
-      key: 'subtotal', 
+    {
+      key: 'subtotal',
       title: 'Subtotal',
       render: (value) => `$${value}`
     },
-    { 
-      key: 'serviceFee', 
+    {
+      key: 'serviceFee',
       title: 'Service Fee',
       render: (value) => `$${value}`
     },
-    { 
-      key: 'totalAmount', 
+    {
+      key: 'totalAmount',
       title: 'Total Amount',
       render: (value) => `$${value}`
     },
-    { 
-      key: 'platformPercent', 
+    {
+      key: 'platformPercent',
       title: 'Platform %',
       render: (value) => `${value}%`
     },
-    { 
-      key: 'paymentStatus', 
+    {
+      key: 'paymentStatus',
       title: 'Payment Status',
       render: (value) => (
-        <span className={`px-2 py-1 rounded-full text-xs ${
-          value === 'paid' ? 'bg-green-100 text-green-800' :
-          value === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-red-100 text-red-800'
-        }`}>
+        <span className={`px-2 py-1 rounded-full text-xs ${value === 'paid' ? 'bg-green-100 text-green-800' :
+            value === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+              'bg-red-100 text-red-800'
+          }`}>
           {value}
         </span>
       )
     },
-    { 
-      key: 'issuedAt', 
+    {
+      key: 'issuedAt',
       title: 'Issued Date',
       render: (value) => new Date(value).toLocaleDateString()
     },
-    { 
-      key: 'paymentMethod', 
+    {
+      key: 'paymentMethod',
       title: 'Payment Method',
       render: (value) => value || 'N/A'
     },
   ];
 
-  const filteredInvoices = statusFilter === 'all' 
-    ? invoices 
+  const filteredInvoices = statusFilter === 'all'
+    ? invoices
     : invoices.filter(invoice => invoice.paymentStatus === statusFilter);
 
   return (
-    <DashboardLayout title="Invoices Management">
+    <div>
       <div className="mb-6 flex justify-between items-center">
         <div className="flex space-x-2">
           <button
             onClick={() => setStatusFilter('all')}
-            className={`px-4 py-2 rounded-lg ${
-              statusFilter === 'all' 
-                ? 'bg-blue-600 text-white' 
+            className={`px-4 py-2 rounded-lg ${statusFilter === 'all'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
-            }`}
+              }`}
           >
             All Invoices
           </button>
           <button
             onClick={() => setStatusFilter('paid')}
-            className={`px-4 py-2 rounded-lg ${
-              statusFilter === 'paid' 
-                ? 'bg-blue-600 text-white' 
+            className={`px-4 py-2 rounded-lg ${statusFilter === 'paid'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
-            }`}
+              }`}
           >
             Paid
           </button>
           <button
             onClick={() => setStatusFilter('pending')}
-            className={`px-4 py-2 rounded-lg ${
-              statusFilter === 'pending' 
-                ? 'bg-blue-600 text-white' 
+            className={`px-4 py-2 rounded-lg ${statusFilter === 'pending'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
-            }`}
+              }`}
           >
             Pending
           </button>
           <button
             onClick={() => setStatusFilter('failed')}
-            className={`px-4 py-2 rounded-lg ${
-              statusFilter === 'failed' 
-                ? 'bg-blue-600 text-white' 
+            className={`px-4 py-2 rounded-lg ${statusFilter === 'failed'
+                ? 'bg-blue-600 text-white'
                 : 'bg-white text-gray-700 border border-gray-300'
-            }`}
+              }`}
           >
             Failed
           </button>
@@ -140,6 +134,6 @@ export default function InvoicesManagement() {
         loading={loading}
         actions={false}
       />
-    </DashboardLayout>
+    </div>
   );
 }

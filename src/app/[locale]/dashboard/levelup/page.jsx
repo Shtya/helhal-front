@@ -1,6 +1,5 @@
 "use client"
 import { useState, useEffect } from 'react';
-import Layout from '@/components/dashboard/Layout';
 import DataTable from '@/components/dashboard/ui/DataTable';
 import { getLevelUpRequests, updateLevelUpStatus } from '@/utils/api';
 
@@ -42,16 +41,15 @@ export default function LevelUp() {
     { key: 'currentLevel', title: 'Current Level', sortable: true },
     { key: 'requestedLevel', title: 'Requested Level', sortable: true },
     { key: 'orderCount', title: 'Order Count', sortable: true },
-    { 
-      key: 'status', 
-      title: 'Status', 
+    {
+      key: 'status',
+      title: 'Status',
       sortable: true,
       render: (value) => (
-        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-          value === 'approved' ? 'bg-green-100 text-green-800' :
+        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${value === 'approved' ? 'bg-green-100 text-green-800' :
           value === 'rejected' ? 'bg-red-100 text-red-800' :
-          'bg-yellow-100 text-yellow-800'
-        }`}>
+            'bg-yellow-100 text-yellow-800'
+          }`}>
           {value}
         </span>
       )
@@ -60,12 +58,12 @@ export default function LevelUp() {
   ];
 
   return (
-    <Layout>
+    <div>
       <div className="py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div className="mx-auto px-4 sm:px-6 md:px-8">
           <h1 className="text-2xl font-semibold text-gray-900">Level Up Requests</h1>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+        <div className="mx-auto px-4 sm:px-6 md:px-8">
           <div className="py-4">
             <DataTable
               columns={columns}
@@ -73,11 +71,11 @@ export default function LevelUp() {
               isLoading={isLoading}
               onStatusChange={handleStatusChange}
               pagination={pagination}
-              onPageChange={(page) => setPagination({...pagination, page})}
+              onPageChange={(page) => setPagination({ ...pagination, page })}
             />
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }

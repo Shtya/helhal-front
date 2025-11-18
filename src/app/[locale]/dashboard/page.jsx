@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Users, FolderTree, ShoppingBag, Briefcase, Rocket, Wallet, Receipt, HelpCircle, Newspaper, BookOpen, ShieldCheck, MessageSquare, BarChart3, Settings, ArrowUpRight, ArrowDownRight, RefreshCw, Calendar, Download, Folder, ArrowDownCircle } from 'lucide-react';
 import api from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 
 export default function StatisticsPage() {
   const today = new Date();
@@ -134,7 +133,7 @@ export default function StatisticsPage() {
 
 
   return (
-    <DashboardLayout title='Statistics' className=" !py-6" >
+    <div className="!py-6" >
       {/* Page header */}
       <div className='  flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <div>
@@ -196,7 +195,7 @@ export default function StatisticsPage() {
           <RecentTable rows={recent.withdraws} loading={recentLoading} empty='No withdrawal requests' />
         </div>
       </section>
-    </DashboardLayout>
+    </div>
   );
 }
 

@@ -4,7 +4,6 @@ import { Eye, Trash2, Settings as SettingsIcon } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 import { MetricBadge, Modal, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Button from '@/components/atoms/Button';
@@ -220,7 +219,7 @@ export default function AdminJobsDashboard() {
   );
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
       <div className='p-6'>
         {/* Header with tabs + inline settings toggle */}
         <GlassCard gradient='from-indigo-400 via-blue-400 to-cyan-400' className='mb-6 !overflow-visible'>
@@ -257,7 +256,7 @@ export default function AdminJobsDashboard() {
           <JobView value={current} onClose={() => setModalOpen(false)} />
         </Modal>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
 

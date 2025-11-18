@@ -4,7 +4,6 @@ import { Eye, Trash2, Plus, Folder } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
-import DashboardLayout from '@/components/dashboard/Layout';
 import { MetricBadge, Modal, KPIGrid, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
 import Input from '@/components/atoms/Input';
@@ -240,7 +239,7 @@ export default function AdminServicesDashboard() {
   );
 
   return (
-    <DashboardLayout className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white'>
+    <div>
       <div className='p-6'>
         <GlassCard gradient='from-indigo-400 via-purple-400 to-pink-400' className='mb-6 !overflow-visible'>
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
@@ -278,7 +277,7 @@ export default function AdminServicesDashboard() {
           <ServiceForm mode={mode} value={current} onSubmit={onSubmit} onCancel={() => setModalOpen(false)} submitting={submitting} apiError={apiError} />
         </Modal>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
 
