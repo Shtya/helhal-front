@@ -20,7 +20,7 @@ export const menuItems = [
   // { name: 'Blogs', href: '/dashboard/blogs', icon: Newspaper, title: 'Blogs', desc: 'Write, schedule, and manage blog posts and drafts.' },
   // { name: 'Guides', href: '/dashboard/guides', icon: BookOpen, title: 'Guides', desc: 'Step-by-step tutorials and documentation for your product.' },
   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare, title: 'Chat', desc: 'Conversations, support inbox, and real-time messages.' },
-  { name: 'Reports', href: '/dashboard/reports', icon: BarChart3, title: 'Reports', desc: 'Visual analytics and downloadable summaries.' },
+  // { name: 'Reports', href: '/dashboard/reports', icon: BarChart3, title: 'Reports', desc: 'Visual analytics and downloadable summaries.' },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings, title: 'Settings', desc: 'Account, preferences, integrations, and system options.' },
 ];
 

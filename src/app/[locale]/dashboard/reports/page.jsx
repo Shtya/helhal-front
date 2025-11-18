@@ -227,8 +227,8 @@ export default function AdminReportsDashboard() {
         <GlassCard gradient='from-indigo-400 via-blue-400 to-cyan-400' className='mb-6'>
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <div>
-              <h1 className='text-2xl font-bold text-white'>Analytics & Reports</h1>
-              <p className='text-blue-100'>Platform performance insights and analytics</p>
+              <h1 className='text-2xl font-bold'>Analytics & Reports</h1>
+              <p className=''>Platform performance insights and analytics</p>
             </div>
             <div className='flex flex-wrap gap-3'>
               <Button onClick={() => exportReport('csv')} className='bg-white text-blue-600'>
