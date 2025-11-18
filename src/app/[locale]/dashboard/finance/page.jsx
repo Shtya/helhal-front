@@ -1,8 +1,17 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import DataTable from '@/components/dashboard/ui/DataTable';
 import api from '@/lib/axios';
-import { ArrowDownRight, ArrowUpRight, Wallet, Banknote, Clock } from 'lucide-react';
+import { ArrowUpRight, Wallet, Banknote, Clock } from 'lucide-react';
+
+// transactionTypes.ts
+export const transactionTypes = [
+  { id: 'all', label: 'All Transactions' },
+  { id: 'escrow_deposit', label: 'Escrow Deposit' },
+  { id: 'escrow_release', label: 'Escrow Release' },
+  { id: 'withdrawal', label: 'Withdrawals' },
+];
+
 
 const formatMoney = (n, currency = 'SAR') => {
   const value = typeof n === 'string' ? Number(n) : n;
@@ -20,6 +29,7 @@ const formatMoney = (n, currency = 'SAR') => {
 
 export default function WithdrawManagement() {
   const [loading, setLoading] = useState(true);
+  const [earningsLoading, setEarningsLoading] = useState(true);
 
   // wallet summary
   const [balance, setBalance] = useState({
@@ -29,19 +39,55 @@ export default function WithdrawManagement() {
     cancelledOrdersCredit: 0,
   });
 
-  // table data
-  const [filterKind, setFilterKind] = useState('withdrawal'); // 'withdrawal' | 'all'
+  // filters for table
+  const [filters, setFilters] = useState({ kind: 'all', page: 1, limit: 10 });
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [transactions, setTransactions] = useState([]);
-  const [pageMeta, setPageMeta] = useState({ page: 1, pages: 1, total: 0, limit: 20 });
+  const [total, setTotal] = useState(0);
 
   // earnings summary (range)
-  const [range, setRange] = useState(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 30);
-    return { from: start, to: end };
-  });
-  const [earningsCard, setEarningsCard] = useState({ totalEarnings: 0, totalWithdrawals: 0, netEarnings: 0 });
+  // const [range, setRange] = useState(() => {
+  //   const end = new Date();
+  //   const start = new Date();
+  //   start.setDate(end.getDate() - 30);
+  //   return { from: start, to: end };
+  // });
+  // const [earningsCard, setEarningsCard] = useState({ totalEarnings: 0, totalWithdrawals: 0, netEarnings: 0 });
+
+  // abort controller
+  const controllerRef = useRef();
+
+
+  const fetchTransactions = async () => {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
+    try {
+      setLoading(true);
+      const q = {
+        page: filters.page,
+        limit: filters.limit,
+        type: filters.kind === 'all' ? '' : filters.kind,
+        search: debouncedSearch,
+      };
+      const res = await api.get('/accounting/transactions', { params: q, signal: controller.signal });
+      const { transactions = [], pagination = {} } = res.data || {};
+      setTransactions(transactions);
+      setTotal(pagination.total ?? 0);
+      setFilters(prev => ({
+        ...prev,
+        page: pagination.page ?? prev.page,
+        limit: pagination.limit ?? prev.limit,
+      }));
+    } catch (e) {
+      if (!isErrorAbort(e)) {
+        console.error('Error fetching transactions:', e);
+      }
+    } finally {
+      if (controllerRef.current === controller) setLoading(false);
+    }
+  };
 
   // ---- fetchers ----
   const fetchBalance = async () => {
@@ -49,36 +95,45 @@ export default function WithdrawManagement() {
     setBalance(res.data || {});
   };
 
-  const fetchTransactions = async (page = 1) => {
-    const q = new URLSearchParams();
-    q.set('page', String(page));
-    if (filterKind === 'withdrawal') q.set('type', 'withdrawal');
-    const res = await api.get(`/accounting/transactions?${q.toString()}`);
-    const { transactions = [], pagination = {} } = res.data || {};
-    setTransactions(transactions);
-    setPageMeta(pagination);
-  };
+  // const fetchEarnings = async () => {
+  //   const params = new URLSearchParams();
+  //   if (range?.from) params.set('startDate', range.from.toISOString());
+  //   if (range?.to) params.set('endDate', range.to.toISOString());
+  //   const res = await api.get(`/accounting/earnings?${params.toString()}`);
+  //   const { totalEarnings = 0, totalWithdrawals = 0, netEarnings = 0 } = res.data || {};
+  //   setEarningsCard({ totalEarnings, totalWithdrawals, netEarnings });
+  // };
 
-  const fetchEarnings = async () => {
-    const params = new URLSearchParams();
-    if (range?.from) params.set('startDate', range.from.toISOString());
-    if (range?.to) params.set('endDate', range.to.toISOString());
-    const res = await api.get(`/accounting/earnings?${params.toString()}`);
-    const { totalEarnings = 0, totalWithdrawals = 0, netEarnings = 0 } = res.data || {};
-    setEarningsCard({ totalEarnings, totalWithdrawals, netEarnings });
-  };
+  useEffect(() => {
+    fetchTransactions()
+  }, [filters.kind, filters.page, filters.limit, debouncedSearch]);
+
 
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
-        await Promise.all([fetchBalance(), fetchTransactions(1), fetchEarnings()]);
+        setEarningsLoading(true);
+        await Promise.all([fetchBalance()]);
       } finally {
-        setLoading(false);
+        setEarningsLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterKind, range?.from, range?.to]);
+  }, []);
+
+  // handlers
+  function onSearch(val) {
+    setDebouncedSearch(val);
+    setFilters(p => ({ ...p, page: 1 }));
+  }
+  function onTabChange(tab) {
+    setFilters(p => ({ ...p, page: 1, kind: tab }));
+  }
+  function onLimitChange(val) {
+    setFilters(p => ({ ...p, page: 1, limit: val }));
+  }
+  function onPageChange(val) {
+    setFilters(p => ({ ...p, page: val }));
+  }
 
   const columns = useMemo(
     () => [
@@ -87,8 +142,14 @@ export default function WithdrawManagement() {
         key: 'type',
         title: 'Type',
         render: v => (
-          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${v === 'earning' ? 'bg-emerald-100 text-emerald-800' : v === 'withdrawal' ? 'bg-amber-100 text-amber-800' : v === 'refund' ? 'bg-sky-100 text-sky-800' : 'bg-slate-100 text-slate-700'}`}>
-            {v === 'earning' ? <ArrowUpRight className='h-3.5 w-3.5' /> : <ArrowDownRight className='h-3.5 w-3.5' />}
+          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${v === 'earning'
+            ? 'bg-emerald-100 text-emerald-800'
+            : v === 'withdrawal'
+              ? 'bg-amber-100 text-amber-800'
+              : v === 'refund'
+                ? 'bg-sky-100 text-sky-800'
+                : 'bg-slate-100 text-slate-700'
+            }`}>
             {v}
           </span>
         ),
@@ -96,7 +157,7 @@ export default function WithdrawManagement() {
       {
         key: 'amount',
         title: 'Amount',
-        render: (v, row) => (
+        render: v => (
           <span className={`font-medium ${Number(v) < 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
             {formatMoney(Number(v < 0 ? -v : v))}
             {Number(v) < 0 ? ' (debit)' : ''}
@@ -106,19 +167,19 @@ export default function WithdrawManagement() {
       {
         key: 'status',
         title: 'Status',
-        render: v => <span className={`px-2 py-1 rounded-full text-xs ${v === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' : v === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>{v?.toLowerCase?.()}</span>,
+        render: v => (
+          <span className={`px-2 py-1 rounded-full text-xs ${v === 'completed'
+            ? 'bg-emerald-100 text-emerald-800'
+            : v === 'pending'
+              ? 'bg-yellow-100 text-yellow-800'
+              : 'bg-red-100 text-red-800'
+            }`}>
+            {v?.toLowerCase?.()}
+          </span>
+        ),
       },
-      {
-        key: 'description',
-        title: 'Description',
-        render: v => <span className='text-slate-600'>{v || '—'}</span>,
-      },
-      {
-        key: 'created_at',
-        title: 'Date',
-        render: v => new Date(v).toLocaleString(),
-      },
-      // NOTE: admin approve/reject is intentionally hidden because backend endpoints don’t exist yet
+      { key: 'description', title: 'Description', render: v => <span className='text-slate-600'>{v || '—'}</span> },
+      { key: 'created_at', title: 'Date', render: v => new Date(v).toLocaleString() },
     ],
     [],
   );
@@ -126,23 +187,27 @@ export default function WithdrawManagement() {
   return (
     <div>
       {/* KPIs */}
-      <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <KpiCard icon={Wallet} label='Available Balance' value={formatMoney(balance.availableBalance)} hint='Ready to withdraw' iconBg='bg-emerald-50 text-emerald-600' />
         <KpiCard icon={Banknote} label='Credits' value={formatMoney(balance.credits)} hint='Refund credits' iconBg='bg-blue-50 text-blue-600' />
-        <KpiCard icon={ArrowUpRight} label='Earnings to Date' value={formatMoney(balance.earningsToDate)} hint='Lifetime gross (net of refunds not applied here)' iconBg='bg-purple-50 text-purple-600' />
+        <KpiCard icon={ArrowUpRight} label='Earnings to Date' value={formatMoney(balance.earningsToDate)} hint='Lifetime gross' iconBg='bg-purple-50 text-purple-600' />
         <KpiCard icon={Clock} label='Cancelled Orders Credit' value={formatMoney(balance.cancelledOrdersCredit)} hint='Holdbacks from cancellations' iconBg='bg-rose-50 text-rose-600' />
       </div>
 
       {/* Filters */}
-      <div className='mb-3 flex items-center gap-2'>
-        <button onClick={() => setFilterKind('withdrawal')} className={`px-4 py-2 rounded-lg ${filterKind === 'withdrawal' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}>
-          {' '}
-          Withdrawals{' '}
-        </button>
-        <button onClick={() => setFilterKind('all')} className={`px-4 py-2 rounded-lg ${filterKind === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}>
-          {' '}
-          All Transactions{' '}
-        </button>
+      <div className="mb-3 text-nowrap inline-flex p-1 max-w-full overflow-x-auto space-x-2">
+        {transactionTypes.map(type => (
+          <button
+            key={type.id}
+            onClick={() => onTabChange(type.id)}
+            className={`px-4 py-2 rounded-lg ${filters.kind === type.id
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-700 border border-gray-300'
+              }`}
+          >
+            {type.label}
+          </button>
+        ))}
       </div>
 
       {/* Table */}
@@ -150,14 +215,14 @@ export default function WithdrawManagement() {
         columns={columns}
         data={transactions}
         loading={loading}
+        page={filters.page}
+        limit={filters.limit}
+        search={debouncedSearch}
+        totalCount={total}
+        onLimitChange={onLimitChange}
+        onPageChange={onPageChange}
+        onSearch={onSearch}
         actions={false}
-        pagination={{
-          page: pageMeta.page,
-          pages: pageMeta.pages,
-          total: pageMeta.total,
-          onPageChange: p => fetchTransactions(p),
-        }}
-        emptyContent={<div className='rounded-xl border border-slate-200 bg-slate-50 p-8 text-center text-slate-600'>No records.</div>}
       />
     </div>
   );
@@ -165,26 +230,29 @@ export default function WithdrawManagement() {
 
 function KpiCard({ icon: Icon, label, value, hint, currency, iconBg = 'bg-emerald-50 text-emerald-600' }) {
   return (
-    <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-4 sm:p-6 flex flex-col justify-between">
       {/* Header */}
-      <div className='flex justify-between items-start'>
-        <p className='text-lg text-gray-600 font-medium'>{label}</p>
-        <span className={`w-9 h-9 flex items-center justify-center rounded-full ${iconBg}`}>{Icon && <Icon className='w-5 h-5' />}</span>
+      <div className="flex justify-between items-start">
+        <p className="text-sm sm:text-base md:text-lg text-gray-600 font-medium">{label}</p>
+        <span className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full ${iconBg}`}>
+          {Icon && <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
+        </span>
       </div>
 
       {/* Value */}
-      <div className='mt-4'>
-        <p className='text-4xl font-extrabold text-gray-900'>
+      <div className="mt-4">
+        <p className="text-2xl xl:text-3xl 2xl:text-3xl font-extrabold text-gray-900">
           {value}
-          {currency ? <span className='text-xl font-semibold ml-1'>{currency}</span> : null}
+          {currency ? <span className="text-base sm:text-lg md:text-xl font-semibold ml-1">{currency}</span> : null}
         </p>
       </div>
 
       {/* Hint/Description */}
-      {hint ? <p className='mt-2 text-base font-[600] text-gray-700'>{hint}</p> : null}
+      {hint ? <p className="mt-2 text-xs sm:text-sm md:text-base font-[600] text-gray-700">{hint}</p> : null}
     </div>
   );
 }
+
 
 function MiniStat({ label, value }) {
   return (

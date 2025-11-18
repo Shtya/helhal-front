@@ -140,7 +140,7 @@ export default function InvoicesManagement() {
   return (
     <div>
       <div className="mb-6 flex justify-between items-center">
-        <div className="flex space-x-2">
+        <div className="text-nowrap inline-flex p-1 max-w-full overflow-x-auto space-x-2">
           <button
             onClick={() => onTabChange('all')}
             className={`px-4 py-2 rounded-lg ${statusFilter === 'all'
@@ -202,4 +202,3 @@ export default function InvoicesManagement() {
     </div>
   );
 }
-
