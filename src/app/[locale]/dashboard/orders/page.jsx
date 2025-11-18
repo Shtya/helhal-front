@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 import { useDebounce } from '@/hooks/useDebounce';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
+import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 
 const OrderStatus = {
   PENDING: 'Pending',
@@ -58,8 +59,8 @@ export default function AdminOrdersDashboard() {
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
-  const [mode, setMode] = useState('view');
   const [current, setCurrent] = useState(null);
+  const [mode, setMode] = useState('view');
 
   const tabs = [
     { value: 'all', label: 'All Orders' },
@@ -125,8 +126,6 @@ export default function AdminOrdersDashboard() {
 
   const openView = async order => {
     try {
-      // setApiError(null);
-      // const res = await api.get(`/orders/${id}`);
       setMode('view');
       setCurrent(order);
       setModalOpen(true);
@@ -134,6 +133,8 @@ export default function AdminOrdersDashboard() {
       setApiError(e?.response?.data?.message || 'Failed to load order.');
     }
   };
+
+
   const updateOrderStatus = async (id, status) => {
     const toastId = toast.loading(`Updating order status to ${status}...`);
 
@@ -299,9 +300,11 @@ export default function AdminOrdersDashboard() {
           />
         </div>
 
-        <Modal open={modalOpen} title='Order Details' onClose={() => setModalOpen(false)} size='lg' hideFooter>
-          <OrderView value={current} onClose={() => setModalOpen(false)} />
-        </Modal>
+        <OrderDetailsModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          orderId={current?.id}
+        />
       </div>
     </div>
   );

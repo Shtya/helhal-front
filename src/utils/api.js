@@ -97,8 +97,8 @@ export async function processWithdrawal(id, action) {
 
 // ------------------------------
 // Invoices management
-export async function getInvoices(status = 'all') {
-  return apiCall('/invoices', { params: { status } });
+export async function getInvoices(params, extra = {}) {
+  return apiCall('/invoices', { params, ...extra });
 }
 
 // ------------------------------
@@ -207,3 +207,4 @@ export function getUserIdFromAccessToken() {
     return null;
   }
 }
+
