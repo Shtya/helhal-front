@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Users, FolderTree, ShoppingBag, Briefcase, Rocket, Wallet, Receipt, HelpCircle, Newspaper, BookOpen, ShieldCheck, MessageSquare, BarChart3, Settings, ArrowUpRight, ArrowDownRight, RefreshCw, Calendar, Download } from 'lucide-react';
+import { Users, FolderTree, ShoppingBag, Briefcase, Rocket, Wallet, Receipt, HelpCircle, Newspaper, BookOpen, ShieldCheck, MessageSquare, BarChart3, Settings, ArrowUpRight, ArrowDownRight, RefreshCw, Calendar, Download, Folder, ArrowDownCircle } from 'lucide-react';
 import api from '@/lib/axios';
 import DashboardLayout from '@/components/dashboard/Layout';
 
@@ -15,7 +15,9 @@ export default function StatisticsPage() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [recentLoading, setRecentLoading] = useState(false);
   const [error, setError] = useState(null);
+
 
   // Overview KPIs
   const [overview, setOverview] = useState({
@@ -49,30 +51,61 @@ export default function StatisticsPage() {
 
   const [recent, setRecent] = useState({ orders: [], withdraws: [], reports: [] });
 
-  const params = useMemo(() => ({ from: range.from.toISOString(), to: range.to.toISOString() }), [range]);
+  const params = useMemo(
+    () => ({
+      from: range.from.toISOString().split('T')[0], // "YYYY-MM-DD"
+      to: range.to.toISOString().split('T')[0],
+    }),
+    [range]
+  );
+
+
+  async function fetchAll() {
+    setLoading(true);
+    setError(null);
+    try {
+      const [{ data: ov }, { data: ent }] = await Promise.all([
+        api.get('/admin/stats/overview', { params }).catch(() => ({ data: mockOverview() })),
+        api.get('/admin/stats/entities', { params }).catch(() => ({ data: mockEntities() })),
+        // api.get('/admin/stats/recent', { params }).catch(() => ({ data: mockRecent() }))
+      ]);
+
+      setOverview(ov);
+      setEntities(prev => prev.map(item => ({ ...item, ...(ent[item.key] || {}) })));
+      // setRecent(rec);
+    } catch (e) {
+
+      setError('Failed to load stats');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    let mounted = true;
-    async function fetchAll() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [{ data: ov }, { data: ent }, { data: rec }] = await Promise.all([api.get('/admin/stats/overview', { params }).catch(() => ({ data: mockOverview() })), api.get('/admin/stats/entities', { params }).catch(() => ({ data: mockEntities() })), api.get('/admin/stats/recent', { params }).catch(() => ({ data: mockRecent() }))]);
-        if (!mounted) return;
-        setOverview(ov);
-        setEntities(prev => prev.map(item => ({ ...item, ...(ent[item.key] || {}) })));
-        setRecent(rec);
-      } catch (e) {
-        if (!mounted) return;
-        setError('Failed to load stats');
-      } finally {
-        mounted && setLoading(false);
-      }
-    }
     fetchAll();
-    return () => (mounted = false);
   }, [params]);
 
+  async function fetchRecent() {
+    setRecentLoading(true);
+    try {
+      const { data: rec } = await api.get('/admin/stats/recent').catch(() => ({ data: mockRecent() }));
+      setRecent(rec);
+    } catch (e) {
+      setError('Failed to load recent stats');
+    } finally {
+      setRecentLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchRecent();
+  }, []);
+
+
+  function Refreash() {
+    fetchAll()
+    fetchRecent()
+  }
   function setPreset(preset) {
     const now = new Date();
     let from = new Date(now);
@@ -84,16 +117,12 @@ export default function StatisticsPage() {
   }
 
   function exportCSV() {
-    const rows = [
-      ['Metric', 'Total', 'Change%'],
-      ['Users', overview.users.total, overview.users.change],
-      ['Categories', overview.categories.total, overview.categories.change],
-      ['Services', overview.services.total, overview.services.change],
-      ['Jobs', overview.jobs.total, overview.jobs.change],
-      ['Orders', overview.orders.total, overview.orders.change],
-      ['Revenue', overview.revenue.total, overview.revenue.change],
-      ['Withdraws', overview.withdraws.total, overview.withdraws.change],
-    ];
+    const rows = [['Metric', 'Total', 'Change%']];
+
+    // Append each entity row
+    entities.forEach(ent => {
+      rows.push([ent.label, ent.total, ent.change]);
+    });
     const blob = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -102,6 +131,7 @@ export default function StatisticsPage() {
     a.click();
     URL.revokeObjectURL(url);
   }
+
 
   return (
     <DashboardLayout title='Statistics' className=" !py-6" >
@@ -122,7 +152,7 @@ export default function StatisticsPage() {
           <button onClick={exportCSV} className='inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50'>
             <Download className='h-4 w-4' /> Export CSV
           </button>
-          <button onClick={() => setRange(r => ({ ...r }))} title='Refresh' className='inline-grid place-items-center rounded-xl border border-emerald-200 bg-white h-10 w-10 text-emerald-700 hover:bg-emerald-50'>
+          <button onClick={() => Refreash()} title='Refresh' className='inline-grid place-items-center rounded-xl border border-emerald-200 bg-white h-10 w-10 text-emerald-700 hover:bg-emerald-50'>
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
@@ -136,11 +166,11 @@ export default function StatisticsPage() {
         {loading
           ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
           : [
-              { label: 'Users', value: overview.users.total, change: overview.users.change, trend: overview.users.trend, icon: Users },
-              { label: 'Services', value: overview.services.total, change: overview.services.change, trend: overview.services.trend, icon: ShoppingBag },
-              { label: 'Orders', value: overview.orders.total, change: overview.orders.change, trend: overview.orders.trend, icon: ShoppingBag },
-              { label: 'Revenue', value: overview.revenue.total, change: overview.revenue.change, trend: overview.revenue.trend, icon: Wallet, prefix: '$' },
-            ].map(k => <StatCard key={k.label} {...k} />)}
+            { label: 'Users', value: overview.users.total, change: overview.users.change, trend: overview.users.trend, icon: Users },
+            { label: 'Services', value: overview.services.total, change: overview.services.change, trend: overview.services.trend, icon: ShoppingBag },
+            { label: 'Orders', value: overview.orders.total, change: overview.orders.change, trend: overview.orders.trend, icon: ShoppingBag },
+            { label: 'Revenue', value: overview.revenue.total, change: overview.revenue.change, trend: overview.revenue.trend, icon: Wallet, prefix: '$' },
+          ].map(k => <StatCard key={k.label} {...k} />)}
       </section>
 
       {/* Secondary insights */}
@@ -156,14 +186,14 @@ export default function StatisticsPage() {
       </section>
 
       {/* Recent activity */}
-      <section className='mt-6 grid gap-6 xl:grid-cols-3'>
-        <div className='xl:col-span-2'>
+      <section className='mt-6 max-xl:space-y-6 xl:grid gap-6 xl:grid-cols-2'>
+        <div className=''>
           <SectionHeader title='Recent Orders' />
-          <RecentTable rows={recent.orders} loading={loading} empty='No recent orders' />
+          <RecentTable rows={recent.orders} loading={recentLoading} empty='No recent orders' />
         </div>
         <div className='space-y-6'>
           <SectionHeader title='Recent Withdrawals' />
-          <RecentTable rows={recent.withdraws} loading={loading} empty='No withdrawal requests' />
+          <RecentTable rows={recent.withdraws} loading={recentLoading} empty='No withdrawal requests' />
         </div>
       </section>
     </DashboardLayout>
@@ -226,28 +256,30 @@ function ModuleRow({ entity, loading }) {
   const positive = (entity.change ?? 0) >= 0;
   return (
     <Link href={entity.href} className='block rounded-xl border border-emerald-100 bg-white p-4 hover:border-emerald-300 hover:shadow-sm transition'>
-      <div className='flex items-start justify-between gap-3'>
-        <div className='min-w-0'>
+      <div className='flex items-start justify-between flex-col sm:flex-row gap-3'>
+        <div className='min-w-0 max-sm:w-full flex max-sm:justify-between flex-row sm:flex-col'>
           <div className='flex flex-col flex-none items-center gap-2'>
             <div className='h-9 w-9 flex-none rounded-lg bg-emerald-50 border border-emerald-200 grid place-items-center text-emerald-700'>
               <Icon className='h-5 w-5' />
             </div>
-            <p title={entity.label} className='text-xs w-12 font-medium text-slate-800 truncate'>
+            <p title={entity.label} className='text-xs font-medium text-slate-800 truncate'>
               {entity.label}
             </p>
           </div>
-          <div className='mt-2 flex items-center gap-3'>
-            <span className='text-lg font-semibold text-slate-900'>{formatNumber(entity.total)}</span>
-            <span className={`inline-flex items-center gap-1 text-xs ${positive ? 'text-emerald-600' : 'text-rose-600'}`}>
-              {positive ? <ArrowUpRight className='h-3.5 w-3.5' /> : <ArrowDownRight className='h-3.5 w-3.5' />}
-              {Math.abs(entity.change ?? 0)}%
-            </span>
-          </div>
-          <div className='mt-2'>
-            <MiniBar value={progressFromTrend(entity.trend)} />
+          <div>
+            <div className='mt-2 flex items-center gap-3'>
+              <span className='text-lg font-semibold text-slate-900'>{formatNumber(entity.total)}</span>
+              <span className={`inline-flex items-center gap-1 text-xs ${positive ? 'text-emerald-600' : 'text-rose-600'}`}>
+                {positive ? <ArrowUpRight className='h-3.5 w-3.5' /> : <ArrowDownRight className='h-3.5 w-3.5' />}
+                {Math.abs(entity.change ?? 0)}%
+              </span>
+            </div>
+            <div className='mt-2'>
+              <MiniBar value={progressFromTrend(entity.trend)} />
+            </div>
           </div>
         </div>
-        <div className='hidden sm:block'>
+        <div className='w-full'>
           <SparkArea width={140} height={48} data={entity.trend || []} />
         </div>
       </div>
@@ -271,7 +303,7 @@ function RecentTable({ rows, loading, empty }) {
     return <div className='rounded-2xl border border-emerald-200 bg-white p-6 text-slate-500'>{empty}</div>;
   }
   return (
-    <div className='overflow-hidden rounded-2xl border border-emerald-200 bg-white'>
+    <div className='overflow-hidden rounded-2xl border border-emerald-200 bg-white overflow-x-auto'>
       <table className='min-w-full'>
         <thead className='bg-emerald-50/60'>
           <tr className='text-left text-sm text-slate-600'>
@@ -285,13 +317,13 @@ function RecentTable({ rows, loading, empty }) {
         <tbody>
           {rows.map((r, idx) => (
             <tr key={idx} className='border-t border-emerald-100 text-sm hover:bg-emerald-50/40'>
-              <td className='px-4 py-3 font-medium text-slate-800'>{r.ref || r.id || '-'}</td>
-              <td className='px-4 py-3 text-slate-700'>{r.customer || r.user || '-'}</td>
-              <td className='px-4 py-3'>
-                <span className={`inline-flex items-center rounded-lg px-2 py-1 text-xs font-medium ${statusTone(r.status)}`}>{r.status || '-'}</span>
+              <td className='px-4 py-3 text-nowrap font-medium text-slate-800'>{r.ref || r.id || '-'}</td>
+              <td className='px-4 py-3 text-nowrap text-slate-700'>{r.customer || r.user || '-'}</td>
+              <td className='px-4 py-3 text-nowrap'>
+                <span className={`inline-flex text-nowrap items-center rounded-lg px-2 py-1 text-xs font-medium ${statusTone(r.status)}`}>{r.status || '-'}</span>
               </td>
-              <td className='px-4 py-3 text-slate-800'>{typeof r.amount === 'number' ? `$${formatNumber(r.amount)}` : r.amount || '-'}</td>
-              <td className='px-4 py-3 text-slate-600'>{formatDate(r.date)}</td>
+              <td className='px-4 py-3 text-nowrap text-slate-800'>{typeof r.amount === 'number' ? `$${formatNumber(r.amount)}` : r.amount || '-'}</td>
+              <td className='px-4 py-3 text-nowrap text-slate-600'>{formatDate(r.date)}</td>
             </tr>
           ))}
         </tbody>
@@ -316,7 +348,7 @@ function SparkArea({ data = [], width = 260, height = 56 }) {
   const area = `${pad},${height - pad} ${poly} ${width - pad},${height - pad}`;
   const id = 'grad-' + Math.random().toString(36).slice(2);
   return (
-    <svg width={width} height={height} className='text-emerald-500'>
+    <svg height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="w-full text-emerald-500">
       <defs>
         <linearGradient id={id} x1='0' x2='0' y1='0' y2='1'>
           <stop offset='0%' stopColor='#10b981' stopOpacity='0.25' />
@@ -337,7 +369,7 @@ function MiniBar({ value = 0 }) {
     </div>
   );
 }
- 
+
 function SkeletonCard() {
   return (
     <div className='rounded-2xl border border-emerald-200 bg-white p-4'>
@@ -365,9 +397,9 @@ function formatDate(iso) {
 
 function statusTone(status) {
   const s = String(status || '').toLowerCase();
-  if (['paid', 'completed', 'success', 'approved', 'resolved'].includes(s)) return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+  if (['paid', 'completed', 'success', , 'Accepted', 'Delivered', 'approved', 'resolved'].includes(s)) return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
   if (['pending', 'processing', 'open'].includes(s)) return 'bg-amber-50 text-amber-700 border border-amber-200';
-  if (['failed', 'rejected', 'canceled', 'cancelled'].includes(s)) return 'bg-rose-50 text-rose-700 border border-rose-200';
+  if (['failed', 'rejected', 'canceled', 'cancelled', 'Missing Details'].includes(s)) return 'bg-rose-50 text-rose-700 border border-rose-200';
   return 'bg-slate-50 text-slate-700 border border-slate-200';
 }
 

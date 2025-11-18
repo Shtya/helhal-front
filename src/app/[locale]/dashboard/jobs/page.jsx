@@ -1,16 +1,14 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Search, Eye, Trash2, Clock, CheckCircle, XCircle, Users, Settings as SettingsIcon } from 'lucide-react';
+import { Eye, Trash2, Settings as SettingsIcon } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
 import DashboardLayout from '@/components/dashboard/Layout';
 import { MetricBadge, Modal, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
-import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import toast from 'react-hot-toast';
-import { useDebounce } from '@/hooks/useDebounce';
 import { getDateAgo } from '@/utils/date';
 import Client from '@/components/pages/jobs/Client';
 import StatusBadge from '@/components/pages/jobs/StatusBadge';
