@@ -24,6 +24,7 @@ import toast from 'react-hot-toast';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
 import { MdOutlineLockOpen } from 'react-icons/md';
 import { isErrorAbort } from '@/utils/helper';
+import SearchBox from '@/components/common/Filters/SearchBox';
 
 
 function UserMini({ user }) {
@@ -88,7 +89,6 @@ const TABS = [
 
 export default function DisputesPage() {
   const [activeTab, setActiveTab] = useState('all');
-  const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -101,8 +101,11 @@ export default function DisputesPage() {
   }
 
   const [sort, setSort] = useState('newest');
-  const debounced = useDebounce({ value: search, onDebounce: () => resetPage() });
-
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const handleSearch = value => {
+    setDebouncedSearch(value);
+    setFilters(p => ({ ...p, page: 1 }));
+  };
   const [rows, setRows] = useState([]);
 
   const [loading, setLoading] = useState(false);
@@ -177,7 +180,7 @@ export default function DisputesPage() {
     try {
       const qs = new URLSearchParams();
       if (activeTab !== 'all') qs.set('status', activeTab);
-      if (debounced?.trim()) qs.set('search', debounced?.trim());
+      if (debouncedSearch?.trim()) qs.set('search', debouncedSearch?.trim());
 
       if (filters.page) qs.set('page', filters.page);
       if (filters.limit) qs.set('limit', filters.limit);
@@ -204,7 +207,7 @@ export default function DisputesPage() {
       if (controllerRef.current === controller)
         setLoading(false);
     }
-  }, [activeTab, debounced?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
+  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 
   useEffect(() => {
     fetchDisputes();
@@ -485,7 +488,7 @@ export default function DisputesPage() {
         <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
           <Tabs tabs={TABS} activeTab={activeTab} setActiveTab={handleTabChange} />
           <div className='flex flex-wrap items-center gap-3'>
-            <Input iconLeft={<Search size={16} />} className='!w-fit' value={search} onChange={e => setSearch(e.target.value)} placeholder='Search disputes' />
+            <SearchBox placeholder='Search disputes…' onSearch={handleSearch} />
             <Select
               className='!w-fit'
               onChange={applySortPreset}

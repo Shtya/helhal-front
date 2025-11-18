@@ -15,6 +15,7 @@ import UserMini from '@/components/dashboard/UserMini';
 import toast from 'react-hot-toast';
 import { useDebounce } from '@/hooks/useDebounce';
 import { isErrorAbort } from '@/utils/helper';
+import SearchBox from '@/components/common/Filters/SearchBox';
 
 const OrderStatus = {
   PENDING: 'Pending',
@@ -42,8 +43,11 @@ export default function AdminOrdersDashboard() {
   function resetPage() {
     setFilters(p => ({ ...p, page: 1 }))
   }
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearch = useDebounce({ value: searchQuery, onDebounce: () => resetPage() });
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const handleSearch = value => {
+    setDebouncedSearch(value);
+    setFilters(p => ({ ...p, page: 1 }));
+  };
 
   const [sort, setSort] = useState('newest');
 
@@ -264,7 +268,7 @@ export default function AdminOrdersDashboard() {
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
             <div className='flex flex-wrap items-center gap-3'>
-              <Input iconLeft={<Search size={16} />} className='!w-fit' value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder='Search orders…' />
+              <SearchBox placeholder='Search orders…' onSearch={handleSearch} />
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}

@@ -15,12 +15,12 @@ import { getDateAgo } from '@/utils/date';
 import Client from '@/components/pages/jobs/Client';
 import StatusBadge from '@/components/pages/jobs/StatusBadge';
 import { isErrorAbort } from '@/utils/helper';
+import SearchBox from '@/components/common/Filters/SearchBox';
 
 export default function AdminJobsDashboard() {
   const [activeTab, setActiveTab] = useState('all');
   const [orderBy, setOrderBy] = useState({ id: 'newest', name: 'Newest' });
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearch = useDebounce({ value: searchQuery });
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -28,6 +28,11 @@ export default function AdminJobsDashboard() {
     sortBy: 'created_at',
     sortOrder: 'DESC',
   });
+
+  const handleSearch = value => {
+    setDebouncedSearch(value);
+    setFilters(p => ({ ...p, page: 1 }));
+  };
 
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
@@ -222,7 +227,7 @@ export default function AdminJobsDashboard() {
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
 
             <div className='flex flex-wrap items-center gap-3'>
-              <Input iconLeft={<Search size={16} />} className='!w-fit' value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder='Search jobs…' />
+              <SearchBox placeholder='Search jobs…' onSearch={handleSearch} />
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}

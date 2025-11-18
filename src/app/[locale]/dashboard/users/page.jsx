@@ -22,15 +22,15 @@ import { useTranslations } from 'next-intl';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import { Divider } from '@/components/UI/ui';
 import { isErrorAbort } from '@/utils/helper';
+import SearchBox from '@/components/common/Filters/SearchBox';
 
 
 export default function AdminUsersDashboard() {
   const [activeTab, setActiveTab] = useState('all');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
-  const debouncedSearch = useDebounce({ value: searchQuery });
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const [filters, setFilters] = useState({ role: '', status: 'all', page: 1, limit: 10, sortBy: 'newest', sortOrder: 'DESC' });
   const [totalUsers, setTotalUsers] = useState(0);
@@ -97,8 +97,8 @@ export default function AdminUsersDashboard() {
     setActiveTab(tab);
     setFilters(p => ({ ...p, page: 1, role: tab === 'all' ? '' : tab }));
   };
-  const handleSearch = e => {
-    setSearchQuery(e.target.value);
+  const handleSearch = value => {
+    setDebouncedSearch(value);
     setFilters(p => ({ ...p, page: 1 }));
   };
   const handleFilterChange = (k, v) => setFilters(p => ({ ...p, [k]: v, page: 1 }));
@@ -297,7 +297,7 @@ export default function AdminUsersDashboard() {
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} className=' ' />
             <div className='flex flex-wrap items-center gap-3'>
-              <Input iconLeft={'/icons/search.svg'} className='!w-fit' value={searchQuery} onChange={handleSearch} placeholder='Search users…' c />
+              <SearchBox placeholder='Search users…' onSearch={handleSearch} />
               <Select
                 className='!w-fit'
                 value={filters.sortBy}

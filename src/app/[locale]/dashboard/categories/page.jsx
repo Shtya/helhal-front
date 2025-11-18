@@ -18,10 +18,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import toast from 'react-hot-toast';
 import { isErrorAbort } from '@/utils/helper';
+import SearchBox from '@/components/common/Filters/SearchBox';
 
 export default function AdminCategoriesDashboard() {
   const [activeTab, setActiveTab] = useState('all');
-
 
 
   const [filters, setFilters] = useState({
@@ -31,11 +31,7 @@ export default function AdminCategoriesDashboard() {
     sortOrder: 'DESC',
   });
 
-  function resetPage() {
-    setFilters(p => ({ ...p, page: 1 }))
-  }
-  const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearch = useDebounce({ value: searchQuery, onDebounce: () => resetPage() });
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sort, setSort] = useState('newest');
 
   const [loading, setLoading] = useState(true);
@@ -49,6 +45,11 @@ export default function AdminCategoriesDashboard() {
   const [mode, setMode] = useState('create');
   const [current, setCurrent] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const handleSearch = value => {
+    setDebouncedSearch(value);
+    setFilters(p => ({ ...p, page: 1 }));
+  };
 
   const tabs = [
     { value: 'all', label: 'All' },
@@ -223,7 +224,7 @@ export default function AdminCategoriesDashboard() {
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
             <div className='flex flex-wrap items-center gap-3'>
               {/* Make Input accept ReactNode OR pass URL here */}
-              <Input iconLeft={<Search size={16} />} className='!w-fit' value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder='Search categories…' />
+              <SearchBox placeholder='Search categories…' onSearch={handleSearch} />
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}

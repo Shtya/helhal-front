@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Search, Eye, Trash2, Plus, Folder } from 'lucide-react';
+import { Eye, Trash2, Plus, Folder } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -14,17 +14,13 @@ import ImagePicker from '@/components/atoms/ImagePicker';
 import Textarea from '@/components/atoms/Textarea';
 import toast from 'react-hot-toast';
 import { Link } from '@/i18n/navigation';
+import SearchBox from '@/components/common/Filters/SearchBox';
 
 export default function AdminServicesDashboard() {
   const [activeTab, setActiveTab] = useState('all');
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  useEffect(() => {
-    const id = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
-    return () => clearTimeout(id);
-  }, [searchQuery]);
 
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -54,7 +50,13 @@ export default function AdminServicesDashboard() {
     { value: 'Paused', label: 'Paused' },
   ];
 
+  const controllerRef = useRef();
   const fetchServices = useCallback(async () => {
+
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     try {
       setLoading(true);
       setApiError(null);
@@ -70,16 +72,20 @@ export default function AdminServicesDashboard() {
         search: debouncedSearch,
       };
 
-      const res = await api.get('/services/admin', { params: q });
+      const res = await api.get('/services/admin', { params: q, signal: controller.signal });
 
       const data = res.data || {};
       setRows(Array.isArray(data.records) ? data.records : []);
       setTotalCount(Number(data.total_records || 0));
     } catch (e) {
-      console.error('Error fetching services:', e);
-      setApiError(e?.response?.data?.message || 'Failed to fetch services.');
+      if (!isErrorAbort(e)) {
+
+        console.error('Error fetching services:', e);
+        setApiError(e?.response?.data?.message || 'Failed to fetch services.');
+      }
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
 
@@ -149,8 +155,30 @@ export default function AdminServicesDashboard() {
           </div>
         ),
     },
-    { key: 'title', label: 'Title' },
-    { key: 'slug', label: 'Slug' },
+    {
+      key: 'title',
+      label: 'Title',
+      render: v => (
+        <span
+          className="max-w-[200px] truncate block"
+          title={v.title}
+        >
+          {v.title}
+        </span>
+      ),
+    },
+    {
+      key: 'slug',
+      label: 'Slug',
+      render: v => (
+        <span
+          className="max-w-[200px] truncate block"
+          title={v.slug}
+        >
+          {v.slug}
+        </span>
+      ),
+    },
     {
       key: 'status',
       label: 'Status',
@@ -175,11 +203,11 @@ export default function AdminServicesDashboard() {
       label: 'Performance',
       render: v => (
         <div className='flex gap-2'>
+          <span className='text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full' title='Clicks'>
+            {v.clicks || 0} clicks
+          </span>
           <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full' title='Orders'>
             {v.ordersCount || 0} orders
-          </span>
-          <span className='text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full' title='Impressions'>
-            {v.impressions || 0} views
           </span>
         </div>
       ),
@@ -194,8 +222,13 @@ export default function AdminServicesDashboard() {
       </Link>
       <Select
         value={row.status}
-        onChange={e => updateStatus(row.id, e)}
+        onChange={e => {
+          if (row.status !== e.id)
+            updateStatus(row.id, e)
+        }
+        }
         options={[
+          { id: 'Pending', name: 'Pending' },
           { id: 'Active', name: 'Activate' },
           { id: 'Paused', name: 'Pause' },
           { id: 'Draft', name: 'Set to Draft' },
@@ -213,7 +246,11 @@ export default function AdminServicesDashboard() {
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
             <div className='flex  items-center gap-3'>
-              <Input iconLeft={<Search size={16} />} className='!w-fit' value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder='Search services…' />
+              <SearchBox placeholder='Search services…' onSearch={(val) => {
+                setDebouncedSearch(val)
+                setFilters(p => ({ ...p, page: 1 }))
+              }} />
+
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}
