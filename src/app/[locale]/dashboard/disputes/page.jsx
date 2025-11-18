@@ -24,6 +24,7 @@ import DisputeChat from '@/components/pages/disputes/DisputeChat';
 import { MdOutlineLockOpen } from 'react-icons/md';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
+import TruncatedText from '@/components/dashboard/TruncatedText';
 
 
 function UserMini({ user }) {
@@ -148,7 +149,7 @@ export default function DisputesPage() {
   const columns = useMemo(
     () => [
       { key: 'id', label: 'ID', headerClassName: 'w-[110px]' },
-      { key: 'orderTitle', label: 'Order', className: 'max-w-[240px] truncate' },
+      { key: 'orderTitle', label: 'Order', className: 'max-w-[240px] truncate', render: (value) => <TruncatedText text={value?.orderTitle} maxLength={300} /> },
       { key: 'seller', label: 'Owner', headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.seller} /> },
       { key: 'buyer', label: 'Client', headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.buyer} /> },
       {

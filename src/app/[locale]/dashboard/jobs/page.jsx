@@ -13,6 +13,7 @@ import Client from '@/components/pages/jobs/Client';
 import StatusBadge from '@/components/pages/jobs/StatusBadge';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
+import TruncatedText from '@/components/dashboard/TruncatedText';
 
 export default function AdminJobsDashboard() {
   const [activeTab, setActiveTab] = useState('all');
@@ -159,7 +160,7 @@ export default function AdminJobsDashboard() {
 
   // Table columns
   const columns = [
-    { key: 'title', label: 'Job Title' },
+    { key: 'title', label: 'Job Title', render: (value) => <TruncatedText text={value?.title} maxLength={300} /> },
     {
       key: 'status',
       label: 'Status',

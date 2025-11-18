@@ -16,6 +16,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
+import TruncatedText from '@/components/dashboard/TruncatedText';
 
 const OrderStatus = {
   PENDING: 'Pending',
@@ -155,7 +156,7 @@ export default function AdminOrdersDashboard() {
 
   // Columns
   const columns = [
-    { key: 'title', label: 'Order Title' },
+    { key: 'title', label: 'Order Title', render: (value) => <TruncatedText text={value?.title} maxLength={300} /> },
     {
       key: 'status',
       label: 'Status',
