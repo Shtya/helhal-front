@@ -1,10 +1,11 @@
 "use client"
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import DataTableSearchBox from './DataTableSearchBox';
 import TableEmptyState from '../Table/TableEmptyState';
 import Img from '@/components/atoms/Img';
-import { Eye } from 'lucide-react';
+import { Eye, MoreHorizontal } from 'lucide-react';
 import PriceTag from '@/components/atoms/priceTag';
+import { buildPageTokens } from '@/utils/pagination';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
@@ -24,6 +25,7 @@ export default function DataTable({
   totalCount,
   search = '',
   actions = true,
+  jumpBy = 5
 }) {
 
   const displayRows = loading ? Array.from({ length: limit }).map((_, i) => ({ __skeleton: i })) : data;
@@ -32,6 +34,7 @@ export default function DataTable({
   const showingFrom = loading || totalCount === 0 ? 0 : Math.min((page - 1) * limit + 1, totalCount);
   const showingTo = loading || totalCount === 0 ? 0 : Math.min(page * limit, totalCount);
 
+  const tokens = useMemo(() => buildPageTokens({ page, totalPages }), [page, totalPages]);
   return (
     <div className="bg-white shadow rounded-lg overflow-hidden">
       {/* Search and controls */}
@@ -192,7 +195,7 @@ export default function DataTable({
               </p>
             </div>
             <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+              <nav className={`${loading ? 'opacity-60 pointer-events-none' : ''} relative z-0 inline-flex rounded-md shadow-sm -space-x-px`}>
                 <button
                   onClick={() => onPageChange(Math.max(1, page - 1))}
                   disabled={page === 1}
@@ -200,18 +203,37 @@ export default function DataTable({
                 >
                   Previous
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => onPageChange(p)}
-                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === p
-                      ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                      : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
-                  >
-                    {p}
-                  </button>
-                ))}
+                {tokens.map((p) => {
+
+                  if (p === 'left-ellipsis' || p === 'right-ellipsis') {
+                    const jumpTarget = p === 'left-ellipsis' ? Math.max(1, page - jumpBy) : Math.min(totalPages, page + jumpBy);
+                    return (
+                      <button
+                        key={p}
+                        onClick={() => onPageChange(jumpTarget)}
+                        title={`Jump ${p === 'left-ellipsis' ? `back ${jumpBy}` : `forward ${jumpBy}`} pages`}
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === p
+                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                          }`}
+                      >
+                        <MoreHorizontal className='w-4 h-4' />
+                      </button>
+                    );
+                  }
+                  return (
+                    <button
+                      key={p}
+                      onClick={() => onPageChange(p)}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === p
+                        ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                        }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                })}
                 <button
                   onClick={() => onPageChange(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
