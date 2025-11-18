@@ -78,7 +78,6 @@ export default function InvoicesManagement() {
       title: 'Order',
       render: (value) => <TruncatedText text={value?.title} />
     },
-
     {
       key: 'buyer',
       title: 'Buyer',

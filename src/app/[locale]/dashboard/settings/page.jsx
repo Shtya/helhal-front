@@ -8,6 +8,22 @@ import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import Textarea from '@/components/atoms/Textarea';
 import { Switcher } from '@/components/atoms/Switcher';
+import z from 'zod';
+import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+
+const SettingsSchema = z.object({
+  contactEmail: z
+    .email("Invalid email format"),
+
+  platformPercent: z
+    .coerce
+    .number()
+    .min(0, "Platform fee must be at least 0%")
+    .max(100, "Platform fee cannot exceed 100%"),
+
+  siteLogo: z
+    .url("Must be a valid image URL"),
+});
 
 const MODULE = 'settings';
 
@@ -80,12 +96,13 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
       setUploading(true);
       const fd = new FormData();
       fd.append('file', file);
-      // adjust if your upload endpoint differs (e.g. /assets/upload, /uploads, etc.)
-      const res = await api.post('/uploads', fd, {
+      // adjust if your upload endpoint differs(e.g. / assets / upload, /uploads, etc.)
+      const res = await api.post('/uploads/siteLogo', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       const url = res?.data?.url || res?.data?.path || res?.data?.location;
       if (url) onUploaded(url);
+      onUploaded(file.url);
     } catch (e) {
       console.error(e);
     } finally {
@@ -146,14 +163,14 @@ export default function AdminSettingsDashboard() {
     // Legal
     privacyPolicy: '',
     termsOfService: '',
-    // Minimal seeder refs kept: only FAQs
-    faqs: [],
+    faqs: [], // now array of { question, answer }
   });
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -183,12 +200,27 @@ export default function AdminSettingsDashboard() {
         platformPercent: Number(settings.platformPercent) || 0,
         defaultCurrency: Number(settings.defaultCurrency) || 1,
       };
+
+      // Validate with Zod
+      const validated = SettingsSchema.parse(payload);
+      setFormErrors(null)
+
       await update(payload);
       setSuccessMessage('Settings saved successfully!');
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (e) {
-      console.error('Error saving settings:', e);
-      setApiError(e?.response?.data?.message || 'Failed to save settings.');
+      if (e instanceof z.ZodError) {
+        // Collect errors into a map
+        const errors = {};
+        e.issues.forEach(err => {
+          const field = err.path[0];
+          errors[field] = err.message;
+        });
+        setFormErrors(errors);
+      } else {
+        console.error("Error saving settings:", e);
+        setApiError((e)?.response?.data?.message || "Failed to save settings.");
+      }
     } finally {
       setSaving(false);
     }
@@ -284,12 +316,14 @@ export default function AdminSettingsDashboard() {
               <div>
                 <label className='mb-1 block text-sm font-medium text-slate-700'>Logo</label>
                 <LogoUploader value={settings.siteLogo} onUploaded={url => updateField('siteLogo', url)} onChangeUrl={url => updateField('siteLogo', url)} />
+                {formErrors?.siteLogo && <FormErrorMessage message={formErrors?.siteLogo} />}
               </div>
 
               <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <div>
                   <label className='mb-1 block text-sm font-medium text-slate-700'>Contact Email</label>
-                  <Input value={settings.contactEmail} onChange={e => updateField('contactEmail', e.target.value)} placeholder='support@example.com' iconLeft={<Mail size={16} />} />
+                  <Input error={formErrors?.contactEmail} value={settings.contactEmail} onChange={e => updateField('contactEmail', e.target.value)} placeholder='support@example.com' iconLeft={<Mail size={16} />} />
+
                 </div>
 
                 <div>
@@ -310,7 +344,7 @@ export default function AdminSettingsDashboard() {
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
               <div>
                 <label className='mb-1 block text-sm font-medium text-slate-700'>Platform Fee (%)</label>
-                <Input type='number' value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
+                <Input type='number' error={formErrors?.platformPercent} value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
               </div>
 
               <div>
@@ -333,7 +367,7 @@ export default function AdminSettingsDashboard() {
         </div>
 
         {/* Jobs Setting (simple) */}
-        <div className='mb-6 grid grid-cols-1 gap-6'>
+        {/* <div className='mb-6 grid grid-cols-1 gap-6'>
           <GlassCard className='p-6'>
             <div className='mb-4 flex items-center'>
               <Globe size={20} className='mr-2 text-indigo-600' />
@@ -348,19 +382,26 @@ export default function AdminSettingsDashboard() {
               <Switcher checked={!settings.jobsRequireApproval} onChange={handleJobsAutoPublishToggle} />
             </div>
           </GlassCard>
-        </div>
+        </div> */}
 
-        {/* FAQs (IDs only) */}
-        <div className='mb-6 grid grid-cols-1 gap-6'>
-          <GlassCard className='p-6'>
-            <div className='mb-4 flex items-center'>
-              <Info size={20} className='mr-2 text-teal-600' />
-              <h2 className='text-lg font-semibold'>FAQs</h2>
+        {/* FAQs (Q&A text) */}
+        <div className="mb-6 grid grid-cols-1 gap-6">
+          <GlassCard className="p-6">
+            <div className="mb-4 flex items-center">
+              <Info size={20} className="mr-2 text-teal-600" />
+              <h2 className="text-lg font-semibold">FAQs</h2>
             </div>
 
-            <IdChipsEditor label='FAQ IDs' hint='Provide FAQ IDs to display across the site.' value={settings.faqs} onChange={v => updateField('faqs', v)} icon={<Info size={16} className='text-slate-500' />} />
+            <FaqsEditor
+              label="FAQs"
+              hint="Add questions and answers to display across the site."
+              value={settings.faqs}
+              onChange={(v) => updateField("faqs", v)}
+              icon={<Info size={16} className="text-slate-500" />}
+            />
           </GlassCard>
         </div>
+
 
         {/* Legal & Compliance – Tabs + Preview */}
         <div className='grid grid-cols-1 gap-6'>
@@ -553,5 +594,75 @@ function GlassCard({ children, className, gradient, padding = 'p-4', header, foo
 
       {footer ? <div className={cx('border-t border-slate-200', padding !== 'none' ? padding : 'p-4')}>{footer}</div> : null}
     </Tag>
+  );
+}
+
+
+function FaqsEditor({ label, hint, value = [], onChange, icon }) {
+  const [draftQ, setDraftQ] = useState('');
+  const [draftA, setDraftA] = useState('');
+  const items = Array.isArray(value) ? value : [];
+
+  const add = () => {
+    if (!draftQ.trim() || !draftA.trim()) return;
+    onChange([...items, { question: draftQ.trim(), answer: draftA.trim() }]);
+    setDraftQ('');
+    setDraftA('');
+  };
+
+  const remove = (idx) => {
+    onChange(items.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <div>
+      <label className="mb-1 flex items-center gap-2 text-sm font-medium text-slate-700">
+        {icon}
+        {label}
+        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
+          {items.length}
+        </span>
+      </label>
+      {hint ? <div className="mb-2 text-xs text-slate-500">{hint}</div> : null}
+
+      <div className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2 ">
+        <div className='flex flex-col gap-2 max-h-64 overflow-y-auto'>
+          {items.length === 0 ? (
+            <span className="text-xs text-slate-400">No FAQs yet</span>
+          ) : (
+            items.map((faq, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col gap-1 rounded bg-slate-50 p-2 text-xs text-slate-700"
+              >
+                <div className="font-semibold">Q: {faq.question}</div>
+                <div>A: {faq.answer}</div>
+                <button
+                  onClick={() => remove(idx)}
+                  className="self-end rounded bg-white/70 px-1 text-[11px] text-slate-500 hover:bg-white hover:text-red-600"
+                  title="Remove"
+                >
+                  ×
+                </button>
+              </div>
+            ))
+          )}
+
+        </div>
+        <div className="flex flex-col gap-2 mt-2">
+          <Input
+            value={draftQ}
+            onChange={(e) => setDraftQ(e.target.value)}
+            placeholder="Add question"
+          />
+          <Input
+            value={draftA}
+            onChange={(e) => setDraftA(e.target.value)}
+            placeholder="Add answer"
+          />
+          <Button className="px-3 py-2 text-sm" onClick={add} name="Add FAQ" />
+        </div>
+      </div>
+    </div>
   );
 }
