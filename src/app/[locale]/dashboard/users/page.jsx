@@ -22,6 +22,13 @@ import { Divider } from '@/components/UI/ui';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 
+const SellerLevel = {
+  LVL1: 'lvl1',
+  LVL2: 'lvl2',
+  NEW: 'new',
+  TOP: 'top',
+}
+
 
 export default function AdminUsersDashboard() {
   const [activeTab, setActiveTab] = useState('all');
@@ -209,6 +216,18 @@ export default function AdminUsersDashboard() {
     setEditingUser(s => ({ ...s, ...val }));
   };
 
+  const updateUserLevel = async (id, level) => {
+    let toastId;
+    try {
+      toastId = toast.loading(`Changing level to ${level}...`);
+      await api.put(`/auth/users/${id}/level`, { level });
+      toast.success(`Level set to ${level}`, { id: toastId });
+      await fetchUsers(); // refresh list
+    } catch (e) {
+      toast.error(e?.response?.data?.message || 'Error updating user level.', { id: toastId });
+    }
+  };
+
 
   // Columns
   const userColumns = [
@@ -243,7 +262,23 @@ export default function AdminUsersDashboard() {
         >
           <Eye size={16} />
         </button>
-
+        {/* New Level Selector */}
+        <Select
+          value={user?.sellerLevel}
+          onChange={(e) => {
+            if (user?.sellerLevel !== e.id) {
+              updateUserLevel(user.id, e.id);
+            }
+          }}
+          options={[
+            { id: SellerLevel.NEW, name: 'New' },
+            { id: SellerLevel.LVL1, name: 'Level 1' },
+            { id: SellerLevel.LVL2, name: 'Level 2' },
+            { id: SellerLevel.TOP, name: 'Top Seller' },
+          ]}
+          className="!w-40 !text-xs"
+          variant="minimal"
+        />
         <button
           onClick={() => handleEditClick(user)}
           className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
@@ -338,7 +373,7 @@ export default function AdminUsersDashboard() {
             onPageChange={(
               p, // NEW: updates server-side page
             ) => setFilters(prev => ({ ...prev, page: p }))}
-          />
+          />f
         </div>
 
         {/* Modal */}
