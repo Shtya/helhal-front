@@ -2,10 +2,10 @@ import Tabs from '@/components/common/Tabs';
 import { AccessibleButton } from './ChatThread';
 import { AnimatePresence, motion } from 'framer-motion';
 import Img from '@/components/atoms/Img';
-import { Shimmer } from '@/app/[locale]/chat/page';
 import { X, Star, Pin, Search, Archive, LifeBuoy } from 'lucide-react';
+import { Shimmer } from './ChatApp';
 
-export function AllMessagesPanel({ adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t, searchResults, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
+export function AllMessagesPanel({ showContactAdmin, adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t, searchResults, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
 
   return (
     <div className='flex flex-col h-full'>
@@ -18,10 +18,10 @@ export function AllMessagesPanel({ adminLoading, userPagination, setUserPaginati
 
             <div className='flex items-center gap-1.5'>
               {/* Contact Admin */}
-              <button disabled={loading || adminLoading} onClick={onContactAdmin} className='p-2 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors' aria-label='Contact admin' title='Contact admin'>
+              {showContactAdmin && <button disabled={loading || adminLoading} onClick={onContactAdmin} className='p-2 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors' aria-label='Contact admin' title='Contact admin'>
                 <LifeBuoy size={18} />
               </button>
-
+              }
               <button disabled={loading} onClick={onRefresh} className='p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors' aria-label='Refresh conversations' title='Refresh'>
                 <svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
                   <path d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8' />

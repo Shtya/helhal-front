@@ -3,11 +3,11 @@ import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy } from 
 import Img from '@/components/atoms/Img';
 import { motion, AnimatePresence } from 'framer-motion';
 import api, { baseImg } from '@/lib/axios';
-import { MessageSkeletonBubble } from '@/app/[locale]/chat/page';
 import { AttachFilesButton } from './AttachFilesButton';
 import { FaSpinner } from 'react-icons/fa';
 import { HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
 import Link from 'next/link';
+import { MessageSkeletonBubble } from './ChatApp';
 
 export const NoMessagesPlaceholder = () => (
   <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 text-slate-500 rounded-xl p-6">
