@@ -177,7 +177,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
               <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
                 <MapPin className='h-4 w-4' /> From
               </span>
-              <span className='font-semibold break-words max-lg:break-all'>{state.country || '—'}</span>
+              <span className='font-semibold break-words max-lg:break-all'>{state?.country?.name || '—'}</span>
             </li>
             <li className='flex items-center justify-between gap-2'>
               <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
@@ -359,7 +359,10 @@ function KPICard({ loading, stats }) {
 }
 
 
-const MAX_IMAGE_SIZE_MB = 10;
+const MAX_IMAGE_SIZE_MB = 15;
+const MAX_VIDEO_SIZE_MB = 200;
+const IMG_RE = /^image\/(jpeg|png|jpg|gif|webp|svg\+xml)$/;
+const VID_RE = /^video\/(mp4|quicktime|x-matroska|webm|x-msvideo)$/;
 
 function Assets({
   initialVideoUrl = '',
@@ -368,6 +371,7 @@ function Assets({
   onImagesChange, // (urls[]) => void
 }) {
   const [videoUrl, setVideoUrl] = useState(initialVideoUrl || '');
+  const [videoDeleting, setDeletingVideo] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
 
   const [imgs, setImgs] = useState((initialImages || []).slice(0, 6).map((u, i) => ({ id: `init-${i}`, url: u, uploading: false })));
@@ -375,10 +379,6 @@ function Assets({
 
   const videoInputRef = useRef(null);
   const imgInputRef = useRef(null);
-
-  useEffect(() => {
-    onVideoChange?.(videoUrl);
-  }, [videoUrl]);
 
   useEffect(() => {
     setVideoUrl(initialVideoUrl);
@@ -390,14 +390,13 @@ function Assets({
 
   // ---------- Video handlers ----------
   const handlePickVideo = () => videoInputRef.current?.click();
-  const MAX_VIDEO_SIZE_MB = 100;
 
   const handleVideoSelected = async e => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
-    if (!file.type.startsWith('video/')) {
+    if (!VID_RE.test(file.type)) {
       toast.error('Only video files are allowed.');
       return;
     }
@@ -431,6 +430,19 @@ function Assets({
 
   const removeVideo = () => setVideoUrl('');
 
+  const handleDeleteVideo = async () => {
+    setDeletingVideo(true);
+    try {
+      await api.delete('/auth/video');
+      setVideoUrl('');
+    } catch (err) {
+      console.error(err);
+      toast.error?.('Delete failed');
+    } finally {
+      setDeletingVideo(false);
+    }
+  };
+
   // ---------- Images handlers ----------
   const handlePickImages = () => imgInputRef.current?.click();
 
@@ -439,7 +451,7 @@ function Assets({
     if (!files.length) return;
 
     for (const file of files) {
-      if (!file.type.startsWith('image/')) {
+      if (!IMG_RE.test(file.type)) {
         toast.error('Only image files are allowed.');
         return;
       }
@@ -540,17 +552,17 @@ function Assets({
             <p className='mt-2 text-lg text-black/70 break-words'>Stand out with a short introduction video.</p>
           </div>
 
-          <Button className='sm:!w-fit' loading={videoUploading} name={videoUploading ? 'Uploading…' : videoUrl ? 'Replace Video' : 'Upload Video'} icon={<Plus size={18} />} onClick={handlePickVideo} disabled={videoUploading} />
+          <Button className='sm:!w-fit' loading={videoUploading || videoDeleting} name={videoUploading ? 'Uploading…' : videoUrl ? 'Replace Video' : 'Upload Video'} icon={<Plus size={18} />} onClick={handlePickVideo} disabled={videoUploading || videoDeleting} />
         </div>
 
         {/* Video preview / skeleton */}
         <div className='mt-5'>
-          {videoUploading ? (
+          {videoUploading || videoDeleting ? (
             <div className='aspect-video w-full rounded-2xl bg-slate-200 animate-pulse' />
           ) : videoUrl ? (
             <div className='relative'>
               <video src={resolveUrl(videoUrl)} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />
-              <button onClick={removeVideo} className='absolute top-2 right-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/75' aria-label='Remove video'>
+              <button onClick={handleDeleteVideo} disabled={videoUploading || videoDeleting} className='absolute top-2 right-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white hover:bg-black/75' aria-label='Remove video'>
                 <Trash2 className='h-4 w-4' />
               </button>
             </div>
@@ -643,32 +655,25 @@ function filenameFromUrl(u) {
 }
 
 const MAX_PORTFOLIO_SIZE_MB = 25;
-const ALLOWED_PORTFOLIO_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-powerpoint',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'text/plain',
-];
-
+// Allow common document types
+const DOC_RE = /^(application\/pdf|text\/plain|application\/msword|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document|application\/vnd\.ms-excel|application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|application\/vnd\.ms-powerpoint|application\/vnd\.openxmlformats-officedocument\.presentationml\.presentation)$/i;
 
 function PortfolioFileBox({
-  initialUrl = '',
+  initialPortfolio = '',
   onChange, // (url: string) => void
 }) {
-  const [fileUrl, setFileUrl] = useState(initialUrl || '');
+  const [fileUrl, setFileUrl] = useState(initialPortfolio?.url || '');
+  const [filename, setFilename] = useState(initialPortfolio?.filename || '');
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
   const inputRef = useRef(null);
 
   // keep in sync if parent updates
-  useEffect(() => setFileUrl(initialUrl || ''), [initialUrl]);
   useEffect(() => {
-    onChange?.(fileUrl);
-  }, [fileUrl]);
+    setFileUrl(initialPortfolio?.url || '')
+    setFilename(initialPortfolio?.filename || '')
+  }, [initialPortfolio]);
 
   const pickFile = () => inputRef.current?.click();
 
@@ -676,11 +681,11 @@ function PortfolioFileBox({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const isAllowedType = ALLOWED_PORTFOLIO_TYPES.includes(file.type);
+    const isAllowedType = DOC_RE.test(file.type);
     const isTooLarge = file.size > MAX_PORTFOLIO_SIZE_MB * 1024 * 1024;
 
     if (!isAllowedType) {
-      toast.error('Unsupported file type. Please upload a PDF, DOC, PPT, XLS, or TXT file.');
+      toast.error('Unsupported file type. Please upload PDF, TXT, DOC, DOCX, XLS, XLSX, PPT, or PPTX.');
       return;
     }
 
@@ -695,7 +700,8 @@ function PortfolioFileBox({
       const { data } = await api.post('/auth/portfolio-file', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      setFileUrl(data.url); // backend returns absolute URL
+      setFileUrl(data.url);
+      setFilename(data.filename);
     } catch (err) {
       console.error(err);
       // toast.error?.('Upload failed');
@@ -711,13 +717,16 @@ function PortfolioFileBox({
     try {
       await api.delete('/auth/portfolio-file', { data: { url: fileUrl } });
       setFileUrl('');
+      setFilename('');
     } catch (err) {
       console.error(err);
-      // toast.error?.('Delete failed');
+      toast.error?.('Delete failed');
     } finally {
       setDeleting(false);
     }
   };
+
+
 
   const hasFile = !!fileUrl;
 
@@ -726,7 +735,7 @@ function PortfolioFileBox({
       <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
         <div>
           <h3 className='text-xl font-semibold text-black'>Portfolio file</h3>
-          <p className='text-sm text-slate-600'>PDF/DOC/PPT/XLS/TXT (max ~25MB). One file at a time.</p>
+          <p className='text-sm text-slate-600'> PDF, TXT, DOC, DOCX, XLS, XLSX, PPT, PPTX (max ~25MB). One file at a time.</p>
         </div>
 
         <Button className='sm:!w-fit' name={uploading ? 'Uploading…' : hasFile ? 'Replace file' : 'Upload file'}
@@ -741,9 +750,9 @@ function PortfolioFileBox({
           <div className='h-14 w-full rounded-xl bg-slate-200 animate-pulse' />
         ) : hasFile ? (
           <div className='relative flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3'>
-            <a href={resolveUrl(fileUrl)} target='_blank' rel='noreferrer' className='flex items-center  gap-3 text-slate-800 hover:underline  flex-1 min-w-0' title={filenameFromUrl(fileUrl)}>
+            <a href={resolveUrl(fileUrl)} target='_blank' rel='noreferrer' className='flex items-center  gap-3 text-slate-800 hover:underline  flex-1 min-w-0' title={resolveUrl(fileUrl)}>
               <FileText className='h-5 w-5' />
-              <span className='truncate text-ellipsis flex-1 min-w-0'>{filenameFromUrl(fileUrl)}</span>
+              <span className='truncate text-ellipsis flex-1 min-w-0'>{filename}</span>
             </a>
 
             <Button className='!w-fit' color='red' name={deleting ? 'Deleting…' : 'Delete'} icon={deleting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Trash2 className='h-4 w-4' />} onClick={handleDelete} loading={deleting || uploading} />
@@ -784,14 +793,15 @@ export default function Overview() {
     ownerType: '',
     description: '',
     languages: [],
-    country: '',
+    country: {},
+    countryId: '',
     sellerLevel: '',
     skills: [],
     education: [],
     certifications: [],
     introVideoUrl: '',
     portfolioItems: [],
-    portfolioFile: '',
+    portfolioFile: null,
     responseTime: null,
     deliveryTime: '',
     ageGroup: '',
@@ -848,6 +858,7 @@ export default function Overview() {
           ownerType: user.ownerType || '',
           description: user.description || '',
           languages: user.languages || [],
+          countryId: user.countryId || '',
           country: user.country || '',
           sellerLevel: user.sellerLevel || '',
           skills: user.skills || [],
@@ -855,7 +866,7 @@ export default function Overview() {
           certifications: Array.isArray(user.certifications) ? user.certifications : [],
           introVideoUrl: user.introVideoUrl || '',
           portfolioItems: user.portfolioItems || [],
-          portfolioFile: user.portfolioFile || '',
+          portfolioFile: user.portfolioFile || null,
           responseTime: user.responseTime ?? null,
           deliveryTime: user.deliveryTime || '',
           ageGroup: user.ageGroup || '',
@@ -892,14 +903,14 @@ export default function Overview() {
           ownerType: user.ownerType || '',
           description: user.description || '',
           languages: user.languages || [],
-          country: user.country || '',
+          countryId: user.countryId || '',
           sellerLevel: user.sellerLevel || '',
           skills: user.skills || [],
           education: Array.isArray(user.education) ? user.education : [],
           certifications: Array.isArray(user.certifications) ? user.certifications : [],
           introVideoUrl: user.introVideoUrl || '',
           portfolioItems: user.portfolioItems || [],
-          portfolioFile: user.portfolioFile || '',
+          portfolioFile: user.portfolioFile || null,
           responseTime: user.responseTime ?? null,
           deliveryTime: user.deliveryTime || '',
           ageGroup: user.ageGroup || '',
@@ -976,7 +987,7 @@ export default function Overview() {
         skills: state.skills,
         education: state.education,
         certifications: state.certifications,
-        country: state.country,
+        countryId: state.countryId,
         type: state.type,
 
 
@@ -1077,7 +1088,7 @@ export default function Overview() {
               introVideoUrl: state.introVideoUrl,
               portfolioItems: state.portfolioItems,
               portfolioFile: state.portfolioFile,
-              country: state.country,
+              countryId: state.countryId,
               type: state.type,
               responseTime: state.responseTime,
               deliveryTime: state.deliveryTime,
@@ -1096,7 +1107,7 @@ export default function Overview() {
             }}
             onRemoveEducation={onRemoveEducation}
             onRemoveCertification={onRemoveCertification}
-            onCountryChange={code => setState(s => ({ ...s, country: code }))}
+            onCountryChange={id => setState(s => ({ ...s, countryId: id }))}
             accountTypeOptions={accountTypeOptions}
             onTypeChange={t => setState(s => ({ ...s, type: t }))}
           />
@@ -1121,7 +1132,7 @@ export default function Overview() {
           />
 
           <Assets initialVideoUrl={state.introVideoUrl} initialImages={(state.portfolioItems || []).slice(0, 6).map(it => (typeof it === 'string' ? it : it?.url))} onVideoChange={url => setState(s => ({ ...s, introVideoUrl: url }))} onImagesChange={urls => setState(s => ({ ...s, portfolioItems: urls }))} />
-          <PortfolioFileBox initialUrl={state?.portfolioFile || ''} />
+          <PortfolioFileBox initialPortfolio={state?.portfolioFile || null} />
         </div>
 
         {/* Bottom Save Drawer */}
@@ -1163,8 +1174,6 @@ export default function Overview() {
           </div>
         </div>
       </div>
-
-
     </div>
   );
 }
@@ -1192,7 +1201,7 @@ function stableStringify(obj) {
 
 function pickEditable(state) {
   // only fields you actually send to the backend (payload)
-  const { username, email, password, type, phone, profileImage, role, status, ownerType, description, languages, country, sellerLevel, skills, education, certifications, introVideoUrl, portfolioItems, portfolioFile, responseTime, deliveryTime, ageGroup, revisions, preferences, balance, totalSpent, totalEarned, reputationPoints } = state;
+  const { username, email, password, type, phone, profileImage, role, status, ownerType, description, languages, countryId, sellerLevel, skills, education, certifications, introVideoUrl, portfolioItems, portfolioFile, responseTime, deliveryTime, ageGroup, revisions, preferences, balance, totalSpent, totalEarned, reputationPoints } = state;
   return {
     username: username?.trim(),
     email,
@@ -1205,7 +1214,7 @@ function pickEditable(state) {
     ownerType,
     description: description?.trim(),
     languages,
-    country,
+    countryId,
     sellerLevel,
     skills,
     education,

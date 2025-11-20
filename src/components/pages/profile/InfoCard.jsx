@@ -281,31 +281,9 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             setCountryError(null);
             try {
                 const res = await api.get(`/countries`);
-                const data = res?.data?.records || [];
-                setCountriesOptions(data.map(country => ({ id: country.id, name: country.name })));
+                setCountriesOptions(res.data);
             } catch (err) {
-                //set temp for development
-                if (process.env.NODE_ENV === 'development') {
-                    setCountriesOptions([
-                        { id: 'US', name: 'United States' },
-                        { id: 'UK', name: 'United Kingdom' },
-                        { id: 'CA', name: 'Canada' },
-                        { id: 'AU', name: 'Australia' },
-                        { id: 'DE', name: 'Germany' },
-                        { id: 'FR', name: 'France' },
-                        { id: 'IN', name: 'India' },
-                        { id: 'BR', name: 'Brazil' },
-                        { id: 'NG', name: 'Nigeria' },
-                        { id: 'ZA', name: 'South Africa' },
-                        { id: 'EG', name: 'Egypt' },
-                        { id: 'SA', name: 'Saudi Arabia' },
-                        { id: 'AE', name: 'United Arab Emirates' },
-                    ]);
-                }
-                else {
-
-                    setCountryError('Failed to load languages');
-                }
+                setCountryError('Failed to load languages');
             } finally {
                 setCountryLoading(false);
             }
@@ -478,7 +456,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider />
             {/* Top selects row */}
             <div className=' mt-4 grid grid-cols-1 gap-3 md:grid-cols-2'>
-                <Select key={`${countryLoading} ${countriesOptions?.length}`} label='Country' options={countriesOptions} value={about?.country} onChange={opt => onCountryChange?.(opt?.id)} placeholder='Select country' isLoading={countryLoading} />
+                <Select key={`${countryLoading} ${countriesOptions?.length}`} label='Country' options={countriesOptions} value={about?.countryId} onChange={opt => onCountryChange?.(opt?.id)} placeholder='Select country' isLoading={countryLoading} showSearch={true} />
                 <Select label='Account Type' options={accountTypeOptions} value={about?.type} onChange={opt => onTypeChange?.(opt?.id)} placeholder='Select type' />
             </div>
         </Card>

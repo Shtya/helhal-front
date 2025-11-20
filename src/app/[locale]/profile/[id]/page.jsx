@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt } from 'lucide-react';
+import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video } from 'lucide-react';
 import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
 import { useAuth } from '@/context/AuthContext';
+import { resolveUrl } from '@/utils/helper';
 
 const mockJobs = [
   {
@@ -162,27 +163,29 @@ export default function ProfilePageClient() {
       {/* ===== Main ===== */}
       <section className='mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6'>
         {/* Left rail */}
-        <div className='space-y-6 lg:col-span-1'>
-          <Card title='About'>
-            <p className='text-slate-700 leading-relaxed'>{buyer?.description || 'No description provided.'}</p>
-            <div className='mt-3 flex flex-wrap gap-2'>
-              {buyer?.verified && <Badge icon={BadgeCheck} text='Verified' />}
-              {buyer?.pro && <Badge icon={Sparkles} text='Pro Member' />}
-            </div>
-          </Card>
+        <div className='lg:col-span-1'>
+          <div className='sticky top-30 space-y-6 '>
+            <Card title='About'>
+              <p className='text-slate-700 leading-relaxed'>{buyer?.description || 'No description provided.'}</p>
+              <div className='mt-3 flex flex-wrap gap-2'>
+                {buyer?.verified && <Badge icon={BadgeCheck} text='Verified' />}
+                {buyer?.pro && <Badge icon={Sparkles} text='Pro Member' />}
+              </div>
+            </Card>
 
-          <Card title='Contact'>
-            <InfoRow icon={Mail} label='Email' value={buyer?.email || '—'} copyable />
-            <InfoRow icon={Smartphone} label='Phone' value={buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—'} />
-            <InfoRow icon={Globe} label='Country' value={buyer?.country || '—'} />
-          </Card>
+            <Card title='Contact'>
+              <InfoRow icon={Mail} label='Email' value={buyer?.email || '—'} copyable />
+              <InfoRow icon={Smartphone} label='Phone' value={buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—'} />
+              <InfoRow icon={Globe} label='Country' value={buyer?.country.name || '—'} />
+            </Card>
 
-          <Card title='Account'>
-            <InfoRow icon={UserIcon} label='User ID' value={buyer?.id || '—'} copyable />
-            <InfoRow icon={Calendar} label='Created' value={prettyDate(buyer?.created_at)} />
-            <InfoRow icon={Clock} label='Updated' value={prettyDate(buyer?.updated_at)} />
-            <InfoRow icon={Award} label='Referral Code' value={buyer?.referralCode || '—'} copyable />
-          </Card>
+            <Card title='Account'>
+              <InfoRow icon={UserIcon} label='User ID' value={buyer?.id || '—'} copyable />
+              <InfoRow icon={Calendar} label='Created' value={prettyDate(buyer?.created_at)} />
+              <InfoRow icon={Clock} label='Updated' value={prettyDate(buyer?.updated_at)} />
+              <InfoRow icon={Award} label='Referral Code' value={buyer?.referralCode || '—'} copyable />
+            </Card>
+          </div>
         </div>
 
         {/* Right column */}
@@ -193,6 +196,70 @@ export default function ProfilePageClient() {
             <InfoRow icon={Clock} label='Delivery Time' value={buyer?.deliveryTime || '—'} />
             <InfoRow icon={Calendar} label='Deactivated At' value={prettyDate(buyer?.deactivatedAt)} />
           </Card>
+
+          <Card title='Intro video'>
+            {buyer?.introVideoUrl ? <video src={resolveUrl(buyer?.introVideoUrl)} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />
+              : (<div>
+                <div type='button' className='group flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-slate-600'>
+                  <Video className='h-5 w-5' />
+                  <span className='font-medium'>This user hasn’t uploaded an intro video yet.</span>
+                </div>
+              </div>
+              )}
+          </Card>
+
+          <Card title='Portfolio'>
+            <div className='mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4'>
+              {buyer?.portfolioItems && buyer.portfolioItems.length > 0 ? (
+                buyer.portfolioItems.map((item, index) => (
+                  <figure
+                    key={index}
+                    className='group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'
+                  >
+                    <img
+                      src={resolveUrl(item)}
+                      alt='Portfolio'
+                      className='aspect-[16/11] w-full object-cover'
+                    />
+                  </figure>
+                ))
+              ) : (
+                <div className='col-span-full text-center text-slate-500'>
+                  This user has no portfolio items yet.
+                </div>
+              )}
+            </div>
+          </Card>
+
+          <Card title='Portfolio file'>
+
+            {/* Preview / state */}
+            <div className='mt-4'>
+              {buyer?.portfolioFile ? (
+                <div className='relative flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3'>
+                  <a
+                    href={resolveUrl(buyer.portfolioFile.url)}
+                    target='_blank'
+                    rel='noreferrer'
+                    className='flex items-center gap-3 text-slate-800 hover:underline flex-1 min-w-0'
+                    title={resolveUrl(buyer.portfolioFile.url)}
+                  >
+                    <FileText className='h-5 w-5' />
+                    <span className='truncate text-ellipsis flex-1 min-w-0'>{buyer.portfolioFile.filename}</span>
+                  </a>
+
+                  {/* Overlay to indicate read-only */}
+                  <div className='absolute inset-0 rounded-xl bg-black/5 pointer-events-none' />
+                </div>
+              ) : (
+                <div className='cursor-default rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-slate-500'>
+                  No file uploaded.
+                </div>
+              )}
+            </div>
+          </Card>
+
+
 
           {/* ===== Services (Redesigned) ===== */}
           {buyer?.role === 'seller' ? (
