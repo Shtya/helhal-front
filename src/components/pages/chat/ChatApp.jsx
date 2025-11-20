@@ -279,6 +279,7 @@ const useChat = () => {
             time: formatTime(serverMsg?.created_at),
             unreadCount: 1,
             about: {
+              id: other?.id,
               name: other?.username || '—',
               from: formatDate(serverMsg?.created_at),
               onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',
@@ -495,6 +496,7 @@ const useChat = () => {
       time: formatTime(conv.lastMessageAt),
       unreadCount: conv.unreadCount || 0,
       about: {
+        id: other?.id,
         name: other?.username || '—',
         from: formatDate(conv.lastMessageAt),
         onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',

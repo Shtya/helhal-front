@@ -176,7 +176,7 @@ export default function ProfilePageClient() {
             <Card title='Contact'>
               <InfoRow icon={Mail} label='Email' value={buyer?.email || '—'} copyable />
               <InfoRow icon={Smartphone} label='Phone' value={buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—'} />
-              <InfoRow icon={Globe} label='Country' value={buyer?.country.name || '—'} />
+              <InfoRow icon={Globe} label='Country' value={buyer?.country?.name || '—'} />
             </Card>
 
             <Card title='Account'>

@@ -198,7 +198,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
           <div>
             <div className='flex items-center gap-2'>
               <div>
-                <h3 className='text-lg font-semibold tracking-tight'>{thread?.name}</h3>
+                <Link href={`/profile/${thread?.about?.id}`} className='text-lg font-semibold tracking-tight'>{thread?.name}</Link>
                 <span className='text-xs  mt-[-3px] font-[500] block '>{thread?.email}</span>
               </div>
               {isPinned && <Pin size={16} className='text-blue-500' />}
