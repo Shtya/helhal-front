@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
       setLoadingUser(true);
       const res = await api.get('/auth/me');
       setUser(res.data);
+      return res.data;
     } catch {
       setUser(null);
     } finally {

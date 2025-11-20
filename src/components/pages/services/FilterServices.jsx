@@ -42,8 +42,8 @@ function buildQuery(formData, pagination) {
         page: pagination.page,
         limit: pagination.limit,
 
-        // ...(formData.search && { search: formData.search }), return it whe back solve exeption
-        ...(formData.priceRange && { priceRange: formData.priceRange }),
+        ...(formData.search && { search: formData.search }),
+        ...(formData.priceRange && { budget: formData.priceRange }),
         ...(formData.customBudget && { customBudget: formData.customBudget }),
         ...(formData.rating && { rating: formData.rating.id }),
         ...(formData.sortBy && { sortBy: formData.sortBy.id }),
@@ -134,19 +134,15 @@ export default function FilterServices({ category = 'all' }) {
     const skipDebouncedRef = useRef(false);
 
     useEffect(() => {
-        let mounted = true;
         (async () => {
             try {
 
                 const res = await apiService.getFilterOptions(category); // expect { filterOptions: {...} }
-                if (mounted && res?.filterOptions) setFilterOptions(res.filterOptions);
+                setFilterOptions(res.filterOptions);
 
             } catch (e) {
             }
         })();
-        return () => {
-            mounted = false;
-        };
     }, []);
 
     const fetchAllServices = useCallback(async () => {
@@ -312,20 +308,20 @@ export default function FilterServices({ category = 'all' }) {
                         <p className='mt-1 text-sm text-slate-500'>{t('filterSubtitle') || 'Refine your search with custom options.'}</p>
                     </div>
 
-                    <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-7'>
+                    <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6'>
                         <SellerDetailsDropdown filterOptions={filterOptions} onFilterChange={handleSellerDetailsChange} selectedValues={formData} />
 
                         <SellerBudgetDropdown onBudgetChange={handleBudgetChange} selectedPriceRange={formData.priceRange} customBudget={formData.customBudget} />
 
                         <DeliveryTimeDropdown onDeliveryTimeChange={handleDeliveryTimeChange} selectedDeliveryTime={formData.deliveryTime} customDeliveryTime={formData.customDeliveryTime} />
 
-                        <Select
+                        {/* <Select
                             options={ratingsOptions}
                             placeholder={t('rating')}
                             cnPlaceholder='!text-gray-900'
                             value={formData?.rating?.id}
                             onChange={val => handleSelectChange('rating', val)}
-                        />
+                        /> */}
 
                         <Select
                             options={revisionsOptions}
@@ -372,3 +368,5 @@ export default function FilterServices({ category = 'all' }) {
         </main>
     );
 }
+
+

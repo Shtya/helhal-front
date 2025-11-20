@@ -142,13 +142,17 @@ const API_BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/`;
 
 export const ContinueWithGoogleButton = ({ referralCode }) => {
   const t = useTranslations('auth');
-  const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const searchParams = useSearchParams();
 
+  const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const userType = searchParams.get('type') || null;
   const handleGoogleLogin = async () => {
     let url = `${API_BASE_URL}auth/google`;
     const params = new URLSearchParams();
     if (redirectUrl) params.append('redirect', redirectUrl);
     if (referralCode) params.append('ref', referralCode);
+    if (userType) params.append('type', userType);
+
     if (params.toString()) url += `?${params.toString()}`;
 
     try {
@@ -166,6 +170,8 @@ export const ContinueWithGoogleButton = ({ referralCode }) => {
 
 export const ContinueWithAppleButton = ({ referralCode }) => {
   const t = useTranslations('auth');
+  const searchParams = useSearchParams();
+  const userType = searchParams.get('type') || null;
   const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   const handleAppleLogin = async () => {
@@ -173,6 +179,7 @@ export const ContinueWithAppleButton = ({ referralCode }) => {
     const params = new URLSearchParams();
     if (redirectUrl) params.append('redirect', redirectUrl);
     if (referralCode) params.append('ref', referralCode);
+    if (userType) params.append('type', userType);
     if (params.toString()) url += `?${params.toString()}`;
 
     try {
@@ -515,6 +522,7 @@ export default function AuthPage() {
   const t = useTranslations('auth');
 
   const tabParam = searchParams?.get('tab') || 'login';
+  const oauthFailed = searchParams?.get('error');
   const accessTokenFromUrl = searchParams?.get('accessToken');
   const refreshTokenFromUrl = searchParams?.get('refreshToken');
   const redirectUrl = searchParams?.get('redirect') || '/explore';
@@ -529,7 +537,22 @@ export default function AuthPage() {
   const [otpForReset, setOtpForReset] = useState('');
 
   const [needsUserTypeSelection, setNeedsUserTypeSelection] = useState(false);
-  const [oauthUser, setOauthUser] = useState(null);
+
+  useEffect(() => {
+    if (oauthFailed === 'oauth_failed') {
+      toast.error('Login failed. Please try again.');
+
+
+      // 🔥 Remove query param from URL without reload
+      const params = new URLSearchParams(window.location.search);
+      params.delete('error');
+
+      const newUrl =
+        window.location.pathname + '?' + params.toString();
+
+      router.replace(newUrl, { scroll: false });
+    }
+  }, [])
 
   // OAuth: if query has tokens, store them and fetch /auth/me
   useEffect(() => {
@@ -538,11 +561,9 @@ export default function AuthPage() {
       try {
 
         updateTokens({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl });
+        const user = await refetchUser();
 
-        refetchUser();
-
-        if (!me?.type) {
-          setOauthUser(me);
+        if (user?.type) {
           setNeedsUserTypeSelection(true);
         } else {
           toast.success('Logged in successfully!');

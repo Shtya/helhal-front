@@ -101,7 +101,6 @@ export default function Page() {
           const badge = fromJob ? 'Job' : 'Service';
           const href = fromJob ? `/my-jobs?job=${order.jobId}` : `/services/category/${slug}`;
 
-
           return (
             <div className="flex flex-col items-start gap-1">
               <Link

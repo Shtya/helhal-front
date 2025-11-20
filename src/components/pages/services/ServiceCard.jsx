@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
- import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/components/atoms/Button';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
 import Img from '@/components/atoms/Img';
 import PriceTag from '@/components/atoms/priceTag';
 import { Clock, CheckCircle2, Zap, Star, CircleArrowOutUpRight } from 'lucide-react';
 import { memo, useMemo } from 'react';
- 
+
 export const Stars = ({ value = 0, size = 12, stroke = 'stroke-white', dim = 'stroke-slate-400' }) => {
   const full = Math.floor(Math.min(Math.max(value, 0), 5));
   const half = value - full >= 0.5 ? 1 : 0;
@@ -75,7 +75,7 @@ export default memo(function AmazingServiceCard({
   const cardVariants = {
     initial: { opacity: 0, y: 20, scale: 0.98 },
     in: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, delay: 0.05 * index, ease: 'easeOut' } },
-    hover: {  rotateX: 2,   transition: { type: 'spring', stiffness: 220, damping: 18 } },
+    hover: { rotateX: 2, transition: { type: 'spring', stiffness: 220, damping: 18 } },
   };
 
   if (loading) {
@@ -143,10 +143,10 @@ export default memo(function AmazingServiceCard({
               <Img src={sellerAvatar} alt={sellerName} className='h-8 w-8 rounded-full object-cover border border-white/40' />
               <div className='min-w-0'>
                 <div className='text-sm font-semibold truncate'>{sellerName}</div>
-                <div className='text-white flex items-center gap-1.5'>
+                {/* <div className='text-white flex items-center gap-1.5'>
                   <span className='text-xs font-semibold'>{ratingText}</span>
                   <Stars value={rating} ratingCount={ratingCount} size={16} stroke='stroke-white' dim='stroke-white/30' />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

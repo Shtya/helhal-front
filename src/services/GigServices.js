@@ -68,6 +68,7 @@ class ApiService {
     if (Array.isArray(processedParams.sellerAvailability)) processedParams.sellerAvailability = processedParams.sellerAvailability.join(',');
     if (Array.isArray(processedParams.sellerSpeaks)) processedParams.sellerSpeaks = processedParams.sellerSpeaks.join(',');
     if (Array.isArray(processedParams.sellerCountries)) processedParams.sellerCountries = processedParams.sellerCountries.join(',');
+
     const queryString = new URLSearchParams(processedParams).toString();
 
     return this.request({
@@ -76,7 +77,6 @@ class ApiService {
       extra
     });
   }
-
   getServicesPublic(query = {}, extra = {}) {
     const params = this.normalizeParams(query);
     return this.request({
@@ -86,6 +86,7 @@ class ApiService {
       ...extra,
     });
   }
+
 
   getServices(category, query = {}, extra = {}) {
     return category === 'all' ? this.getServicesPublic(query, extra) : this.getCategoryServicesFilter(category, query, extra)
