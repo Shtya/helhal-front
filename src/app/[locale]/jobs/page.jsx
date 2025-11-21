@@ -475,7 +475,7 @@ function JobCard({ job, onOpen, index }) {
               Related to you
             </span>
           )}
-          <FavoriteButton className=' !top-0 !right-0 !relative' />
+          {/* <FavoriteButton className=' !top-0 !right-0 !relative' /> */}
         </div>
       </div>
 

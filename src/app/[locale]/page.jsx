@@ -13,7 +13,7 @@ import 'swiper/css/pagination';
 import { useLocale, useTranslations } from 'next-intl';
 import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users } from 'lucide-react';
 import ReactPlayer from 'react-player';
-import { localImageLoader } from '@/utils/helper';
+import { localImageLoader, resolveUrl } from '@/utils/helper';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -374,16 +374,12 @@ export function PopularServicesSwiper() {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get('/services/popular');
-        const data = res?.data?.records || [];
+        const res = await api.get('/services/popular/list');
+        const data = res?.data || res?.data?.records || [];
 
         setItems(data);
       } catch (err) {
-        if (process.env.NODE_ENV === 'development') {
-          setItems(POPULAR_SERVICES);
-        } else {
-          setError('Failed to load popular services');
-        }
+        setError('Failed to load popular services');
       } finally {
         setLoading(false);
       }
@@ -392,6 +388,7 @@ export function PopularServicesSwiper() {
     fetchPopular();
   }, []);
 
+  if (items.length === 0) return null;
   return (
     <section className="container !px-4 sm:!px-6 lg:!px-8 !py-12">
       <div className="flex items-end justify-between mb-4">
@@ -433,8 +430,9 @@ export function PopularServicesSwiper() {
               </div>
             </SwiperSlide>
           ))
-          : items.map(service => (
-            <SwiperSlide key={service.slug}>
+          : items.map(service => {
+            const minPrice = Array.isArray(service?.packages) && service.packages.length ? Math.min(...service.packages.map(p => Number(p.price || 0))) : null;
+            return (<SwiperSlide key={service.slug}>
               <Link
                 // primary target: service detail using service.slug
                 href={`/services/${encodeURIComponent(service.categorySlug)}/${encodeURIComponent(service.slug)}`}
@@ -447,10 +445,10 @@ export function PopularServicesSwiper() {
                 ].join(' ')}
                 aria-label={service.title}
               >
-                <span className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">From ${service.startingPrice}</span>
+                <span className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">From ${minPrice}</span>
                 <div className="relative w-14 h-14 mb-4">
                   <Image
-                    src={service.categoryIconUrl || '/icons/popular/default.svg'}
+                    src={service.iconUrl ? resolveUrl(service.iconUrl) : '/icons/service.png'}
                     loader={localImageLoader}
                     alt={service.title}
                     fill
@@ -461,8 +459,8 @@ export function PopularServicesSwiper() {
                 <span className="text-sm font-semibold text-gray-900 group-hover:text-emerald-700">{service.title}</span>
                 <span className="mt-2 text-xs text-emerald-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity">Book now →</span>
               </Link>
-            </SwiperSlide>
-          ))}
+            </SwiperSlide>)
+          })}
       </Swiper>
 
       {error && (

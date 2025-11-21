@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Eye, Trash2, Plus, Folder } from 'lucide-react';
+import { Eye, Trash2, Plus, Folder, Star, ImageIcon, RefreshCw } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -14,6 +14,7 @@ import Textarea from '@/components/atoms/Textarea';
 import toast from 'react-hot-toast';
 import { Link } from '@/i18n/navigation';
 import SearchBox from '@/components/common/Filters/SearchBox';
+import { resolveUrl } from '@/utils/helper';
 
 export default function AdminServicesDashboard() {
   const [activeTab, setActiveTab] = useState('all');
@@ -104,7 +105,8 @@ export default function AdminServicesDashboard() {
     if (id === 'oldest') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'created_at', sortOrder: 'ASC', page: 1 }));
     if (id === 'az') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'title', sortOrder: 'ASC', page: 1 }));
     if (id === 'za') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'title', sortOrder: 'DESC', page: 1 }));
-    if (id === 'popular') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'ordersCount', sortOrder: 'DESC', page: 1 }));
+    if (id === 'mostOrdered') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'ordersCount', sortOrder: 'DESC', page: 1 }));
+    if (id === 'popular') setFilters(p => ({ ...p, valueSort: opt.id, sortBy: 'popular', sortOrder: 'DESC', page: 1 }));
   };
 
   const onSubmit = async payload => {
@@ -139,6 +141,17 @@ export default function AdminServicesDashboard() {
       toast.error(e?.response?.data?.message || 'Error updating service status.', { id: toastId });
     }
   };
+
+  function openPopularModel(popularMode, current) {
+    setModalOpen(true)
+    setMode(popularMode)
+    setCurrent(current)
+  }
+
+  async function handelSavePopular() {
+    await fetchServices();
+    setModalOpen(false);
+  }
 
   // Columns
   const columns = [
@@ -214,8 +227,11 @@ export default function AdminServicesDashboard() {
     { key: 'created_at', label: 'Created', type: 'date' },
   ];
 
-  const Actions = ({ row }) => (
-    <div className='flex items-center gap-2'>
+
+  const Actions = ({ row }) => {
+    const isPopular = row.popular;
+
+    return (<div className='flex items-center gap-2'>
       <Link href={`/services/category/${row.slug}`} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
         <Eye size={16} />
       </Link>
@@ -235,8 +251,18 @@ export default function AdminServicesDashboard() {
         className='!w-32 !text-xs'
         variant='minimal'
       />
-    </div>
-  );
+      <button
+        onClick={() => openPopularModel(isPopular ? 'edit-popular' : 'mark-popular', row)}
+        className={`p-2 rounded-full ${isPopular
+          ? 'text-yellow-600 hover:bg-yellow-50'
+          : 'text-slate-500 hover:bg-slate-100'
+          }`}
+        title={isPopular ? 'Unmark as Popular' : 'Mark as Popular'}
+      >
+        <Star size={16} fill={isPopular ? 'currentColor' : 'none'} />
+      </button>
+    </div>)
+  }
 
   return (
     <div>
@@ -260,6 +286,7 @@ export default function AdminServicesDashboard() {
                   { id: 'oldest', name: 'Oldest' },
                   { id: 'az', name: 'A–Z' },
                   { id: 'za', name: 'Z–A' },
+                  { id: 'mostOrdered', name: 'Most Ordered' },
                   { id: 'popular', name: 'Most Popular' },
                 ]}
               />
@@ -273,13 +300,31 @@ export default function AdminServicesDashboard() {
           <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
-        <Modal open={modalOpen} title={mode === 'view' ? 'Service Details' : mode === 'edit' ? 'Edit Service' : 'Create Service'} onClose={() => setModalOpen(false)} size='lg' hideFooter>
+        <Modal open={modalOpen && (mode === 'view' || mode === 'edit' || mode === 'create')} title={mode === 'view' ? 'Service Details' : mode === 'edit' ? 'Edit Service' : 'Create Service'} onClose={() => setModalOpen(false)} size='lg' hideFooter>
           <ServiceForm mode={mode} value={current} onSubmit={onSubmit} onCancel={() => setModalOpen(false)} submitting={submitting} apiError={apiError} />
         </Modal>
+
+        <Modal
+          open={modalOpen && (mode === "edit-popular" || mode === "mark-popular")}
+          title={mode === "edit-popular" ? "Edit Popular Icon" : "Mark as Popular"}
+          onClose={() => setModalOpen(false)}
+          size="md"
+          hideFooter
+        >
+          <PopularForm
+            mode={mode}
+            service={current}
+            onCancel={() => setModalOpen(false)}
+            onSaved={handelSavePopular}
+          />
+        </Modal>
+
       </div>
     </div>
   );
 }
+
+
 
 function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = false, apiError = null }) {
   const [form, setForm] = useState({
@@ -630,4 +675,144 @@ function slugify(v) {
     .trim()
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
+}
+
+
+function PopularForm({ service, onCancel, onSaved }) {
+  const [file, setFile] = useState(null);
+  const [iconUrl, setIconUrl] = useState(service?.iconUrl || "");
+  const [saving, setSaving] = useState(false);
+  const [unpopularing, setUnpopularing] = useState(false);
+
+  const serviceId = service.id;
+  const popular = service.popular;
+
+  const handleFileChange = f => {
+    if (!f) return;
+    setFile(f);
+    // Show preview from local file
+    const preview = URL.createObjectURL(f);
+    setIconUrl(preview);
+  };
+
+  const saveIcon = async () => {
+    if (!file) return;
+
+    try {
+      setSaving(true);
+
+      const fd = new FormData();
+
+      // If user selected a file → send it
+      if (file) {
+        fd.append("icon", file);
+      }
+
+      const apiUrl = popular
+        ? `/services/${serviceId}/popular/icon`
+        : `/services/${serviceId}/popular`;
+
+      const res = await api.post(apiUrl, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const url = res?.data?.iconUrl;
+      toast.success("Popular icon updated");
+
+      onSaved?.(url);
+    } catch (e) {
+      const msg = e?.response?.data?.message || "Failed to update icon"
+      toast.error(msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+
+  const removePopular = async () => {
+    try {
+      setUnpopularing(true);
+      await api.delete(`/services/${serviceId}/unpopular`);
+      toast.success("Service removed from popular");
+      onSaved?.(null); // clear icon
+    } catch (e) {
+      const msg = e?.response?.data?.message || "Failed to remove popular status"
+      toast.error(msg);
+    } finally {
+      setUnpopularing(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Upload Button + Preview */}
+      <div className="flex items-center gap-3">
+        <label className="relative inline-flex items-center justify-center h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm hover:bg-slate-50 cursor-pointer">
+          <input
+            type="file"
+            accept="image/*"
+            className="absolute inset-0 opacity-0 cursor-pointer"
+            onChange={e => handleFileChange(e.target.files?.[0])}
+          />
+
+          <span className="inline-flex items-center">
+            <ImageIcon size={16} className="mr-2" /> Choose Icon
+          </span>
+        </label>
+
+        {iconUrl ? (
+          <img
+            src={iconUrl.startsWith("blob:") ? iconUrl : resolveUrl(iconUrl)}
+            alt="Popular icon"
+            className="h-10 w-10 rounded-lg border border-slate-200 object-contain"
+          />
+        ) : (
+          <div className="grid h-10 w-10 place-items-center rounded-lg border border-dashed border-slate-300 text-slate-400">
+            <ImageIcon size={16} />
+          </div>
+        )}
+      </div>
+
+      <p className="text-xs text-slate-500">
+        Choose a file then click Save to update the popular icon.
+      </p>
+
+      {/* Footer Actions */}
+      <div className="flex justify-end gap-3 border-t pt-4">
+        <Button
+          type="button"
+          color="secondary"
+          name="Cancel"
+          onClick={onCancel}
+          className="!w-fit"
+        >
+          Cancel
+        </Button>
+
+        <Button
+          type="button"
+          color="green"
+          onClick={saveIcon}
+          name={saving ? "Saving…" : "Save Icon"}
+          disabled={saving || !file}
+          className="!w-fit"
+        >
+          {saving ? "Saving…" : "Save Icon"}
+        </Button>
+
+        {popular && (
+          <Button
+            type="button"
+            color="red"
+            onClick={removePopular}
+            name={unpopularing ? "Removing…" : "Unmark Popular"}
+            disabled={unpopularing}
+            className="!w-fit"
+          >
+            {unpopularing ? "Removing…" : "Unmark Popular"}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 }
