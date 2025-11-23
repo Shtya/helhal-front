@@ -44,15 +44,23 @@ export function AuthProvider({ children }) {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       setUser(user);
+      return {accessToken, refreshToken, user}
     } catch (err) {
       throw err;
     }
   };
 
-  const logout = () => {
+  async function logout() {
     console.log('Logging out user...');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+
+    //remove login data at cookie
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+        
     setUser(null);
   };
 

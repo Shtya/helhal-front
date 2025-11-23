@@ -1,106 +1,110 @@
-
-// import createMiddleware from 'next-intl/middleware';
-// import { NextResponse } from 'next/server';
-// import { routing } from './i18n/routing';
-
-// const intlMiddleware = createMiddleware(routing);
-
-// const PUBLIC_ROUTES = ['/sign-in', '/login' , "/"];
-
-// export function middleware(request) {
-//   const token = request.cookies.get('accessToken')?.value;
-//   const { pathname } = request.nextUrl;
-
-//   const locale = routing.locales.find((locale) =>
-//     pathname.startsWith(`/${locale}`)
-//   ) ?? routing.defaultLocale;
-
-//   const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
-
-//   // if (!token && !PUBLIC_ROUTES.includes(pathWithoutLocale)) {
-//   //   const signInUrl = new URL(`/${locale}/sign-in`, request.url);
-//   //   return NextResponse.redirect(signInUrl);
-//   // }
-//   return intlMiddleware(request);
-// }
-
-// export const config = {
-//   matcher: '/((?!api|_next|_vercel|.*\\..*).*)',
-// };
-
-
-
-
-// // import { NextResponse } from 'next/server'
-
-// // const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET)
-
-// // export async function middleware(request) {
-// //   const { pathname } = request.nextUrl
-
-// //   const protectedRoutes = ['/dashboard', '/form-submission']
-// //   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
-
-// //   const userCookieValue = request.cookies.get('user')?.value
-
-// //   if (!userCookieValue) {
-// //     if (isProtectedRoute) {
-// //       return NextResponse.redirect(new URL('/login', request.url))
-// //     }
-
-// //     // إذا كان يزور الصفحة الرئيسية `/` → إعادة التوجيه إلى /login
-// //     if (pathname === '/') {
-// //       return NextResponse.redirect(new URL('/login', request.url))
-// //     }
-
-// //     return NextResponse.next()
-// //   }
-
-// //   try {
-// //     const user = JSON.parse(userCookieValue)
-
-// //     if (!user.accessToken) {
-// //       if (isProtectedRoute || pathname === '/') {
-// //         return NextResponse.redirect(new URL('/login', request.url))
-// //       }
-// //       return NextResponse.next()
-// //     }
-
-// //     const { payload: decoded } = await jwtVerify(user.accessToken, JWT_SECRET)
-
-// //     if (pathname === '/') {
-// //       if (decoded.role === 'admin') {
-// //         return NextResponse.redirect(new URL('/dashboard', request.url))
-// //       } else if (decoded.role === 'user') {
-// //         return NextResponse.redirect(new URL('/form-submission', request.url))
-// //       } else {
-// //         return NextResponse.redirect(new URL('/login', request.url)) // دور غير معروف
-// //       }
-// //     }
-
-// //     if (pathname.startsWith('/dashboard') && decoded.role !== 'admin') {
-// //       return NextResponse.redirect(new URL('/form-submission', request.url))
-// //     }
-
-// //     if (pathname.startsWith('/form-submission') && decoded.role !== 'user') {
-// //       return NextResponse.redirect(new URL('/dashboard', request.url))
-// //     }
-
-// //   } catch (error) {
-// //     return NextResponse.redirect(new URL('/login', request.url))
-// //   }
-
-// //   return NextResponse.next()
-// // }
-// middleware.ts
 import createMiddleware from 'next-intl/middleware';
+import { NextResponse } from 'next/server';
+import { routing } from './i18n/routing';
+import { getJwtPayload } from './utils/auth';
 
-export default createMiddleware({
-  locales: ['en', 'ar'],
-  defaultLocale: 'en',
+
+// 1) Initialize next-intl middleware
+const intlMiddleware = createMiddleware({
+  locales: routing.locales,
+  defaultLocale: routing.defaultLocale,
   localePrefix: 'always'
 });
 
+// 2) Public (unprotected) routes
+const PUBLIC_ROUTES = [
+  '/auth',
+  '/explore',
+  '/services',
+  '/become-seller',
+  '/'
+];
+
+// Only buyers
+const BUYER_ROUTES = [
+  '/share-job-description',
+  '/my-jobs',
+];
+
+// Only sellers
+const SELLER_ROUTES = [
+  '/create-gig',
+  '/my-gigs',
+];
+
+// Only admins
+const ADMIN_ROUTES = [
+  '/dashboard',
+];
+
+export async function middleware(request) {
+  const token = request.cookies.get('accessToken')?.value;
+  const { pathname } = request.nextUrl;
+
+  // Detect locale from URL
+  const locale =
+    routing.locales.find((l) => pathname.startsWith(`/${l}`)) ??
+    routing.defaultLocale;
+
+  // Remove locale prefix to compare route
+  const pathWithoutLocale = pathname.replace(`/${locale}`, '') || '/';
+
+  // -----------------------------
+  // 1) PUBLIC ROUTES → always allowed
+  // -----------------------------
+  if (PUBLIC_ROUTES.includes(pathWithoutLocale)) {
+    return intlMiddleware(request);
+  }
+
+  // -----------------------------
+  // 2) Must be authenticated
+  // -----------------------------
+  if (!token) {
+    const url = new URL(`/${locale}/auth`, request.url);
+    return NextResponse.redirect(url);
+  }
+
+  // -----------------------------
+  // 3) Decode JWT and extract role
+  // -----------------------------
+  const payload = await getJwtPayload(token);
+  if (!payload) {
+    const url = new URL(`/${locale}/auth`, request.url);
+    return NextResponse.redirect(url);
+  }
+
+  const role = payload.role; // ✅ role now comes from JWT
+
+  // -----------------------------
+  // 3) Role-specific protection
+  // -----------------------------
+  if (BUYER_ROUTES.some((r) => pathWithoutLocale.startsWith(r))) {
+    if (role !== 'buyer') {
+      return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));
+    }
+  }
+
+  if (SELLER_ROUTES.some((r) => pathWithoutLocale.startsWith(r))) {
+    if (role !== 'seller') {
+      return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));
+    }
+  }
+
+  if (ADMIN_ROUTES.some((r) => pathWithoutLocale.startsWith(r))) {
+    if (role !== 'admin') {
+      return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));
+    }
+  }
+
+  // -----------------------------
+  // Everything OK → run next-intl
+  // -----------------------------
+  return intlMiddleware(request);
+}
+
+// 3) Required matcher for intl + auth
 export const config = {
-  matcher: ['/((?!_next|.*\\..*).*)']
+  matcher: [
+    '/((?!api|_next|_vercel|.*\\..*).*)'
+  ]
 };

@@ -186,7 +186,7 @@ function AccountSettings() {
     try {
 
       await api.post('/auth/account-deactivation', { reason: finalReason?.trim() });
-      logout();
+      await logout();
       window.location.href = '/';
     } finally {
       setDeactivating(false);
@@ -403,7 +403,7 @@ function SecuritySettings() {
       await api.delete(`/auth/sessions/${id}`);
       if (me?.currentDeviceId === id) {
         // if current session is revoked, log out
-        logout();
+        await logout();
         window.location.href = '/';
       }
       setSessions(prev => prev.map(s => (s.id === id ? { ...s, revokedAt: new Date().toISOString() } : s)));

@@ -185,7 +185,7 @@ export default function Header() {
     try {
       setIsLogoutLoading(true);
       // purge local
-      logout();
+      await logout();
       // optional: hit your API (swap to your endpoint)
       await fetch('/api/logout', { method: 'POST' }).catch(() => { });
     } finally {

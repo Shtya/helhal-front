@@ -223,9 +223,17 @@ const LoginForm = ({ onLoggedIn }) => {
     setLoading(true);
     setError(null);
     try {
-      await login(data);
+      const { accessToken, refreshToken, user: fatchedUser } = await login(data);
       toast.success(t('success.signedIn'));
-      onLoggedIn?.(user);
+
+      //set login data at cookie
+      await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken, refreshToken, user: fatchedUser }),
+      });
+
+      onLoggedIn?.(fatchedUser);
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.loginFailed');
       setError(msg === 'Refresh token not provided in the request body' ? 'Incorrect email or password' : msg);
@@ -575,8 +583,14 @@ export default function AuthPage() {
       try {
 
         updateTokens({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl });
-        const user = await refetchUser();
+        const fatchedUser = await refetchUser();
 
+        //set login data at cookie
+        await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl, user: fatchedUser }),
+        });
         if (!user?.type) {
           setNeedsUserTypeSelection(true);
         } else {
@@ -642,6 +656,7 @@ export default function AuthPage() {
     setView('email');
   };
   const handleLoggedIn = user => {
+
     router.push('/explore');
   };
 
