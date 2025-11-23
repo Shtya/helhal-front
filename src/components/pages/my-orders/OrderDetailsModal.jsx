@@ -6,6 +6,7 @@ import { formatDate, formatDateTime } from '@/utils/date';
 import { OrderStatus } from '@/constants/order';
 import { Package, DollarSign, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
 import OrderDeliveryTimer from './OrderDeliveryTimer';
+import { resolveUrl } from '@/utils/helper';
 
 export default function OrderDetailsModal({ open, onClose, orderId }) {
   const [order, setOrder] = useState(null);
@@ -36,15 +37,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
 
     fetchOrder();
   }, [open, orderId]);
-  const requirements = order?.service?.requirements;
 
-  const requirementsMap = useMemo(() => {
-    const map = new Map();
-    (requirements || []).forEach(req => {
-      map.set(req.id, req);
-    });
-    return map;
-  }, [requirements]);
 
   if (!open) return null;
 
@@ -236,26 +229,29 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
               <h4 className="text-lg font-semibold text-slate-900 mb-3">Requirements</h4>
               <div className="space-y-3">
                 {order.requirementsAnswers.map((req, idx) => {
-                  const mainReq = requirementsMap.get(req.questionId);
+
                   return (
                     <div key={idx} className="bg-slate-50 rounded-lg p-3">
                       {/* Question */}
-                      {mainReq?.question && (
+                      {req?.question ? (
                         <p className="text-sm font-medium text-slate-700 mb-1">
-                          {mainReq.question}
+                          {req.question}
                         </p>
+                      ) : (
+                        <p className="text-sm font-medium text-slate-400 mb-1">—</p>
+                        // or use "No question" instead of —
                       )}
 
                       {/* Main Answer */}
-                      {mainReq?.requirementType === 'file' ? (
+                      {req?.requirementType === 'file' ? (
                         req.answer ? (
                           <a
-                            href={req.answer}
+                            href={resolveUrl(req.answer)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-emerald-600 underline hover:text-emerald-700"
                           >
-                            {req.fileName || 'Download file'}
+                            {req.filename || 'Download file'}
                           </a>
                         ) : (
                           <span className="text-sm text-slate-500">—</span>
@@ -263,6 +259,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                       ) : (
                         <p className="text-sm text-slate-600">{req.answer || '—'}</p>
                       )}
+
                       {/* ✅ Show Other Answer if it exists */}
                       {req.otherAnswer && (
                         <p className="mt-1 text-sm text-slate-500 italic">
@@ -270,6 +267,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                         </p>
                       )}
                     </div>
+
                   );
                 })}
 
@@ -289,26 +287,6 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           )}
 
 
-          {/* Timeline */}
-          {/* {order.timeline && order.timeline.length > 0 && (
-                        <div className="pt-4 border-t border-slate-200">
-                            <h4 className="text-lg font-semibold text-slate-900 mb-3">Timeline</h4>
-                            <div className="space-y-3">
-                                {order.timeline.map((event, idx) => (
-                                    <div key={idx} className="flex items-start gap-3">
-                                        <div className="mt-1">{getTimelineIcon(event.type)}</div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center justify-between">
-                                                <p className="text-sm font-medium text-slate-900 capitalize">{event.type}</p>
-                                                <p className="text-xs text-slate-500">{formatDate(event.at)}</p>
-                                            </div>
-                                            <p className="text-xs text-slate-600 mt-1">by {event.by}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )} */}
 
           {/* Invoices */}
           {order.invoices && order.invoices.length > 0 && (

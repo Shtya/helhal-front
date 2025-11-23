@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 export function Modal({ title, children, onClose, className }) {
   return ReactDOM.createPortal(
-    <div className='fixed inset-0 z-50 grid place-items-center bg-black/40 p-4'>
+    <div className='fixed inset-0 z-[105] grid place-items-center bg-black/40 p-4'>
       <div className={`w-full min-w-0 max-w-lg rounded-2xl bg-white p-6 shadow-lg ${className}`}>
         <div className='flex items-center justify-between'>
           <h4 className='text-lg font-semibold text-[#292D32]'>{title}</h4>

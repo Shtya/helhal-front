@@ -74,10 +74,10 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                       title={f?.name || f?.filename}
                       target="_blank"
                       rel="noreferrer"
-                      onClick={e => {
-                        e.preventDefault();
-                        handleAttachmentClick(f);
-                      }}
+                      // onClick={e => {
+                      //   e.preventDefault();
+                      //   handleAttachmentClick(f);
+                      // }}
                       className="block w-full truncate text-sm font-medium text-slate-900 hover:underline"
                       data-file-type={(f?.name || f?.filename || '').split('.').pop()?.toLowerCase()}
                     >
@@ -151,13 +151,17 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
         <Modal title={'Preview File'} onClose={handleCloseModal}>
           {isImageFile(selectedFile) ? (
             <div>
-              {isImageLoading && <div className="animate-pulse bg-gray-200 rounded-md w-full" style={{ height: '464px' }} />}
+              {/* {isImageLoading ? <div className="animate-pulse bg-gray-200 rounded-md w-full" style={{ height: '464px' }} /> */}
+              {/* :
+                ( */}
               <Img
                 src={selectedFile?.url.startsWith('http') ? selectedFile?.url : baseImg + (selectedFile?.url || selectedFile?.path || '')}
                 alt={selectedFile?.name || selectedFile?.filename}
                 className="w-full rounded"
                 onLoad={() => setIsImageLoading(false)}
               />
+              {/* )
+              } */}
             </div>
           ) : (
             <div className="text-center pt-4">

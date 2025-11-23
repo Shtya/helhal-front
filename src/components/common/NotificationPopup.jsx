@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DropdownItem } from '../molecules/Header';
-import { useTranslations } from 'next-intl';
-import { notificationService } from '@/services/notificationService';
-import { toast } from 'react-hot-toast';
 import { Link } from '@/i18n/navigation';
-import { MoveRight } from 'lucide-react';
+import { useDropdownPosition } from '@/hooks/useDropdownPosition';
+import { useNotifications } from '@/context/NotificationContext';
+import api from '@/lib/axios';
+import { Bell, Check, ChevronRight, TypeIcon } from 'lucide-react';
 
 export const getLink = (relatedEntityType, relatedEntityId) => {
   if (relatedEntityType === 'proposal') {
@@ -16,185 +15,239 @@ export const getLink = (relatedEntityType, relatedEntityId) => {
     return null; // Return null if no matching type is found
   }
 };
+const RowSkeleton = () => (
+  <div className='px-4 py-3 flex items-start gap-3'>
+    <div className='h-8 w-8 rounded-lg bg-slate-200 animate-pulse' />
+    <div className='flex-1 space-y-2'>
+      <div className='h-3 w-3/5 rounded bg-slate-200 animate-pulse' />
+      <div className='h-3 w-2/5 rounded bg-slate-200 animate-pulse' />
+    </div>
+  </div>
+);
 
-const NotificationPopup = () => {
-  const t = useTranslations('layout');
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+
+
+const relTime = iso => {
+  if (!iso) return '';
+  const now = Date.now();
+  const t = new Date(iso).getTime();
+  const s = Math.max(1, Math.floor((now - t) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
+};
+
+
+const NotificationPopup = ({ admin = false }) => {
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
+  const [meta, setMeta] = useState({ total_records: 0, per_page: 10, current_page: 1 });
+  const btnRef = useRef(null);
+  const menuRef = useRef(null);
+  const menuStyle = useDropdownPosition(open, btnRef);
+  const [notifications, setNotifications] = useState([]);
+  const {
+    unreadNotificationCount,
+    markOneAsRead,
+    markAllAsRead,
+    subscribe, } = useNotifications();
 
   useEffect(() => {
-    if (isOpen) {
-      loadNotifications();
-      loadUnreadCount();
-    }
-  }, [isOpen]);
+    const unsubscribe = subscribe((action) => {
+      switch (action.type) {
 
-  useEffect(() => {
-    loadUnreadCount();
+        case "NEW_NOTIFICATION":
+          setNotifications(prev => {
+            const exists = prev.some(n => n.id === action.payload.id);
+            if (exists) return prev;
+            return [action.payload, ...prev];
+          });
+          break;
 
-    const interval = setInterval(loadUnreadCount, 30000);
-    return () => clearInterval(interval);
+        case "MARK_ONE_AS_READ":
+          setNotifications(prev =>
+            prev.map(n =>
+              n.id === action.payload.id ? { ...n, isRead: true } : n
+            )
+          );
+          break;
+
+        case "REVERT_MARK_ONE":
+          setNotifications(prev =>
+            prev.map(n =>
+              n.id === action.payload.id ? { ...n, isRead: false } : n
+            )
+          );
+          break;
+
+        case "MARK_ALL_AS_READ":
+          setNotifications(prev =>
+            prev.map(n => ({ ...n, isRead: true }))
+          );
+          break;
+
+        case "REVERT_MARK_ALL":
+          // Simply re-fetch from server
+          fetchList();
+          break;
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const loadNotifications = async () => {
+
+  // ---- fetch helpers ----
+  const fetchList = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await notificationService.getNotifications();
-      setNotifications(response.data.records || []);
-    } catch (error) {
-      console.error('Error loading notifications:', error);
-      toast.error('Failed to load notifications');
+      const res = await api.get('/notifications');
+      const { records = [], total_records, per_page, current_page } = res.data || {};
+      setNotifications(records);
+      setMeta({ total_records, per_page, current_page });
+    } catch {
+      setNotifications([]);
+      setMeta({ total_records: 0, per_page: 10, current_page: 1 });
     } finally {
       setLoading(false);
     }
   };
 
-  const loadUnreadCount = async () => {
-    try {
-      const response = await notificationService.getUnreadCount();
-      setUnreadCount(response.data.total_records || 0);
-    } catch (error) {
-      // console.error('Error loading unread count:', error);
-    }
-  };
+  useEffect(() => {
+    let mounted = true;
 
-  const handleMarkAsRead = async notificationId => {
-    try {
-      await notificationService.markAsRead(notificationId);
-      // Update local state
-      setNotifications(prev => prev.map(n => (n.id === notificationId ? { ...n, isRead: true } : n)));
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-      toast.error('Failed to mark notification as read');
-    }
-  };
+    // initial fetch
+    (async () => {
+      await fetchList();
+      if (!mounted) return;
+    })();
 
-  const handleMarkAllAsRead = async () => {
-    try {
-      await notificationService.markAllAsRead();
-      // Update local state
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-      setUnreadCount(0);
-      toast.success('All notifications marked as read');
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-      toast.error('Failed to mark all notifications as read');
-    }
-  };
+    const onClick = e => {
+      if (!btnRef.current) return;
+      if (!btnRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      mounted = false;
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, []);
 
-  const formatTime = dateString => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
 
-    if (diffInHours < 1) {
-      return 'Just now';
-    } else if (diffInHours < 24) {
-      return `${diffInHours}h ago`;
-    } else {
-      return `${Math.floor(diffInHours / 24)}d ago`;
-    }
-  };
-
-  const getNotificationIcon = type => {
-    switch (type) {
-      case 'message':
-        return '/icons/message.svg';
-      case 'order':
-        return '/icons/shopping-bag.svg';
-      case 'system':
-        return '/icons/system.svg';
-      case 'promotion':
-        return '/icons/discount.svg';
-      default:
-        return '/icons/notification.svg';
-    }
-  };
+  const goToTarget = n => (n.relatedEntityType === 'order' ? `/my-orders/${n.relatedEntityId}` : '/notifications');
 
   return (
-    <div className='relative'>
-      <motion.span initial={{ scale: 0 }} animate={{ scale: unreadCount > 0 ? 1 : 0 }} className='ring-[3px] right-white flex items-center justify-center text-[12px] text-white z-[10] absolute bg-[#D81F22] rounded-full w-5 h-5 top-[-8px] right-[-5px]'>
-        {unreadCount > 9 ? '9+' : unreadCount}
-      </motion.span>
+    <div className='' ref={btnRef}>
+      <motion.button onClick={() => setOpen(v => !v)} className='relative  inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
+        <Bell className='h-5 w-5 text-slate-700' />
+        {unreadNotificationCount > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-emerald-600 px-1 text-[11px] text-white font-semibold'>{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}</span>}
+      </motion.button>
 
-      <DropdownItem iconSrc='/icons/notification.svg' title={t('notificationsTitle')} setOpen={setIsOpen}>
-        <div className='w-full max-h-96 overflow-y-auto'>
-          <div className='flex items-center justify-between py-4 border-b border-gray-200'>
-            <h3 className='text-lg font-semibold text-gray-900'>{t('notificationsTitle')}</h3>
-            {unreadCount > 0 && (
-              <button onClick={handleMarkAllAsRead} className='text-sm text-blue-600 hover:text-blue-800 font-medium'>
-                Mark all as read
-              </button>
-            )}
-          </div>
+      <AnimatePresence>
+        {open && (
+          <motion.div ref={menuRef} style={menuStyle} initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl' role='dialog' aria-label='Notifications menu'>
+            {/* Header */}
+            <div className='flex items-center justify-between border-b border-slate-200 px-4 py-3'>
+              <div className='text-sm font-semibold text-slate-900'>Notifications</div>
+              <div className='flex items-center gap-2'>
+                <button onClick={markAllAsRead} className='inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-[11px] text-slate-700 hover:bg-slate-50' title='Mark all as read'>
+                  <Check className='h-3.5 w-3.5' />
+                  Read all
+                </button>
+              </div>
+            </div>
 
-          {loading ? (
-            <div className='p-4 space-y-3'>
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className='animate-pulse flex space-x-3'>
-                  <div className='rounded-full bg-gray-200 h-10 w-10'></div>
-                  <div className='flex-1 space-y-2'>
-                    <div className='h-4 bg-gray-200 rounded'></div>
-                    <div className='h-3 bg-gray-200 rounded w-5/6'></div>
+            {/* Content */}
+            <div className='max-h-72 overflow-auto'>
+              {loading ? (
+                <>
+                  <RowSkeleton />
+                  <RowSkeleton />
+                  <RowSkeleton />
+                </>
+              ) : notifications.length === 0 ? (
+                <div className='px-6 py-10 text-center text-slate-500'>
+                  <div className='mx-auto mb-2 grid h-10 w-10 place-items-center rounded-xl bg-slate-100'>
+                    <Bell className='h-5 w-5 text-slate-500' />
                   </div>
+                  <div className='text-sm'>You’re all caught up!</div>
                 </div>
-              ))}
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className='p-6 text-center'>
-              <img src='/icons/empty-notifications.svg' alt='No notifications' className='mx-auto w-16 h-16 opacity-50 mb-3' />
-              <p className='text-gray-500 text-sm'>{t('notificationsPlaceholder')}</p>
-            </div>
-          ) : (
-            <div className='divide-y divide-gray-100'>
-              <AnimatePresence>
-                {notifications.map(notification => (
-                  <motion.div key={notification.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }} className={`p-4 hover:bg-gray-50 cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''}`} onClick={() => !notification.isRead && handleMarkAsRead(notification.id)}>
-                    <div className='flex gap-3'>
-                      <div className='flex-shrink-0'>
-                        <img src={getNotificationIcon(notification.type)} alt={notification.type} className='w-8 h-8 rounded-full bg-blue-100 p-1.5' />
+              ) : (
+                notifications.map(n => (
+                  <div
+                    key={n.id}
+                    data-notification-id={`${n.id}`}
+                    className={`px-4 py-3 hover:bg-slate-50 transition ${!n.isRead ? 'bg-emerald-50/30' : ''}`}
+                  >
+                    <div className="flex items-start gap-3">
+
+                      {/* icon */}
+                      <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50">
+                        <TypeIcon type={n.type} />
                       </div>
-                      <div className='flex-1 min-w-0'>
-                        <p className='text-sm font-medium text-gray-900 truncate'>{notification.title}</p>
-                        <p className='text-sm text-gray-600 mt-1'>{notification.message}</p>
-                        <div className='flex items-center justify-between mt-2'>
-                          <span className='text-xs text-gray-500'>{formatTime(notification.created_at)}</span>
-                          {!notification.isRead && <span className='flex-none inline-block w-2 h-2 rounded-full bg-blue-500'></span>}
+
+                      <div className="min-w-0 flex-1">
+
+                        {/* Title + timestamp + View link */}
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="truncate text-sm font-medium text-slate-900">{n.title}</div>
+
+                          <div className="flex items-center gap-3 shrink-0">
+                            {getLink(n.relatedEntityType, n.relatedEntityId) && (
+                              <Link
+                                href={getLink(n.relatedEntityType, n.relatedEntityId)}
+                                className="text-[11px] text-blue-600 hover:text-blue-700 font-medium"
+                              >
+                                View
+                              </Link>
+                            )}
+                            <div className="text-[11px] text-slate-500">{relTime(n.created_at)}</div>
+                          </div>
                         </div>
 
-                        {getLink(notification.relatedEntityType, notification.relatedEntityId) && (
-                          <div className='mt-3'>
-                            <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>
-                              <span className='text-xs'>{notification.relatedEntityType === 'proposal' ? 'View Proposal' : 'View Order'}</span>
-                              <span className='text-blue-600 text-sm'> <MoveRight size={16} /> </span>
-                            </Link>
-                          </div>
-                        )}
+                        {/* Message */}
+                        <div className="mt-0.5 line-clamp-2 text-sm text-slate-600">
+                          {n.message}
+                        </div>
+
+                        {/* Bottom actions */}
+                        <div className="mt-2 flex items-center gap-2">
+                          {!n.isRead && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+                              New <ChevronRight className="h-3 w-3" />
+                            </span>
+                          )}
+
+                          {!n.isRead && (
+                            <button
+                              onClick={() => markOneAsRead(n.id)}
+                              className="text-[11px] text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline"
+                            >
+                              Mark as read
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
+                  </div>
+                ))
 
-          {notifications.length > 0 && (
-            <div className='p-3 border-t border-gray-200'>
-              <button
-                className='w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium'
-                onClick={() => {
-                  // Navigate to full notifications page
-                  window.location.href = '/notifications';
-                }}>
-                View all notifications
-              </button>
+              )}
             </div>
-          )}
-        </div>
-      </DropdownItem>
+
+            {/* Footer */}
+            <div className='border-t border-slate-200 px-4 py-2 text-center'>
+              <Link href={admin ? `/dashboard/notifications` : `/notifications`} className='text-sm text-emerald-700 hover:underline' onClick={() => setOpen(false)}>
+                View all
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

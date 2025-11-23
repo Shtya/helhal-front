@@ -17,7 +17,7 @@ export const getFileIcon = mimeType => {
 };
 
 
-export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange, value, cnBtn, maxSelection = undefined }) {
+export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange, value, cnBtn, maxSelection = undefined, cnModel }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [loadedOnce, setLoadedOnce] = useState(false);
@@ -198,7 +198,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
   // Modal content
   const modalContent = (
     <div
-      className='fixed inset-0 z-[101] bg-black/40 backdrop-blur-sm flex items-center justify-center'
+      className={`fixed inset-0 z-[101] bg-black/40 backdrop-blur-sm flex items-center justify-center ${cnModel} `}
       onClick={e => {
         if (e.target === e.currentTarget) closeModal();
       }}>

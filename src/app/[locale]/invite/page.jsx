@@ -154,7 +154,6 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
         subject: subject.trim(),
         senderName: senderName.trim(),
         message: message.trim(),
-        referralLink: link,
       });
 
       toast.success(`Successfully sent to ${validEmails.length} ${validEmails.length === 1 ? 'email' : 'emails'}.`);

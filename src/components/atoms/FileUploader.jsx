@@ -2,6 +2,7 @@ import { Trash2 } from 'lucide-react';
 import Button from './Button';
 import { useRef } from 'react';
 import AttachFilesButton from './AttachFilesButton';
+import { resolveUrl } from '@/utils/helper';
 
 export default function FileUploader({
     label,
@@ -36,7 +37,7 @@ export default function FileUploader({
 
                 <AttachFilesButton maxSelection={10} hiddenFiles={true} onChange={files => {
                     handleFileChange(files)
-                }} />
+                }} cnModel="z-[110]" />
             </div>
 
             <p className="text-xs text-slate-500">
@@ -52,7 +53,7 @@ export default function FileUploader({
                             key={i}
                             className=" flex items-center gap-2 border rounded px-3 py-2 bg-slate-50 w-full"
                         >
-                            <a href={file.url} target='_blank' className="min-w-0 flex-1 flex hover:underline cursor-pointer">
+                            <a href={resolveUrl(file.url)} target='_blank' className="min-w-0 flex-1 flex hover:underline cursor-pointer">
                                 <span className="truncate block min-w-0">
                                     {file.name || file.filename}
                                 </span>

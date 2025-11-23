@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, Eye, Edit, Trash2, Plus } from 'lucide-react';
+import { Search, Eye, Edit, Trash2, Plus, ImageIcon, Star } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import toast from 'react-hot-toast';
-import { isErrorAbort } from '@/utils/helper';
+import { isErrorAbort, resolveUrl } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 
 export default function AdminCategoriesDashboard() {
@@ -112,6 +112,7 @@ export default function AdminCategoriesDashboard() {
     else if (id === 'oldest') { setSort(id); setFilters(p => ({ ...p, sortBy: 'created_at', sortOrder: 'ASC', page: 1 })) }
     else if (id === 'az') { setSort(id); setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'ASC', page: 1 })) }
     else if (id === 'za') { setSort(id); setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'DESC', page: 1 })) }
+    else if (id === 'top') { setSort(id); setFilters(p => ({ ...p, sortBy: 'top', sortOrder: 'DESC', page: 1 })) }
     else return;
   };
 
@@ -164,6 +165,17 @@ export default function AdminCategoriesDashboard() {
       setSubmitting(false);
     }
   };
+  function openPopularModel(popularMode, current) {
+    setModalOpen(true)
+    setMode(popularMode)
+    setCurrent(current)
+  }
+
+
+  async function handleSaveTop() {
+    await fetchCategories();
+    setModalOpen(false);
+  }
 
   const onDelete = async id => {
     if (!confirm('Delete this category? This cannot be undone.')) return;
@@ -198,21 +210,31 @@ export default function AdminCategoriesDashboard() {
     },
     { key: 'created_at', label: 'Created', type: 'date' },
   ];
+  const Actions = ({ row }) => {
+    const isTop = row.top;
 
-  const Actions = ({ row }) => (
-    <div className='flex items-center gap-2'>
-      <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
-        <Eye size={16} />
-      </button>
-      <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title='Edit'>
-        <Edit size={16} />
-      </button>
-      <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title='Delete'>
-        <Trash2 size={16} />
-      </button>
-    </div>
+    return (
+      <div className='flex items-center gap-2'>
+        <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
+          <Eye size={16} />
+        </button>
+        <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title='Edit'>
+          <Edit size={16} />
+        </button>
+        <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title='Delete'>
+          <Trash2 size={16} />
+        </button>
+        <button
+          onClick={() => openPopularModel(isTop ? 'edit-top' : 'mark-top', row)}
+          className={`p-2 rounded-full ${isTop ? 'text-yellow-600 hover:bg-yellow-50' : 'text-slate-500 hover:bg-slate-100'}`}
+          title={isTop ? 'Unmark as Top' : 'Mark as Top'}
+        >
+          <Star size={16} fill={isTop ? 'currentColor' : 'none'} />
+        </button>
+      </div>
+    );
+  };
 
-  );
 
   return (
     <div>
@@ -233,6 +255,7 @@ export default function AdminCategoriesDashboard() {
                   { id: 'oldest', name: 'Oldest' },
                   { id: 'az', name: 'A–Z' },
                   { id: 'za', name: 'Z–A' },
+                  { id: 'top', name: 'Top Categories' }
                 ]}
               />
               <Button name='Add Category' onClick={openCreate} className='!w-fit' leftIcon={<Plus size={16} />} />
@@ -246,9 +269,38 @@ export default function AdminCategoriesDashboard() {
           <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
-        <Modal open={modalOpen} title={mode === 'view' ? 'Category Details' : mode === 'edit' ? `Edit Category (${current?.name})` : 'Create Category'} onClose={() => setModalOpen(false)} size='md' hideFooter>
-          <CategoryForm mode={mode} value={current} onSubmit={onSubmit} onCancel={() => setModalOpen(false)} submitting={submitting} apiError={apiError} />
+        <Modal
+          open={modalOpen && (mode === 'view' || mode === 'edit' || mode === 'create')}
+          title={mode === 'view' ? 'Category Details' : mode === 'edit' ? `Edit Category (${current?.name})` : 'Create Category'}
+          onClose={() => setModalOpen(false)}
+          size='md'
+          hideFooter
+        >
+          <CategoryForm
+            mode={mode}
+            value={current}
+            onSubmit={onSubmit}
+            onCancel={() => setModalOpen(false)}
+            submitting={submitting}
+            apiError={apiError}
+          />
         </Modal>
+
+        <Modal
+          open={modalOpen && (mode === 'edit-top' || mode === 'mark-top')}
+          title={mode === 'edit-top' ? 'Edit Top Icon' : 'Mark as Top'}
+          onClose={() => setModalOpen(false)}
+          size='md'
+          hideFooter
+        >
+          <TopCategoryForm
+            mode={mode}
+            category={current}
+            onCancel={() => setModalOpen(false)}
+            onSaved={handleSaveTop}
+          />
+        </Modal>
+
       </div>
     </div>
   );
@@ -278,11 +330,6 @@ const schema = z.object({
     .url('Invalid URL')
     .or(z.literal(''))
     .optional(),
-
-  iconUrl: z
-    .url('Invalid URL')
-    .or(z.literal(''))
-    .optional(),
 }).refine(data => data.type === 'category' || !!data.parentId, {
   message: 'Parent category is required for subcategories',
   path: ['parentId'],
@@ -306,7 +353,6 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
       description: value?.description ?? '',
       type: value?.type ?? 'category',
       image: value?.image ?? '',
-      iconUrl: value?.iconUrl ?? '',
       parentId: value?.parentId ?? '',
     },
   });
@@ -405,14 +451,6 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         />
       </div>
 
-      <ImagePicker
-        value={watch('iconUrl')}
-        label="Icon"
-        onChange={url => setValue('iconUrl', url)}
-        disabled={readOnly}
-        allowManual
-      />
-
       {readOnly ? (
         <div className="flex justify-end">
           <Button color="white" name="Close" onClick={onCancel} className="!w-fit" />
@@ -441,4 +479,109 @@ function slugify(v) {
     .trim()
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
+}
+
+
+function TopCategoryForm({ category, onCancel, onSaved }) {
+  const [file, setFile] = useState(null);
+  const [iconUrl, setIconUrl] = useState(category?.topIconUrl || '');
+  const [saving, setSaving] = useState(false);
+  const [removing, setRemoving] = useState(false);
+
+  const categoryId = category.id;
+  const top = category.top;
+
+  const handleFileChange = f => {
+    if (!f) return;
+    setFile(f);
+    setIconUrl(URL.createObjectURL(f));
+  };
+
+  const saveIcon = async () => {
+    if (!file) return;
+    try {
+      setSaving(true);
+      const fd = new FormData();
+      fd.append('icon', file);
+
+      const apiUrl = top
+        ? `/categories/${categoryId}/top/icon`
+        : `/categories/${categoryId}/top`;
+
+      const res = await api.post(apiUrl, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const url = res?.data?.topIconUrl;
+      toast.success('Top category icon updated');
+      onSaved?.(url);
+    } catch (e) {
+      const msg = e?.response?.data?.message || 'Failed to update icon';
+      toast.error(msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeTop = async () => {
+    try {
+      setRemoving(true);
+      await api.delete(`/categories/${categoryId}/untop`);
+      toast.success('Category removed from top');
+      onSaved?.(null);
+    } catch (e) {
+      const msg = e?.response?.data?.message || 'Failed to remove top status';
+      toast.error(msg);
+    } finally {
+      setRemoving(false);
+    }
+  };
+
+  return (
+    <div className='flex flex-col gap-4'>
+      <div className='flex items-center gap-3'>
+        <label className='relative inline-flex items-center justify-center h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm hover:bg-slate-50 cursor-pointer'>
+          <input
+            type='file'
+            accept='image/*'
+            className='absolute inset-0 opacity-0 cursor-pointer'
+            onChange={e => handleFileChange(e.target.files?.[0])}
+          />
+          <span className='inline-flex items-center'>
+            <ImageIcon size={16} className='mr-2' /> Choose Icon
+          </span>
+        </label>
+
+        {iconUrl ? (
+          <img
+            src={iconUrl.startsWith('blob:') ? iconUrl : resolveUrl(iconUrl)}
+            alt='Top icon'
+            className='h-10 w-10 rounded-lg border border-slate-200 object-contain'
+          />
+        ) : (
+          <div className='grid h-10 w-10 place-items-center rounded-lg border border-dashed border-slate-300 text-slate-400'>
+            <ImageIcon size={16} />
+          </div>
+        )}
+      </div>
+
+      <p className='text-xs text-slate-500'>Choose a file then click Save to update the top icon.</p>
+
+      <div className='flex justify-end gap-3 border-t pt-4'>
+        <Button name='Cancel' type='button' color='secondary' onClick={onCancel} className='!w-fit'>
+          Cancel
+        </Button>
+
+        <Button name={saving ? 'Saving…' : 'Save Icon'} type='button' color='green' onClick={saveIcon} disabled={saving || !file} className='!w-fit'>
+          {saving ? 'Saving…' : 'Save Icon'}
+        </Button>
+
+        {top && (
+          <Button name={removing ? 'Removing…' : 'Unmark Top'} type='button' color='red' onClick={removeTop} disabled={removing} className='!w-fit'>
+            {removing ? 'Removing…' : 'Unmark Top'}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
 }

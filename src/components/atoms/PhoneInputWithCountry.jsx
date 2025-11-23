@@ -38,6 +38,14 @@ export default function PhoneInputWithCountry({
     value = { countryCode: { code: 'SA', dial_code: '+966' }, phone: '' },
     onChange,
 }) {
+    const [internalPhone, setInternalPhone] = useState(value.phone || '');
+    const [internalCountry, setInternalCountry] = useState(value.countryCode || { code: 'SA', dial_code: '+966' });
+
+    useEffect(() => {
+        setInternalPhone(value.phone || '');
+        setInternalCountry(value.countryCode || { code: 'SA', dial_code: '+966' });
+    }, [value]);
+
     const formattedOptions = useMemo(() => countryCodes.map(({ name, dial_code, code }) => ({
         id: code,
         value: dial_code,
@@ -52,13 +60,19 @@ export default function PhoneInputWithCountry({
 
 
     const handleCodeChange = (opt) => {
-        onChange({ ...value, countryCode: { code: opt.id, dial_code: opt.value } });
+        setInternalCountry({ code: opt.id, dial_code: opt.value });
+        onChange({ countryCode: internalCountry });
     };
 
     const handlePhoneChange = (e) => {
         const raw = e.target.value;
-        const digitsOnly = raw.replace(/\D/g, '').slice(0, 14); // Remove non-digits and limit to 14
-        onChange({ ...value, phone: digitsOnly });
+        const digitsOnly = raw.replace(/\D/g, '').slice(0, 14);
+        setInternalPhone(digitsOnly);
+    };
+
+    // Only propagate changes on blur
+    const handleBlur = () => {
+        onChange({ phone: internalPhone, countryCode: internalCountry });
     };
 
 
@@ -91,8 +105,9 @@ export default function PhoneInputWithCountry({
             />
             <Input
                 label="Phone"
-                value={value.phone}
+                value={internalPhone}
                 onChange={handlePhoneChange}
+                onBlur={handleBlur}
                 maxLength={14}
                 className="w-full"
             />

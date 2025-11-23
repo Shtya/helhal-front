@@ -68,11 +68,11 @@ export default function AdminJobsDashboard() {
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
         search: debouncedSearch?.trim(),
-        filters: { status: "" }
+        status: ''
       };
-      if (activeTab !== 'all') q.filters.status = activeTab;
+      if (activeTab !== 'all') q.status = activeTab;
 
-      const res = await api.get('/jobs', { params: q, signal: controller.signal });
+      const res = await api.get('/jobs/admin', { params: q, signal: controller.signal });
 
       const data = res.data || {};
       setRows(Array.isArray(data.records) ? data.records : []);
@@ -187,7 +187,7 @@ export default function AdminJobsDashboard() {
     {
       key: 'proposals',
       label: 'Proposals',
-      render: v => <span className='bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs'>{v.proposals?.length || 0}</span>,
+      render: v => <span className='bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs'>{v.proposalsLength || 0}</span>,
     },
     { key: 'created_at', label: 'Created', type: 'date' },
   ];

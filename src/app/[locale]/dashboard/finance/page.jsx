@@ -71,7 +71,7 @@ export default function WithdrawManagement() {
         type: filters.kind === 'all' ? '' : filters.kind,
         search: debouncedSearch,
       };
-      const res = await api.get('/accounting/transactions', { params: q, signal: controller.signal });
+      const res = await api.get('/accounting/admin/transactions', { params: q, signal: controller.signal });
       const { transactions = [], pagination = {} } = res.data || {};
       setTransactions(transactions);
       setTotal(pagination.total ?? 0);
@@ -106,7 +106,7 @@ export default function WithdrawManagement() {
 
   useEffect(() => {
     fetchTransactions()
-  }, [filters.kind, filters.page, filters.limit, debouncedSearch]);
+  }, [filters.kind, filters.page.toString(), filters.limit.toString(), debouncedSearch]);
 
 
   useEffect(() => {

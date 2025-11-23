@@ -1,11 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 
-const NoResults = ({ mainText, additionalText, buttonText, buttonLink , onClick }) => {
+const NoResults = ({ mainText, additionalText, buttonText, buttonLink, onClick }) => {
   return (
-    <div className='text-center col-span-10 opacity-80 '>
+    <div className='text-center col-span-10 opacity-80 flex flex-col justify-center items-center '>
       {/* Icon */}
-      <div className='text-6xl text-gray-400 mb-2'>
+      <div className='text-6xl text-gray-400 mb-2 w-[200px] h-[200px] '>
         <img src='/icons/empty.jpg' alt='No Data' className='mx-auto w-[200px] transform transition duration-500 hover:scale-105' />
       </div>
 

@@ -288,7 +288,7 @@ export default function MyDisputesPage() {
                       }}>
                         <div className='flex items-start justify-between gap-3'>
                           <div className='min-w-0'>
-                            <div className='font-medium text-sm truncate text-slate-900'>{d?.order?.title || d.orderId}</div>
+                            <div className='font-medium text-sm truncate text-slate-900'>{d?.subject || d.orderId}</div>
                             <div className='mt-0.5 text-[11px] text-slate-500 truncate'>
                               #{(d.id || '').slice(0, 8)} · Opened {new Date(d.created_at).toLocaleString()}
                             </div>

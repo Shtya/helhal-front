@@ -60,14 +60,17 @@ export default function DeliverModel({
         setRowLoading(row.id, 'deliver');
         setSubmitting(true);
 
-        const formData = new FormData();
-        formData.append('message', data.message);
-        for (const file of data.files || []) {
-            formData.append('files', file.id);
-        }
 
         try {
-            const res = await api.post(`/orders/${row.id}/deliver`, formData);
+            const payload = {
+                message: data.message,
+                files: (data.files || []).map(file => ({
+                    filename: file.filename,
+                    url: file.url,
+                })),
+            };
+
+            const res = await api.post(`/orders/${row.id}/deliver`, payload);
             if (res?.status >= 200 && res?.status < 300) {
                 patchOrderRow(row.id, (r) => ({
                     ...r,

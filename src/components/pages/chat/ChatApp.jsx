@@ -12,10 +12,10 @@ import { ChatThread } from '@/components/pages/chat/ChatThread';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
-import { getUserIdFromAccessToken } from '@/utils/api';
 import { showNotification } from '@/utils/notifications';
 import { isErrorAbort } from '@/utils/helper';
 import { useValues } from '@/context/GlobalContext';
+import { useSocket } from '@/context/SocketContext';
 
 
 /** ───────────────────────────────── SOCKET REF ───────────────────────────────── */
@@ -40,8 +40,6 @@ export const MessageSkeletonBubble = ({ me = false, animated = false }) => (
     </div>
   </div>
 );
-
-
 
 /* ------------------------------ CHAT LOGIC ------------------------------ */
 
@@ -80,9 +78,8 @@ const useChat = () => {
 
   const [aboutUser, setAboutUser] = useState({});
   const [query, setQuery] = useState('');
-  const [isConnected, setIsConnected] = useState(false);
   //initail user id from access token to able detect me messges when user not fetched yet
-  const [currentUser, setCurrentUser] = useState({ id: getUserIdFromAccessToken() });
+  const [currentUser, setCurrentUser] = useState({ id: null });
   const [searchResults, setSearchResults] = useState([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -104,7 +101,6 @@ const useChat = () => {
   });
 
   const [loading, setLoading] = useState(true);
-  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -116,9 +112,130 @@ const useChat = () => {
   const messagesByThreadRef = useRef(new Map());
   const messagesPaginationByThreadRef = useRef(new Map());
   const threadsRef = useRef([]);
-  const socketRef = useRef(null);
   const { user } = useAuth();
   const { setUnreadChatCount } = useValues();
+
+  const {
+    isConnected,
+    // Publisher/Subscriber
+    subscribe,
+    // External controls
+    incrementUnread,
+  } = useSocket()
+
+  useEffect(() => {
+    const handleNewMessage = serverMsg => {
+      const currentUserId = currentUserIdRef.current;
+      const cid = serverMsg?.conversationId;
+      const other = serverMsg?.sender;
+      const uiMsg = normalizeMessage(serverMsg, currentUserId);
+
+      //show conversation item at top regardless of pagination when conversation not exist at currunt shown conversations.
+      if (other.id !== user?.id && !threadsRef.current.some(c => c.id === serverMsg?.conversationId)) {
+        const conversationId = serverMsg?.conversationId;
+        setThreads(prev => {
+          const newConversation = {
+            id: conversationId,
+            name: other?.username || 'User',
+            email: other?.email,
+            avatar: other?.profileImage || '/default-avatar.png',
+            active: false,
+            time: formatTime(serverMsg?.created_at),
+            unreadCount: 1,
+            about: {
+              id: other?.id,
+              name: other?.username || '—',
+              from: formatDate(serverMsg?.created_at),
+              onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',
+              languages: other?.languages?.join(', ') || '—',
+              level: other?.sellerLevel ? other?.sellerLevel : '—',
+              responseRate: other?.responseTime ? `${other.responseTime} hrs` : '—',
+              ordersCompleted: other?.ordersCompleted ?? 0,
+              role: other?.role ?? 'member',
+              topRated: other?.topRated ?? false,
+            }
+            ,
+            otherUserId: other?.id,
+            isFavorite: false,
+            isPinned: false,
+            isArchived: false,
+            lastMessageAt: serverMsg?.created_at,
+          }
+          return sortThreads([newConversation, ...prev])
+        })
+
+        // Trigger highlight animation after DOM update
+        setTimeout(() => {
+          const el = document.querySelector(`[data-conversation-id="${conversationId}"]`);
+          if (el) el.classList.add("highlight");
+        }, 50);
+
+        return;
+      }
+
+      //only add message if messages for this conversation already loaded
+      if (messagesByThreadRef.current.has(cid)) {
+        setMessagesByThread(prev => {
+          const updated = new Map(prev);
+          const list = updated.get(cid) || [];
+
+          const isDuplicate = list.some(m => (m.id && m.id === uiMsg.id) || (m.clientMessageId && m.clientMessageId === uiMsg.clientMessageId));
+          if (isDuplicate) return prev;
+
+          if (uiMsg.clientMessageId) {
+            const optimisticIndex = list.findIndex(m => m.clientMessageId === uiMsg.clientMessageId);
+            if (optimisticIndex !== -1) {
+              const next = [...list];
+              next[optimisticIndex] = { ...uiMsg, pending: false };
+              updated.set(cid, next);
+              return updated;
+            }
+          }
+
+          updated.set(cid, [...list, { ...uiMsg, pending: false }]);
+          return updated;
+        });
+      }
+
+      const isForOpenThread = activeThreadIdRef.current === cid;
+      const fromOther = (serverMsg?.senderId || (serverMsg?.sender && serverMsg?.sender.id)) !== currentUserId;
+
+      if (isForOpenThread && fromOther) {
+        markAsRead(cid);
+      }
+
+      if (!isForOpenThread) {
+        incrementUnread(1)
+      }
+
+      // Update the existing thread's unread/lastMessageAt; sorting will react to lastMessageAt
+      if (!isForOpenThread && fromOther) {
+        setThreads(prev => {
+          const updated = prev.map(t =>
+            t.id === cid
+              ? {
+                ...t,
+                unreadCount: (t.unreadCount || 0) + 1,
+                lastMessageAt: new Date().toISOString(),
+              }
+              : t,
+          );
+          return sortThreads(updated);
+        });
+      }
+
+    };
+
+    const unsubscribe = subscribe(({ type, payload }) => {
+      if (type === "NEW_MESSAGE") {
+        const msg = payload;
+
+        handleNewMessage(msg)
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     activeThreadIdRef.current = activeThreadId;
@@ -189,210 +306,8 @@ const useChat = () => {
     };
   }, []);
 
-  // ── INIT ──
-
-  useEffect(() => {
-    const token = user?.accessToken;
-    const userId = user?.id;
-
-    // Don't initialize socket without token
-    if (!token || !userId) {
-      return;
-    }
-
-    // Disconnect existing socket if token changed
-    if (socketRef.current) {
-      const oldToken = socketRef.current.auth?.token;
-      if (oldToken !== token) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    }
-
-    // Create new socket if doesn't exist
-    if (!socketRef.current) {
-      socketRef.current = io(process.env.NEXT_PUBLIC_BACKEND_URL, {
-        auth: { token },
-        transports: ['websocket', 'polling'],
-        reconnection: true,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        reconnectionAttempts: Infinity,
-      });
-    }
-
-    const socket = socketRef.current;
-
-    const handleConnect = () => {
-
-      setIsConnected(true);
-    };
-
-    const handleDisconnect = (reason) => {
-      setIsConnected(false);
-      // If disconnected due to authentication error, don't reconnect
-      if (reason === 'io server disconnect' || reason === 'transport close') {
-        // Server closed connection, will attempt to reconnect
-        console.log('Socket disconnected:', reason);
-      }
-    };
-
-    const handleReconnect = (attemptNumber) => {
-      console.log('Socket reconnecting, attempt:', attemptNumber);
-      // Update token on reconnect if it changed
-      if (socket.auth?.token !== token) {
-        socket.auth = { token };
-      }
-    };
-
-    const handleReconnectError = (error) => {
-      console.error('Socket reconnection error:', error);
-      // If token is invalid, stop reconnecting
-      if (error?.message?.includes('auth') || error?.message?.includes('token')) {
-        socket.disconnect();
-        showNotification('Authentication failed. Please refresh the page.', 'error');
-      }
-    };
-
-    socket.on('connect', handleConnect);
-    socket.on('disconnect', handleDisconnect);
-    socket.on('reconnect', handleReconnect);
-    socket.on('reconnect_error', handleReconnectError);
-
-    // 🟢 NEW MESSAGE HANDLER: de-dupe, update messages, keep unread in sync, handle unknown conversations
-    const handleNewMessage = serverMsg => {
-      const currentUserId = currentUserIdRef.current;
-      const cid = serverMsg?.conversationId;
-      const other = serverMsg?.sender;
-      const uiMsg = normalizeMessage(serverMsg, currentUserId);
-
-      //show conversation item at top regardless of pagination when conversation not exist at currunt shown conversations.
-      if (other.id !== user?.id && !threadsRef.current.some(c => c.id === serverMsg?.conversationId)) {
-        const conversationId = serverMsg?.conversationId;
-        setThreads(prev => {
-          const newConversation = {
-            id: conversationId,
-            name: other?.username || 'User',
-            email: other?.email,
-            avatar: other?.profileImage || '/default-avatar.png',
-            active: false,
-            time: formatTime(serverMsg?.created_at),
-            unreadCount: 1,
-            about: {
-              id: other?.id,
-              name: other?.username || '—',
-              from: formatDate(serverMsg?.created_at),
-              onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',
-              languages: other?.languages?.join(', ') || '—',
-              level: other?.sellerLevel ? other?.sellerLevel : '—',
-              responseRate: other?.responseTime ? `${other.responseTime} hrs` : '—',
-              ordersCompleted: other?.ordersCompleted ?? 0,
-              role: other?.role ?? 'member',
-              topRated: other?.topRated ?? false,
-            }
-            ,
-            otherUserId: other?.id,
-            isFavorite: false,
-            isPinned: false,
-            isArchived: false,
-            lastMessageAt: serverMsg?.created_at,
-          }
-          return sortThreads([newConversation, ...prev])
-        })
-
-        // Trigger highlight animation after DOM update
-        setTimeout(() => {
-          const el = document.querySelector(`[data-conversation-id="${conversationId}"]`);
-          if (el) el.classList.add("highlight");
-        }, 50);
-
-        return;
-      }
-
-      //only add message if messages for this conversation already loaded
-      if (messagesByThreadRef.current.has(id)) {
-        setMessagesByThread(prev => {
-          const updated = new Map(prev);
-          const list = updated.get(cid) || [];
-
-          const isDuplicate = list.some(m => (m.id && m.id === uiMsg.id) || (m.clientMessageId && m.clientMessageId === uiMsg.clientMessageId));
-          if (isDuplicate) return prev;
-
-          if (uiMsg.clientMessageId) {
-            const optimisticIndex = list.findIndex(m => m.clientMessageId === uiMsg.clientMessageId);
-            if (optimisticIndex !== -1) {
-              const next = [...list];
-              next[optimisticIndex] = { ...uiMsg, pending: false };
-              updated.set(cid, next);
-              return updated;
-            }
-          }
-
-          updated.set(cid, [...list, { ...uiMsg, pending: false }]);
-          return updated;
-        });
-      }
-      const isForOpenThread = activeThreadIdRef.current === cid;
-      const fromOther = (serverMsg?.senderId || (serverMsg?.sender && serverMsg?.sender.id)) !== currentUserId;
-
-      if (isForOpenThread && fromOther) {
-        markAsRead(cid);
-      }
-
-      // Update the existing thread's unread/lastMessageAt; sorting will react to lastMessageAt
-      if (!isForOpenThread && fromOther) {
-        setThreads(prev => {
-          const updated = prev.map(t =>
-            t.id === cid
-              ? {
-                ...t,
-                unreadCount: (t.unreadCount || 0) + 1,
-                lastMessageAt: new Date().toISOString(),
-              }
-              : t,
-          );
-          return sortThreads(updated);
-        });
-      }
-
-    };
-
-    socket.on('new_message', handleNewMessage);
 
 
-    const handleError = (error) => {
-      console.error('Socket error:', error);
-      showNotification(error.message || 'Connection error', 'error');
-    };
-
-    socket.on('error', handleError);
-
-    // initial loads
-    fetchTotalUnreadCount();
-
-    // Cleanup function
-    return () => {
-      if (socket) {
-        socket.off('connect', handleConnect);
-        socket.off('disconnect', handleDisconnect);
-        socket.off('reconnect', handleReconnect);
-        socket.off('reconnect_error', handleReconnectError);
-        socket.off('new_message', handleNewMessage);
-        socket.off('error', handleError);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.accessToken, user?.id, router, normalizeMessage]);
-
-  // Cleanup socket on component unmount
-  useEffect(() => {
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, []);
 
   //initial fetch conversations
 
@@ -404,24 +319,6 @@ const useChat = () => {
   }, [user?.id, userPagination.page]);
 
 
-  const fetchTotalUnreadCount = async () => {
-    try {
-      //comment it untill reach the count part 
-      // const { data } = await api.get('/conversations/unread/count');
-      // setTotalUnreadCount(data.unreadCount || 0);
-      setTotalUnreadCount(0);
-    } catch (error) {
-      console.error('Error fetching unread count:', error);
-    }
-  };
-
-  // ✅ DERIVE TOTAL UNREAD FROM THREADS (fixes “disappear until refresh”)
-  useEffect(() => {
-    const total = threads.reduce((sum, thread) => sum + (thread.unreadCount || 0), 0);
-    setTotalUnreadCount(total);
-  }, [threads]);
-
-  // Remove the old updateTotalUnreadCount() write-to-threads helper entirely
 
   // Auto-select target user if provided
   useEffect(() => {
@@ -478,7 +375,7 @@ const useChat = () => {
   }
 
   const formatConversation = useCallback((conv) => {
-    const meId = user?.id || getUserIdFromAccessToken();
+    const meId = user?.id;
 
     if (!meId) {
       console.warn('No user ID available to fetch conversations.');
@@ -518,7 +415,7 @@ const useChat = () => {
 
   const conversationsApiRef = useRef(null)
   const fetchConversations = useCallback(async (page = 1, options = { silent: false }) => {
-    const meId = user?.id || getUserIdFromAccessToken();
+    const meId = user?.id;
 
     if (!meId) {
       console.warn('No user ID available to fetch conversations.');
@@ -715,7 +612,7 @@ const useChat = () => {
 
   const handleSearchResultClick = async user => {
     const existing = threadsRef.current.find(t => t.otherUserId === user?.id);
-    if (!existing) {
+    if (existing) {
       selectThread(existing.id);
     } else {
       await createConversation(user?.id);
@@ -769,8 +666,14 @@ const useChat = () => {
     try {
       const payload = {
         message: messageData.text || '',
-        attachments: files.map(file => file.id || file.assetId).filter(Boolean),
+        attachments: files
+          .map(file => ({
+            url: file?.url || file?.path,
+            type: file?.mimeType || file?.type,
+            filename: file?.filename || file?.name,
+          }))
       };
+
       await api.post(`/conversations/${conversationId}/message`, payload);
       // server will emit the message via socket, which replaces the optimistic one
     } catch (error) {
@@ -892,7 +795,7 @@ const useChat = () => {
         let id = settings?.platformAccountUserId;
 
         if (!id) {
-          const { data: adminUser } = await api.get('/users/admin');
+          const { data: adminUser } = await api.get('/auth/users/admin');
           id = adminUser?.id;
         }
 
@@ -979,8 +882,6 @@ const useChat = () => {
     loadOlderMessages,
     loadingOlderThreads,
     contactAdmin,
-    totalUnreadCount,
-    fetchTotalUnreadCount,
     adminLoading
   };
 };
@@ -1013,7 +914,7 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
   const t = useTranslation('Chat');
   useKeyboardShortcuts();
 
-  const { threads, adminLoading, messagesPaginationByThread, userPagination, setUserPagination, loadingMessagesId, loadingOlderThreads, loadOlderMessages, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin, totalUnreadCount } = useChat();
+  const { threads, adminLoading, messagesPaginationByThread, userPagination, setUserPagination, loadingMessagesId, loadingOlderThreads, loadOlderMessages, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin } = useChat();
 
   const activeThread = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
 
@@ -1023,9 +924,6 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
         {/* Left Panel - Conversations List */}
         <div className=' '>
           <Panel className="h-full" cdCard="h-full !p-0">
-            {/* Example: unread badge spot if you want it in your UI header
-            {totalUnreadCount > 0 && <span>{totalUnreadCount > 99 ? '99+' : totalUnreadCount}</span>}
-            */}
             <AllMessagesPanel showContactAdmin={showContactAdmin} adminLoading={adminLoading} userPagination={userPagination} setUserPagination={setUserPagination} items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={() => fetchConversations()} onContactAdmin={contactAdmin} />
           </Panel>
         </div>

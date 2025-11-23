@@ -176,7 +176,7 @@ export default memo(function AmazingServiceCard({
         </div>
 
         {/* Favorite / seller level */}
-        {/* <FavoriteButton service={service} className='absolute top-3 right-3 z-[2]' /> */}
+        <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' />
         <SellerLevelBadge level={service?.seller?.sellerLevel} />
       </div>
 

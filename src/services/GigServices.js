@@ -146,10 +146,10 @@ class ApiService {
     });
   }
 
-  increaseServiceClick({ slug }, extra = {}) {
+  increaseServiceClick({ serviceId }, extra = {}) {
     return this.request({
       method: 'PUT',
-      url: `/services/${slug}/clicks`,
+      url: `/services/${serviceId}/click`,
       ...extra,
     });
   }

@@ -507,7 +507,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
         <ContinueWithEmailButton onClick={onEmailClick} />
         <ContinueWithGoogleButton referralCode={referralCode} />
         <ContinueWithAppleButton referralCode={referralCode} />
-        <ContinueWithPhoneButton onClick={onPhoneClick} />
+        {/* <ContinueWithPhoneButton onClick={onPhoneClick} /> */}
       </div>
       <p className='text-sm text-gray-500 border-t border-slate-200 mt-6 pt-6'>{t('terms')}</p>
     </motion.div>
@@ -522,7 +522,7 @@ export default function AuthPage() {
   const t = useTranslations('auth');
 
   const tabParam = searchParams?.get('tab') || 'login';
-  const oauthFailed = searchParams?.get('error');
+  const loginError = searchParams?.get('error');
   const accessTokenFromUrl = searchParams?.get('accessToken');
   const refreshTokenFromUrl = searchParams?.get('refreshToken');
   const redirectUrl = searchParams?.get('redirect') || '/explore';
@@ -539,7 +539,7 @@ export default function AuthPage() {
   const [needsUserTypeSelection, setNeedsUserTypeSelection] = useState(false);
 
   useEffect(() => {
-    if (oauthFailed === 'oauth_failed') {
+    if (loginError === 'oauth_failed') {
       toast.error('Login failed. Please try again.');
 
 
@@ -552,6 +552,20 @@ export default function AuthPage() {
 
       router.replace(newUrl, { scroll: false });
     }
+
+    if (loginError === 'confirmation_failed') {
+      toast.error('Email confirmation failed. Please try again or contact support.');
+
+      // 🔥 Remove query param from URL without reload
+      const params = new URLSearchParams(window.location.search);
+      params.delete('error');
+
+      const newUrl =
+        window.location.pathname + '?' + params.toString();
+
+      router.replace(newUrl, { scroll: false });
+    }
+
   }, [])
 
   // OAuth: if query has tokens, store them and fetch /auth/me
@@ -563,7 +577,7 @@ export default function AuthPage() {
         updateTokens({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl });
         const user = await refetchUser();
 
-        if (user?.type) {
+        if (!user?.type) {
           setNeedsUserTypeSelection(true);
         } else {
           toast.success('Logged in successfully!');

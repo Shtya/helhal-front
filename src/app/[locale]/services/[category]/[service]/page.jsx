@@ -20,6 +20,7 @@ import AttachmentList from '@/components/common/AttachmentList';
 import { useAuth } from '@/context/AuthContext';
 import AttachFilesButton from '@/components/atoms/AttachFilesButton';
 import Textarea from '@/components/atoms/Textarea';
+import FavoriteButton from '@/components/atoms/FavoriteButton';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -33,8 +34,8 @@ const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, n
           : requirementAnswers[req.id] ?? '';
 
     const obj = {
-      questionId: req.id,
-      type: req.requirementType,
+      question: req.question,
+      requirementType: req.requirementType,
       answer: baseAnswer,
     };
 
@@ -97,17 +98,21 @@ export default function ServiceDetailsPage({ params }) {
   const [validationErrors, setValidationErrors] = useState({});
 
   const canOrder = user?.id != serviceData?.seller?.id && role === 'buyer' && serviceData?.status === 'Active';
+  console.log(user?.id, serviceData?.seller?.id, role, serviceData?.status)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 
   const router = useRouter();
 
   // ✅ Separate useEffect to increase click count
   useEffect(() => {
+
     const increaseClick = async () => {
+      if (!serviceData?.id) return;
       try {
 
         await apiService.increaseServiceClick({
-          slug: service,
+          serviceId: serviceData?.id,
         });
       } catch (err) {
         console.error("Error increasing service click:", err);
@@ -115,7 +120,7 @@ export default function ServiceDetailsPage({ params }) {
     };
 
     increaseClick();
-  }, [service]);
+  }, [serviceData?.id]);
 
   useEffect(() => {
     const fetchService = async () => {
@@ -123,61 +128,6 @@ export default function ServiceDetailsPage({ params }) {
         setLoading(true);
 
         const res = await apiService.getService(service);
-
-        //Just for a test 
-        // res.requirements = [
-        //   {
-        //     id: 1,
-        //     question: "Please describe your business (name, industry, and main services).",
-        //     requirementType: "text",
-        //     isRequired: true,
-        //     options: []
-        //   },
-        //   {
-        //     id: 2,
-        //     requirementType: "text",
-        //     options: [],
-        //     isRequired: false,
-        //     question: "Do you have any preferred colors, styles, or reference websites?"
-        //   },
-        //   {
-        //     id: 3,
-        //     question: "Upload your business logo.",
-        //     requirementType: "file",
-        //     options: [],
-        //     isRequired: true
-        //   },
-        //   {
-        //     id: 4,
-        //     requirementType: "file",
-        //     options: [],
-        //     isRequired: false,
-        //     question: "Upload your small  business logo."
-        //   },
-        //   {
-        //     id: 5,
-        //     question: "What is the main purpose of your website?",
-        //     requirementType: "multiple_choice",
-        //     options: [
-        //       "Showcase business information",
-        //       "Sell products/services online",
-        //       "Collect leads/contact requests",
-        //       "Other"
-        //     ],
-        //     isRequired: true
-        //   },
-        //   {
-        //     id: 6,
-        //     requirementType: "multiple_choice",
-        //     options: [
-        //       "WordPress",
-        //       "Custom React/Next.js",
-        //       "No preference"
-        //     ],
-        //     isRequired: false,
-        //     question: "Do you have a preferred platform for your website?"
-        //   }
-        // ]
 
         setServiceData(res);
 
@@ -1452,14 +1402,14 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
   return (
     <div className='w-full lg:w-[400px]'>
       <aside className='sticky top-28'>
-        <div className='relative rounded-xl border border-slate-200 bg-white p-6 shadow-custom '>
+        <div className={`relative rounded-xl border border-slate-200 bg-white p-6 ${selectedPackage && "pt-[36px]"} shadow-custom`}>
           <div className='pointer-events-none absolute -inset-px rounded-xl p-[1px]   ' />
 
           {selectedPackage ? (
             <>
               <div className='mb-4 flex items-start justify-between'>
                 <h3 className='text-lg font-semibold text-slate-900'>{selectedPackage.name}</h3>
-                {/* <FavoriteButton service={serviceData} packageType={selectedPackage.name} /> */}
+                <FavoriteButton serviceId={serviceData?.id} packageType={selectedPackage.name} />
               </div>
 
               <div className='mb-3 flex items-center justify-between'>

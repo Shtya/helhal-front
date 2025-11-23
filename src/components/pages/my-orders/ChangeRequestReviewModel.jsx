@@ -21,25 +21,6 @@ export default function ChangeRequestReviewModel({
                 const res = await api.get(`/orders/${selectedRow.id}/last-change-request`);
                 setRequest(res.data);
 
-                // Mocked response
-                // const twoDaysAgo = new Date(Date.now() - 2 * 86400000).toISOString();
-                // const mockData = {
-                //     created_at: twoDaysAgo,
-                //     message: `Hi ${selectedRow?._raw?.seller?.username},\n\nThanks for the delivery! I’d like a few adjustments before we proceed.`,
-                //     files: [
-                //         {
-                //             name: 'revision-notes.pdf',
-                //             url: 'https://example.com/mock/revision-notes.pdf',
-                //         },
-                //         {
-                //             name: 'reference-screenshot.png',
-                //             url: 'https://example.com/mock/reference-screenshot.png',
-                //         },
-                //     ],
-                // };
-
-                // await new Promise((res) => setTimeout(res, 500));
-                // setRequest(mockData);
             } catch (error) {
                 setRequest(null);
             } finally {

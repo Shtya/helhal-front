@@ -31,6 +31,7 @@ const schema = z.object({
 export default function RequestChangesModel({ open, onClose, onSend, selectedRow, patchOrderRow }) {
     const [submitting, setSubmitting] = useState(false);
 
+
     const {
         register,
         handleSubmit,
@@ -50,13 +51,16 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
     async function onSubmit(data) {
         setSubmitting(true);
         const formData = new FormData();
-        formData.append('message', data.message);
-        for (const file of data.files || []) {
-            formData.append('files', file.id);
-        }
+        const payload = {
+            message: data.message,
+            files: (data.files || []).map(file => ({
+                filename: file.filename,
+                url: file.url,
+            })),
+        };
 
         try {
-            await api.post(`/orders/${selectedRow.id}/request-changes`, formData);
+            await api.post(`/orders/${selectedRow.id}/request-changes`, payload);
             patchOrderRow(selectedRow.id, (r) => ({
                 ...r,
                 status: OrderStatus.CHANGES_REQUESTED,
@@ -80,7 +84,7 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
     if (!open) return null;
 
     return (
-        <Modal title="Request Changes" onClose={onClose} open={open}>
+        <Modal title="Request Changes" onClose={onClose} open={open} className="!z-[106]">
             <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">

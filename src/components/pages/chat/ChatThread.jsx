@@ -56,11 +56,16 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
     }
   };
 
-  const checkIfAtBottom = useCallback(() => {
+  const checkIfAtBottom = useCallback((includeLastCheck = false) => {
     if (!bodyRef.current) return false;
+
+    const lastChild = bodyRef.current.lastElementChild;
+    const lastChildHeight = lastChild && includeLastCheck ? lastChild.offsetHeight : 0;
+
+
     const { scrollTop, scrollHeight, clientHeight } = bodyRef.current;
     // Check if user is within 50px of the bottom (threshold for "at bottom")
-    return scrollHeight - scrollTop - clientHeight < 50;
+    return scrollHeight - scrollTop - clientHeight - lastChildHeight < 50;
   }, []);
 
   const handleScrollToBottom = () => {
@@ -130,7 +135,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
     // For subsequent new messages
     if (isNewMessage && lastMessage && lastMessage?.authorId !== currentUser?.id) {
       // Only show button if user is not at bottom
-      if (!checkIfAtBottom()) {
+      if (!checkIfAtBottom({ includeLastCheck: true })) {
         setShowBottom(true);
       } else {
         setShowBottom(false);
@@ -370,7 +375,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className={`flex gap-4 ${me ? 'flex-row-reverse text-right' : ''}`}>
       <div className='relative h-fit flex-none'>
         {avatar ? <Img altSrc={'/no-user.png'} src={avatar} alt={name} className='h-10 w-10 rounded-full object-cover ring-2 ring-white shadow' /> : <div className={`h-10 w-10 rounded-full ${avatarBg} ring-2 ring-white shadow`} />}
-        <span className='absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500' />
+        {/* <span className='absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500' /> */}
       </div>
 
       <div className={`flex-1 ${me ? 'items-end' : ''}`}>
@@ -382,7 +387,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
               {/* Images */}
               <div className="flex flex-wrap gap-2 justify-end">
                 {attachments
-                  .filter((f) => f.mimeType?.startsWith?.('image/'))
+                  .filter((f) => (f.mimeType || f.type)?.startsWith?.('image/'))
                   .map((f, idx) => {
                     const url = f.url || f.path || '';
                     const absolute = url ? (url.startsWith('http') ? url : baseImg + url) : '';
@@ -425,7 +430,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
               {/* Files */}
               <div className="flex flex-wrap gap-2 justify-end">
                 {attachments
-                  .filter((f) => !f.mimeType?.startsWith?.('image/'))
+                  .filter((f) => !(f.mimeType || f.type)?.startsWith?.('image/'))
                   .map((f, idx) => {
                     const url = f.url || f.path || '';
                     const absolute = url ? (url.startsWith('http') ? url : baseImg + url) : '';

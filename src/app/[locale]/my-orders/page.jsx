@@ -38,6 +38,7 @@ const TABS = [
   { label: 'All', value: 'all' },
   { label: 'Active', value: 'active' }, // Pending + Accepted
   { label: 'Delivered', value: 'delivered' },
+  { label: 'Change Requested', value: 'change_requested' },
   { label: 'Completed', value: 'completed' },
   { label: 'Disputed', value: 'disputed' },
   { label: 'Canceled', value: 'canceled' },
@@ -157,6 +158,7 @@ export default function Page() {
     else if (activeTab === 'completed') params.set('status', OrderStatus.COMPLETED);
     else if (activeTab === 'canceled') params.set('status', OrderStatus.CANCELLED);
     else if (activeTab === 'disputed') params.set('status', OrderStatus.DISPUTED);
+    else if (activeTab === 'change_requested') params.set('status', OrderStatus.CHANGES_REQUESTED);
     // 'all' -> broad fetch
 
     params.set('page', pagination.page);
@@ -319,11 +321,11 @@ export default function Page() {
 
     const hasOpenDispute = !!(s === 'Disputed' || s === 'in_review');
 
-    const canSellerDeliver = isSeller && s === (OrderStatus.ACCEPTED || OrderStatus.CHANGES_REQUESTED) && !hasOpenDispute;
+    const canSellerDeliver = isSeller && [OrderStatus.ACCEPTED, OrderStatus.CHANGES_REQUESTED].includes(s) && !hasOpenDispute;
     const canBuyerReceive = isBuyer && s === OrderStatus.DELIVERED && !hasOpenDispute;
     const canDispute = (isBuyer || isSeller) && [OrderStatus.ACCEPTED, OrderStatus.DELIVERED, OrderStatus.CHANGES_REQUESTED].includes(s) && !hasOpenDispute;
 
-    const isCompleted = s === OrderStatus.COMPLETED;
+    const canSeeReview = s === OrderStatus.DELIVERED || s === OrderStatus.COMPLETED;
     const isChangesRequested = s === OrderStatus.CHANGES_REQUESTED;
     const loadingAction = actionLoading[row.id]; // "deliver" | "receive" | "dispute" | "cancel" | null
     const isBusy = !!loadingAction;
@@ -348,7 +350,7 @@ export default function Page() {
         label: "Review Submission",
         onClick: () => handleOpenModal(row, "submission"),
         disabled: isBusy,
-        hide: !isCompleted,
+        hide: !canSeeReview,
       },
       {
         icon: <MessageSquare className="h-4 w-4" />,
@@ -385,7 +387,7 @@ export default function Page() {
         icon: <FileWarning className="h-4 w-4" />,
         label: 'View Dispute',
         href: `/my-disputes?dispute=${row?._raw?.disputeId}`,
-        hide: !hasOpenDispute,
+        hide: !hasOpenDispute || !row?._raw?.disputeId,
       },
       {
         icon: <CreditCard className="h-4 w-4" />,

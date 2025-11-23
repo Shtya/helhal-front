@@ -13,9 +13,12 @@ export default function OrderDeliveryTimer({ order }) {
     });
 
     useEffect(() => {
-        if (!order?.completedAt || !order?.deliveryTime) return;
+        if (!order?.deliveryTime) return;
 
-        const deliveryDeadline = new Date(order.completedAt);
+        const orderDate = order?.submissionDate || order.completedAt;
+        if (!orderDate) return;
+
+        const deliveryDeadline = new Date(orderDate);
         deliveryDeadline.setDate(
             deliveryDeadline.getDate() + (order.deliveryTime)
         ); // e.g. 5 days

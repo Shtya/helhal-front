@@ -27,7 +27,7 @@ export default function Page() {
   const tabs = [
     { label: 'Account', value: 'account' },
     { label: 'Security', value: 'security' },
-    { label: 'Notifications', value: 'notifications' },
+    // { label: 'Notifications', value: 'notifications' },
   ];
 
   return (
@@ -78,7 +78,7 @@ function AccountSettings() {
   const [reason, setReason] = useState(null);
   const [customReason, setCustomReason] = useState('');
 
-  const [pendingEmail, setPendingEmail] = useState(null);
+  const [pendingEmail, setPendingEmail] = useState(me?.pendingEmail);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
@@ -99,13 +99,8 @@ function AccountSettings() {
   }
 
   useEffect(() => {
-    (async () => {
-      const pending = await api.get('/auth/pending-email').then(r => r.data?.pendingEmail);
-      if (pending) {
-        setPendingEmail(pending);
-      }
-    })();
-  }, []);
+    setPendingEmail(me?.pendingEmail);
+  }, [me]);
 
 
   useEffect(() => {
@@ -133,20 +128,11 @@ function AccountSettings() {
       }
 
       if (email && email !== me?.email && resendCooldown <= 0) {
-        // updates.push(
-        //   api.post('/auth/request-email-change', { newEmail: email }).then(() => {
-        //     setPendingEmail(email);
-        //   })
-        // );
-
-        //for testing without backend
         updates.push(
-          new Promise(resolve => {
-            setTimeout(() => {
-              setPendingEmail(email);
-              startResendCooldown();
-              resolve(); // simulate success
-            }, 500); // simulate network delay
+          api.post('/auth/request-email-change', { newEmail: email }).then(() => {
+            startResendCooldown(); // trigger cooldown
+            setPendingEmail(email);
+            setCurrentUser(prev => ({ ...prev, pendingEmail: email }));
           })
         );
       }
@@ -163,24 +149,33 @@ function AccountSettings() {
       setSaving(false);
     }
   })
+  const [resendLoading, setResendLoading] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   async function resendEmail() {
     try {
+      setResendLoading(true);
       await api.post('/auth/resend-email-confirmation');
       toast.success('Confirmation email resent!');
       startResendCooldown(); // trigger cooldown
     } catch (err) {
       toast.error('Failed to resend email');
+    } finally {
+      setResendLoading(false);
     }
   }
 
   async function cancelEmailChange() {
     try {
+      setCancelLoading(true);
       await api.post('/auth/cancel-email-change');
       setPendingEmail(null);
+      setCurrentUser(prev => ({ ...prev, pendingEmail: null }));
       toast.success('Email change request canceled');
     } catch (err) {
       toast.error('Failed to cancel email change');
+    } finally {
+      setCancelLoading(false);
     }
   }
 
@@ -207,25 +202,27 @@ function AccountSettings() {
             Please check your inbox to confirm the change.
           </p>
           <div className='grid items-center grid-cols-1 xs:grid-cols-2 gap-2'>
-
             <Button
-              name='Cancel request'
+              name={cancelLoading ? 'Canceling…' : 'Cancel request'}
               color='gray'
               className='mt-2 text-sm !text-red-600 !bg-transparent'
               onClick={cancelEmailChange}
+              disabled={cancelLoading || resendLoading}
             />
 
             {resendCooldown > 0 ? (
-              <span className='mt-2 text-sm text-blue-600 text-nowrap text-center'>Resend in {resendCooldown}s</span>
+              <span className='mt-2 text-sm text-blue-600 text-nowrap text-center'>
+                Resend in {resendCooldown}s
+              </span>
             ) : (
               <Button
-                name='Resend Email'
+                name={resendLoading ? 'Resending…' : 'Resend Email'}
                 color='green'
                 className='mt-2 text-sm'
                 onClick={resendEmail}
+                disabled={resendLoading || cancelLoading}
               />
             )}
-
           </div>
         </div>
       )}
@@ -270,7 +267,10 @@ function AccountSettings() {
           placeholder='Your reason for leaving'
           className='mt-4 max-w-[450px] w-full'
           value={customReason}
-          onChange={e => setCustomReason(e.target.value)}
+          onChange={e => {
+            const value = e.target.value.slice(0, 500)
+            setCustomReason(value)
+          }}
         />
       )}
 
@@ -319,7 +319,13 @@ function SecuritySettings() {
   const { user: me, loadingUser, logout } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loadingSessions, setLoadingSessions] = useState(true);
+  const [loadingMore, setLoadMore] = useState(false);
+  const [revokingAll, setRevokingAll] = useState(false);
   const [revoking, setRevoking] = useState(null);
+
+  const [cursor, setCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
+  const limit = 50;
 
   const {
     register,
@@ -333,19 +339,49 @@ function SecuritySettings() {
 
   const loading = loadingSessions || loadingUser;
 
-  async function load() {
+  async function loadInitial() {
     setLoadingSessions(true);
     try {
-      const sesRes = await api.get('/auth/sessions').then(r => r.data);
-      setSessions(sesRes);
+      const res = await api
+        .get("/auth/sessions", { params: { limit } })
+        .then((r) => r.data);
+
+      setSessions(res.data);
+      setCursor(res.nextCursor);
+      setHasMore(res.hasMore);
     } finally {
       setLoadingSessions(false);
     }
   }
 
+  async function loadMore() {
+    if (!hasMore) return;
+
+    setLoadMore(true);
+    try {
+      const res = await api
+        .get("/auth/sessions", {
+          params: {
+            limit,
+            cursor,
+          },
+        })
+        .then((r) => r.data);
+
+      setSessions((prev) => [...prev, ...res.data]);
+      setCursor(res.nextCursor);
+      setHasMore(res.hasMore);
+    }
+    finally {
+      setLoadMore(false);
+    }
+  }
+
+
   useEffect(() => {
-    load();
+    loadInitial();
   }, []);
+
 
   async function onSubmit(data) {
     try {
@@ -377,8 +413,15 @@ function SecuritySettings() {
   }
 
   async function revokeAllOthers() {
-    await api.post('/auth/logout-all'); // keeps current
-    await load();
+    try {
+      setRevokingAll(true)
+      await api.post('/auth/logout-all'); // keeps current
+      await load();
+    }
+    finally {
+      setRevokingAll(false)
+
+    }
   }
 
   return (
@@ -461,10 +504,23 @@ function SecuritySettings() {
                 </div>
               );
             })}
+            {/* LOAD MORE */}
+            {hasMore && (
+              <div className="text-center mt-4">
+                <Button
+                  name="Load More Sessions"
+                  disabled={loadingMore}
+                  color="gray"
+                  onClick={loadMore}
+                  className="!rounded-md"
+                />
+              </div>
+            )}
           </div>
         )}
 
-        {!loading && sessions.length > 1 && <Button name='Sign Out From All Other Devices' className='mt-4 !rounded-md' color='red' onClick={revokeAllOthers} />}
+
+        {!loading && sessions.length > 1 && <Button name='Sign Out From All Other Devices' disabled={revokingAll} className='mt-4 !rounded-md' color='red' onClick={revokeAllOthers} />}
       </div>
     </div>
   );

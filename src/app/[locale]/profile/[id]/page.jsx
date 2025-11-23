@@ -8,6 +8,7 @@ import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
 import { useAuth } from '@/context/AuthContext';
 import { resolveUrl } from '@/utils/helper';
+import { formatResponseTime } from '@/utils/profile';
 
 const mockJobs = [
   {
@@ -149,13 +150,20 @@ export default function ProfilePageClient() {
           </div>
 
           {/* KPIs */}
-          <div className='mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3'>
+          <div className='mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3'>
             {/* <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' /> */}
 
             <StatCard gradient='from-emerald-500 via-teal-500 to-cyan-400' icon={Star} title='Orders' value={buyer?.ordersCompleted ?? 0} />
-            <StatCard gradient='from-sky-500 via-indigo-500 to-violet-500' icon={DollarSign} title='Total Spent' value={formatMoney(buyer?.totalSpent ?? 0)} />
             <StatCard gradient='from-amber-400 via-orange-500 to-rose-500' icon={Repeat} title='Repeat Buyers' value={buyer?.repeatBuyers ?? 0} />
-            <StatCard gradient='from-fuchsia-500 via-rose-500 to-orange-400' icon={Award} title='Reputation' value={buyer?.reputationPoints ?? 0} />
+            <StatCard
+              gradient="from-sky-500 via-indigo-500 to-violet-500"
+              icon={Award}
+              title="Response Time"
+              value={formatResponseTime(buyer.responseTime)}
+              hint={buyer.responseTime ? 'Average time' : 'Not yet calculated'}
+            />
+
+            {/* <StatCard gradient='from-fuchsia-500 via-rose-500 to-orange-400' icon={Award} title='Reputation' value={buyer?.reputationPoints ?? 0} /> */}
           </div>
         </div>
       </section>
@@ -192,7 +200,7 @@ export default function ProfilePageClient() {
         <div className='space-y-6 lg:col-span-2'>
           <Card title='Activity'>
             <InfoRow icon={Clock} label='Last Activity' value={prettyDate(buyer?.lastActivity)} />
-            <InfoRow icon={Clock} label='Response Time' value={buyer?.responseTime || '—'} />
+            <InfoRow icon={Clock} label='Response Time' value={formatResponseTime(buyer?.responseTime)} />
             <InfoRow icon={Clock} label='Delivery Time' value={buyer?.deliveryTime || '—'} />
             <InfoRow icon={Calendar} label='Deactivated At' value={prettyDate(buyer?.deactivatedAt)} />
           </Card>

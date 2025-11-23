@@ -10,6 +10,7 @@ import Textarea from '@/components/atoms/Textarea';
 import { Switcher } from '@/components/atoms/Switcher';
 import z from 'zod';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+import { resolveUrl } from '@/utils/helper';
 
 const SettingsSchema = z.object({
   contactEmail: z
@@ -21,8 +22,9 @@ const SettingsSchema = z.object({
     .min(0, "Platform fee must be at least 0%")
     .max(100, "Platform fee cannot exceed 100%"),
 
-  siteLogo: z
-    .url("Must be a valid image URL"),
+  siteLogo: process.env.NODE_ENV === "development"
+    ? z.string().min(1, "Logo path is required") // allow any string in dev
+    : z.url("Must be a valid image URL"),
 });
 
 const MODULE = 'settings';
@@ -89,7 +91,7 @@ function IdChipsEditor({ label, hint, value = [], onChange, icon }) {
 /* --------------------------- Logo Uploader --------------------------- */
 function LogoUploader({ value, onUploaded, onChangeUrl }) {
   const [uploading, setUploading] = useState(false);
-
+  console.log(value)
   const handleFile = async file => {
     if (!file) return;
     try {
@@ -97,12 +99,11 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
       const fd = new FormData();
       fd.append('file', file);
       // adjust if your upload endpoint differs(e.g. / assets / upload, /uploads, etc.)
-      const res = await api.post('/uploads/siteLogo', fd, {
+      const res = await api.post('/settings/uploads/siteLogo', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       const url = res?.data?.url || res?.data?.path || res?.data?.location;
       if (url) onUploaded(url);
-      onUploaded(file.url);
     } catch (e) {
       console.error(e);
     } finally {
@@ -127,7 +128,7 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
         </label>
 
         {value ? (
-          <img src={value} alt='logo preview' className='h-10 w-10 rounded-lg border border-slate-200 object-contain' />
+          <img src={resolveUrl(value)} alt='logo preview' className='h-10 w-10 rounded-lg border border-slate-200 object-contain' />
         ) : (
           <div className='grid h-10 w-10 place-items-center rounded-lg border border-dashed border-slate-300 text-slate-400'>
             <ImageIcon size={16} />
@@ -137,7 +138,10 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
 
       <div className='mt-3'>
         <label className='mb-1 block text-xs font-medium text-slate-600'>Or paste image URL</label>
-        <Input value={value || ''} onChange={e => onChangeUrl(e.target.value)} placeholder='/logo.png' iconLeft={<ImageIcon size={16} />} />
+        <Input value={resolveUrl(value) || ''} onChange={e => {
+          if (e.target.value)
+            onChangeUrl(e.target.value)
+        }} placeholder='/logo.png' iconLeft={<ImageIcon size={16} />} />
       </div>
       <p className='mt-1 text-xs text-slate-500'>PNG/SVG recommended. Square works best.</p>
     </div>
@@ -245,7 +249,9 @@ export default function AdminSettingsDashboard() {
     }
   };
 
-  const updateField = (field, value) => setSettings(prev => ({ ...prev, [field]: value }));
+  const updateField = (field, value) => {
+    setSettings(prev => ({ ...prev, [field]: value }))
+  };
 
   /* -------------------------- Legal Tabs/Preview -------------------------- */
   const [activeLegalTab, setActiveLegalTab] = useState('privacy'); // 'privacy' | 'terms'
@@ -273,6 +279,8 @@ export default function AdminSettingsDashboard() {
     );
   }
 
+  console.log(settings, settings.siteLogo)
+
   return (
     <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
       <div className='p-6'>
@@ -295,7 +303,7 @@ export default function AdminSettingsDashboard() {
         <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           <MetricBadge icon={<Globe className='h-4 w-4' />} label='Brand' value={settings.siteName || '—'} intent='neutral' />
           <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Platform Fee' value={`${Number(settings.platformPercent || 0).toFixed(1)}%`} intent='success' />
-          <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Default Currency ID' value={String(settings.defaultCurrency || 1)} intent='info' hint='Change in Financial Settings' />
+          {/* <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Default Currency ID' value={String(settings.defaultCurrency || 1)} intent='info' hint='Change in Financial Settings' /> */}
         </div>
 
         {/* Top row: General + Financial */}

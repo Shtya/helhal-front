@@ -114,7 +114,7 @@ const SIZE_CLASS = {
 
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ open, title, subtitle, icon: Icon, onClose, size = 'md', footer, children, closeOnBackdrop = true, hideHeader = false, hideFooter = false, accent = 'emerald', initialFocusRef }) {
+export function Modal({ className, open, title, subtitle, icon: Icon, onClose, size = 'md', footer, children, closeOnBackdrop = true, hideHeader = false, hideFooter = false, accent = 'emerald', initialFocusRef }) {
   const panelRef = useRef(null);
   const closeBtnRef = useRef(null);
 
@@ -176,7 +176,7 @@ export function Modal({ open, title, subtitle, icon: Icon, onClose, size = 'md',
   return (
     <AnimatePresence>
       {open && (
-        <div className='fixed inset-0 z-[100]'>
+        <div className={`fixed inset-0 z-[100] ${className}`}>
           {/* Backdrop */}
           <motion.div className='absolute inset-0 bg-slate-900/60 backdrop-blur-sm' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => closeOnBackdrop && onClose()} />
           {/* Panel */}

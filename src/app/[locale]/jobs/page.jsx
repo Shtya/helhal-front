@@ -28,13 +28,13 @@ import Client from '@/components/pages/jobs/Client';
 // Services
 // -------------------------------------------------
 // build query helper for fetchAllServices
-function buildQuery({ page = 1, limit = 12, q = '', filters = {} } = {}) {
+function buildQuery({ page = 1, limit = 12, search = '', filters = {} } = {}) {
   const out = {
     page: Number(page) || 1,
     limit: Number(limit) || 12,
   };
 
-  if (typeof q === 'string' && q.trim()) out.q = q.trim();
+  if (typeof search === 'string' && search.trim()) out.search = search.trim();
 
   // map filters to API params
   if (filters.category) out.category = String(filters.category);
@@ -46,25 +46,26 @@ function buildQuery({ page = 1, limit = 12, q = '', filters = {} } = {}) {
   if (filters.max7days === true || filters.max7days === 'true') out.max7days = true;
   if (filters.withAttachments === true || filters.withAttachments === 'true') out.withAttachments = true;
 
-  // leave min/max if present (API may consume them)
-  if (filters.sortBy) out.sortBy = filters.sortBy;
-
+  if (filters.sortBy === 'newest') out.sortBy = 'created_at', out.sortOrder = 'DESC';
+  if (filters.sortBy === 'budgetAsc') out.sortBy = 'budget', out.sortOrder = 'ASC';
+  if (filters.sortBy === 'budgetDesc') out.sortBy = 'budget', out.sortOrder = 'DESC';
   return out;
 }
 
-async function listPublishedJobs({ page = 1, limit = 12, q = '', category, budgetType, max7days, withAttachments, customBudget, priceRange, sortBy = 'newest' } = {}, { signal }) {
+async function listPublishedJobs({ page = 1, limit = 12, search = '', category, budgetType, max7days, withAttachments, customBudget, priceRange, sortBy = 'created_at', sortOrder = 'DESC' } = {}, { signal }) {
   const res = await api.get('/jobs', {
     params: {
       page,
       limit,
-      q,
+      search,
       category,
       budgetType,
       max7days,
       withAttachments,
       customBudget,
       priceRange,
-      // sortBy, return it when backend add it 
+      sortBy,
+      sortOrder,
       filters: { status: 'published' },
     },
     signal
@@ -283,7 +284,7 @@ export default function SellerJobsPage() {
 
 
         setLoading(true);
-        const query = buildQuery({ page, limit, q: debouncedQ?.trim(), filters });
+        const query = buildQuery({ page, limit, search: debouncedQ?.trim(), filters });
 
         const res = await listPublishedJobs(query, { signal: controller.signal });
 
@@ -337,7 +338,7 @@ export default function SellerJobsPage() {
             className='!text-xs min-w-0 truncate'
             variant='minimal'
           />
-          <SellerBudgetDropdown onBudgetChange={(priceRange) => {
+          <SellerBudgetDropdown onBudgetChange={(priceRange, customBudget) => {
             setFiltersState(prev => {
               const updated = {
                 ...prev,

@@ -27,6 +27,7 @@ export const getJobProposals = async (
     status = '',
     sortBy = '',
     sortdir = '',
+    sortOrder = '',
     signal
   }
 ) => {
@@ -37,7 +38,7 @@ export const getJobProposals = async (
   if (search) params.append('search', search);
   if (status) params.append('status', status);
   if (sortBy) params.append('sortBy', sortBy);
-  if (sortdir) params.append('sortdir', sortdir);
+  if (sortOrder) params.append('sortdir', sortdir);
 
   const res = await api.get(`/jobs/${jobId}/proposals?${params.toString()}`, {
     signal
@@ -348,10 +349,10 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
 // ----------------------------
 const SORT_CONFIG = {
   recent: { sortBy: 'created_at', sortdir: 'desc' },
-  amountAsc: { sortBy: 'amount', sortdir: 'asc' },
-  amountDesc: { sortBy: 'amount', sortdir: 'desc' },
-  timeAsc: { sortBy: 'delivery_time', sortdir: 'asc' },
-  timeDesc: { sortBy: 'delivery_time', sortdir: 'desc' },
+  amountAsc: { sortBy: 'bidAmount', sortdir: 'asc' },
+  amountDesc: { sortBy: 'bidAmount', sortdir: 'desc' },
+  timeAsc: { sortBy: 'estimatedTimeDays', sortdir: 'asc' },
+  timeDesc: { sortBy: 'estimatedTimeDays', sortdir: 'desc' },
 };
 
 export default function JobProposalsPage() {

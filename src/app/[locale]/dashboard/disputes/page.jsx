@@ -148,7 +148,8 @@ export default function DisputesPage() {
 
   const columns = useMemo(
     () => [
-      { key: 'id', label: 'ID', headerClassName: 'w-[110px]' },
+      { key: 'id', label: 'ID', headerClassName: 'w-[150px]', render: (value) => <TruncatedText text={value?._raw?.id} maxLength={50} /> },
+      { key: 'subject', label: 'Subject', className: 'max-w-[240px] truncate', render: (value) => <TruncatedText text={value?._raw?.subject} maxLength={300} /> },
       { key: 'orderTitle', label: 'Order', className: 'max-w-[240px] truncate', render: (value) => <TruncatedText text={value?.orderTitle} maxLength={300} /> },
       { key: 'seller', label: 'Owner', headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.seller} /> },
       { key: 'buyer', label: 'Client', headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.buyer} /> },
@@ -186,7 +187,7 @@ export default function DisputesPage() {
       if (filters.limit) qs.set('limit', filters.limit);
 
       if (filters.sortBy) qs.set('sortBy', filters.sortBy);
-      if (filters.sortOrder) qs.set('sortdir', filters.sortOrder);
+      if (filters.sortOrder) qs.set('sortOrder', filters.sortOrder);
 
       const { data } = await api.get(`/disputes?${qs.toString()}`, { signal: controller.signal });
       const list = (data?.disputes ?? data) || [];

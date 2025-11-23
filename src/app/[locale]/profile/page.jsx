@@ -15,7 +15,7 @@ import { Card, Divider, Pill, SkeletonLine, SkeletonAvatar, BlockSkeleton } from
 import Img from '@/components/atoms/Img';
 import toast from 'react-hot-toast'
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
-import { validateUsername, validatPhone } from '@/utils/profile';
+import { formatResponseTime, validateUsername, validatPhone } from '@/utils/profile';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import InfoCard from '@/components/pages/profile/InfoCard';
@@ -347,12 +347,20 @@ function KPICard({ loading, stats }) {
   return (
     <>
       {/* <h3 className='mb-3 text-lg font-semibold'>Seller KPIs</h3> */}
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' />
         <StatCard title='Repeat Buyers' value={Number(stats.repeatBuyers || 0)} hint='Unique customers' icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
-        <StatCard title='Avg. Rating' value={stats.averageRating ? Number(stats.averageRating) : '—'}
-          hint={stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} / 5` : 'Not yet calculated'} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' />
-        <StatCard title='Response Time' value={typeof stats.responseTime === 'number' ? `${stats.responseTime} hours` : '—'} hint={stats.responseTime ? 'Average time' : 'Not yet calculated'} icon={Award} gradient='from-fuchsia-500 via-rose-500 to-orange-400' />
+        {/* <StatCard title='Avg. Rating' value={stats.averageRating ? Number(stats.averageRating) : '—'}
+          hint={stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} / 5` : 'Not yet calculated'} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' /> */}
+        <StatCard
+          title="Response Time"
+          value={formatResponseTime(stats.responseTime)}
+          hint={stats.responseTime ? 'Average time' : 'Not yet calculated'}
+          icon={Award}
+          gradient="from-fuchsia-500 via-rose-500 to-orange-400"
+        />
+
+
       </div>
     </>
   );
@@ -858,7 +866,7 @@ export default function Overview() {
           ownerType: user.ownerType || '',
           description: user.description || '',
           languages: user.languages || [],
-          countryId: user.countryId || '',
+          countryId: user.countryId || null,
           country: user.country || '',
           sellerLevel: user.sellerLevel || '',
           skills: user.skills || [],
@@ -876,6 +884,10 @@ export default function Overview() {
           totalSpent: Number(user.totalSpent ?? 0),
           totalEarned: Number(user.totalEarned ?? 0),
           reputationPoints: Number(user.reputationPoints ?? 0),
+          ordersCompleted: Number(user?.ordersCompleted) || 0,
+          repeatBuyers: Number(user?.repeatBuyers) || 0,
+          averageRating: Number(user?.averageRating) || 0,
+          responseTime: Number(user?.responseTime),
         }));
 
         setMeta({
@@ -903,7 +915,7 @@ export default function Overview() {
           ownerType: user.ownerType || '',
           description: user.description || '',
           languages: user.languages || [],
-          countryId: user.countryId || '',
+          countryId: user.countryId || null,
           sellerLevel: user.sellerLevel || '',
           skills: user.skills || [],
           education: Array.isArray(user.education) ? user.education : [],

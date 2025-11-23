@@ -262,15 +262,12 @@ export function CategorySwiper() {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get(`/categories/top`);
-        const data = res?.data?.records || [];
+        const res = await api.get(`/categories/top/list`);
+        const data = res?.data || [];
         setItems(data);
       } catch (err) {
-        // development fallback dataset
-        // if (process.env.NODE_ENV !== 'development') {
-        // }
-        setItems(CATEGORIES_FALLBACK);
-        // setError('Failed to load categories');
+
+        setError('Failed to load categories');
 
       } finally {
         setLoading(false);
@@ -294,7 +291,7 @@ export function CategorySwiper() {
     );
   }
 
-
+  if (!loading && items.length === 0) return null;
 
   return (
     <section className="relative -mt-6 pb-4">
@@ -346,7 +343,7 @@ export function CategorySwiper() {
                   >
                     <span className="absolute inset-0 rounded-xl bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative w-12 h-12 mb-3">
-                      <Image src={category.iconUrl} alt={category.name} fill sizes="48px" className="object-contain" />
+                      <Image src={category.topIconUrl ? resolveUrl(category.topIconUrl) : '/icons/service.png'} alt={category.name} fill sizes="48px" className="object-contain" />
                     </div>
                     <span className="text-nowrap truncate relative text-sm font-semibold text-gray-900 group-hover:text-emerald-700">
                       {category.name}
@@ -388,7 +385,7 @@ export function PopularServicesSwiper() {
     fetchPopular();
   }, []);
 
-  if (items.length === 0) return null;
+  if (!loading && items.length === 0) return null;
   return (
     <section className="container !px-4 sm:!px-6 lg:!px-8 !py-12">
       <div className="flex items-end justify-between mb-4">

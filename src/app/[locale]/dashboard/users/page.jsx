@@ -166,12 +166,16 @@ export default function AdminUsersDashboard() {
   // Add the handler for saving edited user
   const handleSaveUser = async (updatedData) => {
     if (phoneError || usernameError) return;
+    const finalUpdatedata = {
+      ...updatedData,
+      countryId: updatedData.country,
+    }
     setSavingUser(true);
     let toastId;
     try {
       toastId = toast.loading('Saving changes...');
 
-      await api.put(`/auth/profile/${editingUser.id}`, updatedData);
+      await api.put(`/auth/profile/${editingUser.id}`, finalUpdatedata);
 
       toast.success('User updated successfully', { id: toastId });
       fetchUsers(); // Refresh the list
@@ -220,7 +224,7 @@ export default function AdminUsersDashboard() {
     let toastId;
     try {
       toastId = toast.loading(`Changing level to ${level}...`);
-      await api.put(`/auth/users/${id}/level`, { level });
+      await api.put(`/auth/users/${id}/level`, { sellerLevel: level });
       toast.success(`Level set to ${level}`, { id: toastId });
       await fetchUsers(); // refresh list
     } catch (e) {
@@ -248,7 +252,6 @@ export default function AdminUsersDashboard() {
     { key: 'memberSince', label: 'Joined', type: 'date' },
     { key: 'lastLogin', label: 'Last Login', type: 'date' },
   ];
-
 
 
   const UserActions = ({ row }) => {
@@ -348,12 +351,12 @@ export default function AdminUsersDashboard() {
                 className='!w-fit'
                 value={filters?.status}
                 onChange={e => applyStatusPreset(e)}
-                placeholder='order by'
+                placeholder='filter by'
                 options={[
                   { id: 'all', name: 'All' },
                   { id: 'active', name: 'Active' },
                   { id: 'suspended', name: 'Suspended' },
-                  { id: 'Deleted', name: 'Deleted' },
+                  { id: 'deleted', name: 'Deleted' },
                 ]}
               />
             </div>
@@ -377,7 +380,7 @@ export default function AdminUsersDashboard() {
         </div>
 
         {/* Modal */}
-        <Modal open={showUserModal && (selectedUser || editingUser)} title={editMode ? 'Edit User' : 'User Details'} onClose={() => {
+        <Modal open={showUserModal && (selectedUser || editingUser)} title={editMode ? `Edit User ${editingUser?.username}` : 'User Details'} onClose={() => {
           setShowUserModal(false);
           setEditMode(false);
           setEditingUser(null);
@@ -387,24 +390,13 @@ export default function AdminUsersDashboard() {
           {editMode ? (
             // Edit mode using InfoCard
             <>
-              <Input
-                required
-                label="Username"
-                value={editingUser.username}
-                onChange={e => {
-                  const value = e.target.value.slice(0, 50);
-                  setEditingUser(s => ({ ...s, username: value }));
-                  handleChangeUsername(value);
-                }}
-                onBlur={e => handleChangeUsername(e.target.value)}
+              <UserBasicInfoForm
+                username={editingUser?.username}
+                phone={editingUser?.phone}
+                countryCode={editingUser?.countryCode}
+                onChange={data => setEditingUser(s => ({ ...s, ...data }))}
               />
-              {usernameError && <FormErrorMessage message={t(`errors.${usernameError}`)} />}
-              <Divider />
-              <PhoneInputWithCountry
-                value={{ countryCode: editingUser.countryCode || { code: 'SA', dial_code: '+966' }, phone: editingUser.phone }}
-                onChange={handleChangePhone}
-              />
-              {phoneError && <FormErrorMessage message={t(`errors.${phoneError}`)} />}
+
               <Divider />
               <InfoCard
                 className='!border-none !bg-transparent  !shadow-none !p-0'
@@ -419,7 +411,7 @@ export default function AdminUsersDashboard() {
                   certifications: editingUser.certifications,
                   languages: editingUser.languages || [],
                   skills: editingUser.skills || [],
-                  country: editingUser.country,
+                  countryId: editingUser.countryId,
                   type: editingUser.type,
                 }}
                 setAbout={updater => {
@@ -503,6 +495,58 @@ export default function AdminUsersDashboard() {
 
         </Modal>
       </div>
+    </div>
+  );
+}
+
+
+
+function UserBasicInfoForm({ username: initialUsername, phone: initialPhone, countryCode: initialCountryCode, onChange }) {
+  const t = useTranslations()
+  const [username, setUsername] = useState(initialUsername || '');
+  const [phoneValue, setPhoneValue] = useState(initialPhone || '');
+  const [country, setCountry] = useState(initialCountryCode || { code: 'SA', dial_code: '+966' });
+  const [usernameError, setUsernameError] = useState(null);
+  const [phoneError, setPhoneError] = useState(false);
+
+  // Update parent on change
+  useEffect(() => {
+    onChange({ username, phone: phoneValue, countryCode: country });
+  }, [phoneValue, country]);
+
+  const handleUsernameChange = (value) => {
+    setUsername(value.slice(0, 50));
+    const msg = validateUsername(value);
+    setUsernameError(msg);
+  };
+
+  const handlePhoneChange = (val) => {
+    setPhoneValue(val.phone);
+    setCountry(val.countryCode);
+    const invalid = validatPhone(val.phone);
+    setPhoneError(invalid);
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <Input
+        required
+        label="Username"
+        value={username}
+        onChange={e => handleUsernameChange(e.target.value)}
+        onBlur={e => {
+          onChange({ username })
+        }}
+      />
+      {usernameError && <FormErrorMessage message={t(`errors.${usernameError}`)} />}
+      <Divider />
+
+      <PhoneInputWithCountry
+        value={{ phone: phoneValue, countryCode: country }}
+        onChange={handlePhoneChange}
+      />
+      {phoneError && <FormErrorMessage message={'Invalid Phone'} />}
+      <Divider />
     </div>
   );
 }

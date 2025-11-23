@@ -150,9 +150,12 @@ export default function CreateJobPage() {
 
   const formValues = watch();
 
+  const [ignoreSave, setIgnoreSave] = useState(false);
 
   useEffect(() => {
-    const saveFormData = () => {
+    if (ignoreSave) return;
+
+    const timeoutId = setTimeout(() => {
       try {
         const formData = getValues();
         sessionStorage.setItem('jobFormData', JSON.stringify(formData));
@@ -160,11 +163,10 @@ export default function CreateJobPage() {
       } catch (error) {
         console.error('Error saving form data:', error);
       }
-    };
+    }, 500);
 
-    const timeoutId = setTimeout(saveFormData, 500);
     return () => clearTimeout(timeoutId);
-  }, [formValues, getValues]);
+  }, [formValues]);
 
   useEffect(() => {
     const loadSavedData = () => {
@@ -289,6 +291,7 @@ export default function CreateJobPage() {
             const status = String(res?.status || '').toLowerCase();
 
             // Clear persisted form state
+            setIgnoreSave(true);
             sessionStorage.removeItem('jobFormData');
             // sessionStorage.removeItem('jobFormPublishing');
 
@@ -340,6 +343,7 @@ export default function CreateJobPage() {
           router.push('/my-jobs');
         }
       }
+
     } catch (error) {
       console.error('Error submitting job:', error);
       // toast.promise already showed an error toast; no need to duplicate

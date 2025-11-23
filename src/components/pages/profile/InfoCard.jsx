@@ -13,6 +13,7 @@ import { Trash2, X } from "lucide-react";
 import Button from "@/components/atoms/Button";
 import { usernameSchema } from "@/utils/profile";
 import api from "@/lib/axios";
+import { allLanguages } from "@/constants/languages";
 
 
 function SectionHeader({ title, iconSrc, actionAria, onAction, disabled }) {
@@ -251,6 +252,16 @@ const aboutSchema = z.object({
 
 
 export default function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertification, onCountryChange, accountTypeOptions = [], onTypeChange, className }) {
+    const [internalDesc, setInternalDesc] = useState(about?.description || '');
+
+    useEffect(() => {
+        setInternalDesc(about?.description || '');
+    }, [about?.description]);
+
+    const handleDescBlur = () => {
+        setAbout(prev => ({ ...prev, description: internalDesc }));
+    };
+
 
     const {
         register,
@@ -283,7 +294,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                 const res = await api.get(`/countries`);
                 setCountriesOptions(res.data);
             } catch (err) {
-                setCountryError('Failed to load languages');
+                setCountryError('Failed to load countries');
             } finally {
                 setCountryLoading(false);
             }
@@ -317,18 +328,23 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider className='!my-2' />
             {editingDesc ? (
                 <>
-                    <Textarea  {...register('description')} onChange={e => {
-                        const val = e.target.value.slice(0, 1000);
-                        setValue('description', val);
-                    }} rows={4} placeholder='Tell buyers about yourself…' />
+                    <Textarea
+                        {...register('description')}
+                        value={internalDesc}
+                        onChange={e => {
+                            const val = e.target.value.slice(0, 1000);
+                            setInternalDesc(val);
+                        }}
+                        onBlur={handleDescBlur}
+                        rows={4} placeholder='Tell buyers about yourself…' />
                     <div className='flex justify-between items-center'>
                         <p className='mt-1 text-xs text-[#6B7280]'>Use a clear, professional summary. Ctrl/Cmd+Enter to save.</p>
-                        <p className='mt-1 text-xs text-[#6B7280]'>{watch('description')?.trim()?.length}/1000 characters</p>
+                        <p className='mt-1 text-xs text-[#6B7280]'>{internalDesc?.trim()?.length}/1000 characters</p>
                     </div>
                     {errors.description && <p className='text-red-500 text-xs'>{errors.description.message}</p>}
                 </>
             ) : (
-                <p className='mt-1 text-sm leading-7 text-[#292D32]/80'>{watch('description')?.trim() || '—'}</p>
+                <p className='mt-1 text-sm leading-7 text-[#292D32]/80'>{internalDesc?.trim() || '—'}</p>
             )}
 
             <Divider className='!mt-6 !mb-2 ' />
@@ -538,7 +554,7 @@ function SkeletonPill() {
 
 
 function LanguageSelector({ value = [], setValue }) {
-    const [languageOptions, setLanguageOptions] = useState([]);
+    const [languageOptions, setLanguageOptions] = useState(allLanguages || []);
     const [langLoading, setLangLoading] = useState(false);
     const [langError, setLangError] = useState(null);
     const [selectedLang, setSelectedLang] = useState(null);
@@ -548,36 +564,36 @@ function LanguageSelector({ value = [], setValue }) {
         return languageOptions.filter(opt => !value.includes(opt.name));
     }, [languageOptions, value]);
 
-    useEffect(() => {
-        const fetchLanguages = async () => {
-            setLangLoading(true);
-            setLangError(null);
-            try {
-                const res = await api.get(`/languages`);
-                const data = res?.data?.records || [];
-                setLanguageOptions(data.map(lang => ({ id: lang.id, name: lang.name })));
-            } catch (err) {
-                //set temp for development
-                if (process.env.NODE_ENV === 'development') {
-                    setLanguageOptions([
-                        { id: 'en', name: 'English' },
-                        { id: 'ar', name: 'Arabic' },
-                        { id: 'fr', name: 'French' },
-                        { id: 'de', name: 'German' },
-                        { id: 'es', name: 'Spanish' },
-                    ]);
-                }
-                else {
+    // useEffect(() => {
+    //     const fetchLanguages = async () => {
+    //         setLangLoading(true);
+    //         setLangError(null);
+    //         try {
+    //             const res = await api.get(`/languages`);
+    //             const data = res?.data?.records || [];
+    //             setLanguageOptions(data.map(lang => ({ id: lang.id, name: lang.name })));
+    //         } catch (err) {
+    //             //set temp for development
+    //             if (process.env.NODE_ENV === 'development') {
+    //                 setLanguageOptions([
+    //                     { id: 'en', name: 'English' },
+    //                     { id: 'ar', name: 'Arabic' },
+    //                     { id: 'fr', name: 'French' },
+    //                     { id: 'de', name: 'German' },
+    //                     { id: 'es', name: 'Spanish' },
+    //                 ]);
+    //             }
+    //             else {
 
-                    setLangError('Failed to load languages');
-                }
-            } finally {
-                setLangLoading(false);
-            }
-        };
+    //                 setLangError('Failed to load languages');
+    //             }
+    //         } finally {
+    //             setLangLoading(false);
+    //         }
+    //     };
 
-        fetchLanguages();
-    }, []);
+    //     fetchLanguages();
+    // }, []);
 
     return (
         <>

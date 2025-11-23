@@ -133,7 +133,7 @@ export default function AdminServicesDashboard() {
     const toastId = toast.loading('Updating service status...');
 
     try {
-      await api.put(`/services/${id}`, { status: status.id });
+      await api.put(`/services/${id}/status`, { status: status.id });
       await fetchServices();
 
       toast.success('Service status updated successfully!', { id: toastId });

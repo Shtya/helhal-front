@@ -6,6 +6,7 @@ import { usePathname } from '@/i18n/navigation';
 import { menuItems } from './Sidebar';
 import { Menu, X, Bell, Check } from 'lucide-react';
 import api from '@/lib/axios';
+import NotificationPopup from '../common/NotificationPopup';
 
 /* --------------------------------- Header --------------------------------- */
 
@@ -52,7 +53,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
 
           {/* Right: actions */}
           <div className='flex items-center gap-2'>
-            <Notifications />
+            <NotificationPopup admin />
           </div>
         </div>
       </div>
@@ -111,7 +112,7 @@ function Notifications() {
   // fetch first page on open
   useEffect(() => {
     setPage(1);
-    fetchNotifications(1, true).catch(() => {});
+    fetchNotifications(1, true).catch(() => { });
   }, []);
 
   async function fetchNotifications(targetPage, replace = false) {

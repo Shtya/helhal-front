@@ -10,6 +10,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { useAuthInterceptor } from '@/hooks/useAuthInterceptor';
 import { useEffect } from 'react';
 import { NotificationProvider } from '@/context/NotificationContext';
+import { SocketProvider } from '@/context/SocketContext';
 
 export default function Layout({ children, params }) {
 
@@ -30,22 +31,24 @@ export default function Layout({ children, params }) {
   return (
     <AuthProvider>
       <NotificationProvider>
-        <GlobalProvider>
-          <AuthInterceptorWrapper>
-            <ProgressProvider
-              height="2px"
-              color="#0070f3"
-              options={{ showSpinner: false }}
-              shallowRouting
-            >
-              {!isAuthRoute && <Header />}
-              <div className='  ' >{children}</div>
-              {!isAuthRoute && <Footer />}
-              <ConfigAos />
-              <Toaster position='top-center' />
-            </ProgressProvider>
-          </AuthInterceptorWrapper>
-        </GlobalProvider>
+        <SocketProvider>
+          <GlobalProvider>
+            <AuthInterceptorWrapper>
+              <ProgressProvider
+                height="2px"
+                color="#0070f3"
+                options={{ showSpinner: false }}
+                shallowRouting
+              >
+                {!isAuthRoute && <Header />}
+                <div className='  ' >{children}</div>
+                {!isAuthRoute && <Footer />}
+                <ConfigAos />
+                <Toaster position='top-center' />
+              </ProgressProvider>
+            </AuthInterceptorWrapper>
+          </GlobalProvider>
+        </SocketProvider>
       </NotificationProvider>
     </AuthProvider>
   );

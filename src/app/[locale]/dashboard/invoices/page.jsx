@@ -55,8 +55,9 @@ export default function InvoicesManagement() {
         setFilters(prev => ({
           ...prev,
           page: data?.current_page ?? prev.page,
-          limit: data?.per_page ?? prev.limit,
-        }))
+          limit: (data?.per_page ?? prev.limit).toString(),
+        }));
+
       } catch (error) {
         if (!isErrorAbort(e)) {
           console.error('Error fetching invoices:', error);

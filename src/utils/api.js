@@ -98,7 +98,7 @@ export async function processWithdrawal(id, action) {
 // ------------------------------
 // Invoices management
 export async function getInvoices(params, extra = {}) {
-  return apiCall('/invoices', { params, ...extra });
+  return apiCall('/orders/invoices', { params, ...extra });
 }
 
 // ------------------------------

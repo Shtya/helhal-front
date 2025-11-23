@@ -28,32 +28,9 @@ export default function ReviewSubmissionModel({
         const fetchSubmission = async () => {
             setLoading(true);
             try {
-                // const res = await api.get(`/orders/${selectedRow.id}/last-submission`);
-                // setSubmission(res.data);
-                // Mocked response
-                const twoDaysAgo = new Date(Date.now() - 2 * 86400000).toISOString();
-                const mockData = {
-                    created_at: twoDaysAgo,
-                    message: `Hi ${selectedRow?._raw?.buyer?.username},\n\nHere’s the final version of your order. Let me know if you need any changes.`,
-                    files: [
-                        {
-                            filename: 'preview-design-v2.pdf',
-                            url: 'https://example.com/mock/preview-design-v2.pdf',
-                        },
-                        {
-                            filename: 'assets.zip',
-                            url: 'https://example.com/mock/assets.zip',
-                        },
-                        {
-                            filename: 'design.png',
-                            url: 'https://image.com/mock/design.png',
-                        },
-                    ],
-                };
+                const res = await api.get(`/orders/${selectedRow.id}/last-submission`);
+                setSubmission(res.data);
 
-                // Simulate network delay
-                await new Promise((res) => setTimeout(res, 500));
-                setSubmission(mockData);
             } catch (error) {
                 setSubmission(null);
             } finally {
@@ -70,6 +47,7 @@ export default function ReviewSubmissionModel({
         setCompleteLoading(true);
         try {
             const res = await api.post(`/orders/${selectedRow.id}/complete`);
+
             if (res?.status >= 200 && res?.status < 300) {
                 patchOrderRow(selectedRow.id, (r) => ({
                     ...r,

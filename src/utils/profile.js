@@ -24,3 +24,14 @@ export function validatPhone(value) {
     const isInvalid = value && (value.length < 6 || !/^\d+$/.test(value));
     return isInvalid;
 }
+
+export function formatResponseTime(seconds) {
+    if (!seconds || seconds <= 0) return '—';
+
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+
+    return `${days}d ${hours}h ${minutes}m ${secs}s`;
+}
