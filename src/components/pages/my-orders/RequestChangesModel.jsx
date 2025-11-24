@@ -10,25 +10,27 @@ import api from '@/lib/axios';
 import toast from 'react-hot-toast';
 import { Modal } from '@/components/dashboard/Ui';
 import { OrderStatus } from '@/constants/order';
+import { useTranslations } from 'next-intl';
 
-const schema = z.object({
+const getSchema = (t) => z.object({
     message: z
         .string()
-        .min(10, 'Message must be at least 10 characters')
-        .max(2000, 'Message must be at most 2000 characters'),
+        .min(10, t('validation.messageMin'))
+        .max(2000, t('validation.messageMax')),
     files: z
         .any()
-        .refine((files) => !files || files.length <= 10, 'You can upload up to 10 files')
+        .refine((files) => !files || files.length <= 10, t('validation.filesMax'))
         .refine(
             (files) =>
                 !files ||
                 Array.from(files).every((f) => !f.size || f.size <= 25 * 1024 * 1024),
-            'Each file  must be less than 25MB'
+            t('validation.fileSizeMax')
         )
         .optional(),
 });
 
 export default function RequestChangesModel({ open, onClose, onSend, selectedRow, patchOrderRow }) {
+    const t = useTranslations('MyOrders.modals.requestChanges');
     const [submitting, setSubmitting] = useState(false);
 
 
@@ -39,7 +41,7 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
         watch,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(getSchema(t)),
         defaultValues: {
             message: '',
             files: [],
@@ -67,11 +69,11 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
                 _raw: { ...r._raw, status: OrderStatus.CHANGES_REQUESTED },
             }));
 
-            toast.success('Change request sent to the freelancer');
+            toast.success(t('success'));
             onClose();
             onSend?.();
         } catch (e) {
-            toast.error(e?.response?.data?.message || 'Failed to request changes');
+            toast.error(e?.response?.data?.message || t('error'));
         } finally {
             setSubmitting(false);
         }
@@ -84,15 +86,15 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
     if (!open) return null;
 
     return (
-        <Modal title="Request Changes" onClose={onClose} open={open} className="!z-[106]">
+        <Modal title={t('title')} onClose={onClose} open={open} className="!z-[106]">
             <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Message *
+                        {t('message')} *
                     </label>
                     <Textarea
                         rows={4}
-                        placeholder="Explain what needs to be changed…"
+                        placeholder={t('messagePlaceholder')}
                         {...register('message')}
                         error={errors.message?.message}
                     />
@@ -109,7 +111,7 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
                 <Button
                     type="submit"
                     color="red"
-                    name={submitting ? 'Submitting…' : 'Send Request'}
+                    name={submitting ? t('submitting') : t('sendRequest')}
                     disabled={submitting}
                     onClick={handleSubmit(onSubmit)}
                     className="!w-fit"
