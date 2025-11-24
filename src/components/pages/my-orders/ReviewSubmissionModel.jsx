@@ -8,6 +8,7 @@ import RequestChangesModel from './RequestChangesModel';
 import AttachmentList from '@/components/common/AttachmentList';
 import { formatDate } from '@/utils/date';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 export default function ReviewSubmissionModel({
     open,
@@ -17,6 +18,7 @@ export default function ReviewSubmissionModel({
     setRowLoading,
     readOnly
 }) {
+    const t = useTranslations('MyOrders.modals.reviewSubmission');
     const [loading, setLoading] = useState(true);
     const [completeloading, setCompleteLoading] = useState(false);
     const [submission, setSubmission] = useState(null);
@@ -55,11 +57,11 @@ export default function ReviewSubmissionModel({
                     _raw: { ...r._raw, status: OrderStatus.COMPLETED },
                 }));
 
-                toast.success('Order completed successfully');
+                toast.success(t('success'));
                 onClose();
             }
         } catch (e) {
-            alert(e?.response?.data?.message || 'Failed to complete order');
+            alert(e?.response?.data?.message || t('error'));
         } finally {
             setRowLoading(selectedRow.id, null);
             setCompleteLoading(false);
@@ -76,13 +78,13 @@ export default function ReviewSubmissionModel({
 
     return (
         <>
-            <Modal title={readOnly ? "Review Submission" : "Receive Work"} onClose={onClose}>
+            <Modal title={readOnly ? t('titleReadOnly') : t('title')} onClose={onClose}>
                 <div className="space-y-4">
                     <p className="text-sm text-slate-600">
-                        Order: <strong>{orderTitle}</strong>
+                        {t('order')}: <strong>{orderTitle}</strong>
                     </p>
                     <p className="text-sm text-slate-600">
-                        Submitted by <strong>{sellerName}</strong>
+                        {t('submittedBy')} <strong>{sellerName}</strong>
                     </p>
 
                     {loading ? (
@@ -91,7 +93,7 @@ export default function ReviewSubmissionModel({
                         <>
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Message
+                                    {t('message')}
                                 </label>
                                 <p className="text-sm text-slate-800 whitespace-pre-line bg-slate-50 p-3 rounded">
                                     {submission.message}
@@ -101,27 +103,27 @@ export default function ReviewSubmissionModel({
                             {submission.files?.length > 0 && (
                                 <div className="space-y-2">
                                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                                        Files
+                                        {t('files')}
                                     </label>
                                     <AttachmentList attachments={submission.files} variant='list' />
                                 </div>
                             )}
                         </>
                     ) : (
-                        <p className="text-sm text-red-600">No submission found.</p>
+                        <p className="text-sm text-red-600">{t('noSubmission')}</p>
                     )}
 
                     {!readOnly && <>
                         {submission && <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
-                            This delivery was submitted on <strong>{formatDate(submission?.created_at)}</strong>.
-                            If you don’t take action by <strong>{formatDate(releaseDate)}</strong>, a payment of <strong>${amount}</strong> will be automatically released to <strong>{sellerName}</strong>.
+                            {t('deliverySubmitted')} <strong>{formatDate(submission?.created_at)}</strong>.
+                            {t('ifNoAction')} <strong>{formatDate(releaseDate)}</strong>, {t('paymentReleased')} <strong>${amount}</strong> {t('willBeReleased')} <strong>{sellerName}</strong>.
                         </div>
                         }
                         <div className="flex gap-3 pt-2">
                             <Button
                                 type="button"
                                 color="green"
-                                name="Receive Work"
+                                name={t('receiveWork')}
                                 disabled={!submission}
                                 loading={completeloading}
                                 onClick={completeOrder}
@@ -130,7 +132,7 @@ export default function ReviewSubmissionModel({
                             <Button
                                 type="button"
                                 color="red"
-                                name="Request Changes"
+                                name={t('requestChanges')}
                                 disabled={!submission}
                                 onClick={() => setShowRequestModal(true)}
                                 className="!w-fit"

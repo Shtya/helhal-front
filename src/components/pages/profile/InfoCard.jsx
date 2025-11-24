@@ -4,6 +4,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from 'next-intl';
 import Textarea from "@/components/atoms/Textarea";
 import { Modal } from '@/components/common/Modal';
 import Select from "@/components/atoms/Select";
@@ -14,6 +15,7 @@ import Button from "@/components/atoms/Button";
 import { usernameSchema } from "@/utils/profile";
 import api from "@/lib/axios";
 import { allLanguages } from "@/constants/languages";
+import { showWarningToast } from "@/utils/notifications";
 
 
 function SectionHeader({ title, iconSrc, actionAria, onAction, disabled }) {
@@ -33,6 +35,7 @@ function SectionHeader({ title, iconSrc, actionAria, onAction, disabled }) {
 }
 
 function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInput, maxOneSkilllength = 50 }) {
+    const t = useTranslations('Profile.infoCard');
     const [input, setInput] = useState('');
 
     return (
@@ -51,7 +54,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                         </span>
                     ))
                 ) : (
-                    <div className='text-sm text-[#6B7280]'>No items added</div>
+                    <div className='text-sm text-[#6B7280]'>{t('noItemsAdded')}</div>
                 )}
             </div>
 
@@ -69,7 +72,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                             }
                         }}
                         autoFocus
-                        placeholder={placeholder || 'Add item'}
+                        placeholder={placeholder || t('addItem')}
                         className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500'
                     />
                     <button
@@ -80,7 +83,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                             setShowInput(false);
                         }}
                         className='rounded-xl border border-emerald-500 px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50' disabled={!input}>
-                        Save
+                        {t('save')}
                     </button>
                 </div>
             )}
@@ -97,29 +100,32 @@ const MAX_INSTITUTION_LENGTH = 200;
 const currentYear = new Date().getFullYear();
 const minYear = currentYear - DATE_AVARAGE;
 
-const educationSchema = z.object({
-    degree: z
-        .string().trim()
-        .min(1, 'Degree is required')
-        .max(MAX_DEGREE_LENGTH, `Degree must be ${MAX_DEGREE_LENGTH} characters or less`),
-    institution: z
-        .string().trim()
-        .min(1, 'Institution is required')
-        .max(MAX_INSTITUTION_LENGTH, `Institution must be ${MAX_INSTITUTION_LENGTH} characters or less`),
-    year: z
-        .number({ invalid_type_error: 'Year is required' })
-        .min(minYear, `Year must be between ${minYear} and ${currentYear}`)
-        .max(currentYear, `Year must be between ${minYear} and ${currentYear}`),
-});
+function createEducationSchema(t) {
+    return z.object({
+        degree: z
+            .string().trim()
+            .min(1, t('degreeRequired'))
+            .max(MAX_DEGREE_LENGTH, t('degreeMaxLength', { max: MAX_DEGREE_LENGTH })),
+        institution: z
+            .string().trim()
+            .min(1, t('institutionRequired'))
+            .max(MAX_INSTITUTION_LENGTH, t('institutionMaxLength', { max: MAX_INSTITUTION_LENGTH })),
+        year: z
+            .number({ invalid_type_error: t('yearRequired') })
+            .min(minYear, t('yearRange', { min: minYear, max: currentYear }))
+            .max(currentYear, t('yearRange', { min: minYear, max: currentYear })),
+    });
+}
 
 
 function EducationForm({ onSubmit }) {
+    const t = useTranslations('Profile.infoCard');
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(educationSchema),
+        resolver: zodResolver(createEducationSchema(t)),
         defaultValues: {
             degree: '',
             institution: '',
@@ -130,18 +136,18 @@ function EducationForm({ onSubmit }) {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 gap-3'>
             <div>
-                <Input label='Degree' required {...register('degree')} />
+                <Input label={t('degree')} required {...register('degree')} />
                 <FormErrorMessage message={errors.degree?.message} />
             </div>
 
             <div>
-                <Input label='Institution' required {...register('institution')} />
+                <Input label={t('institution')} required {...register('institution')} />
                 <FormErrorMessage message={errors.institution?.message} />
             </div>
 
             <div>
                 <Input
-                    label='Year'
+                    label={t('year')}
                     type='number'
                     required
                     {...register('year', { valueAsNumber: true })}
@@ -149,7 +155,7 @@ function EducationForm({ onSubmit }) {
                 <FormErrorMessage message={errors.year?.message} />
             </div>
 
-            <Button type='submit' name='Save item' color='green' />
+            <Button type='submit' name={t('saveItem')} color='green' />
         </form>
     );
 }
@@ -157,29 +163,32 @@ function EducationForm({ onSubmit }) {
 const MAX_NAME_LENGTH = 250;
 const MAX_ISSUER_LENGTH = 250;
 
-const certificationSchema = z.object({
-    name: z
-        .string().trim()
-        .min(1, 'Name is required')
-        .max(MAX_NAME_LENGTH, `Name must be ${MAX_NAME_LENGTH} characters or less`),
-    issuingOrganization: z
-        .string().trim()
-        .min(1, 'Issuing Organization is required')
-        .max(MAX_ISSUER_LENGTH, `Issuing Organization must be ${MAX_ISSUER_LENGTH} characters or less`),
-    year: z
-        .number({ invalid_type_error: 'Year is required' })
-        .min(minYear, `Year must be between ${minYear} and ${currentYear}`)
-        .max(currentYear, `Year must be between ${minYear} and ${currentYear}`),
-});
+function createCertificationSchema(t) {
+    return z.object({
+        name: z
+            .string().trim()
+            .min(1, t('nameRequired'))
+            .max(MAX_NAME_LENGTH, t('nameMaxLength', { max: MAX_NAME_LENGTH })),
+        issuingOrganization: z
+            .string().trim()
+            .min(1, t('issuingOrganizationRequired'))
+            .max(MAX_ISSUER_LENGTH, t('issuingOrganizationMaxLength', { max: MAX_ISSUER_LENGTH })),
+        year: z
+            .number({ invalid_type_error: t('yearRequired') })
+            .min(minYear, t('yearRange', { min: minYear, max: currentYear }))
+            .max(currentYear, t('yearRange', { min: minYear, max: currentYear })),
+    });
+}
 
 
 function CertificationForm({ onSubmit }) {
+    const t = useTranslations('Profile.infoCard');
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(certificationSchema),
+        resolver: zodResolver(createCertificationSchema(t)),
         defaultValues: {
             name: '',
             issuingOrganization: '',
@@ -190,21 +199,21 @@ function CertificationForm({ onSubmit }) {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className='grid grid-cols-1 gap-3'>
             <div>
-                <Input label='Name' required {...register('name')} />
+                <Input label={t('name')} required {...register('name')} />
                 <FormErrorMessage message={errors.name?.message} />
             </div>
 
             <div>
-                <Input label='Issuing Organization' required {...register('issuingOrganization')} />
+                <Input label={t('issuingOrganization')} required {...register('issuingOrganization')} />
                 <FormErrorMessage message={errors.issuingOrganization?.message} />
             </div>
 
             <div>
-                <Input label='Year' type='number' required {...register('year', { valueAsNumber: true })} />
+                <Input label={t('year')} type='number' required {...register('year', { valueAsNumber: true })} />
                 <FormErrorMessage message={errors.year?.message} />
             </div>
 
-            <Button type='submit' name='Save item' color='green' />
+            <Button type='submit' name={t('saveItem')} color='green' />
         </form>
     );
 }
@@ -252,6 +261,7 @@ const aboutSchema = z.object({
 
 
 export default function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertification, onCountryChange, accountTypeOptions = [], onTypeChange, className }) {
+    const t = useTranslations('Profile.infoCard');
     const [internalDesc, setInternalDesc] = useState(about?.description || '');
 
     useEffect(() => {
@@ -294,7 +304,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                 const res = await api.get(`/countries`);
                 setCountriesOptions(res.data);
             } catch (err) {
-                setCountryError('Failed to load countries');
+                setCountryError(t('errors.failedToLoadCountries'));
             } finally {
                 setCountryLoading(false);
             }
@@ -324,7 +334,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
 
     return (
         <Card className={` p-4 sm:p-5 ${className}`}>
-            <SectionHeader title='Description' iconSrc={'/icons/edit-green.svg'} actionAria={editingDesc ? 'Finish editing description' : 'Edit description'} onAction={() => setEditingDesc(v => !v)} />
+            <SectionHeader title={t('description')} iconSrc={'/icons/edit-green.svg'} actionAria={editingDesc ? t('finishEditingDescription') : t('editDescription')} onAction={() => setEditingDesc(v => !v)} />
             <Divider className='!my-2' />
             {editingDesc ? (
                 <>
@@ -336,10 +346,10 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                             setInternalDesc(val);
                         }}
                         onBlur={handleDescBlur}
-                        rows={4} placeholder='Tell buyers about yourself…' />
+                        rows={4} placeholder={t('tellBuyers')} />
                     <div className='flex justify-between items-center'>
-                        <p className='mt-1 text-xs text-[#6B7280]'>Use a clear, professional summary. Ctrl/Cmd+Enter to save.</p>
-                        <p className='mt-1 text-xs text-[#6B7280]'>{internalDesc?.trim()?.length}/1000 characters</p>
+                        <p className='mt-1 text-xs text-[#6B7280]'>{t('useClearSummary')}</p>
+                        <p className='mt-1 text-xs text-[#6B7280]'>{internalDesc?.trim()?.length}/1000 {t('characters')}</p>
                     </div>
                     {errors.description && <p className='text-red-500 text-xs'>{errors.description.message}</p>}
                 </>
@@ -355,7 +365,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider className='!mt-6 !mb-2 ' />
 
             {/* Skills */}
-            <SectionHeader title='Skills' iconSrc='/icons/add-green.svg' actionAria='Add skill' onAction={() => setShowSkillInput(true)} disabled={skills.length >= MAX_SKILLS} />
+            <SectionHeader title={t('skills')} iconSrc='/icons/add-green.svg' actionAria={t('addSkill')} onAction={() => setShowSkillInput(true)} disabled={skills.length >= MAX_SKILLS} />
 
             <PillEditor
                 items={skills}
@@ -369,7 +379,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                     const alreadyExists = current.some(skill => skill.trim().toLowerCase() === normalized);
 
                     if (alreadyExists) {
-                        showWarningToast('This skill already added');
+                        showWarningToast(t('skillAlreadyAdded'));
                         return;
                     }
 
@@ -386,7 +396,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider className='!mt-6 !mb-2 ' />
 
             {/* Education */}
-            <SectionHeader title='Education' iconSrc='/icons/add-green.svg' actionAria='Add education' onAction={() => setEduOpen(true)} disabled={educations.length >= MAX_EDUCATIONS} />
+            <SectionHeader title={t('education')} iconSrc='/icons/add-green.svg' actionAria={t('addEducation')} onAction={() => setEduOpen(true)} disabled={educations.length >= MAX_EDUCATIONS} />
             <div className='mt-2 space-y-2'>
                 {(educations).length > 0 ? (
                     educations.map((e, idx) => (
@@ -403,19 +413,19 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                         </div>
                     ))
                 ) : (
-                    <div className='text-sm text-[#6B7280]'>No education added</div>
+                    <div className='text-sm text-[#6B7280]'>{t('noEducationAdded')}</div>
                 )}
             </div>
 
             {/* Add Education */}
             {eduOpen && (
-                <Modal title='Add Education' onClose={() => setEduOpen(false)}>
+                <Modal title={t('addEducationModal')} onClose={() => setEduOpen(false)}>
                     <EducationForm
                         onSubmit={item => {
 
                             const alreadyHas = educations.some(e => e.degree === item.degree && e.institution === item.institution && e.year === item.year)
                             if (alreadyHas) {
-                                showWarningToast('This education already added');
+                                showWarningToast(t('educationAlreadyAdded'));
                                 return;
                             }
                             setValue('education', [...educations, item]);
@@ -430,7 +440,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider />
 
             {/* Certifications */}
-            <SectionHeader title='Certification' iconSrc='/icons/add-green.svg' actionAria='Add certification' onAction={() => setCertOpen(true)} disabled={certifications.length >= MAX_CERTIFICATIONS} />
+            <SectionHeader title={t('certification')} iconSrc='/icons/add-green.svg' actionAria={t('addCertification')} onAction={() => setCertOpen(true)} disabled={certifications.length >= MAX_CERTIFICATIONS} />
             <div className='mt-2 space-y-2'>
                 {(certifications).length > 0 ? (
                     certifications.map((c, idx) => (
@@ -447,19 +457,19 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                         </div>
                     ))
                 ) : (
-                    <div className='text-sm text-[#6B7280]'>No certifications added</div>
+                    <div className='text-sm text-[#6B7280]'>{t('noCertificationsAdded')}</div>
                 )}
             </div>
 
             {/* Add Certification */}
             {certOpen && (
-                <Modal title='Add Certification' onClose={() => setCertOpen(false)}>
+                <Modal title={t('addCertificationModal')} onClose={() => setCertOpen(false)}>
                     <CertificationForm
                         onSubmit={item => {
 
                             const alreadyHas = certifications.some(c => c.name === item.name && c.issuingOrganization === item.issuingOrganization && c.year === item.year)
                             if (alreadyHas) {
-                                showWarningToast('This certification already added');
+                                showWarningToast(t('certificationAlreadyAdded'));
                                 return;
                             }
                             setValue('certifications', [...certifications, item]);
@@ -472,8 +482,8 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider />
             {/* Top selects row */}
             <div className=' mt-4 grid grid-cols-1 gap-3 md:grid-cols-2'>
-                <Select key={`${countryLoading} ${countriesOptions?.length}`} label='Country' options={countriesOptions} value={about?.countryId} onChange={opt => onCountryChange?.(opt?.id)} placeholder='Select country' isLoading={countryLoading} showSearch={true} />
-                <Select label='Account Type' options={accountTypeOptions} value={about?.type} onChange={opt => onTypeChange?.(opt?.id)} placeholder='Select type' />
+                <Select key={`${countryLoading} ${countriesOptions?.length}`} label={t('country')} options={countriesOptions} value={about?.countryId} onChange={opt => onCountryChange?.(opt?.id)} placeholder={t('selectCountry')} isLoading={countryLoading} showSearch={true} />
+                <Select label={t('accountType')} options={accountTypeOptions} value={about?.type} onChange={opt => onTypeChange?.(opt?.id)} placeholder={t('selectType')} />
             </div>
         </Card>
     );
@@ -554,6 +564,7 @@ function SkeletonPill() {
 
 
 function LanguageSelector({ value = [], setValue }) {
+    const t = useTranslations('Profile.infoCard');
     const [languageOptions, setLanguageOptions] = useState(allLanguages || []);
     const [langLoading, setLangLoading] = useState(false);
     const [langError, setLangError] = useState(null);
@@ -597,7 +608,7 @@ function LanguageSelector({ value = [], setValue }) {
 
     return (
         <>
-            <SectionHeader title='Languages' iconSrc='/icons/add-green.svg' actionAria='Add language' onAction={() => setShowLangInput(true)} />
+            <SectionHeader title={t('languages')} iconSrc='/icons/add-green.svg' actionAria={t('addLanguage')} onAction={() => setShowLangInput(true)} />
             <div className='mt-1 flex flex-wrap items-center gap-2'>
                 {value.map((lang, idx) => (
                     <div key={idx} className='group relative inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] border border-[#EDEDED] shadow'>
@@ -617,10 +628,10 @@ function LanguageSelector({ value = [], setValue }) {
 
                     <div className='mt-3 flex items-end gap-2'>
                         <Select
-                            label='Select Language'
+                            label={t('selectLanguage')}
                             isLoading={langLoading}
                             options={filteredLanguageOptions}
-                            placeholder='Choose a language'
+                            placeholder={t('chooseLanguage')}
                             onChange={opt => setSelectedLang(opt)}
                             name='languageSelect'
                         />
@@ -633,7 +644,7 @@ function LanguageSelector({ value = [], setValue }) {
                             }}
                             disabled={!selectedLang}
                             className={`rounded-xl border px-3 py-2 text-sm border-emerald-500 text-emerald-600 hover:bg-emerald-50`}>
-                            Add
+                            {t('add')}
                         </button>
                     </div>
                     <FormErrorMessage message={langError} />

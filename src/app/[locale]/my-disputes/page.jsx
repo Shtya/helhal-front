@@ -20,6 +20,7 @@ import { initialsFromName, isErrorAbort, updateUrlParams } from '@/utils/helper'
 import { DisputeStatus, disputeType } from '@/constants/dispute';
 import DisputeStatusPill from '@/components/pages/disputes/DisputeStatusPill';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
+import { useTranslations } from 'next-intl';
 
 
 
@@ -64,6 +65,7 @@ function ShimmerListItem() {
 
 
 export default function MyDisputesPage() {
+  const t = useTranslations('MyDisputes');
   const { user: me, role } = useAuth();
   const isBuyer = role === 'buyer'
 
@@ -203,7 +205,7 @@ export default function MyDisputesPage() {
 
         } catch (e2) {
           if (!isErrorAbort(e2) && detailsControllerRef.current === controller) {
-            setErrDetail(e2?.response?.data?.message || 'Unable to load dispute.');
+            setErrDetail(e2?.response?.data?.message || t('errors.unableToLoad'));
             setDetail(null);
           }
         }
@@ -211,7 +213,7 @@ export default function MyDisputesPage() {
       } else {
         // ---------- normal error ----------
         if (detailsControllerRef.current === controller) {
-          setErrDetail(e?.response?.data?.message || 'Failed to load activity.');
+          setErrDetail(e?.response?.data?.message || t('errors.failedToLoad'));
           setDetail(null);
         }
       }
@@ -240,10 +242,10 @@ export default function MyDisputesPage() {
   }, [errDetail]);
 
   const mapNames = {
-    sellerAmount: 'Seller amount',
-    buyerRefund: 'Buyer refund',
-    note: 'Note',
-    decidedBy: 'Decided by',
+    sellerAmount: t('resolution.sellerAmount'),
+    buyerRefund: t('resolution.buyerRefund'),
+    note: t('resolution.note'),
+    decidedBy: t('resolution.decidedBy'),
   };
 
   return (
@@ -251,7 +253,7 @@ export default function MyDisputesPage() {
       {/* Page header */}
       <div className='flex items-center justify-between gap-2 flex-wrap'>
         <div className='flex items-center gap-3'>
-          <h1 className='text-2xl sm:text-3xl font-bold'>My Disputes</h1>
+          <h1 className='text-2xl sm:text-3xl font-bold'>{t('title')}</h1>
           {!!disputes?.length && (
             <span className='text-xs px-2 py-0.5 rounded-full ring-1 ring-gray-200 bg-gray-50 text-gray-600'>
               {disputes.length} / {disputes.length}
@@ -266,7 +268,7 @@ export default function MyDisputesPage() {
             {/* List header with search */}
             <div className='p-3 border-b border-gray-100 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 rounded-t-2xl'>
               <div className='relative'>
-                <Input cnInput="search-disputes" name='search-disputes' placeholder='Search disputes (title, status, id, user)…' value={search} onChange={e => setSearch(e.target.value)} />
+                <Input cnInput="search-disputes" name='search-disputes' placeholder={t('searchPlaceholder')} value={search} onChange={e => setSearch(e.target.value)} />
                 <Search className='h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none' />
               </div>
             </div>
@@ -305,8 +307,8 @@ export default function MyDisputesPage() {
                   <div className='mx-auto h-12 w-12 rounded-xl bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center'>
                     <MessageSquare className='h-6 w-6 text-emerald-600' />
                   </div>
-                  <h3 className='mt-3 text-sm font-semibold text-gray-800'>No disputes found</h3>
-                  <p className='mt-1 text-xs text-gray-500'>Try adjusting your search or reloading.</p>
+                  <h3 className='mt-3 text-sm font-semibold text-gray-800'>{t('noDisputes')}</h3>
+                  <p className='mt-1 text-xs text-gray-500'>{t('noDisputesDesc')}</p>
                 </div>
               )}
             </div>
@@ -322,9 +324,9 @@ export default function MyDisputesPage() {
           {!selectedId ? (
             <div className="flex flex-col items-center justify-center gap-4 p-10 text-gray-500 rounded-2xl text-center">
               <MdInfoOutline className="text-4xl text-gray-400" />
-              <h2 className="text-lg font-semibold text-gray-600">No dispute selected</h2>
+              <h2 className="text-lg font-semibold text-gray-600">{t('noDisputeSelected')}</h2>
               <p className="text-sm text-gray-500 max-w-md">
-                Please choose a dispute from the list on the left to view its details, messages, and resolution status.
+                {t('noDisputeSelectedDesc')}
               </p>
             </div>
 
@@ -338,7 +340,7 @@ export default function MyDisputesPage() {
               <Shimmer className='h-64 w-full' />
             </div>
           ) : isNotFound || (!errDetail && !detail) ? (
-            <NoResults mainText={'Dispute not found'} additionalText={'The dispute you selected could not be located. It may have been removed or the link is invalid.'} />
+            <NoResults mainText={t('notFound')} additionalText={t('notFoundDesc')} />
           ) : errDetail ? (
             <div className='m-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-rose-700 text-sm'>{errDetail}</div>
           ) : detail ? (
@@ -352,7 +354,7 @@ export default function MyDisputesPage() {
                       {/* Left Info Block */}
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <div className="text-xs text-gray-500">Order</div>
+                          <div className="text-xs text-gray-500">{t('order')}</div>
                           <div className="text-base font-semibold text-slate-900 truncate">
                             {detail?.order?.title || detail?.dispute?.orderId}
                           </div>
@@ -361,34 +363,34 @@ export default function MyDisputesPage() {
                         <div className="mt-2 grid grid-cols-1 gap-3 text-xs">
                           {isBuyer ? (
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-gray-500 shrink-0">Freelancer:</span>
+                              <span className="text-gray-500 shrink-0">{t('freelancer')}</span>
                               <UserChip user={detail?.order?.seller} />
                             </div>
                           ) : (
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-gray-500 shrink-0">Client:</span>
+                              <span className="text-gray-500 shrink-0">{t('client')}</span>
                               <UserChip user={detail?.order?.buyer} />
                             </div>
                           )}
 
                           <div className="flex items-center gap-2">
-                            <span className="text-gray-500">Status:</span>
+                            <span className="text-gray-500">{t('status')}</span>
                             <DisputeStatusPill status={detail?.dispute?.status} />
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <span className="text-gray-500 block text-xs">Raised By:</span>
+                            <span className="text-gray-500 block text-xs">{t('raisedBy')}</span>
                             <div className="flex items-center gap-2 mt-0.5">
                               {detail?.dispute?.raisedBy?.id === me?.id ? (
-                                <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-700">You</span>
+                                <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-700">{t('you')}</span>
                               ) : (
-                                <span className="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-700">Other party</span>
+                                <span className="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-700">{t('otherParty')}</span>
                               )}
                             </div>
                           </div>
 
                           <div>
-                            <span className="text-gray-500">Opened:</span>{' '}
+                            <span className="text-gray-500">{t('opened')}</span>{' '}
                             {detail?.dispute?.created_at
                               ? new Date(detail.dispute.created_at).toLocaleString()
                               : '—'}
@@ -400,7 +402,7 @@ export default function MyDisputesPage() {
                       <div className="flex flex-nowrap items-center gap-2">
                         {parsedResolution && (
                           <Button
-                            name="View resolution"
+                            name={t('viewResolution')}
                             className="!w-full sm:!w-auto"
                             color="outline"
                             onClick={() => setResModalOpen(true)}
@@ -419,14 +421,14 @@ export default function MyDisputesPage() {
                     {/* Dispute details */}
                     <div className="mt-4 border-t border-gray-100 pt-4 space-y-3 text-sm">
                       <div>
-                        <span className="text-gray-500 block text-xs">Subject</span>
+                        <span className="text-gray-500 block text-xs">{t('subject')}</span>
                         <div className="font-medium text-slate-900">
                           {detail?.dispute?.subject || '—'}
                         </div>
                       </div>
 
                       <div>
-                        <span className="text-gray-500 block text-xs">Type</span>
+                        <span className="text-gray-500 block text-xs">{t('type')}</span>
                         <div className="font-medium text-slate-900">
                           {(() => {
                             const found = disputeType.find(t => t.id === detail?.dispute?.type);
@@ -436,7 +438,7 @@ export default function MyDisputesPage() {
                       </div>
 
                       <div>
-                        <span className="text-gray-500 block text-xs">Reason</span>
+                        <span className="text-gray-500 block text-xs">{t('reason')}</span>
                         <div className="text-slate-800 whitespace-pre-line">
                           {detail?.dispute?.reason || '—'}
                         </div>
@@ -447,17 +449,17 @@ export default function MyDisputesPage() {
                     {/* Invoice if exists */}
                     {detail?.invoice ? (
                       <div className="relative rounded-2xl mt-4 border border-gray-200 p-4 bg-slate-50">
-                        <div className="text-sm font-semibold mb-2">Invoice</div>
+                        <div className="text-sm font-semibold mb-2">{t('invoice')}</div>
                         <div className="text-sm flex items-center justify-between">
-                          <span>Subtotal (escrow)</span>
+                          <span>{t('subtotal')}</span>
                           <span>{Number(detail.invoice.subtotal).toFixed(2)} SAR</span>
                         </div>
                         <div className="text-sm flex items-center justify-between">
-                          <span>Service fee</span>
+                          <span>{t('serviceFee')}</span>
                           <span>{Number(detail.invoice.serviceFee).toFixed(2)} SAR</span>
                         </div>
                         <div className="text-sm flex items-center justify-between font-semibold">
-                          <span>Total</span>
+                          <span>{t('total')}</span>
                           <span>{Number(detail.invoice.totalAmount).toFixed(2)} SAR</span>
                         </div>
                       </div>
@@ -476,7 +478,7 @@ export default function MyDisputesPage() {
 
       {/* Resolution Modal */}
       {resModalOpen && (
-        <Modal title='Proposed Resolution' onClose={() => setResModalOpen(false)}>
+        <Modal title={t('proposedResolution')} onClose={() => setResModalOpen(false)}>
           <div className='space-y-3'>
             <div className='rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm'>
               <div className='text-[13px] space-y-1'>

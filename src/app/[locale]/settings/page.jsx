@@ -21,12 +21,12 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Page() {
-
+  const t = useTranslations('Settings');
   const [activeTab, setActiveTab] = useState('account');
 
   const tabs = [
-    { label: 'Account', value: 'account' },
-    { label: 'Security', value: 'security' },
+    { label: t('tabs.account'), value: 'account' },
+    { label: t('tabs.security'), value: 'security' },
     // { label: 'Notifications', value: 'notifications' },
   ];
 
@@ -51,11 +51,12 @@ const formSchema = z.object({
 
 
 function AccountSettings() {
+  const t = useTranslations('Settings.account');
   const reasons = [
-    { id: 'platform', name: 'I found another platform' },
-    { id: 'price', name: 'Too expensive' },
-    { id: 'features', name: 'Not satisfied with features' },
-    { id: 'other', name: 'Other' },
+    { id: 'platform', name: t('reasons.platform') },
+    { id: 'price', name: t('reasons.price') },
+    { id: 'features', name: t('reasons.features') },
+    { id: 'other', name: t('reasons.other') },
   ];
   const {
     register,
@@ -70,7 +71,6 @@ function AccountSettings() {
       email: '',
     },
   });
-  const t = useTranslations('auth');
 
 
   const { user: me, setCurrentUser, logout } = useAuth();
@@ -142,9 +142,9 @@ function AccountSettings() {
 
       await Promise.all(updates);
 
-      toast.success('Changes saved successfully!');
+      toast.success(t('toast.changesSaved'));
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to save changes');
+      toast.error(err?.response?.data?.message || t('toast.failedToSave'));
     } finally {
       setSaving(false);
     }
@@ -156,10 +156,10 @@ function AccountSettings() {
     try {
       setResendLoading(true);
       await api.post('/auth/resend-email-confirmation');
-      toast.success('Confirmation email resent!');
+      toast.success(t('toast.emailResent'));
       startResendCooldown(); // trigger cooldown
     } catch (err) {
-      toast.error('Failed to resend email');
+      toast.error(t('toast.failedToResend'));
     } finally {
       setResendLoading(false);
     }
@@ -171,9 +171,9 @@ function AccountSettings() {
       await api.post('/auth/cancel-email-change');
       setPendingEmail(null);
       setCurrentUser(prev => ({ ...prev, pendingEmail: null }));
-      toast.success('Email change request canceled');
+      toast.success(t('toast.changeCanceled'));
     } catch (err) {
-      toast.error('Failed to cancel email change');
+      toast.error(t('toast.failedToCancel'));
     } finally {
       setCancelLoading(false);
     }
@@ -197,13 +197,10 @@ function AccountSettings() {
     <div>
       {pendingEmail && (
         <div className=' max-w-[450px] mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>
-          <p>
-            A confirmation link has been sent to <strong>{maskEmail(pendingEmail)}</strong>.
-            Please check your inbox to confirm the change.
-          </p>
+          <p dangerouslySetInnerHTML={{ __html: t('pendingEmail', { email: maskEmail(pendingEmail) }) }} />
           <div className='grid items-center grid-cols-1 xs:grid-cols-2 gap-2'>
             <Button
-              name={cancelLoading ? 'Canceling…' : 'Cancel request'}
+              name={cancelLoading ? t('canceling') : t('cancelRequest')}
               color='gray'
               className='mt-2 text-sm !text-red-600 !bg-transparent'
               onClick={cancelEmailChange}
@@ -212,11 +209,11 @@ function AccountSettings() {
 
             {resendCooldown > 0 ? (
               <span className='mt-2 text-sm text-blue-600 text-nowrap text-center'>
-                Resend in {resendCooldown}s
+                {t('resendIn', { seconds: resendCooldown })}
               </span>
             ) : (
               <Button
-                name={resendLoading ? 'Resending…' : 'Resend Email'}
+                name={resendLoading ? t('resending') : t('resendEmail')}
                 color='green'
                 className='mt-2 text-sm'
                 onClick={resendEmail}
@@ -227,10 +224,10 @@ function AccountSettings() {
         </div>
       )}
 
-      <h2 className='text-xl font-semibold text-gray-800'>Need to update your public profile?</h2>
+      <h2 className='text-xl font-semibold text-gray-800'>{t('updateProfile')}</h2>
 
       <Input
-        label='Username'
+        label={t('username')}
         placeholder='Enter Text'
         className='mt-6 max-w-[450px] w-full'
         error={errors.username?.message && t(`errors.${errors.username?.message}`)}
@@ -239,7 +236,7 @@ function AccountSettings() {
 
 
       <Input
-        label='Email'
+        label={t('email')}
         placeholder='you@example.com'
         type='email'
         className='mt-6 max-w-[450px] w-full'
@@ -249,22 +246,22 @@ function AccountSettings() {
 
 
 
-      <Button name={saving ? '' : 'Save Changes'} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md ' onClick={saveProfile} />
+      <Button name={saving ? '' : t('saveChanges')} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md ' onClick={saveProfile} />
 
       <Divider className='!my-8' />
 
-      <h3 className='p !opacity-100'>Account deactivation</h3>
-      <p className='text-sm opacity-90 mt-2'>What happens when you deactivate your account?</p>
+      <h3 className='p !opacity-100'>{t('accountDeactivation')}</h3>
+      <p className='text-sm opacity-90 mt-2'>{t('deactivationDescription')}</p>
       <div className='mt-3 space-y-1 text-sm text-gray-600'>
-        <p>• Your profile and Gigs won’t be shown anymore.</p>
-        <p>• Active orders will be cancelled.</p>
+        <p>• {t('deactivationPoints.profileHidden')}</p>
+        <p>• {t('deactivationPoints.ordersCancelled')}</p>
       </div>
 
-      <Select className='mt-6 max-w-[450px] w-full' cnLabel='!text-sm opacity-90 mt-2' label='I’m leaving because' placeholder='Choose a Reason' value={reason} onChange={opt => setReason(opt?.id)} options={reasons} />
+      <Select className='mt-6 max-w-[450px] w-full' cnLabel='!text-sm opacity-90 mt-2' label={t('leavingReason')} placeholder={t('chooseReason')} value={reason} onChange={opt => setReason(opt?.id)} options={reasons} />
       {reason === 'other' && (
         <Input
-          label='Please tell us why'
-          placeholder='Your reason for leaving'
+          label={t('tellUsWhy')}
+          placeholder={t('yourReason')}
           className='mt-4 max-w-[450px] w-full'
           value={customReason}
           onChange={e => {
@@ -274,24 +271,24 @@ function AccountSettings() {
         />
       )}
 
-      <Button name='Deactivate Account' color='red' loading={deactivating} className='mt-6 max-w-[450px] w-full !rounded-md' onClick={() => {
+      <Button name={t('deactivateAccount')} color='red' loading={deactivating} className='mt-6 max-w-[450px] w-full !rounded-md' onClick={() => {
         const finalReason = reason === 'other' ? customReason : reason;
         if (!finalReason?.trim()) return;
         setConfirmOpen(true)
       }} />
       {confirmOpen && (
-        <Modal title='Confirm Deactivation' onClose={() => setConfirmOpen(false)}>
+        <Modal title={t('confirmDeactivation')} onClose={() => setConfirmOpen(false)}>
           <p className='text-sm text-gray-700 mb-4'>
-            Are you sure you want to deactivate your account?
+            {t('confirmMessage')}
           </p>
           <div className='flex justify-end gap-3'>
             <Button
-              name='Cancel'
+              name={t('cancel')}
               variant='ghost'
               onClick={() => setConfirmOpen(false)}
             />
             <Button
-              name='Yes, Deactivate'
+              name={t('yesDeactivate')}
               color='red'
               loading={deactivating}
               onClick={deactivate}
@@ -316,6 +313,7 @@ const securitySchema = z.object({
 
 
 function SecuritySettings() {
+  const t = useTranslations('Settings.security');
   const { user: me, loadingUser, logout } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loadingSessions, setLoadingSessions] = useState(true);
@@ -389,10 +387,10 @@ function SecuritySettings() {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
-      toast.success('✅ Your password has been updated successfully.');
+      toast.success(t('toast.passwordUpdated'));
       reset();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to update password');
+      toast.error(err.response?.data?.message || t('toast.failedToUpdate'));
     }
   }
 
@@ -426,31 +424,31 @@ function SecuritySettings() {
 
   return (
     <div>
-      <h2 className='text-xl font-semibold text-gray-800'>Change Password</h2>
+      <h2 className='text-xl font-semibold text-gray-800'>{t('changePassword')}</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input
-          label='Current Password'
+          label={t('currentPassword')}
           type='password'
           className='mt-6 max-w-[450px] w-full'
           {...register('currentPassword')}
           error={errors.currentPassword?.message}
         />
         <Input
-          label='New Password'
+          label={t('newPassword')}
           type='password'
           className='mt-3 max-w-[450px] w-full'
           {...register('newPassword')}
           error={errors.newPassword?.message}
         />
         <Input
-          label='Confirm Password'
+          label={t('confirmPassword')}
           type='password'
           className='mt-3 max-w-[450px] w-full'
           {...register('confirmPassword')}
           error={errors.confirmPassword?.message}
         />
         <Button
-          name='Save Changes'
+          name={t('saveChanges')}
           loading={isSubmitting}
           className='mt-6 max-w-[450px] w-full !rounded-md'
           color='green'
@@ -462,7 +460,7 @@ function SecuritySettings() {
       <Divider className='!my-8' />
 
       <div className='border border-slate-200 rounded-lg p-4'>
-        <h2 className='text-xl font-semibold'>Connected Devices</h2>
+        <h2 className='text-xl font-semibold'>{t('connectedDevices')}</h2>
         <Divider className='!my-3' />
 
         {/* skeleton loader */}
@@ -480,7 +478,7 @@ function SecuritySettings() {
 
         {!loading && (
           <div className='overflow-auto' style={{ maxHeight: 300 }}>
-            {sessions.length === 0 && <p className='text-sm text-gray-600'>No active sessions.</p>}
+            {sessions.length === 0 && <p className='text-sm text-gray-600'>{t('noActiveSessions')}</p>}
             {sessions.map((s, i) => {
               // ✅ compare current session id with row id
               const isThisDevice = !!(me?.currentDeviceId && s.id && me?.currentDeviceId === s.id);
@@ -492,14 +490,14 @@ function SecuritySettings() {
                     <div>
                       <p className='font-medium text-gray-800'>
                         {meta}
-                        {isThisDevice && <span className='ml-2 text-emerald-600 text-xs font-semibold'>THIS DEVICE</span>}
-                        {killed && <span className='ml-2 text-red-600 text-xs font-semibold'>SIGNED OUT</span>}
+                        {isThisDevice && <span className='ml-2 text-emerald-600 text-xs font-semibold'>{t('thisDevice')}</span>}
+                        {killed && <span className='ml-2 text-red-600 text-xs font-semibold'>{t('signedOut')}</span>}
                       </p>
                       <p className='text-sm text-gray-600'>
-                        IP {s.ipAddress || '—'} · Last activity {fmt(s.lastActivity)}
+                        IP {s.ipAddress || '—'} · {t('lastActivity', { date: fmt(s.lastActivity) })}
                       </p>
                     </div>
-                    <div className='flex items-center gap-2'>{!killed ? <Button name={revoking === s.id ? '' : 'Sign Out'} loading={revoking === s.id} color='red' className='!w-auto !px-3 !py-1.5' onClick={() => revoke(s.id)} /> : <span className='text-xs text-gray-500'>Revoked {fmt(s.revokedAt)}</span>}</div>
+                    <div className='flex items-center gap-2'>{!killed ? <Button name={revoking === s.id ? '' : t('signOut')} loading={revoking === s.id} color='red' className='!w-auto !px-3 !py-1.5' onClick={() => revoke(s.id)} /> : <span className='text-xs text-gray-500'>{t('revoked', { date: fmt(s.revokedAt) })}</span>}</div>
                   </div>
                 </div>
               );
@@ -508,7 +506,7 @@ function SecuritySettings() {
             {hasMore && (
               <div className="text-center mt-4">
                 <Button
-                  name="Load More Sessions"
+                  name={t('loadMoreSessions')}
                   disabled={loadingMore}
                   color="gray"
                   onClick={loadMore}
@@ -520,13 +518,14 @@ function SecuritySettings() {
         )}
 
 
-        {!loading && sessions.length > 1 && <Button name='Sign Out From All Other Devices' disabled={revokingAll} className='mt-4 !rounded-md' color='red' onClick={revokeAllOthers} />}
+        {!loading && sessions.length > 1 && <Button name={t('signOutAllOthers')} disabled={revokingAll} className='mt-4 !rounded-md' color='red' onClick={revokeAllOthers} />}
       </div>
     </div>
   );
 }
 
 function NotificationSettings() {
+  const t = useTranslations('Settings.notifications');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({
@@ -577,9 +576,9 @@ function NotificationSettings() {
     setSaving(true);
     try {
       await api.put('/notifications/settings/user', settings);
-      toast.success('Settings saved successfully'); // ✅ success toast
+      toast.success(t('toast.settingsSaved')); // ✅ success toast
     } catch (err) {
-      toast.error('Failed to save settings'); // ✅ error toast
+      toast.error(t('toast.failedToSave')); // ✅ error toast
     } finally {
       setSaving(false);
     }
@@ -588,17 +587,17 @@ function NotificationSettings() {
   if (loading) {
     return (
       <div>
-        <h2 className='text-xl font-semibold text-gray-800'>Notifications</h2>
-        <p className='text-sm opacity-90 mt-2'>For important updates regarding your activity, certain notifications cannot be disabled.</p>
+        <h2 className='text-xl font-semibold text-gray-800'>{t('title')}</h2>
+        <p className='text-sm opacity-90 mt-2'>{t('description')}</p>
 
         {/* Skeleton table */}
         <div className='mt-6 overflow-x-auto'>
           <table className='w-full border-collapse text-sm'>
             <thead>
               <tr className='text-left text-gray-600 border-b border-slate-200'>
-                <th className='pb-2'>Type</th>
-                <th className='pb-2'>Email</th>
-                <th className='pb-2'>Mobile</th>
+                <th className='pb-2'>{t('type')}</th>
+                <th className='pb-2'>{t('email')}</th>
+                <th className='pb-2'>{t('mobile')}</th>
               </tr>
             </thead>
             <tbody>
@@ -621,7 +620,7 @@ function NotificationSettings() {
 
         <Divider className='!my-8' />
 
-        <h3 className='text-lg font-semibold text-gray-800'>Push notifications (for mobile devices)</h3>
+        <h3 className='text-lg font-semibold text-gray-800'>{t('pushNotifications')}</h3>
         <div className='mt-6 space-y-6'>
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className='flex items-center gap-3 '>
@@ -639,16 +638,16 @@ function NotificationSettings() {
 
   return (
     <div>
-      <h2 className='text-xl font-semibold text-gray-800'>Notifications</h2>
-      <p className='text-sm opacity-90 mt-2'>For important updates regarding your activity, certain notifications cannot be disabled.</p>
+      <h2 className='text-xl font-semibold text-gray-800'>{t('title')}</h2>
+      <p className='text-sm opacity-90 mt-2'>{t('description')}</p>
 
       <div className='mt-6 overflow-x-auto'>
         <table className='w-full border-collapse text-sm text-gray-800'>
           <thead>
             <tr className='text-left text-gray-600 border-b border-b-slate-200'>
-              <th className='pb-2'>Type</th>
-              <th className='pb-2'>Email</th>
-              <th className='pb-2'>Mobile</th>
+              <th className='pb-2'>{t('type')}</th>
+              <th className='pb-2'>{t('email')}</th>
+              <th className='pb-2'>{t('mobile')}</th>
             </tr>
           </thead>
           <tbody>
@@ -669,28 +668,28 @@ function NotificationSettings() {
 
       <Divider className='!my-8' />
 
-      <h3 className='text-lg font-semibold text-gray-800'>Push notifications (for mobile devices)</h3>
+      <h3 className='text-lg font-semibold text-gray-800'>{t('pushNotifications')}</h3>
       <div className='mt-6 space-y-6'>
         <div className='flex items-center gap-3'>
           <Switcher checked={!!settings.push?.enabled} onChange={v => setSettings(p => ({ ...p, push: { ...p.push, enabled: v } }))} />
           <div>
-            <p className='text-sm font-medium text-gray-800'>Enable/disable push notifications</p>
-            <p className='text-xs text-gray-500'>Try Me</p>
+            <p className='text-sm font-medium text-gray-800'>{t('enableDisablePush')}</p>
+            <p className='text-xs text-gray-500'>{t('tryMe')}</p>
           </div>
         </div>
 
         <div className='flex items-center gap-3'>
           <Switcher checked={!!settings.push?.sound} onChange={v => setSettings(p => ({ ...p, push: { ...p.push, sound: v } }))} />
           <div>
-            <p className='text-sm font-medium text-gray-800'>Enable/disable sound</p>
-            <p className='text-xs text-gray-500'>Try Me</p>
+            <p className='text-sm font-medium text-gray-800'>{t('enableDisableSound')}</p>
+            <p className='text-xs text-gray-500'>{t('tryMe')}</p>
           </div>
         </div>
       </div>
 
       <Divider className='!my-8' />
 
-      <Button name={saving ? '' : 'Save Changes'} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md' color='green' onClick={save} />
+      <Button name={saving ? '' : t('saveChanges')} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md' color='green' onClick={save} />
     </div>
   );
 }

@@ -3,16 +3,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Check, TimerIcon, Eraser } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 
 export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDeliveryTime, customDeliveryTime }) {
+  const t = useTranslations('Services.filters.deliveryTime');
   const BRAND = '#007a55';
   const RING = `${BRAND}66`;
   const tiers = [
-    { id: 'u1000', label: 'Express 24 hrs' },
-    { id: 'm1000_3600', label: 'Upto 3 Days' },
-    { id: 'h3600+', label: 'Upto 7 Days' },
-    { id: 'custom', label: 'Custom Delivery' },
+    { id: 'u1000', label: t('express24hrs') },
+    { id: 'm1000_3600', label: t('upto3Days') },
+    { id: 'h3600+', label: t('upto7Days') },
+    { id: 'custom', label: t('customDelivery') },
   ];
 
   const [open, setOpen] = useState(false);
@@ -57,9 +59,9 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
   }, [open]);
 
   const activeLabel = () => {
-    if (selectedDeliveryTime === 'custom' && customDeliveryTime) return `Delivery: ${customDeliveryTime} days`;
-    const t = tiers.find(t => t.id === selectedDeliveryTime);
-    return t ? t.label : 'Delivery Time';
+    if (selectedDeliveryTime === 'custom' && customDeliveryTime) return t('deliveryWithDays', { days: customDeliveryTime });
+    const tier = tiers.find(t => t.id === selectedDeliveryTime);
+    return tier ? tier.label : t('deliveryTime');
   };
 
   const clearAll = () => {
@@ -137,7 +139,7 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
           style={{ border: `1px solid ${BRAND}60` }}>
           <div className='py-4'>
             <div className='px-4'>
-              <h4 className='text-lg font-bold text-slate-900 mb-2'>Delivery Time</h4>
+              <h4 className='text-lg font-bold text-slate-900 mb-2 text-start'>{t('deliveryTime')}</h4>
             </div>
 
             <div className=' px-2 '>
@@ -154,7 +156,7 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
                     {' '}
                     <TimerIcon />{' '}
                   </span>
-                  <input type='text' inputMode='numeric' placeholder='Enter max delivery time in days' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' />
+                  <input type='text' inputMode='numeric' placeholder={t('enterMaxDeliveryTime')} value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' />
                 </div>
 
                 <div className='mt-3 border-t border-slate-200' />

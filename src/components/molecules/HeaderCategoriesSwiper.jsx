@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation } from 'swiper/modules';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -12,6 +13,7 @@ import 'swiper/css/navigation';
 import { useValues } from '@/context/GlobalContext';
 
 export default function HeaderCategoriesSwiper({ category }) {
+  const t = useTranslations('Explore');
   const { categories = [], loadingCategory } = useValues();
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
@@ -47,13 +49,13 @@ export default function HeaderCategoriesSwiper({ category }) {
             setIsEnd(swiper.isEnd);
           }}>
           <SwiperSlide className='!w-auto py-2'>
-            <span className='inline-flex items-center rounded-full px-5 py-2 text-sm font-medium border border-slate-200 bg-white text-slate-600'>All</span>
+            <span className='inline-flex items-center rounded-full px-5 py-2 text-sm font-medium border border-slate-200 bg-white text-slate-600'>{t('categories.all')}</span>
           </SwiperSlide>
 
           {SKELETON_WIDTHS.map((w, i) => (
             <SwiperSlide key={`sk-${i}`} className='!w-auto py-2'>
               <span className='inline-flex items-center rounded-full h-[40px] px-5 py-2 text-sm font-medium border border-slate-200 bg-white relative overflow-hidden' style={{ width: w }}>
-                <span className='sr-only'>loading…</span>
+                <span className='sr-only'>{t('categories.loading')}</span>
                 <span className='shimmer absolute inset-0 rounded-full' />
               </span>
             </SwiperSlide>
@@ -83,8 +85,8 @@ export default function HeaderCategoriesSwiper({ category }) {
           }}
           className='!px-2'>
           <SwiperSlide className='!w-auto py-2 '>
-            <Link href='/services/all' aria-current={isAllActive ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ' + (isAllActive ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-emerald-500 from-emerald-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-emerald-400/60 hover:text-emerald-700')} title='All services'>
-              All
+            <Link href='/services/all' aria-current={isAllActive ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ' + (isAllActive ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-emerald-500 from-emerald-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-emerald-400/60 hover:text-emerald-700')} title={t('categories.allServices')}>
+              {t('categories.all')}
             </Link>
           </SwiperSlide>
 
@@ -104,7 +106,7 @@ export default function HeaderCategoriesSwiper({ category }) {
       {/* EMPTY: no categories after loading */}
       {!loadingCategory && !hasData && (
         <div className='px-12'>
-          <span className='inline-flex items-center rounded-full border border-slate-200 bg-white px-5 py-2 text-sm text-slate-600'>No categories available</span>
+          <span className='inline-flex items-center rounded-full border border-slate-200 bg-white px-5 py-2 text-sm text-slate-600'>{t('categories.noCategoriesAvailable')}</span>
         </div>
       )}
     </div>

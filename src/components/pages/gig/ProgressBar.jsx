@@ -33,7 +33,7 @@ export default function ProgressBar({
         <div className='min-w-[680px] sm:min-w-0'>
           {/* Track line */}
           <div className='relative h-2 w-full rounded-full bg-slate-200'>
-            <div className='absolute left-0 top-0 h-2 rounded-full bg-emerald-500 transition-[width] duration-500 ease-out' style={{ width: `${progressPct}%` }} aria-hidden />
+            <div className='absolute start-0 top-0 h-2 rounded-full bg-emerald-500 transition-[width] duration-500 ease-out' style={{ width: `${progressPct}%` }} aria-hidden />
           </div>
 
           {/* Steps */}

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video } from 'lucide-react';
 import api from '@/lib/axios';
@@ -10,63 +11,8 @@ import { useAuth } from '@/context/AuthContext';
 import { resolveUrl } from '@/utils/helper';
 import { formatResponseTime } from '@/utils/profile';
 
-const mockJobs = [
-  {
-    id: "job-001",
-    title: "Arabic-English Subtitle Translator Needed",
-    description: "Translate short-form video content from Arabic to English.\nMust maintain tone and timing.\nExperience with subtitle tools preferred.",
-    categoryId: "translation",
-    budget: "50.00",
-    budgetType: "fixed",
-    preferredDeliveryDays: 5,
-    skillsRequired: ["Translation", "Subtitling", "Arabic"],
-    attachments: [],
-    buyer: { username: "media_hub" },
-  },
-  {
-    id: "job-002",
-    title: "React Dashboard QA Tester (Freelance)",
-    description: "We're looking for a QA tester to validate a React-based analytics dashboard.\nTasks include regression testing, edge case validation, and reporting UI bugs.\nMust be familiar with browser dev tools and responsive testing.",
-    categoryId: "development",
-    budget: "25.00",
-    budgetType: "hourly",
-    preferredDeliveryDays: 10,
-    skillsRequired: ["QA Testing", "React", "Browser DevTools"],
-    attachments: [
-      { name: "test-plan.pdf", url: "uploads/test-plan.pdf", type: "document" }
-    ],
-    buyer: { username: "dash_ops" },
-  },
-  {
-    id: "job-003",
-    title: "Voiceover Artist for Educational Biology Series",
-    description: "Seeking a warm, clear voice for a biology explainer series.\nEach episode is 3–5 minutes.\nScript provided.\nBonus if you can sync VO with visuals.",
-    categoryId: "audio",
-    budget: "100.00",
-    budgetType: "fixed",
-    preferredDeliveryDays: 7,
-    skillsRequired: ["Voiceover", "Biology", "Audio Sync"],
-    attachments: [],
-    buyer: { username: "edu_studio" },
-  },
-  {
-    id: "job-004",
-    title: "Figma Designer for Arabic-first Mobile App",
-    description: "Design clean, RTL-friendly mobile screens for a fintech app.\nMust understand Arabic UX conventions and currency formatting.\nDeliver layered Figma file with components.",
-    categoryId: "design",
-    budget: "40.00",
-    budgetType: "hourly",
-    preferredDeliveryDays: 14,
-    skillsRequired: ["Figma", "Arabic UX", "Mobile Design"],
-    attachments: [
-      { name: "wireframes.png", url: "uploads/wireframes.png", type: "image" }
-    ],
-    buyer: { username: "fintech_lab" },
-  }
-];
-
-
 export default function ProfilePageClient() {
+  const t = useTranslations('Profile.public');
   const { id } = useParams();
   const { user } = useAuth();
   const isSameUser = user?.id === id;
@@ -85,7 +31,7 @@ export default function ProfilePageClient() {
         const data = res?.data || res;
         if (!ignore) setBuyer(data);
       } catch (e1) {
-        if (!ignore) setError('Failed to load user. Try again.');
+        if (!ignore) setError(t('failedToLoad'));
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -94,9 +40,9 @@ export default function ProfilePageClient() {
     return () => {
       ignore = true;
     };
-  }, [id]);
+  }, [id, t]);
 
-  const name = buyer?.username || buyer?.email || 'Unknown';
+  const name = buyer?.username || buyer?.email || t('unknown');
   const initials = useMemo(() => getInitials(name), [name]);
   const role = buyer?.role || 'buyer';
 
@@ -104,7 +50,7 @@ export default function ProfilePageClient() {
   if (error) {
     return (
       <main className='mx-auto max-w-6xl p-6 text-center min-h-[250px] flex items-center justify-center '>
-        <div className='flex-1 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 p-4'>{error || "Failed to load user. Try again."}</div>
+        <div className='flex-1 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 p-4'>{error || t('failedToLoad')}</div>
       </main>
     );
   }
@@ -134,17 +80,17 @@ export default function ProfilePageClient() {
                   <Mail className='h-4 w-4' /> {buyer?.email || '—'}
                 </span>
                 <span className='inline-flex items-center gap-1.5'>
-                  <Calendar className='h-4 w-4' /> Member since {prettyDate(buyer?.memberSince || buyer?.created_at)}
+                  <Calendar className='h-4 w-4' /> {t('memberSince')} {prettyDate(buyer?.memberSince || buyer?.created_at)}
                 </span>
                 <span className='inline-flex items-center gap-1.5'>
-                  <Clock className='h-4 w-4' /> Last login {prettyDate(buyer?.lastLogin)} <em className='text-white/70'>({fromNow(buyer?.lastLogin)})</em>
+                  <Clock className='h-4 w-4' /> {t('lastLogin')} {prettyDate(buyer?.lastLogin)} <em className='text-white/70'>({fromNow(buyer?.lastLogin)})</em>
                 </span>
               </div>
             </div>
 
             <div className='flex items-center gap-2'>
               {!isSameUser && <Link href={`/chat?userId=${buyer?.id || ''}`} className='px-4 py-2 text-sm font-semibold rounded-xl bg-white text-emerald-700 hover:bg-emerald-50 active:scale-95 transition shadow'>
-                Message
+                {t('message')}
               </Link>}
             </div>
           </div>
@@ -153,14 +99,14 @@ export default function ProfilePageClient() {
           <div className='mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3'>
             {/* <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' /> */}
 
-            <StatCard gradient='from-emerald-500 via-teal-500 to-cyan-400' icon={Star} title='Orders' value={buyer?.ordersCompleted ?? 0} />
-            <StatCard gradient='from-amber-400 via-orange-500 to-rose-500' icon={Repeat} title='Repeat Buyers' value={buyer?.repeatBuyers ?? 0} />
+            <StatCard gradient='from-emerald-500 via-teal-500 to-cyan-400' icon={Star} title={t('orders')} value={buyer?.ordersCompleted ?? 0} />
+            <StatCard gradient='from-amber-400 via-orange-500 to-rose-500' icon={Repeat} title={t('repeatBuyers')} value={buyer?.repeatBuyers ?? 0} />
             <StatCard
               gradient="from-sky-500 via-indigo-500 to-violet-500"
               icon={Award}
-              title="Response Time"
+              title={t('responseTime')}
               value={formatResponseTime(buyer.responseTime)}
-              hint={buyer.responseTime ? 'Average time' : 'Not yet calculated'}
+              hint={buyer.responseTime ? t('averageTime') : t('notYetCalculated')}
             />
 
             {/* <StatCard gradient='from-fuchsia-500 via-rose-500 to-orange-400' icon={Award} title='Reputation' value={buyer?.reputationPoints ?? 0} /> */}
@@ -173,50 +119,50 @@ export default function ProfilePageClient() {
         {/* Left rail */}
         <div className='lg:col-span-1'>
           <div className='sticky top-30 space-y-6 '>
-            <Card title='About'>
-              <p className='text-slate-700 leading-relaxed'>{buyer?.description || 'No description provided.'}</p>
+            <Card title={t('about')}>
+              <p className='text-slate-700 leading-relaxed'>{buyer?.description || t('noDescription')}</p>
               <div className='mt-3 flex flex-wrap gap-2'>
-                {buyer?.verified && <Badge icon={BadgeCheck} text='Verified' />}
-                {buyer?.pro && <Badge icon={Sparkles} text='Pro Member' />}
+                {buyer?.verified && <Badge icon={BadgeCheck} text={t('verified')} />}
+                {buyer?.pro && <Badge icon={Sparkles} text={t('proMember')} />}
               </div>
             </Card>
 
-            <Card title='Contact'>
-              <InfoRow icon={Mail} label='Email' value={buyer?.email || '—'} copyable />
-              <InfoRow icon={Smartphone} label='Phone' value={buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—'} />
-              <InfoRow icon={Globe} label='Country' value={buyer?.country?.name || '—'} />
+            <Card title={t('contact')}>
+              <InfoRow icon={Mail} label={t('email')} value={buyer?.email || '—'} copyable />
+              <InfoRow icon={Smartphone} label={t('phone')} value={buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—'} />
+              <InfoRow icon={Globe} label={t('country')} value={buyer?.country?.name || '—'} />
             </Card>
 
-            <Card title='Account'>
-              <InfoRow icon={UserIcon} label='User ID' value={buyer?.id || '—'} copyable />
-              <InfoRow icon={Calendar} label='Created' value={prettyDate(buyer?.created_at)} />
-              <InfoRow icon={Clock} label='Updated' value={prettyDate(buyer?.updated_at)} />
-              <InfoRow icon={Award} label='Referral Code' value={buyer?.referralCode || '—'} copyable />
+            <Card title={t('account')}>
+              <InfoRow icon={UserIcon} label={t('userId')} value={buyer?.id || '—'} copyable />
+              <InfoRow icon={Calendar} label={t('created')} value={prettyDate(buyer?.created_at)} />
+              <InfoRow icon={Clock} label={t('updated')} value={prettyDate(buyer?.updated_at)} />
+              <InfoRow icon={Award} label={t('referralCode')} value={buyer?.referralCode || '—'} copyable />
             </Card>
           </div>
         </div>
 
         {/* Right column */}
         <div className='space-y-6 lg:col-span-2'>
-          <Card title='Activity'>
-            <InfoRow icon={Clock} label='Last Activity' value={prettyDate(buyer?.lastActivity)} />
-            <InfoRow icon={Clock} label='Response Time' value={formatResponseTime(buyer?.responseTime)} />
-            <InfoRow icon={Clock} label='Delivery Time' value={buyer?.deliveryTime || '—'} />
-            <InfoRow icon={Calendar} label='Deactivated At' value={prettyDate(buyer?.deactivatedAt)} />
+          <Card title={t('activity')}>
+            <InfoRow icon={Clock} label={t('lastActivity')} value={prettyDate(buyer?.lastActivity)} />
+            <InfoRow icon={Clock} label={t('responseTime')} value={formatResponseTime(buyer?.responseTime)} />
+            <InfoRow icon={Clock} label={t('deliveryTime')} value={buyer?.deliveryTime || '—'} />
+            <InfoRow icon={Calendar} label={t('deactivatedAt')} value={prettyDate(buyer?.deactivatedAt)} />
           </Card>
 
-          <Card title='Intro video'>
+          <Card title={t('introVideo')}>
             {buyer?.introVideoUrl ? <video src={resolveUrl(buyer?.introVideoUrl)} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />
               : (<div>
                 <div type='button' className='group flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-slate-600'>
                   <Video className='h-5 w-5' />
-                  <span className='font-medium'>This user hasn’t uploaded an intro video yet.</span>
+                  <span className='font-medium'>{t('noIntroVideo')}</span>
                 </div>
               </div>
               )}
           </Card>
 
-          <Card title='Portfolio'>
+          <Card title={t('portfolio')}>
             <div className='mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4'>
               {buyer?.portfolioItems && buyer.portfolioItems.length > 0 ? (
                 buyer.portfolioItems.map((item, index) => (
@@ -233,13 +179,13 @@ export default function ProfilePageClient() {
                 ))
               ) : (
                 <div className='col-span-full text-center text-slate-500'>
-                  This user has no portfolio items yet.
+                  {t('noPortfolio')}
                 </div>
               )}
             </div>
           </Card>
 
-          <Card title='Portfolio file'>
+          <Card title={t('portfolioFile')}>
 
             {/* Preview / state */}
             <div className='mt-4'>
@@ -261,7 +207,7 @@ export default function ProfilePageClient() {
                 </div>
               ) : (
                 <div className='cursor-default rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-slate-500'>
-                  No file uploaded.
+                  {t('noFileUploaded')}
                 </div>
               )}
             </div>
@@ -271,7 +217,7 @@ export default function ProfilePageClient() {
 
           {/* ===== Services (Redesigned) ===== */}
           {buyer?.role === 'seller' ? (
-            <Card title="Services">
+            <Card title={t('services')}>
               {Array.isArray(buyer?.services) && buyer.services.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                   {buyer.services.map(svc => (
@@ -279,11 +225,11 @@ export default function ProfilePageClient() {
                   ))}
                 </div>
               ) : (
-                <EmptyState text="No services yet." />
+                <EmptyState text={t('noServices')} />
               )}
             </Card>
           ) : (
-            <Card title="Jobs">
+            <Card title={t('jobs')}>
               {Array.isArray(buyer?.jobs) && buyer?.jobs.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                   {buyer?.jobs.map(job => (
@@ -291,7 +237,7 @@ export default function ProfilePageClient() {
                   ))}
                 </div>
               ) : (
-                <EmptyState text="No jobs yet." />
+                <EmptyState text={t('noJobs')} />
               )}
             </Card>
           )}
@@ -337,6 +283,7 @@ function Card({ title, children }) {
 }
 
 function InfoRow({ icon: Icon, label, value, copyable }) {
+  const t = useTranslations('Profile.public');
   const val = value ?? '—';
   return (
     <div className='flex items-center justify-between gap-3 py-2'>
@@ -350,7 +297,7 @@ function InfoRow({ icon: Icon, label, value, copyable }) {
         </span>
         {copyable && (
           <button type='button' onClick={() => navigator.clipboard.writeText(String(val))} className='inline-flex items-center justify-center rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 active:scale-95'>
-            Copy
+            {t('copy')}
           </button>
         )}
       </div>
@@ -368,6 +315,7 @@ function Badge({ icon: Icon, text }) {
 
 /* ===== Service Card (Redesign) ===== */
 function ServiceCard({ service }) {
+  const t = useTranslations('Profile.public');
   const initials = getInitials(service?.title || 'Service');
   const price = pickPrice(service?.packages);
   const delivery = service?.packages?.[0]?.deliveryTime ?? service?.deliveryTime ?? '—';
@@ -379,8 +327,8 @@ function ServiceCard({ service }) {
       <div className='flex items-center gap-3'>
         <div className=' flex-none h-11 w-11 grid place-items-center rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-semibold shadow'>{initials}</div>
         <div className='min-w-0 truncate whitespace-nowrap'>
-          <Link href={`/services/category/${service?.slug || service?.id || ''}`} className='  font-semibold text-slate-900 group-hover:text-emerald-600 ' title={service?.title || 'Untitled service'}>
-            {service?.title || 'Untitled service'}
+          <Link href={`/services/category/${service?.slug || service?.id || ''}`} className='  font-semibold text-slate-900 group-hover:text-emerald-600 ' title={service?.title || t('untitledService')}>
+            {service?.title || t('untitledService')}
           </Link>
           {service?.category && <div className='mt-0.5 text-xs text-slate-500 truncate'>{service.category}</div>}
         </div>
@@ -388,9 +336,9 @@ function ServiceCard({ service }) {
 
       {/* Metrics */}
       <div className='mt-3 grid grid-cols-3 gap-2 text-sm'>
-        <Metric icon={DollarSign} label='From' value={formatMoney(price)} />
-        <Metric icon={Star} label='Rating' value={rating} />
-        <Metric icon={Clock} label='Delivery' value={`${delivery}d`} />
+        <Metric icon={DollarSign} label={t('from')} value={formatMoney(price)} />
+        <Metric icon={Star} label={t('rating')} value={rating} />
+        <Metric icon={Clock} label={t('deliveryTime')} value={`${delivery}d`} />
       </div>
 
     </div>
@@ -400,10 +348,11 @@ function ServiceCard({ service }) {
 
 
 function JobCard({ job }) {
+  const t = useTranslations('Profile.public');
   const initials = getInitials(job?.title || 'Job');
   const budget = job?.budget ? parseFloat(job.budget) : null;
   const delivery = job?.preferredDeliveryDays ?? '—';
-  const buyer = job?.buyer?.username || 'Unknown';
+  const buyer = job?.buyer?.username || t('unknown');
   const budgetLabel = job?.budgetType === 'hourly' ? `${formatMoney(budget)}/hr` : formatMoney(budget);
 
   return (
@@ -417,24 +366,24 @@ function JobCard({ job }) {
           <Link
             href={`/jobs?job=${job?.id}`}
             className="font-semibold text-slate-900 group-hover:text-indigo-600"
-            title={job?.title || 'Untitled job'}
+            title={job?.title || t('untitledJob')}
           >
-            {job?.title || 'Untitled job'}
+            {job?.title || t('untitledJob')}
           </Link>
           {job?.buyer?.username && (
-            <div className="mt-0.5 text-xs text-slate-500 truncate">Posted by {job.buyer.username}</div>
+            <div className="mt-0.5 text-xs text-slate-500 truncate">{t('postedBy')} {job.buyer.username}</div>
           )}
         </div>
       </div>
 
       {/* Metrics */}
       <div className="mt-3 grid grid-cols-3 gap-2 text-sm">
-        <Metric icon={DollarSign} label="Budget" value={budgetLabel} />
-        <Metric icon={Clock} label="Delivery" value={`${delivery}d`} />
+        <Metric icon={DollarSign} label={t('budget')} value={budgetLabel} />
+        <Metric icon={Clock} label={t('deliveryTime')} value={`${delivery}d`} />
         <Metric
           icon={Receipt}
-          label="Type"
-          value={job?.budgetType === 'hourly' ? 'Hourly' : 'Fixed'}
+          label={t('type')}
+          value={job?.budgetType === 'hourly' ? t('hourly') : t('fixed')}
         />
 
       </div>

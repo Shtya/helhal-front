@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslations } from 'next-intl';
 import PriceTag from '@/components/atoms/priceTag';
 import AttachmentList from '@/components/common/AttachmentList';
 import { User2, Trash2, FolderOpen } from 'lucide-react';
@@ -30,13 +31,14 @@ const getStatusStyles = status => {
 };
 
 const JobCard = ({ job, onDeleteRequest, onOpen }) => {
+    const t = useTranslations('JobCard');
     const created = useMemo(() => job?.created_at?.split('T')[0] ?? '—', [job?.created_at]);
 
     const postedAgo = useMemo(() => {
         return getDateAgo(job?.created_at);
     }, [job?.created_at]);
 
-    const priceTypeLabel = job?.budgetType === 'hourly' ? 'Hourly' : 'Fixed price';
+    const priceTypeLabel = job?.budgetType === 'hourly' ? t('hourly') : t('fixedPrice');
 
     const shortAdditional = useMemo(() => {
         if (!job?.additionalInfo) return null;
@@ -68,7 +70,7 @@ const JobCard = ({ job, onDeleteRequest, onOpen }) => {
                     <div className="flex flex-col items-end gap-2 shrink-0">
                         <StatusBadge status={job.status} />
 
-                        <div className="text-xs text-slate-400">{job?.preferredDeliveryDays || 0} Delivery Days</div>
+                        <div className="text-xs text-slate-400">{job?.preferredDeliveryDays || 0} {t('deliveryDays')}</div>
                     </div>
                 </header>
 
@@ -76,13 +78,13 @@ const JobCard = ({ job, onDeleteRequest, onOpen }) => {
                 {job.description ? (
                     <p className="mt-4 text-sm text-slate-600 leading-6 line-clamp-4">{job.description}</p>
                 ) : (
-                    <p className="mt-4 text-sm text-slate-400 italic">No description provided</p>
+                    <p className="mt-4 text-sm text-slate-400 italic">{t('noDescription')}</p>
                 )}
 
                 {/* Additional info (small snippet) */}
                 {shortAdditional && (
                     <div className="mt-3">
-                        <div className="text-xs text-slate-500 font-semibold mb-1">Extra details</div>
+                        <div className="text-xs text-slate-500 font-semibold mb-1">{t('extraDetails')}</div>
                         <p className="text-sm text-slate-600 leading-6 line-clamp-3">{shortAdditional}</p>
                     </div>
                 )}
@@ -107,9 +109,9 @@ const JobCard = ({ job, onDeleteRequest, onOpen }) => {
                         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                             <div className="mb-3 flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-sm font-semibold text-slate-800">
-                                    <FolderOpen className="h-4 w-4" /> <span>Attachments</span>
+                                    <FolderOpen className="h-4 w-4" /> <span>{t('attachments')}</span>
                                 </div>
-                                <div className="text-xs text-slate-500">{job.attachments.length} file{job.attachments.length > 1 ? 's' : ''}</div>
+                                <div className="text-xs text-slate-500">{job.attachments.length} {job.attachments.length > 1 ? t('files') : t('file')}</div>
                             </div>
 
                             <AttachmentList
@@ -141,14 +143,14 @@ const JobCard = ({ job, onDeleteRequest, onOpen }) => {
                     {/* delete as icon-only control (compact) */}
                     <button
                         type="button"
-                        title="Delete job"
-                        aria-label="Delete job"
+                        title={t('deleteJob')}
+                        aria-label={t('deleteJob')}
                         onClick={() => onDeleteRequest(job.id)}
                         className="inline-flex items-center justify-center h-9 w-9 rounded-md text-rose-600 hover:bg-rose-50 border border-transparent"
                     >
                         <Trash2 className="h-4 w-4" />
                     </button>
-                    <Button href={`/my-jobs/${job.id}/proposals`} name={`View Proposals (${job.proposals?.length || 0})`} className="min-w-[160px] opacity-90" />
+                    <Button href={`/my-jobs/${job.id}/proposals`} name={t('viewProposals', { count: job.proposals?.length || 0 })} className="min-w-[160px] opacity-90" />
                 </div>
             </footer>
 

@@ -66,7 +66,7 @@ const AuthFormContext = createContext(null);
 
 /* ---------- small UI bits (titles/tabs) unchanged from your file ---------- */
 function TitleByTab({ activeTab, view }) {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const TITLES = {
     login: {
       options: { title: t('signIn'), subtitle: t('chooseMethod') },
@@ -104,7 +104,7 @@ const TABS = [
 ];
 
 function AuthTabs({ setView, activeTab, setActiveTab }) {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -141,7 +141,7 @@ function AuthTabs({ setView, activeTab, setActiveTab }) {
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/`;
 
 export const ContinueWithGoogleButton = ({ referralCode }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const searchParams = useSearchParams();
 
   const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
@@ -169,7 +169,7 @@ export const ContinueWithGoogleButton = ({ referralCode }) => {
 };
 
 export const ContinueWithAppleButton = ({ referralCode }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const searchParams = useSearchParams();
   const userType = searchParams.get('type') || null;
   const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
@@ -196,17 +196,17 @@ export const ContinueWithAppleButton = ({ referralCode }) => {
 };
 
 export const ContinueWithEmailButton = ({ onClick }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   return <SocialButton icon='/images/email-icon.png' text={t('continueWithEmail')} onClick={onClick} />;
 };
 export const ContinueWithPhoneButton = ({ onClick }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   return <SocialButton icon='/images/phone-icon.png' text={t('continueWithPhone')} onClick={onClick} />;
 };
 
 /* ---------- forms (switched to api from lib/axios) ---------- */
 const LoginForm = ({ onLoggedIn }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const { login, user } = useAuth();
 
   const { setLoading, setError, loading } = useContext(AuthFormContext);
@@ -236,8 +236,9 @@ const LoginForm = ({ onLoggedIn }) => {
       onLoggedIn?.(fatchedUser);
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.loginFailed');
-      setError(msg === 'Refresh token not provided in the request body' ? 'Incorrect email or password' : msg);
-      toast.error(msg === 'Refresh token not provided in the request body' ? 'Incorrect email or password' : msg);
+      const errorMsg = msg === 'Refresh token not provided in the request body' ? t('errors.incorrectEmailOrPassword') : msg;
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -253,7 +254,7 @@ const LoginForm = ({ onLoggedIn }) => {
 };
 
 const RegisterForm = ({ onOtp }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const searchParams = useSearchParams();
   const referralCode = searchParams.get('ref') || '';
   const userType = searchParams.get('type') || 'buyer';
@@ -332,7 +333,7 @@ const RegisterForm = ({ onOtp }) => {
 };
 
 const ForgotPasswordForm = ({ onOtp }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const { setLoading, setSuccess, setError, loading } = useContext(AuthFormContext);
   const {
     register,
@@ -371,7 +372,7 @@ const ForgotPasswordForm = ({ onOtp }) => {
 };
 
 const ResetPasswordForm = ({ email, otp, onReset }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const { setLoading, setSuccess, setError, loading } = useContext(AuthFormContext);
 
   const {
@@ -420,7 +421,7 @@ const ResetPasswordForm = ({ email, otp, onReset }) => {
 //purpose = 'verify-email' | 'verify-phone' | 'reset'
 const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
 
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const { setLoading, setError, loading } = useContext(AuthFormContext);
   const [otp, setOtp] = useState('');
   const [resending, setResending] = useState(false);
@@ -508,7 +509,7 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
 };
 
 const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   return (
     <motion.div className='w-full h-full flex flex-col'>
       <div className='flex-1 flex flex-col items-center justify-center gap-4 py-6'>
@@ -527,7 +528,7 @@ export default function AuthPage() {
   const router = useRouter();
   const { user: me, setCurrentUser, refetchUser, updateTokens } = useAuth();
   const searchParams = useSearchParams();
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
 
   const tabParam = searchParams?.get('tab') || 'login';
   const loginError = searchParams?.get('error');
@@ -548,7 +549,7 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (loginError === 'oauth_failed') {
-      toast.error('Login failed. Please try again.');
+      toast.error(t('errors.loginFailedTryAgain'));
 
 
       // 🔥 Remove query param from URL without reload
@@ -562,7 +563,7 @@ export default function AuthPage() {
     }
 
     if (loginError === 'confirmation_failed') {
-      toast.error('Email confirmation failed. Please try again or contact support.');
+      toast.error(t('errors.emailConfirmationFailed'));
 
       // 🔥 Remove query param from URL without reload
       const params = new URLSearchParams(window.location.search);
@@ -574,7 +575,7 @@ export default function AuthPage() {
       router.replace(newUrl, { scroll: false });
     }
 
-  }, [])
+  }, [t, router, loginError])
 
   // OAuth: if query has tokens, store them and fetch /auth/me
   useEffect(() => {
@@ -591,15 +592,15 @@ export default function AuthPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl, user: fatchedUser }),
         });
-        if (!user?.type) {
+        if (!fatchedUser?.type) {
           setNeedsUserTypeSelection(true);
         } else {
-          toast.success('Logged in successfully!');
+          toast.success(t('success.loggedInSuccessfully'));
           router.push(redirectUrl);
         }
       } catch (e) {
         console.error('OAuth finalize failed', e);
-        toast.error('Failed to complete login');
+        toast.error(t('errors.failedToCompleteLogin'));
       }
     };
     run();
@@ -610,10 +611,10 @@ export default function AuthPage() {
     try {
       const me = await api.put('/auth/profile', { type: userType }).then(r => r.data);
       setCurrentUser(me);
-      toast.success('User type updated successfully!');
+      toast.success(t('success.userTypeUpdatedSuccessfully'));
       router.push(redirectUrl);
     } catch (e) {
-      toast.error('Failed to update user type');
+      toast.error(t('errors.failedToUpdateUserType'));
     } finally {
       setLoading(false);
     }
@@ -630,7 +631,7 @@ export default function AuthPage() {
   useEffect(() => {
     try {
       if (me) {
-        if (userData && window.location.pathname === '/auth') router.push('/explore');
+        if (me && window.location.pathname === '/auth') router.push('/explore');
       }
     } catch { }
   }, [router, me]);
@@ -694,7 +695,7 @@ export default function AuthPage() {
         return <AuthOptions onEmailClick={handleEmailClick} onPhoneClick={handlePhoneClick} referralCode={referralCode} />;
     }
   };
-  const rawFeatures = t.raw('features');
+  const rawFeatures = t.raw('hero.features');
   const features = Array.isArray(rawFeatures) ? rawFeatures : [];
   return (
     <AuthFormContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess }}>
@@ -707,8 +708,8 @@ export default function AuthPage() {
             <div className='absolute inset-0 z-[10]' style={{ background: 'linear-gradient(269.99deg, rgba(0,0,0,0) 15.21%, rgba(0,0,0,0.48) 33.9%, rgba(0,0,0,0.8) 132.88%)' }} />
             <img src='/images/auth.jpeg' alt='' className='absolute inset-0 object-cover w-full h-full object-right' />
             <div className='relative z-10 max-w-2xl mx-auto my-auto'>
-              <motion.h1 className='text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-3'>  {t('heroTitle')}</motion.h1>
-              <motion.p className='text-base lg:text-lg xl:text-2xl    font-normal mb-6'>{t('heroSubtitle')}</motion.p>
+              <motion.h1 className='text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-3'>  {t('hero.title')}</motion.h1>
+              <motion.p className='text-base lg:text-lg xl:text-2xl    font-normal mb-6'>{t('hero.subtitle')}</motion.p>
               <div className='space-y-2 sm:text-base lg:text-lg xl:text-lg'>
                 {features?.map((text, i) => (
                   <p key={i} className='flex gap-2 items-center'>
@@ -743,7 +744,7 @@ export default function AuthPage() {
 
 /* helper component (unchanged) */
 const UserTypeSelection = ({ onSelect, loading }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const [selectedType, setSelectedType] = useState(null);
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='w-full'>
@@ -773,7 +774,7 @@ const UserTypeSelection = ({ onSelect, loading }) => {
 };
 
 const PhoneLoginForm = ({ onOtp }) => {
-  const t = useTranslations('auth');
+  const t = useTranslations('Auth');
   const { setLoading, setError, loading } = useContext(AuthFormContext);
 
   const [state, setState] = useState({
@@ -790,7 +791,7 @@ const PhoneLoginForm = ({ onOtp }) => {
     const isValid = trimmedPhone.length >= 6 && /^\d+$/.test(trimmedPhone);
 
     if (!isValid) {
-      const msg = t('errors.phoneMin') || 'Please enter a valid phone number with at least 6 digits.';
+      const msg = t('errors.phoneMin') || t('errors.phoneNumberValidationMessage');
       setError(msg);
       setLoading(false);
       return;

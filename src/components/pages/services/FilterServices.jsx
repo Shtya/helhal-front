@@ -68,12 +68,13 @@ export default function FilterServices({ category = 'all' }) {
     const [services, setServices] = useState([]);
     const [filterOptions, setFilterOptions] = useState();
 
+    const tServices = useTranslations('Services');
     const ratingsOptions = [
-        { id: 'rating-5', name: '⭐⭐⭐⭐⭐ 5' },
-        { id: 'rating-4', name: '⭐⭐⭐⭐ 4+' },
-        { id: 'rating-3', name: '⭐⭐⭐ 3+' },
-        { id: 'rating-2', name: '⭐⭐ 2+' },
-        { id: 'rating-1', name: '⭐ 1+' },
+        { id: 'rating-5', name: tServices('filters.ratings.rating5') },
+        { id: 'rating-4', name: tServices('filters.ratings.rating4') },
+        { id: 'rating-3', name: tServices('filters.ratings.rating3') },
+        { id: 'rating-2', name: tServices('filters.ratings.rating2') },
+        { id: 'rating-1', name: tServices('filters.ratings.rating1') },
     ];
 
     const sortByOptions = [
@@ -86,10 +87,10 @@ export default function FilterServices({ category = 'all' }) {
 
 
     const revisionsOptions = [
-        { id: 1, name: '1' },
-        { id: 2, name: '2' },
-        { id: 3, name: '3' },
-        { id: 4, name: '4+' },
+        { id: 1, name: tServices('filters.revisions.one') },
+        { id: 2, name: tServices('filters.revisions.two') },
+        { id: 3, name: tServices('filters.revisions.three') },
+        { id: 4, name: tServices('filters.revisions.fourPlus') },
     ];
     const [formData, setFormData] = useState(() => {
         const params = Object.fromEntries(searchParams.entries());
@@ -299,13 +300,13 @@ export default function FilterServices({ category = 'all' }) {
                         <div className='flex items-center gap-2 justify-between w-full'>
                             <div className='flex items-center gap-2'>
                                 <SlidersHorizontal className='h-5 w-5 text-emerald-600' aria-hidden='true' />
-                                <h2 className='text-lg font-bold text-slate-800'>{t('filterTitle') || 'Filters'}</h2>
+                                <h2 className='text-lg font-bold text-slate-800'>{t('filterTitle') || tServices('filters.title')}</h2>
                             </div>
                             <span className='text-slate-500 text-base'>
-                                ({pagination.total}) {Number(pagination.total) === 1 ? 'result' : 'results'}
+                                ({pagination.total}) {Number(pagination.total) === 1 ? tServices('filters.result') : tServices('filters.results')}
                             </span>
                         </div>
-                        <p className='mt-1 text-sm text-slate-500'>{t('filterSubtitle') || 'Refine your search with custom options.'}</p>
+                        <p className='mt-1 text-sm text-slate-500'>{t('filterSubtitle') || tServices('filters.subtitle')}</p>
                     </div>
 
                     <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6'>

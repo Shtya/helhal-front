@@ -7,10 +7,12 @@ import api from "@/lib/axios";
 import { initialsFromName } from "@/utils/helper";
 import { ArrowDown, MessageSquare, Reply, Send } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from 'next-intl';
 
 
 
 export default function DisputeChat({ detail, setDetail, selectedId }) {
+    const t = useTranslations('DisputeChat');
     const scrollRef = useRef(null);
     const rafScrollRef = useRef(0);
     const [replyTo, setReplyTo] = useState(null);
@@ -33,6 +35,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
     }, [detail]);
 
     // Add a system "resolution" message to head (dedup by id)
+    const tDisputes = useTranslations('MyDisputes');
     const threadWithResolution = useMemo(() => {
         const base = detail?.messages || [];
         if (!parsedResolution) return base;
@@ -40,12 +43,18 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
             id: `sys-resolution-${detail?.dispute?.id}`,
             parentId: null,
             system: true,
-            sender: { id: 'system', username: 'System' },
-            message: typeof parsedResolution === 'string' ? `Proposed resolution: ${parsedResolution}` : `Proposed resolution → Seller: ${parsedResolution.sellerAmount} • Buyer refund: ${parsedResolution.buyerRefund}${parsedResolution.note ? ` • Note: ${parsedResolution.note}` : ''}`,
+            sender: { id: 'system', username: t('system') },
+            message: typeof parsedResolution === 'string'
+                ? t('proposedResolution.simple', { resolution: parsedResolution })
+                : t('proposedResolution.detailed', {
+                    sellerAmount: parsedResolution.sellerAmount,
+                    buyerRefund: parsedResolution.buyerRefund,
+                    note: parsedResolution.note ? ` • ${tDisputes('resolution.note')}: ${parsedResolution.note}` : ''
+                }),
             created_at: detail?.dispute?.updated_at || detail?.dispute?.created_at || new Date().toISOString(),
         };
         return base.some(m => m.id === sysMsg.id) ? base : [...base, sysMsg];
-    }, [detail, parsedResolution]);
+    }, [detail, parsedResolution, t, tDisputes]);
 
     const threaded = useMemo(() => threadWithResolution, [threadWithResolution]);
 
@@ -123,7 +132,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
             id: `tmp-${Math.random().toString(36).slice(2)}`,
             parentId: parentId || null,
             system: false,
-            sender: { id: me?.id || 'me', username: me?.username || 'Me' },
+            sender: { id: me?.id || 'me', username: me?.username || t('me') },
             message: text,
             created_at: nowISO(),
             _optimistic: true,
@@ -159,7 +168,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
             setDetail(prev => (prev ? { ...prev, messages: replaceMessageById(prev.messages || [], optimistic.id, final) } : prev));
         } catch (e) {
             setDetail(prev => (prev ? { ...prev, messages: (prev.messages || []).filter(m => m.id !== optimistic.id) } : prev));
-            Notification(e?.response?.data?.message || 'Failed to send message.', 'error');
+            Notification(e?.response?.data?.message || t('errors.failedToSend'), 'error');
         } finally {
             setSending(false);
         }
@@ -169,7 +178,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
             <div className='relative rounded-2xl  bg-white flex-1 overflow-hidden flex flex-col'>
                 {/* Sticky header */}
                 <div className='sticky top-0 z-10 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-100 px-4 py-2 flex items-center justify-between'>
-                    <div className='text-sm font-semibold'>Thread</div>
+                    <div className='text-sm font-semibold'>{t('thread')}</div>
                     <div></div>
                 </div>
 
@@ -180,8 +189,8 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                     ) : (
                         <div className='mx-2 flex flex-col items-center justify-center py-8 text-center text-gray-500 border border-dashed border-gray-200 rounded-xl bg-gray-50 h-full'>
                             <MessageSquare className='h-6 w-6 mb-2 text-gray-400' />
-                            <p className='text-sm font-medium'>No messages yet</p>
-                            <p className='text-xs text-gray-400 mt-1'>Start the conversation by sending the first message.</p>
+                            <p className='text-sm font-medium'>{t('noMessages.title')}</p>
+                            <p className='text-xs text-gray-400 mt-1'>{t('noMessages.subtitle')}</p>
                         </div>
                     )}
 
@@ -194,7 +203,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                                     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
                                 }}
                                 className='inline-flex items-center gap-1 rounded-full bg-white/90 ring-1 ring-gray-200 px-3 py-1 text-xs shadow'>
-                                <ArrowDown className='h-4 w-4' /> Newer messages
+                                <ArrowDown className='h-4 w-4' /> {t('newerMessages')}
                             </button>
                         </div>
                     )}
@@ -207,12 +216,10 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                             <div className='flex items-center justify-between gap-2 max-w-full'>
                                 <div className="truncate max-w-[70%] cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition"
                                     onClick={() => handleJumpToMessage?.(replyTo?.id)}
-                                >
-                                    Replying to <b>{replyTo?.sender?.username || 'User'}</b>: “{replyTo?.message?.slice(0, 120)}
-                                    {replyTo?.message?.length > 120 ? '…' : ''}”
-                                </div>
+                                    dangerouslySetInnerHTML={{ __html: t('replyingTo', { username: replyTo?.sender?.username || t('user'), message: replyTo?.message?.slice(0, 120) + (replyTo?.message?.length > 120 ? '…' : '') }) }}
+                                />
                                 <button className='ml-2 underline' onClick={() => setReplyTo(null)}>
-                                    cancel
+                                    {t('cancel')}
                                 </button>
                             </div>
                         )}
@@ -220,7 +227,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                     <div className='flex items-end gap-2  w-full '>
                         <Input
                             name='thread-message'
-                            placeholder='Write a message…'
+                            placeholder={t('writeMessage')}
                             value={msg}
                             disabled={isDisputeClosed}
                             cnInput={`${isDisputeClosed
@@ -236,7 +243,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                             }}
                             className=""
                         />
-                        <Button icon={<Send size={18} />} color='black' onClick={sendMessage} loading={sending} disabled={isDisputeClosed || sending || !msg.trim()} className='!h-[39px] !w-auto px-4' name='Send' />
+                        <Button icon={<Send size={18} />} color='black' onClick={sendMessage} loading={sending} disabled={isDisputeClosed || sending || !msg.trim()} className='!h-[39px] !w-auto px-4' name={t('send')} />
                     </div>
                 </div>}
             </div>
@@ -246,6 +253,7 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
 
 
 function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed }) {
+    const t = useTranslations('DisputeChat');
     const isMine = node?.sender?.id === meId && !node.system;
 
     // Parent preview chip (if replying to someone)
@@ -263,7 +271,7 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
                     <div className={`rounded-2xl px-3 py-2 ring-1 shadow-sm ${node.system ? 'bg-slate-50 ring-slate-200' : isMine ? 'bg-emerald-50 ring-emerald-100' : 'bg-white ring-slate-200'}`}>
                         <div className="text-[12px] text-gray-500 mb-1 flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-x-2 gap-y-1">
                             <b className="text-gray-800 truncate max-w-[50%] sm:max-w-none">
-                                {node?.sender?.username || (node.system ? 'System' : 'User')}
+                                {node?.sender?.username || (node.system ? t('system') : t('user'))}
                             </b>
 
                             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-gray-500 text-[11px] sm:text-[12px]">
@@ -280,9 +288,9 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
                                     <button
                                         onClick={() => onReply(node)}
                                         className="text-gray-400 hover:text-emerald-600 transition underline "
-                                        title="Reply to this message"
+                                        title={t('replyToMessage')}
                                     >
-                                        ↩ Reply
+                                        {t('reply')}
                                     </button>
                                 )}
                             </div>
@@ -295,13 +303,10 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
                             <div
                                 className='mb-1 inline-flex items-center gap-2 text-[12px] bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 w-full cursor-pointer hover:bg-gray-100'
                                 onClick={() => parent?.id && onJump?.(parent.id)}
-                                title='Go to parent message'
+                                title={t('goToParent')}
                             >
                                 <Reply className='h-3.5 w-3.5 text-gray-500' />
-                                <span className='truncate text-gray-600'>
-                                    In reply to <b>{parent?.sender?.username || 'User'}</b>: “{parentSnippet}
-                                    {parent?.message?.length > 120 ? '…' : ''}”
-                                </span>
+                                <span className='truncate text-gray-600' dangerouslySetInnerHTML={{ __html: t('inReplyTo', { username: parent?.sender?.username || t('user'), message: parentSnippet + (parent?.message?.length > 120 ? '…' : '') }) }} />
                             </div>
                         )}
 

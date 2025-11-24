@@ -1,5 +1,6 @@
 // Pagination.js - A reusable pagination component
 import React, { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import Select from '../atoms/Select';
 
 const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItemsPerPageChange, itemsPerPage, className,
@@ -9,7 +10,7 @@ const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItem
     { id: 20, name: '20' },
     { id: 50, name: '50' },
   ] }) => {
-
+  const t = useTranslations('TabsPagination');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -24,15 +25,15 @@ const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItem
             disabled={currentPage <= 1}
             className="px-4 py-2 cursor-pointer gradient text-white rounded-l-md disabled:!opacity-30"
           >
-            Prev
+            {t('prev')}
           </button>
-          <span className="px-4 py-2">{`Page ${currentPage} of ${totalPages}`}</span>
+          <span className="px-4 py-2">{t('page', { current: currentPage, total: totalPages })}</span>
           <button
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
             className="px-4 py-2 cursor-pointer gradient text-white rounded-r-md disabled:opacity-30"
           >
-            Next
+            {t('next')}
           </button>
         </div>
 
@@ -41,10 +42,10 @@ const TabsPagination = ({ loading, currentPage, totalPages, onPageChange, onItem
           options={options}
           value={itemsPerPage}
           onChange={selectedOption => onItemsPerPageChange(Number(selectedOption.name))}
-          placeholder="Select items per page"
+          placeholder={t('selectItemsPerPage')}
           cnLabel="text-sm text-gray-600"
           cnSelect="text-sm text-gray-700"
-          className="!w-fit xs:ml-auto"
+          className="!w-fit xs:ms-auto"
         />}
       </div>
 

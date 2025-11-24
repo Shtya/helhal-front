@@ -1,5 +1,6 @@
 'use client';
 import React, { useCallback, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 import FAQSection from '@/components/common/Faqs';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
@@ -10,10 +11,11 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 
 const page = () => {
+  const t = useTranslations('BecomeSeller');
   const stats = [
-    { value: '4 Sec', label: 'A Gig is Bought Every' },
-    { value: '50M+', label: 'Transactions' },
-    { value: '$5 - $10,000', label: 'Price Range' },
+    { value: '4 Sec', label: t('stats.gigBought') },
+    { value: '50M+', label: t('stats.transactions') },
+    { value: '$5 - $10,000', label: t('stats.priceRange') },
   ];
 
   const categories = [
@@ -37,18 +39,18 @@ const page = () => {
 
   const steps = [
     {
-      title: 'Create a Gig',
-      subtitle: 'Sign up for free, set up your Gig, and offer your work to our global audience.',
+      title: t('steps.createGig.title'),
+      subtitle: t('steps.createGig.subtitle'),
       icon: '/icons/gig.svg',
     },
     {
-      title: 'Deliver great work',
-      subtitle: 'Get notified when you get an order and use our system to discuss details with customers.',
+      title: t('steps.deliverWork.title'),
+      subtitle: t('steps.deliverWork.subtitle'),
       icon: '/icons/box-tick.svg',
     },
     {
-      title: 'Get paid',
-      subtitle: 'Get paid on time, every time. Payment is available for withdrawal as soon as it clears.',
+      title: t('steps.getPaid.title'),
+      subtitle: t('steps.getPaid.subtitle'),
       icon: '/icons/timer.svg',
     },
   ];
@@ -75,12 +77,12 @@ const page = () => {
   ];
 
   const faqs = [
-    { question: 'What can I sell?', answer: "Be creative! You can offer any service you wish as long as it's legal and complies with our terms. There are over 200 categories you can browse to get ideas." },
-    { question: 'How much money can I make?', answer: 'Your earnings depend on the demand, quality, and uniqueness of your service.' },
-    { question: 'How much time will I need to invest?', answer: 'You decide your own schedule — from part-time to full-time commitment.' },
-    { question: 'How do I get paid?', answer: 'Payments are securely processed and transferred directly to your chosen method.' },
-    { question: 'How much does it cost?', answer: 'Creating an account is free. We only take a service fee per completed order.' },
-    { question: 'How do I price my service?', answer: 'You set your own price depending on complexity, time, and expertise.' },
+    { question: t('faqs.whatCanISell.question'), answer: t('faqs.whatCanISell.answer') },
+    { question: t('faqs.howMuchMoney.question'), answer: t('faqs.howMuchMoney.answer') },
+    { question: t('faqs.howMuchTime.question'), answer: t('faqs.howMuchTime.answer') },
+    { question: t('faqs.howDoIGetPaid.question'), answer: t('faqs.howDoIGetPaid.answer') },
+    { question: t('faqs.howMuchDoesItCost.question'), answer: t('faqs.howMuchDoesItCost.answer') },
+    { question: t('faqs.howDoIPrice.question'), answer: t('faqs.howDoIPrice.answer') },
   ];
 
   return (
@@ -99,10 +101,10 @@ const page = () => {
         <div className='absolute inset-0 bg-[#00000080]' />
 
         <div className='relative z-10 px-6 max-w-3xl mx-auto text-white' data-aos='zoom-in' data-aos-delay='200'>
-          <h1 className='text-3xl md:text-5xl font-extrabold mb-4'>Freelance services</h1>
-          <p className='text-xl opacity-90 md:text-4xl mb-8'>are just a click away!</p>
+          <h1 className='text-3xl md:text-5xl font-extrabold mb-4'>{t('hero.title')}</h1>
+          <p className='text-xl opacity-90 md:text-4xl mb-8'>{t('hero.subtitle')}</p>
           <Button
-            name='Become a Seller'
+            name={t('hero.button')}
             href='/auth?tab=register&type=seller'
             color='green'
             className={'!max-w-[300px] w-full'}
@@ -135,7 +137,7 @@ const page = () => {
       {/* How It Works */}
       <section className='w-full divider' data-aos='fade-up' data-aos-duration='1000'>
         <h2 className='text-center text-3xl font-bold text-white mb-12' data-aos='zoom-in' data-aos-delay='200'>
-          How it Works
+          {t('howItWorks.title')}
         </h2>
         <div className='flex flex-wrap items-center justify-center gap-10'>
           {steps.map((step, idx) => (
@@ -189,7 +191,7 @@ function BecomeSellerButton({ className = '' }) {
   return (
     <>
       <Button
-        name='Become a Seller'
+        name={t('hero.button')}
         href='/auth?tab=register'
         color='green'
         className={className}

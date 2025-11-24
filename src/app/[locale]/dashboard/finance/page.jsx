@@ -3,13 +3,15 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import DataTable from '@/components/dashboard/ui/DataTable';
 import api from '@/lib/axios';
 import { ArrowUpRight, Wallet, Banknote, Clock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { isErrorAbort } from '@/utils/helper';
 
 // transactionTypes.ts
-export const transactionTypes = [
-  { id: 'all', label: 'All Transactions' },
-  { id: 'escrow_deposit', label: 'Escrow Deposit' },
-  { id: 'escrow_release', label: 'Escrow Release' },
-  { id: 'withdrawal', label: 'Withdrawals' },
+const getTransactionTypes = (t) => [
+  { id: 'all', label: t('Dashboard.finance.tabs.all') },
+  { id: 'escrow_deposit', label: t('Dashboard.finance.tabs.escrowDeposit') },
+  { id: 'escrow_release', label: t('Dashboard.finance.tabs.escrowRelease') },
+  { id: 'withdrawal', label: t('Dashboard.finance.tabs.withdrawal') },
 ];
 
 
@@ -28,6 +30,8 @@ const formatMoney = (n, currency = 'SAR') => {
 };
 
 export default function WithdrawManagement() {
+  const t = useTranslations('Dashboard.finance');
+  const transactionTypes = getTransactionTypes(t);
   const [loading, setLoading] = useState(true);
   const [earningsLoading, setEarningsLoading] = useState(true);
 
@@ -137,10 +141,10 @@ export default function WithdrawManagement() {
 
   const columns = useMemo(
     () => [
-      { key: 'id', title: 'ID', render: v => <span className='text-slate-700'>{v.slice(0, 8)}…</span> },
+      { key: 'id', title: t('columns.id'), render: v => <span className='text-slate-700'>{v.slice(0, 8)}…</span> },
       {
         key: 'type',
-        title: 'Type',
+        title: t('columns.type'),
         render: v => (
           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${v === 'earning'
             ? 'bg-emerald-100 text-emerald-800'
@@ -156,17 +160,17 @@ export default function WithdrawManagement() {
       },
       {
         key: 'amount',
-        title: 'Amount',
+        title: t('columns.amount'),
         render: v => (
           <span className={`font-medium ${Number(v) < 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
             {formatMoney(Number(v < 0 ? -v : v))}
-            {Number(v) < 0 ? ' (debit)' : ''}
+            {Number(v) < 0 ? t('debit') : ''}
           </span>
         ),
       },
       {
         key: 'status',
-        title: 'Status',
+        title: t('columns.status'),
         render: v => (
           <span className={`px-2 py-1 rounded-full text-xs ${v === 'completed'
             ? 'bg-emerald-100 text-emerald-800'
@@ -178,20 +182,20 @@ export default function WithdrawManagement() {
           </span>
         ),
       },
-      { key: 'description', title: 'Description', render: v => <span className='text-slate-600'>{v || '—'}</span> },
-      { key: 'created_at', title: 'Date', render: v => new Date(v).toLocaleString() },
+      { key: 'description', title: t('columns.description'), render: v => <span className='text-slate-600'>{v || '—'}</span> },
+      { key: 'created_at', title: t('columns.date'), render: v => new Date(v).toLocaleString() },
     ],
-    [],
+    [t],
   );
 
   return (
     <div>
       {/* KPIs */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <KpiCard icon={Wallet} label='Available Balance' value={formatMoney(balance.availableBalance)} hint='Ready to withdraw' iconBg='bg-emerald-50 text-emerald-600' />
-        <KpiCard icon={Banknote} label='Credits' value={formatMoney(balance.credits)} hint='Refund credits' iconBg='bg-blue-50 text-blue-600' />
-        <KpiCard icon={ArrowUpRight} label='Earnings to Date' value={formatMoney(balance.earningsToDate)} hint='Lifetime gross' iconBg='bg-purple-50 text-purple-600' />
-        <KpiCard icon={Clock} label='Cancelled Orders Credit' value={formatMoney(balance.cancelledOrdersCredit)} hint='Holdbacks from cancellations' iconBg='bg-rose-50 text-rose-600' />
+        <KpiCard icon={Wallet} label={t('kpis.availableBalance')} value={formatMoney(balance.availableBalance)} hint={t('kpis.readyToWithdraw')} iconBg='bg-emerald-50 text-emerald-600' />
+        <KpiCard icon={Banknote} label={t('kpis.credits')} value={formatMoney(balance.credits)} hint={t('kpis.refundCredits')} iconBg='bg-blue-50 text-blue-600' />
+        <KpiCard icon={ArrowUpRight} label={t('kpis.earningsToDate')} value={formatMoney(balance.earningsToDate)} hint={t('kpis.lifetimeGross')} iconBg='bg-purple-50 text-purple-600' />
+        <KpiCard icon={Clock} label={t('kpis.cancelledOrdersCredit')} value={formatMoney(balance.cancelledOrdersCredit)} hint={t('kpis.holdbacks')} iconBg='bg-rose-50 text-rose-600' />
       </div>
 
       {/* Filters */}

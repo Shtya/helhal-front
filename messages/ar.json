@@ -1,18 +1,1994 @@
 {
-	"Chat": {
+  "Auth": {
+    "hero": {
+      "title": "ابدأ نجاحك الآن!",
+      "subtitle": "مستقلون موهوبون لأي مشروع…",
+      "features": [
+        "تسجيل دخول سريع وممتع",
+        "جلسات آمنة ومحترمة للخصوصية",
+        "واجهة مستخدم جميلة وسهلة الوصول",
+        "تدفق مصادقة موثوق"
+      ]
+    },
+    "userType": "نوع المستخدم",
+    "business": "عمل تجاري",
+    "individual": "فردي",
+    "businessDescription": "للمؤسسات والمنظمات",
+    "individualDescription": "للاستخدام الشخصي",
+    "selectUserType": "اختر نوع المستخدم",
+    "selectUserTypeDescription": "يرجى اختيار ما إذا كنت تسجل كعمل تجاري أو فرد",
+    "continueToExplore": "المتابعة إلى الاستكشاف",
+    "chooseMethod": "اختر طريقة تسجيل الدخول",
+    "emailMethod": "تسجيل الدخول برسالتك الإلكترونية",
+    "phoneMethod": "تسجيل الدخول بهاتفك",
+    "otpMethod": "أدخل رمز التحقق",
+    "createAccount": "إنشاء حسابك",
+    "phoneSignUp": "التسجيل بهاتفك",
+    "verifyEmail": "التحقق من بريدك الإلكتروني",
+    "resetPassword": "إعادة تعيين كلمة المرور",
+    "verifyIdentity": "التحقق من هويتك",
+    "setNewPassword": "تعيين كلمة مرور جديدة",
+    "passwordRequirements": "يرجى إدخال كلمة المرور الجديدة",
+    "email": "البريد الإلكتروني",
+    "enterEmail": "أدخل بريدك الإلكتروني",
+    "password": "كلمة المرور",
+    "enterPassword": "أدخل كلمة المرور",
+    "username": "اسم المستخدم",
+    "chooseUsername": "اختر اسم مستخدم",
+    "phoneNumber": "رقم الهاتف",
+    "enterPhone": "أدخل رقم هاتفك",
+    "newPassword": "كلمة المرور الجديدة",
+    "otpCode": "رمز التحقق",
+    "enterOtp": "أدخل رمز التحقق",
+    "referralCode": "رمز الإحالة (اختياري)",
+    "enterReferral": "أدخل رمز الإحالة",
+    "role": {
+      "selectRole": "اختر الدور",
+      "buyer": "مشتري",
+      "seller": "بائع"
+    },
+    "success": {
+      "signedIn": "تم تسجيل الدخول بنجاح!",
+      "otpSent": "تم إرسال رمز التحقق إلى بريدك الإلكتروني!",
+      "codeSent": "تم إرسال رمز التحقق بنجاح!",
+      "emailVerified": "تم التحقق من البريد الإلكتروني بنجاح!",
+      "phoneVerified": "تم التحقق من الهاتف بنجاح!",
+      "passwordReset": "تم إعادة تعيين كلمة المرور بنجاح!",
+      "codeResent": "تم إعادة إرسال رمز التحقق!",
+      "loggedInSuccessfully": "تم تسجيل الدخول بنجاح!",
+      "userTypeUpdatedSuccessfully": "تم تحديث نوع المستخدم بنجاح!"
+    },
+    "errors": {
+      "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+      "passwordRequired": "كلمة المرور مطلوبة",
+      "usernameMin": "يجب أن يكون اسم المستخدم على الأقل حرفين",
+      "usernameMax": "يجب أن يكون اسم المستخدم أقل من 30 حرفًا",
+      "usernameInvalid": "يمكن أن يحتوي اسم المستخدم على أحرف وأرقام ومسافات فقط",
+      "usernameSpaces": "لا يمكن أن يحتوي اسم المستخدم على مسافات متتالية",
+      "passwordMin": "يجب أن تكون كلمة المرور على الأقل 8 أحرف",
+      "passwordMax": "يجب أن تكون كلمة المرور على الأكثر 20 حرفًا",
+      "passwordInvalidChars": "تحتوي كلمة المرور على أحرف غير صالحة. يُسمح فقط بالأحرف والأرقام و _ @ $ ! % * ? &",
+      "refMax": "يجب أن يكون رمز الإحالة على الأكثر 150 حرفًا",
+      "phoneMin": "يجب أن يكون رقم الهاتف على الأقل 6 أرقام.",
+      "inValidOptionalPhone": "يجب أن يكون رقم الهاتف على الأقل 6 أرقام إذا تم توفيره",
+      "passwordsMatch": "كلمات المرور غير متطابقة",
+      "otpRequired": "رمز التحقق مطلوب",
+      "otpMax": "يجب أن يكون رمز التحقق على الأكثر 10 أرقام",
+      "otpNumbersOnly": "يجب أن يحتوي رمز التحقق على أرقام فقط",
+      "otpLength": "يجب أن يكون رمز التحقق 6 أرقام",
+      "otpInvalid": "رمز التحقق غير صحيح",
+      "loginFailed": "فشل تسجيل الدخول. يرجى التحقق من بيانات الاعتماد الخاصة بك.",
+      "registrationFailed": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+      "codeSendFailed": "فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى.",
+      "resetEmailFailed": "فشل إرسال بريد إعادة التعيين. يرجى المحاولة مرة أخرى.",
+      "passwordResetFailed": "فشل إعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى.",
+      "resendFailed": "فشل إعادة إرسال الرمز. يرجى المحاولة مرة أخرى.",
+      "googleLoginFailed": "فشل بدء تسجيل الدخول عبر Google",
+      "appleLoginFailed": "فشل بدء تسجيل الدخول عبر Apple",
+      "incorrectEmailOrPassword": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+      "loginFailedTryAgain": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+      "emailConfirmationFailed": "فشل تأكيد البريد الإلكتروني. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
+      "failedToCompleteLogin": "فشل إكمال تسجيل الدخول",
+      "failedToUpdateUserType": "فشل تحديث نوع المستخدم",
+      "phoneNumberValidationMessage": "يرجى إدخال رقم هاتف صحيح يحتوي على 6 أرقام على الأقل."
+    },
+    "enterNewPassword": "أدخل كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+    "sendCodeButton": "إرسال رمز التحقق",
+    "terms": "بالانضمام، أنت توافق على شروط خدمة UpPhoto وعلى تلقي رسائل بريد إلكتروني منا أحيانًا. يرجى قراءة سياسة الخصوصية الخاصة بنا لمعرفة كيفية استخدامنا لبياناتك الشخصية.",
+    "signIn": "تسجيل الدخول",
+    "signUp": "التسجيل",
+    "forgotPassword": "نسيت؟",
+    "signInTitle": "تسجيل الدخول إلى حسابك",
+    "signInSubtitle": "اختر طريقة للمتابعة",
+    "signInEmailTitle": "تسجيل الدخول بالبريد الإلكتروني",
+    "signInEmailSubtitle": "أدخل بريدك الإلكتروني وكلمة المرور",
+    "signInPhoneTitle": "تسجيل الدخول بالهاتف",
+    "signInPhoneSubtitle": "أدخل رقم هاتفك لتلقي رمز",
+    "otpTitle": "تحقق من رمزك",
+    "otpSubtitle": "أدخل رمز الـ 6 أرقام الذي أرسلناه لك",
+    "registerTitle": "إنشاء حسابك",
+    "registerSubtitle": "اختر طريقة للبدء",
+    "registerEmailTitle": "إنشاء حساب بالبريد الإلكتروني",
+    "registerEmailSubtitle": "املأ تفاصيلك للتسجيل",
+    "registerPhoneTitle": "إنشاء حساب بالهاتف",
+    "registerPhoneSubtitle": "سنرسل لك رمز تحقق",
+    "verifyEmailTitle": "التحقق من بريدك الإلكتروني",
+    "verifyEmailSubtitle": "أدخل الرمز لتفعيل حسابك",
+    "forgotPasswordTitle": "نسيت كلمة المرور",
+    "forgotPasswordSubtitle": "أدخل بريدك الإلكتروني لتلقي رمز إعادة التعيين",
+    "verifyIdentityTitle": "التحقق من هويتك",
+    "verifyIdentitySubtitle": "أدخل الرمز الذي أرسلناه لإعادة تعيين كلمة المرور",
+    "resetPasswordTitle": "تعيين كلمة مرور جديدة",
+    "resetPasswordSubtitle": "استخدم 8 أحرف على الأقل مع أحرف وأرقام",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "usernameLabel": "اسم المستخدم",
+    "usernamePlaceholder": "اختر اسم مستخدم",
+    "referralLabel": "رمز الإحالة (اختياري)",
+    "referralPlaceholder": "أدخل رمز الإحالة",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "أدخل رقم هاتفك",
+    "newPasswordLabel": "كلمة المرور الجديدة",
+    "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+    "confirmPasswordLabel": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+    "signInButton": "تسجيل الدخول",
+    "createAccountButton": "إنشاء حساب",
+    "sendOtpButton": "إرسال رمز التحقق",
+    "resetPasswordButton": "إعادة تعيين كلمة المرور",
+    "verifyCodeButton": "التحقق من الرمز",
+    "continueWithGoogle": "المتابعة مع Google",
+    "continueWithApple": "المتابعة مع Apple",
+    "continueWithEmail": "المتابعة بالبريد الإلكتروني",
+    "continueWithPhone": "المتابعة بالهاتف",
+    "resendCode": "إعادة الإرسال",
+    "resendIn": "إعادة الإرسال خلال {seconds} ثانية",
+    "didntReceiveCode": "لم تستلم الرمز؟",
+    "termsText": "بالانضمام، أنت توافق على شروط خدمة UpPhoto وعلى تلقي رسائل بريد إلكتروني منا أحيانًا. يرجى قراءة سياسة الخصوصية الخاصة بنا لمعرفة كيفية استخدامنا لبياناتك الشخصية.",
+    "roleLabel": "أريد أن أكون",
+    "roleBuyer": "مشتري",
+    "roleSeller": "بائع",
+    "successRegister": "تم إرسال رمز التحقق إلى بريدك الإلكتروني!",
+    "successLogin": "تم تسجيل الدخول بنجاح!",
+    "successOtp": "تم التحقق من البريد الإلكتروني بنجاح!",
+    "successPasswordReset": "تم إعادة تعيين كلمة المرور بنجاح!",
+    "errorInvalidOtp": "رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى.",
+    "errorGeneral": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "title": "ابدأ نجاحك الآن!",
+    "taglines": [
+      "مستقلون موهوبون لأي مشروع",
+      "أفضل المستقلين لكل مشروع خدمات عالية الجودة لكل ميزانية",
+      "موثوق به من قبل أكثر من 4 ملايين عميل حول العالم"
+    ],
+    "signInToYourAccount": "تسجيل الدخول إلى حسابك",
+    "dontHaveAnAccount": "ليس لديك حساب؟",
+    "authConsentNotice": "بالانضمام، أنت توافق على شروط خدمة UpPhoto وعلى تلقي رسائل بريد إلكتروني منا أحيانًا. يرجى قراءة سياسة الخصوصية الخاصة بنا لمعرفة كيفية استخدامنا لبياناتك الشخصية.",
+    "back": "رجوع",
+    "continueWithYourEmail": "المتابعة برسالتك الإلكترونية",
+    "forgotPasswordLink": "نسيت كلمة المرور؟",
+    "loginButton": "تسجيل الدخول",
+    "registerYourAccount": "تسجيل حسابك",
+    "alreadyHaveAnAccount": "لديك حساب بالفعل؟",
+    "registerButton": "التسجيل",
+    "verifyYourEmail": "التحقق من بريدك الإلكتروني",
+    "otpSentTo": "تم إرسال رمز مكون من 6 أرقام إلى",
+    "enterCodeBelow": "يرجى إدخال الرمز أدناه للتحقق من بريدك الإلكتروني.",
+    "verificationCodeLabel": "رمز التحقق",
+    "verificationCodePlaceholder": "أدخل رمز مكون من 6 أرقام",
+    "verifyButton": "التحقق",
+    "resendCodeIn": "إعادة إرسال الرمز خلال {count}",
+    "noEmailForOtp": "لم يتم العثور على بريد إلكتروني للتحقق. يرجى العودة والتسجيل مرة أخرى.",
+    "backToRegister": "العودة إلى التسجيل",
+    "forgotPasswordInstructions": "أدخل عنوان بريدك الإلكتروني المسجل لتلقي رابط إعادة تعيين كلمة المرور.",
+    "sendResetLinkButton": "إرسال الرابط",
+    "passwordResetEmailSent": "تم إرسال بريد إلكتروني يحتوي على رابط إعادة تعيين كلمة المرور إلى عنوانك. يرجى التحقق من صندوق الوارد الخاص بك.",
+    "passwordResetRequestFailedGeneric": "فشل إرسال رابط إعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى.",
+    "resetPasswordInstructions": "أدخل كلمة المرور الجديدة أدناه.",
+    "confirmNewPasswordLabel": "تأكيد كلمة المرور الجديدة",
+    "confirmNewPasswordPlaceholder": "تأكيد كلمة المرور الجديدة",
+    "passwordResetSuccess": "تم إعادة تعيين كلمة المرور بنجاح!",
+    "passwordResetFailedGeneric": "فشل إعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى أو طلب رابط جديد.",
+    "invalidResetLinkTitle": "رابط غير صحيح أو منتهي الصلاحية",
+    "invalidResetLinkMessage": "رابط إعادة تعيين كلمة المرور غير صحيح أو انتهت صلاحيته. يرجى طلب رابط جديد.",
+    "requestNewResetLink": "طلب رابط إعادة تعيين جديد"
+  },
+  "categories": {
+    "importantLinks": "روابط مهمة"
+  },
+  "GlobalSearch": {
+    "scopes": {
+      "services": "الخدمات",
+      "jobs": "الوظائف"
+    },
+    "placeholder": "بحث",
+    "sections": {
+      "recent": "حديث",
+      "trySearchingFor": "جرب البحث عن",
+      "live": "مباشر {scope}"
+    },
+    "loading": "جاري التحميل…",
+    "empty": {
+      "noMatching": "لا توجد {scope} مطابقة بعد"
+    },
+    "footer": {
+      "searchIn": "البحث عن \"{query}\" في {scope}",
+      "enter": "Enter ↵"
+    },
+    "ariaLabels": {
+      "clear": "مسح",
+      "goToChat": "الذهاب إلى الدردشة"
+    }
+  },
+  "navigation_sections": {
+    "forClients": {
+      "title": "للعملاء",
+      "yourAccount": "حسابك",
+      "shareYourJob": "شارك وظيفتك",
+      "becomeSeller": "كن بائعًا",
+      "topServices": "أفضل الخدمات",
+      "careers": "الوظائف",
+      "pressNews": "الأخبار والصحافة",
+      "partnerships": "الشراكات",
+      "ipClaims": "مطالبات الملكية الفكرية"
+    },
+    "company": {
+      "title": "الشركة",
+      "contact": "اتصل بنا",
+      "privacyPolicy": "سياسة الخصوصية",
+      "termsOfService": "شروط الخدمة",
+      "inviteFriend": "ادعُ صديقًا",
+      "guides": "أدلة",
+      "helpSupport": "المساعدة والدعم"
+    },
+    "forFreelancers": {
+      "title": "للمستقلين",
+      "createService": "أنشئ خدمة",
+      "jobs": "ابحث عن وظيفة",
+      "yourProposals": "مقترحاتك",
+      "trustSafety": "الثقة والأمان",
+      "buying": "الشراء على هلهل",
+      "selling": "البيع على هلهل"
+    },
+    "businessSolutions": {
+      "title": "حلول الأعمال",
+      "events": "الفعاليات",
+      "communityStandards": "معايير المجتمع",
+      "podcast": "البودكاست"
+    }
+  },
+  "Header": {
+    "navigation": {
+      "explore": "استكشف",
+      "services": "الخدمات",
+      "allServices": "جميع الخدمات",
+      "jobs": "الوظائف",
+      "browseJobs": "تصفح الوظائف",
+      "createJob": "إنشاء وظيفة",
+      "myJobs": "وظائفي",
+      "myJobsBuyer": "وظائفي (مشتري)",
+      "myProposals": "عروضي",
+      "dashboard": "لوحة التحكم",
+      "becomeSeller": "كن بائعًا",
+      "becomeASeller": "كن بائعًا"
+    },
+    "userMenu": {
+      "myProfile": "ملفي الشخصي",
+      "myOrders": "طلباتي",
+      "myDisputes": "نزاعاتي",
+      "myBilling": "الفواتير",
+      "settings": "الإعدادات",
+      "inviteNewUser": "دعوة مستخدم جديد",
+      "shareYourJob": "شارك وظيفتك",
+      "myServices": "خدماتي",
+      "createAService": "إنشاء خدمة",
+      "logout": "تسجيل الخروج",
+      "loggingOut": "جاري تسجيل الخروج…",
+      "email": "البريد الإلكتروني",
+      "user": "مستخدم",
+      "member": "عضو",
+      "menu": "القائمة",
+      "myJobs": "وظائفي",
+      "becomeASeller": "كن بائعًا"
+    },
+    "auth": {
+      "signIn": "تسجيل الدخول",
+      "signUp": "التسجيل"
+    }
+  },
+  "Home": {
+    "hero": {
+      "alt": "خلفية Helhal الرئيسية",
+      "badge": "استأجر أفضل المستقلين بسرعة",
+      "title": "استأجر موهبة يمكنك الوثوق بها.",
+      "subtitle": "انشر طلبًا، احصل على عروض مخصصة، وابدأ في ساعات وليس أسابيع.",
+      "tagline": "مدفوعات آمنة، تسعير شفاف، وسوق منظم يحترم وقتك.",
+      "trust": {
+        "safepay": "ضمان آمن",
+        "rated": "متوسط 4.9★",
+        "talent": "مواهب مختارة"
+      }
+    },
+    "categories": {
+      "error": {
+        "loadFailed": "فشل تحميل الفئات",
+        "loadFailedMessage": "تعذر تحميل الفئات الشائعة. يرجى المحاولة مرة أخرى لاحقًا."
+      },
+      "browse": "تصفح {name}"
+    },
+    "popularServices": {
+      "title": "الخدمات الشائعة",
+      "seeAll": "عرض الكل",
+      "from": "من {price}",
+      "bookNow": "احجز الآن →",
+      "error": {
+        "loadFailed": "فشل تحميل الخدمات الشائعة"
+      }
+    },
+    "whyChoose": {
+      "title": "لماذا تختار Helhal؟",
+      "items": {
+        "categories": {
+          "title": "فئات واسعة",
+          "description": "من التطوير إلى التصميم والتسويق—كل شيء في سوق واحد."
+        },
+        "pricing": {
+          "title": "تسعير واضح",
+          "description": "عروض مقدمة. لا توجد رسوم خفية. ادفع بأمان عند الموافقة على المعالم."
+        },
+        "quality": {
+          "title": "جودة موثقة",
+          "description": "تقييمات ومحافظ وملفات شخصية مدققة لمساعدتك على التوظيف بثقة."
+        },
+        "support": {
+          "title": "دعم سريع",
+          "description": "نحن معك بمساعدة سريعة وحل النزاعات."
+        }
+      }
+    },
+    "clientsExperiences": {
+      "title": "تجارب عملائنا"
+    },
+    "cta": {
+      "title": "هل أنت مستعد لنشر طلبك؟",
+      "subtitle": "اوصف مشروعك واحصل على عروض في دقائق.",
+      "postOrder": "نشر طلب",
+      "loginToPost": "تسجيل الدخول لنشر طلب",
+      "browse": "تصفح الخدمات",
+      "sellerTitle": "هل أنت مستعد لنشر خدمتك؟",
+      "sellerSubtitle": "اعرض مهاراتك وابدأ في تلقي الطلبات.",
+      "createService": "إنشاء خدمة"
+    }
+  },
+  "layout": {
+    "searchPlaceholder": "استكشف الخدمات والفئات."
+  },
+  "Explore": {
+    "cart": {
+      "addedToCart": "تمت الإضافة إلى السلة",
+      "removedFromCart": "تمت الإزالة من السلة",
+      "failedUpdateCart": "فشل تحديث السلة",
+      "removeFromCart": "إزالة من السلة",
+      "addToCart": "إضافة إلى السلة"
+    },
+    "page": {
+      "hero": {
+        "title": "خدمات مستقلة",
+        "subtitle": "على بعد نقرة واحدة!",
+        "seeMore": "عرض المزيد"
+      },
+      "gigsYouMayLike": "خدمات قد تعجبك"
+    },
+    "hero": {
+      "quickActions": "إجراءات سريعة",
+      "welcomeBack": "مرحباً بعودتك،",
+      "there": "هناك",
+      "subtitle": "استأنف من حيث توقفت، أو أنجز ما هو التالي.",
+      "cards": {
+        "guest": {
+          "title": "إنشاء حسابك",
+          "lines": [
+            "سجل للتوظيف من المستقلين",
+            "احصل على توصيات مخصصة"
+          ],
+          "buttonLabel": "انضم الآن",
+          "chip": "جديد هنا؟"
+        },
+        "buyer": {
+          "title": "موصى به لك",
+          "lines": [
+            "احصل على مطابقة مع المستقلين",
+            "أنشئ وظيفة واحصل على عروض مخصصة"
+          ],
+          "buttonLabel": "ابدأ مشروعاً",
+          "chip": "ابدأ الآن"
+        },
+        "seller": {
+          "title": "أنشئ خدمتك",
+          "lines": [
+            "اعرض مهاراتك",
+            "ابدأ في تلقي طلبات العملاء"
+          ],
+          "buttonLabel": "إضافة خدمة",
+          "chip": "زيادة الظهور"
+        },
+        "completeProfile": {
+          "title": "أكمل حسابك",
+          "lines": [
+            "ملفك الشخصي ينقصه التفاصيل.",
+            "أضف معلوماتك لفتح جميع الميزات."
+          ],
+          "buttonLabel": "أكمل ملفك الشخصي",
+          "chip": "إجراء مطلوب"
+        }
+      },
+      "defaultChip": "مقترح"
+    },
+    "discovery": {
+      "title": "البحث حسب الفئة",
+      "all": "الكل",
+      "showMore": "عرض المزيد",
+      "category": "فئة",
+      "errors": {
+        "loadFailed": "فشل تحميل الخدمات"
+      },
+      "empty": {
+        "title": "لم يتم العثور على خدمات.",
+        "description": "جرب فئة أخرى أو اعرض جميع الخدمات.",
+        "resetFilters": "إعادة تعيين الفلاتر"
+      }
+    },
+    "categories": {
+      "all": "الكل",
+      "allServices": "جميع الخدمات",
+      "noCategoriesAvailable": "لا توجد فئات متاحة",
+      "loading": "جاري التحميل…"
+    }
+  },
+  "Services": {
+    "page": {
+      "browseCategories": "تصفح الفئات",
+      "featured": "مميز",
+      "empty": {
+        "title": "لا توجد خدمات مميزة متاحة في الوقت الحالي.",
+        "description": "يرجى التحقق لاحقاً أو استكشاف فئات أخرى."
+      }
+    },
+    "filters": {
+      "title": "الفلاتر",
+      "subtitle": "قم بتصفية بحثك بخيارات مخصصة.",
+      "result": "نتيجة",
+      "results": "نتائج",
+      "ratings": {
+        "rating5": "⭐⭐⭐⭐⭐ 5",
+        "rating4": "⭐⭐⭐⭐ 4+",
+        "rating3": "⭐⭐⭐ 3+",
+        "rating2": "⭐⭐ 2+",
+        "rating1": "⭐ 1+"
+      },
+      "revisions": {
+        "one": "1",
+        "two": "2",
+        "three": "3",
+        "fourPlus": "4+"
+      },
+      "sellerDetails": {
+        "title": "الفلاتر",
+        "filter": "فلتر",
+        "filters": "فلاتر",
+        "applied": "مطبق",
+        "sellerLevel": "مستوى البائع",
+        "total": "الإجمالي",
+        "sellerSpeaks": "اللغات التي يتحدثها البائع",
+        "languages": "لغات",
+        "sellerCountries": "دول البائع",
+        "countries": "دول",
+        "extras": "إضافات",
+        "fastDelivery": "تسليم سريع",
+        "additionalRevision": "مراجعة إضافية",
+        "levels": {
+          "lvl1": "المستوى 1",
+          "lvl2": "المستوى 2",
+          "lvl3": "المستوى 3",
+          "top": "بائع ممتاز",
+          "new": "بائع جديد"
+        }
+      },
+      "budget": {
+        "under": "أقل من {amount}",
+        "between": "بين {min} - {max}",
+        "above": "أكثر من {amount}",
+        "customBudget": "ميزانية مخصصة",
+        "budget": "الميزانية",
+        "budgetWithAmount": "الميزانية: {amount}",
+        "enterMaxAmount": "أدخل الحد الأقصى للمبلغ",
+        "youEntered": "لقد أدخلت: {amount}",
+        "typeNumberOnly": "أدخل رقماً فقط"
+      },
+      "deliveryTime": {
+        "express24hrs": "سريع 24 ساعة",
+        "upto3Days": "حتى 3 أيام",
+        "upto7Days": "حتى 7 أيام",
+        "customDelivery": "وقت تسليم مخصص",
+        "deliveryTime": "وقت التسليم",
+        "deliveryWithDays": "التسليم: {days} أيام",
+        "enterMaxDeliveryTime": "أدخل الحد الأقصى لوقت التسليم بالأيام"
+      }
+    }
+  },
+  "footer": {
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل",
+    "description": "سوق خدمات موثوق بتسعير واضح ودفع آمن."
+  },
+  "copyright": "© {{year}} Helhal. جميع الحقوق محفوظة.",
+  "CategoryPage": {
+    "categoryNotFound": "الفئة غير موجودة",
+    "categoryNotFoundDesc": "الفئة التي تبحث عنها غير موجودة أو تمت إزالتها. يرجى التحقق من الرابط أو استكشاف فئات أخرى.",
+    "backToServices": "العودة إلى الخدمات",
+    "services": "الخدمات",
+    "filterTitle": "ابحث وصفِّ الخدمات",
+    "filterSubtitle": "استخدم عوامل التصفية أدناه للعثور على ما تبحث عنه بالضبط.",
+    "category": "الفئة",
+    "serviceType": "نوع الخدمة",
+    "priceRange": "نطاق السعر",
+    "rating": "التقييم",
+    "revisions": "المراجعات",
+    "sortBy": "ترتيب حسب",
+    "sort": {
+      "all": "الكل",
+      "priceLowHigh": "السعر: من الأقل إلى الأعلى",
+      "priceHighLow": "السعر: من الأعلى إلى الأقل",
+      "rating": "التقييم",
+      "newest": "الأحدث"
+    },
+    "searchPlaceholder": "بحث",
+    "results": "نتيجة/نتائج",
+    "noServices": "لم يتم العثور على خدمات",
+    "noServicesDesc": "لم نتمكن من العثور على أي خدمات تطابق عوامل التصفية الخاصة بك. حاول تعديل عوامل التصفية أو كلمات البحث.",
+    "resetFilters": "إعادة تعيين عوامل التصفية",
+    "prev": "السابق",
+    "next": "التالي"
+  },
+  "Pagination": {
+    "previous": "الصفحة السابقة",
+    "next": "الصفحة التالية",
+    "jumpBack": "الرجوع {count} صفحات",
+    "jumpForward": "التقدم {count} صفحات"
+  },
+  "Jobs": {
+    "page": {
+      "findWork": "ابحث عن عمل",
+      "findWorkSubtitle": "وظائف مختارة بعناية. عروض سلسة. احصل على المشروع.",
+      "myProposals": "عروضي",
+      "selectCategory": "اختر فئة",
+      "anyBudgetType": "أي نوع ميزانية",
+      "fixed": "ثابت",
+      "hourly": "بالساعة",
+      "searchPlaceholder": "ابحث بالعنوان أو الوصف أو المهارات",
+      "noJobs": "لا توجد وظائف في الوقت الحالي",
+      "noJobsDescription": "حاول توسيع الفلاتر أو تحقق لاحقاً.",
+      "resetFilters": "إعادة تعيين الفلاتر",
+      "posted": "نُشر",
+      "relatedToYou": "متعلق بك",
+      "viewAndApply": "عرض والتقديم",
+      "jobDetails": "تفاصيل الوظيفة",
+      "youPostedThis": "لقد نشرت هذا",
+      "summary": "الملخص",
+      "preferredDelivery": "وقت التسليم المفضل",
+      "day": "يوم",
+      "days": "أيام",
+      "skillsAndExpertise": "المهارات والخبرة",
+      "paymentMethodVerified": "تم التحقق من طريقة الدفع",
+      "attachments": "المرفقات",
+      "files": "الملفات",
+      "additionalDetails": "تفاصيل إضافية",
+      "apply": "تقديم",
+      "bidAmount": "مبلغ العرض (ريال)",
+      "delivery": "التسليم (أيام)",
+      "coverLetter": "خطاب التقديم",
+      "coverLetterPlaceholder": "اشرح نهجك والعمل المشابه والجدول الزمني…",
+      "portfolioLinks": "روابط المحفظة (واحد في كل سطر)",
+      "portfolioLinksPlaceholder": "https://…\nhttps://…",
+      "cancel": "إلغاء",
+      "submitting": "جاري الإرسال…",
+      "applyNow": "تقديم الآن",
+      "proposalSubmitted": "تم إرسال العرض",
+      "fixedPrice": "سعر ثابت",
+      "estBudget": "الميزانية المقدرة",
+      "justNow": "الآن",
+      "minute": "دقيقة",
+      "minutes": "دقائق",
+      "ago": "منذ",
+      "hour": "ساعة",
+      "hours": "ساعات",
+      "validation": {
+        "min20Chars": "الحد الأدنى 20 حرف",
+        "max3000Chars": "الحد الأقصى 3000 حرف",
+        "required": "مطلوب",
+        "enterNumber": "أدخل رقماً",
+        "mustBePositive": "يجب أن يكون موجباً",
+        "bidAmountMax": "يجب ألا يتجاوز مبلغ العرض 100,000",
+        "mustBeInteger": "يجب أن يكون رقماً صحيحاً",
+        "deliveryMax": "الحد الأقصى لوقت التسليم هو 1200 يوم",
+        "invalidPortfolioUrls": "روابط المحفظة غير صالحة",
+        "max10Links": "يمكنك إضافة حتى 10 روابط للمحفظة",
+        "validUrls": "يجب أن يكون كل رابط رابطاً صالحاً",
+        "maxLength": "يجب ألا يتجاوز كل رابط 500 حرف"
+      },
+      "errors": {
+        "failedToLoad": "فشل تحميل الوظائف",
+        "unableToOpen": "تعذر فتح الوظيفة",
+        "failedToLoadJob": "فشل تحميل الوظيفة",
+        "failedToSubmit": "فشل الإرسال"
+      }
+    },
+    "proposals": {
+      "title": "عروضي",
+      "subtitle": "تتبع الإرسالات والموافقات والنتائج.",
+      "all": "الكل",
+      "submitted": "مُرسل",
+      "accepted": "مقبول",
+      "rejected": "مرفوض",
+      "noProposals": "لم يتم العثور على عروض",
+      "noProposalsYet": "لم ترسل أي عروض بعد.",
+      "noStatusProposals": "لا توجد عروض {status}.",
+      "showLess": "عرض أقل",
+      "showMore": "عرض المزيد",
+      "portfolio": "المحفظة",
+      "jobDetails": "تفاصيل الوظيفة",
+      "days": "أيام",
+      "errors": {
+        "failedToLoad": "فشل تحميل العروض"
+      }
+    }
+  },
+  "AttachmentList": {
+    "preview": "معاينة",
+    "previewFile": "معاينة الملف",
+    "cannotPreview": "لا يمكن معاينة هذا الملف مباشرة.",
+    "openInNewTab": "فتح في تبويب جديد",
+    "download": "تحميل"
+  },
+  "Client": {
+    "aboutTheClient": "حول العميل"
+  },
+  "CategorySelect": {
+    "selectOption": "اختر خياراً",
+    "loading": "جاري التحميل...",
+    "search": "بحث {type}…",
+    "noFound": "لم يتم العثور على {type}",
+    "create": "إنشاء \"{name}\"",
+    "alreadyExists": "موجود بالفعل",
+    "created": "تم إنشاء \"{name}\"",
+    "errors": {
+      "failedToLoad": "فشل تحميل الخيارات",
+      "failedToCreate": "فشل الإنشاء"
+    }
+  },
+  "AdvancedJobsDropdown": {
+    "advanced": "متقدم",
+    "filter": "فلتر",
+    "filters": "فلاتر",
+    "applied": "مطبقة",
+    "sortBy": "ترتيب حسب",
+    "newest": "الأحدث",
+    "budgetAsc": "الميزانية ↑",
+    "budgetDesc": "الميزانية ↓",
+    "quickToggles": "تبديلات سريعة",
+    "clientSideFilters": "فلاتر على جانب العميل",
+    "max7Days": "≤ 7 أيام",
+    "withAttachments": "مع مرفقات"
+  },
+  "Profile": {
+    "page": {
+      "level": "المستوى {level}",
+      "topRated": "مميز",
+      "username": "اسم المستخدم",
+      "from": "من",
+      "memberSince": "عضو منذ",
+      "lastLogin": "آخر تسجيل دخول",
+      "referralCode": "رمز الإحالة",
+      "referralStats": "إحصائيات الإحالة",
+      "referrals": "إحالات",
+      "rewards": "مكافآت",
+      "referredBy": "تمت الإحالة بواسطة",
+      "sellerSettings": "إعدادات البائع",
+      "deliveryTime": "وقت التسليم (مثلاً: 3 أيام)",
+      "responseTime": "وقت الاستجابة (ساعات)",
+      "ageGroup": "الفئة العمرية",
+      "revisions": "المراجعات",
+      "sellerLevel": "مستوى البائع (lvl1/lvl2/new/top)",
+      "financials": "المالية",
+      "balance": "الرصيد",
+      "totalSpent": "إجمالي الإنفاق",
+      "totalEarned": "إجمالي الأرباح",
+      "reputationPoints": "نقاط السمعة",
+      "topRatedReadonly": "مميز (للقراءة فقط من الإحصائيات)",
+      "yes": "نعم",
+      "no": "لا",
+      "preferences": "التفضيلات (JSON)",
+      "invalidJSON": "JSON غير صالح",
+      "introVideo": "فيديو تعريفي",
+      "introVideoSubtitle": "تميز بفيديو تعريفي قصير.",
+      "uploading": "جاري الرفع…",
+      "replaceVideo": "استبدال الفيديو",
+      "uploadVideo": "رفع فيديو",
+      "uploadIntroVideo": "رفع فيديو تعريفي",
+      "maxSize": "الحد الأقصى للحجم: {size} ميجابايت.",
+      "portfolio": "المحفظة",
+      "addImages": "إضافة صور",
+      "addImagesSubtitle": "أضف حتى 6 صور.",
+      "upload": "رفع",
+      "images": "صور",
+      "uploadingCount": "جاري رفع {count}…",
+      "portfolioFile": "ملف المحفظة",
+      "portfolioFileSubtitle": "PDF, TXT, DOC, DOCX, XLS, XLSX, PPT, PPTX (الحد الأقصى ~25 ميجابايت). ملف واحد في كل مرة.",
+      "replaceFile": "استبدال الملف",
+      "uploadFile": "رفع ملف",
+      "noFileUploaded": "لم يتم رفع أي ملف بعد.",
+      "deleting": "جاري الحذف…",
+      "delete": "حذف",
+      "savingProfile": "جاري حفظ الملف الشخصي...",
+      "profileUpdated": "تم تحديث الملف الشخصي بنجاح ✅",
+      "profileUpdateFailed": "فشل تحديث الملف الشخصي ❌",
+      "referralCodeCopied": "تم نسخ رمز الإحالة إلى الحافظة ✅",
+      "noReferralCode": "لم يتم العثور على رمز إحالة",
+      "unsavedChanges": "لديك تغييرات غير محفوظة",
+      "unsavedChangesDesc": "لا تفقد تعديلاتك. احفظ الآن أو تجاهلها.",
+      "discard": "تجاهل",
+      "saveChanges": "حفظ التغييرات",
+      "ordersCompleted": "الطلبات المكتملة",
+      "allTime": "طوال الوقت",
+      "repeatBuyers": "مشترون متكررون",
+      "uniqueCustomers": "عملاء فريدون",
+      "responseTimeAverage": "متوسط الوقت",
+      "responseTimeNotCalculated": "لم يتم حسابه بعد"
+    },
+    "public": {
+      "failedToLoad": "فشل تحميل المستخدم. حاول مرة أخرى.",
+      "unknown": "غير معروف",
+      "memberSince": "عضو منذ",
+      "lastLogin": "آخر تسجيل دخول",
+      "message": "رسالة",
+      "orders": "الطلبات",
+      "repeatBuyers": "مشترون متكررون",
+      "responseTime": "وقت الاستجابة",
+      "averageTime": "متوسط الوقت",
+      "notYetCalculated": "لم يتم حسابه بعد",
+      "about": "حول",
+      "noDescription": "لا يوجد وصف.",
+      "verified": "متحقق",
+      "proMember": "عضو محترف",
+      "contact": "اتصل",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "country": "البلد",
+      "account": "الحساب",
+      "userId": "معرف المستخدم",
+      "created": "تم الإنشاء",
+      "updated": "تم التحديث",
+      "activity": "النشاط",
+      "lastActivity": "آخر نشاط",
+      "deliveryTime": "وقت التسليم",
+      "deactivatedAt": "تم إلغاء التفعيل في",
+      "noIntroVideo": "لم يقم هذا المستخدم برفع فيديو تعريفي بعد.",
+      "noPortfolio": "لا توجد عناصر محفظة لهذا المستخدم بعد.",
+      "noFileUploaded": "لم يتم رفع أي ملف.",
+      "introVideo": "فيديو تعريفي",
+      "portfolio": "المحفظة",
+      "portfolioFile": "ملف المحفظة",
+      "services": "الخدمات",
+      "noServices": "لا توجد خدمات بعد.",
+      "jobs": "الوظائف",
+      "noJobs": "لا توجد وظائف بعد.",
+      "postedBy": "نشر بواسطة",
+      "untitledService": "خدمة بدون عنوان",
+      "untitledJob": "وظيفة بدون عنوان",
+      "from": "من",
+      "rating": "التقييم",
+      "type": "النوع",
+      "budget": "الميزانية",
+      "copy": "نسخ",
+      "hourly": "بالساعة",
+      "fixed": "ثابت"
+    },
+    "infoCard": {
+      "description": "الوصف",
+      "editDescription": "تعديل الوصف",
+      "finishEditingDescription": "إنهاء تعديل الوصف",
+      "tellBuyers": "أخبر المشترين عن نفسك…",
+      "useClearSummary": "استخدم ملخصاً واضحاً ومهنياً. Ctrl/Cmd+Enter للحفظ.",
+      "characters": "حرف",
+      "languages": "اللغات",
+      "addLanguage": "إضافة لغة",
+      "skills": "المهارات",
+      "addSkill": "إضافة مهارة",
+      "noItemsAdded": "لم تتم إضافة عناصر",
+      "addItem": "إضافة عنصر",
+      "save": "حفظ",
+      "skillAlreadyAdded": "تمت إضافة هذه المهارة بالفعل",
+      "education": "التعليم",
+      "addEducation": "إضافة تعليم",
+      "addEducationModal": "إضافة تعليم",
+      "noEducationAdded": "لم تتم إضافة تعليم",
+      "degree": "الدرجة",
+      "degreeRequired": "الدرجة مطلوبة",
+      "degreeMaxLength": "يجب أن تكون الدرجة {max} حرفاً أو أقل",
+      "institution": "المؤسسة",
+      "institutionRequired": "المؤسسة مطلوبة",
+      "institutionMaxLength": "يجب أن تكون المؤسسة {max} حرفاً أو أقل",
+      "year": "السنة",
+      "yearRequired": "السنة مطلوبة",
+      "yearRange": "يجب أن تكون السنة بين {min} و {max}",
+      "saveItem": "حفظ العنصر",
+      "educationAlreadyAdded": "تمت إضافة هذا التعليم بالفعل",
+      "certification": "الشهادة",
+      "addCertification": "إضافة شهادة",
+      "addCertificationModal": "إضافة شهادة",
+      "noCertificationsAdded": "لم تتم إضافة شهادات",
+      "name": "الاسم",
+      "nameRequired": "الاسم مطلوب",
+      "nameMaxLength": "يجب أن يكون الاسم {max} حرفاً أو أقل",
+      "issuingOrganization": "المنظمة المصدرة",
+      "issuingOrganizationRequired": "المنظمة المصدرة مطلوبة",
+      "issuingOrganizationMaxLength": "يجب أن تكون المنظمة المصدرة {max} حرفاً أو أقل",
+      "certificationAlreadyAdded": "تمت إضافة هذه الشهادة بالفعل",
+      "selectLanguage": "اختر اللغة",
+      "chooseLanguage": "اختر لغة",
+      "add": "إضافة",
+      "country": "البلد",
+      "selectCountry": "اختر البلد",
+      "accountType": "نوع الحساب",
+      "selectType": "اختر النوع",
+      "errors": {
+        "failedToLoadCountries": "فشل تحميل البلدان"
+      }
+    }
+  },
+  "MyJobs": {
+    "page": {
+      "title": "وظائفي",
+      "createNewJob": "إنشاء وظيفة جديدة",
+      "tabs": {
+        "all": "الكل",
+        "pending": "قيد الانتظار",
+        "published": "منشور",
+        "awarded": "ممنوح",
+        "completed": "مكتمل"
+      },
+      "noJobs": "لا توجد وظائف متاحة في الوقت الحالي",
+      "noJobsDescription": "يبدو أنه لا توجد وظائف متاحة الآن. تحقق لاحقاً!",
+      "createNewJobButton": "إنشاء وظيفة جديدة",
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذه الوظيفة؟",
+      "cancel": "إلغاء",
+      "delete": "حذف",
+      "jobDetails": "تفاصيل الوظيفة",
+      "summary": "الملخص",
+      "preferredDelivery": "وقت التسليم المفضل",
+      "day": "يوم",
+      "days": "أيام",
+      "skillsAndExpertise": "المهارات والخبرة",
+      "aboutTheClient": "حول العميل",
+      "posted": "نُشر",
+      "attachments": "المرفقات",
+      "files": "الملفات",
+      "additionalDetails": "تفاصيل إضافية",
+      "hourly": "بالساعة",
+      "fixedPrice": "سعر ثابت",
+      "errors": {
+        "unableToOpen": "تعذر فتح الوظيفة",
+        "failedToLoadJob": "فشل تحميل الوظيفة",
+        "failedToUpdateStatus": "فشل تحديث حالة الوظيفة"
+      }
+    },
+    "proposals": {
+      "title": "عروض الوظيفة",
+      "proposal": "عرض",
+      "proposals": "عروض",
+      "received": "مستلمة",
+      "jobBudget": "ميزانية الوظيفة",
+      "preferredDeliveryTime": "وقت التسليم المفضل",
+      "daysPreferred": "{days} أيام مفضلة",
+      "viewMyJobs": "عرض وظائفي",
+      "searchPlaceholder": "ابحث عن المستقل أو البريد الإلكتروني أو خطاب التقديم…",
+      "status": {
+        "all": "الكل",
+        "submitted": "مُرسل",
+        "accepted": "مقبول",
+        "rejected": "مرفوض"
+      },
+      "sort": {
+        "recent": "الأحدث",
+        "amountAsc": "المبلغ ↑",
+        "amountDesc": "المبلغ ↓",
+        "timeAsc": "وقت التسليم ↑",
+        "timeDesc": "وقت التسليم ↓"
+      },
+      "selectKeys": {
+        "status": "الحالة",
+        "sort": "الترتيب"
+      },
+      "bidType": {
+        "bid": "عرض",
+        "fixed": "ثابت",
+        "hourly": "بالساعة"
+      },
+      "noMatching": "لا توجد عروض مطابقة",
+      "noMatchingDescription": "حاول تغيير الفلاتر أو مصطلحات البحث. يمكنك أيضاً تعديل وظيفتك لجذب المزيد من المستقلين.",
+      "showYourJobs": "عرض وظائفي",
+      "sellerLevel": "مستوى البائع",
+      "memberSince": "عضو منذ",
+      "portfolio": "المحفظة",
+      "coverLetter": "خطاب التقديم",
+      "acceptProposal": "قبول العرض",
+      "reject": "رفض",
+      "message": "رسالة",
+      "acceptConfirmTitle": "قبول هذا العرض؟",
+      "acceptConfirmMessage": "سيؤدي هذا إلى وضع علامة على العرض كـ <strong>مقبول</strong> وإشعار المستقل.",
+      "confirmAccept": "تأكيد القبول",
+      "daysDelivery": "{days} أيام تسليم",
+      "cancel": "إلغاء",
+      "attachments": "المرفقات",
+      "errors": {
+        "failedToLoad": "فشل تحميل العروض",
+        "failedToUpdate": "فشل تحديث حالة العرض"
+      },
+      "success": {
+        "proposalRejected": "تم رفض العرض",
+        "proposalAccepted": "تم قبول العرض"
+      }
+    }
+  },
+  "CreateJob": {
+    "steps": {
+      "step1": "تفاصيل المشروع",
+      "step2": "الميزانية والتسليم",
+      "step3": "المراجعة والإرسال"
+    },
+    "reset": "إعادة تعيين",
+    "hero": {
+      "step1Title": "دع المطابقة تبدأ..",
+      "step1Subtitle": "هذا هو المكان الذي تخبرنا فيه بالصورة الكبيرة.",
+      "step2Title": "الآن دعنا نتحدث عن الميزانية والتوقيت",
+      "step2Subtitle": "هذا هو المكان الذي تزودنا فيه بالصورة الكاملة.",
+      "step3Title": "هل أنت مستعد لمراجعة وظيفتك؟",
+      "step3Subtitle": "هذا هو المكان الذي تبدأ فيه اتخاذ القرارات النهائية."
+    },
+    "form": {
+      "titleLabel": "أعط وظيفة مشروعك عنواناً",
+      "titleHint": "اجعله قصيراً وبسيطاً - سيساعدنا هذا على مطابقتك مع الفئة الصحيحة.",
+      "titlePlaceholder": "أدخل عنوان المشروع",
+      "descriptionLabel": "وصف المشروع",
+      "descriptionPlaceholder": "اوصف مشروعك بالتفصيل",
+      "categoryLabel": "الفئة",
+      "categoryPlaceholder": "اختر فئة",
+      "subcategoryLabel": "الفئة الفرعية",
+      "subcategoryPlaceholder": "اختر فئة فرعية",
+      "subcategoryPlaceholderFirst": "اختر فئة أولاً",
+      "skillsLabel": "المهارات المطلوبة *",
+      "skillsPlaceholder": "أضف مهارة (مثلاً: WordPress)",
+      "skillsValidation": "يرجى تقديم مهارة واحدة على الأقل.",
+      "additionalInfoLabel": "معلومات إضافية (اختياري)",
+      "additionalInfoPlaceholder": "أي تفاصيل أو متطلبات إضافية",
+      "budgetLabel": "الميزانية",
+      "budgetPlaceholder": "أدخل الميزانية",
+      "budgetHint": "أدخل مبلغ ميزانيتك",
+      "budgetTypeLabel": "نوع الميزانية",
+      "budgetTypeFixed": "سعر ثابت",
+      "budgetTypeHourly": "معدل بالساعة",
+      "preferredDeliveryLabel": "وقت التسليم المفضل (أيام)",
+      "preferredDeliveryPlaceholder": "أدخل عدد الأيام",
+      "preferredDeliveryHint": "وقت التسليم المقدر بالأيام",
+      "back": "رجوع",
+      "next": "التالي",
+      "publishJob": "نشر الوظيفة"
+    },
+    "review": {
+      "projectDetailsTitle": "تفاصيل المشروع",
+      "projectDetailsSubtitle": "راجع معلومات مشروعك",
+      "budgetDeliveryTitle": "الميزانية والتسليم",
+      "budgetDeliverySubtitle": "تفاصيل الميزانية والتسليم",
+      "edit": "تعديل",
+      "title": "العنوان",
+      "description": "الوصف",
+      "category": "الفئة",
+      "subcategory": "الفئة الفرعية",
+      "skillsRequired": "المهارات المطلوبة",
+      "additionalInformation": "معلومات إضافية",
+      "attachments": "المرفقات",
+      "noFilesAttached": "لا توجد ملفات مرفقة",
+      "budget": "الميزانية",
+      "deliveryDays": "أيام التسليم",
+      "notSpecified": "غير محدد"
+    },
+    "validation": {
+      "titleRequired": "العنوان مطلوب",
+      "titleMin": "يجب أن يكون العنوان 5 أحرف على الأقل",
+      "titleMax": "يجب ألا يتجاوز العنوان 100 حرف",
+      "descriptionRequired": "الوصف مطلوب",
+      "descriptionMin": "يجب أن يكون الوصف 12 حرفاً على الأقل",
+      "descriptionMax": "يجب ألا يتجاوز الوصف 15,000 حرف",
+      "categoryRequired": "الفئة مطلوبة",
+      "skillMin": "يجب أن تكون كل مهارة {min} أحرف على الأقل",
+      "skillMax": "يجب ألا تتجاوز كل مهارة {max} حرف",
+      "skillsMin": "مهارة واحدة على الأقل مطلوبة",
+      "skillsMax": "يمكنك إضافة حتى {max} مهارات",
+      "skillsRequired": "المهارات مطلوبة",
+      "attachmentsMax": "يمكنك رفع حتى 10 مرفقات",
+      "additionalInfoMax": "يجب ألا تتجاوز المعلومات الإضافية 5,000 حرف",
+      "budgetMin": "يجب أن تكون الميزانية 1 على الأقل",
+      "budgetMax": "يجب ألا تتجاوز الميزانية 100,000",
+      "budgetRequired": "الميزانية مطلوبة",
+      "budgetTypeInvalid": "يجب أن يكون نوع الميزانية ثابتاً أو بالساعة",
+      "budgetTypeRequired": "نوع الميزانية مطلوب",
+      "deliveryMin": "الحد الأدنى يوم واحد",
+      "deliveryMax": "الحد الأقصى لوقت التسليم هو 1200 يوم",
+      "deliveryRequired": "أيام التسليم المفضلة مطلوبة"
+    },
+    "toast": {
+      "creating": "جاري إنشاء وظيفتك…",
+      "updating": "جاري تحديث وظيفتك",
+      "jobLive": "وظيفتك الآن نشطة 🎉 يمكن للبائعين التقديم الآن.",
+      "submittedForReview": "تم الإرسال للمراجعة ✅ سيقوم المدير بالموافقة عليها قريباً.",
+      "jobCreated": "تم إنشاء الوظيفة ✅",
+      "jobPublished": "تم نشر الوظيفة ✅ أصبحت الآن مرئية للبائعين.",
+      "draftUpdated": "تم تحديث المسودة 💾",
+      "jobUpdated": "تم تحديث الوظيفة ✅",
+      "failed": "فشل: {message}",
+      "somethingWentWrong": "حدث خطأ ما"
+    }
+  },
+  "TabsPagination": {
+    "prev": "السابق",
+    "next": "التالي",
+    "page": "صفحة {current} من {total}",
+    "selectItemsPerPage": "اختر العناصر لكل صفحة"
+  },
+  "JobCard": {
+    "hourly": "بالساعة",
+    "fixedPrice": "سعر ثابت",
+    "deliveryDays": "أيام التسليم",
+    "noDescription": "لا يوجد وصف",
+    "extraDetails": "تفاصيل إضافية",
+    "attachments": "المرفقات",
+    "file": "ملف",
+    "files": "ملفات",
+    "deleteJob": "حذف الوظيفة",
+    "viewProposals": "عرض العروض ({count})"
+  },
+  "MyGigs": {
+    "title": "وظائفي",
+    "createNewGig": "إنشاء وظيفة جديدة",
+    "tabs": {
+      "all": "الكل",
+      "active": "نشط",
+      "pending": "قيد الانتظار",
+      "draft": "مسودة",
+      "denied": "مرفوض",
+      "paused": "متوقف"
+    },
+    "columns": {
+      "gig": "الوظيفة",
+      "service": "الخدمة",
+      "clicks": "النقرات",
+      "ordersCount": "عدد الطلبات",
+      "startingPrice": "السعر الأولي",
+      "status": "الحالة",
+      "createdDate": "تاريخ الإنشاء"
+    },
+    "status": {
+      "active": "نشط",
+      "pending": "قيد الانتظار",
+      "draft": "مسودة",
+      "denied": "مرفوض",
+      "paused": "متوقف"
+    },
+    "delete": {
+      "title": "حذف الوظيفة",
+      "confirm": "هل أنت متأكد أنك تريد حذف هذه الوظيفة <strong>{title}</strong>؟ لا يمكن التراجع عن هذا الإجراء.",
+      "cancel": "إلغاء",
+      "deleting": "جاري الحذف...",
+      "delete": "حذف"
+    },
+    "toast": {
+      "deleting": "جاري حذف \"{title}\"...",
+      "deleted": "تم حذف \"{title}\" بنجاح",
+      "failed": "فشل حذف \"{title}\""
+    }
+  },
+  "MyDisputes": {
+    "title": "نزاعاتي",
+    "searchPlaceholder": "البحث في النزاعات (العنوان، الحالة، المعرف، المستخدم)...",
+    "noDisputes": "لم يتم العثور على نزاعات",
+    "noDisputesDesc": "حاول تعديل البحث أو إعادة التحميل.",
+    "noDisputeSelected": "لم يتم اختيار نزاع",
+    "noDisputeSelectedDesc": "يرجى اختيار نزاع من القائمة على اليسار لعرض تفاصيله ورسائله وحالة الحل.",
+    "notFound": "النزاع غير موجود",
+    "notFoundDesc": "لا يمكن العثور على النزاع الذي اخترته. قد يكون قد تم إزالته أو الرابط غير صالح.",
+    "order": "الطلب",
+    "freelancer": "المستقل:",
+    "client": "العميل:",
+    "status": "الحالة:",
+    "raisedBy": "تم رفعه بواسطة:",
     "you": "أنت",
+    "otherParty": "الطرف الآخر",
+    "opened": "تم الفتح:",
+    "subject": "الموضوع",
+    "type": "النوع",
+    "reason": "السبب",
+    "invoice": "الفاتورة",
+    "subtotal": "المجموع الفرعي (الضمان)",
+    "serviceFee": "رسوم الخدمة",
+    "total": "المجموع",
+    "viewResolution": "عرض الحل",
+    "proposedResolution": "الحل المقترح",
+    "resolution": {
+      "sellerAmount": "مبلغ البائع",
+      "buyerRefund": "استرداد المشتري",
+      "note": "ملاحظة",
+      "decidedBy": "قرر بواسطة"
+    },
+    "errors": {
+      "unableToLoad": "غير قادر على تحميل النزاع.",
+      "failedToLoad": "فشل تحميل النشاط."
+    }
+  },
+  "MyBilling": {
+    "tabs": {
+      "billingHistory": "سجل الفواتير",
+      "billingInformation": "معلومات الفوترة",
+      "availableBalances": "الأرصدة المتاحة",
+      "paymentMethods": "طرق الدفع"
+    },
+    "billingHistory": {
+      "title": "سجل الفواتير",
+      "searchByDate": "البحث حسب التاريخ",
+      "searchByOrder": "البحث حسب رقم الطلب",
+      "loading": "جاري التحميل...",
+      "columns": {
+        "date": "التاريخ",
+        "document": "المستند",
+        "type": "النوع",
+        "order": "الطلب",
+        "currency": "العملة",
+        "total": "المجموع"
+      }
+    },
+    "availableBalances": {
+      "title": "الأرصدة المتاحة",
+      "loading": "جاري تحميل الأرصدة...",
+      "earningsToDate": {
+        "title": "الأرباح حتى الآن",
+        "description": "متاح للسحب أو المشتريات."
+      },
+      "availableBalance": {
+        "title": "الرصيد المتاح",
+        "description": "استخدم للمشتريات."
+      },
+      "credits": {
+        "title": "الاعتمادات",
+        "description": "احصل على اعتمادات Upphoto."
+      },
+      "phoneVerification": {
+        "title": "التحقق من الهاتف",
+        "description": "أحضر أشخاصاً تعرفهم ويفيد الجميع!",
+        "button": "التحقق من الهاتف"
+      }
+    },
+    "billingInformation": {
+      "title": "معلومات الفوترة",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "جون دو",
+      "state": "الولاية",
+      "statePlaceholder": "جدة",
+      "country": "الدولة",
+      "selectCountry": "اختر الدولة",
+      "saudiResident": "هل أنت مواطن / مقيم في المملكة العربية السعودية",
+      "select": "اختر",
+      "yes": "نعم",
+      "no": "لا",
+      "invoices": "الفواتير",
+      "invoicesDesc": "ستجد فواتيرك في تبويب سجل الفواتير",
+      "inboxMessages": "رسائل البريد الوارد",
+      "saveChanges": "حفظ التغييرات",
+      "saving": "جاري الحفظ...",
+      "loading": "جاري التحميل...",
+      "errors": {
+        "loading": "خطأ في تحميل معلومات الفوترة",
+        "updating": "خطأ في تحديث معلومات الفوترة"
+      },
+      "success": "تم تحديث معلومات الفوترة بنجاح!"
+    },
+    "paymentMethods": {
+      "title": "معلومات الحساب البنكي",
+      "yourBankAccounts": "حساباتك البنكية",
+      "iban": "رقم الحساب الدولي:",
+      "default": "افتراضي",
+      "setDefault": "تعيين كافتراضي",
+      "delete": "حذف",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "بدر الخميس",
+      "ibanLabel": "رقم الحساب البنكي الدولي",
+      "ibanPlaceholder": "أدخل رقم الحساب الدولي",
+      "clientId": "معرف العميل",
+      "clientIdPlaceholder": "أدخل معرف العميل",
+      "clientSecret": "سر العميل",
+      "clientSecretPlaceholder": "أدخل سر العميل",
+      "country": "الدولة",
+      "selectCountry": "اختر الدولة",
+      "state": "الولاية",
+      "statePlaceholder": "جدة",
+      "mobileNumber": "رقم الجوال",
+      "mobileNumberPlaceholder": "+966555521471",
+      "addBankAccount": "إضافة حساب بنكي",
+      "adding": "جاري الإضافة...",
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا الحساب البنكي؟",
+      "errors": {
+        "loading": "خطأ في تحميل الحسابات البنكية",
+        "adding": "خطأ في إضافة الحساب البنكي",
+        "deleting": "خطأ في حذف الحساب البنكي",
+        "settingDefault": "خطأ في تعيين الحساب البنكي الافتراضي"
+      },
+      "success": {
+        "added": "تم إضافة الحساب البنكي بنجاح!",
+        "deleted": "تم حذف الحساب البنكي بنجاح!",
+        "defaultUpdated": "تم تحديث الحساب البنكي الافتراضي بنجاح!"
+      }
+    }
+  },
+  "Table": {
+    "emptyState": {
+      "title": "لم يتم العثور على نتائج",
+      "subtitle": "حاول تعديل الفلاتر، أو مسح البحث، أو تغيير النطاق الزمني.",
+      "clearFilters": "مسح الفلاتر",
+      "reload": "إعادة التحميل"
+    },
+    "action": "الإجراء",
+    "nothingToShow": {
+      "title": "لا يوجد شيء للعرض هنا",
+      "subtitle": "لا توجد صفوف تطابق الفلاتر الحالية. يمكنك مسح الفلاتر أو تجربة بحث مختلف."
+    },
+    "showing": "عرض {from}-{to} من {total}"
+  },
+  "DisputeChat": {
+    "thread": "الخيط",
+    "noMessages": {
+      "title": "لا توجد رسائل بعد",
+      "subtitle": "ابدأ المحادثة بإرسال الرسالة الأولى."
+    },
+    "newerMessages": "رسائل أحدث",
+    "replyingTo": "الرد على <b>{username}</b>: \"{message}\"",
+    "cancel": "إلغاء",
+    "writeMessage": "اكتب رسالة…",
+    "send": "إرسال",
+    "reply": "↩ رد",
+    "replyToMessage": "الرد على هذه الرسالة",
+    "goToParent": "الانتقال إلى الرسالة الأصلية",
+    "inReplyTo": "رداً على <b>{username}</b>: \"{message}\"",
+    "system": "النظام",
+    "user": "المستخدم",
+    "me": "أنا",
+    "proposedResolution": {
+      "simple": "الحل المقترح: {resolution}",
+      "detailed": "الحل المقترح → البائع: {sellerAmount} • استرداد المشتري: {buyerRefund}{note}"
+    },
+    "errors": {
+      "failedToSend": "فشل إرسال الرسالة."
+    }
+  },
+  "MyOrders": {
+    "page": {
+      "title": "إدارة الطلبات",
+      "searchPlaceholder": "البحث برقم الطلب أو الحالة",
+      "tabs": {
+        "all": "الكل",
+        "active": "نشط",
+        "delivered": "تم التسليم",
+        "changeRequested": "تم طلب التعديل",
+        "completed": "مكتمل",
+        "disputed": "نزاع",
+        "canceled": "ملغي"
+      },
+      "columns": {
+        "serviceImg": "صورة الخدمة",
+        "serviceJob": "الخدمة / الوظيفة",
+        "freelancer": "المستقل",
+        "client": "العميل",
+        "orderDate": "تاريخ الطلب",
+        "total": "الإجمالي",
+        "status": "الحالة"
+      },
+      "badges": {
+        "job": "وظيفة",
+        "service": "خدمة"
+      },
+      "actions": {
+        "viewDetails": "عرض التفاصيل",
+        "chat": "محادثة",
+        "reviewSubmission": "مراجعة التسليم",
+        "viewChangeRequest": "عرض طلب التعديل",
+        "deliver": "تسليم",
+        "delivering": "جاري التسليم…",
+        "receive": "استلام",
+        "submitting": "جاري الإرسال…",
+        "openDispute": "فتح نزاع",
+        "opening": "جاري الفتح…",
+        "viewDispute": "عرض النزاع",
+        "pay": "دفع",
+        "cancelOrder": "إلغاء الطلب",
+        "cancelling": "جاري الإلغاء…"
+      },
+      "errors": {
+        "failedToLoad": "فشل تحميل الطلبات.",
+        "failedToCancel": "فشل إلغاء الطلب"
+      },
+      "cancelConfirm": "هل أنت متأكد أنك تريد إلغاء هذا الطلب؟",
+      "paymentCanceled": "تم إلغاء الدفع"
+    },
+    "modals": {
+      "notifications": {
+        "title": "الإشعارات",
+        "markAllAsRead": "قراءة الكل",
+        "viewAll": "عرض الكل",
+        "allCaughtUp": "لقد انتهيت من كل شيء!",
+        "view": "عرض",
+        "new": "جديد",
+        "markAsRead": "وضع علامة كمقروء"
+      },
+      "dispute": {
+        "title": "فتح نزاع",
+        "order": "الطلب",
+        "aboutToOpen": "أنت على وشك فتح",
+        "dispute": "نزاع",
+        "against": "ضد",
+        "forOrder": "للطلب:",
+        "whatAbout": "ما هو موضوع هذا النزاع؟",
+        "subject": "موضوع النزاع",
+        "subjectPlaceholder": "أدخل موضوعًا واضحًا للنزاع",
+        "detailedExplanation": "شرح مفصل",
+        "explanationPlaceholder": "اشرح بوضوح ما الذي حدث خطأ، وما كان متوقعًا، وما الحل الذي تسعى إليه…",
+        "explanationHint": "قدم تفاصيل كافية عن المشكلة حتى نتمكن من فهم نزاعك.",
+        "submit": "إرسال النزاع",
+        "submitting": "جاري الإرسال…",
+        "types": {
+          "money": "مشاكل مالية",
+          "quality": "مخاوف جودة العمل",
+          "requirements": "المتطلبات لم يتم الوفاء بها",
+          "other": "مشكلة أخرى"
+        },
+        "validation": {
+          "typeRequired": "يرجى اختيار نوع النزاع",
+          "subjectMin": "يجب أن يكون الموضوع 3 أحرف على الأقل",
+          "subjectMax": "يجب ألا يتجاوز الموضوع 250 حرفًا",
+          "messageMin": "يجب أن تكون الرسالة 8 أحرف على الأقل",
+          "messageMax": "يجب ألا تتجاوز الرسالة 2000 حرف"
+        },
+        "success": "تم فتح النزاع بنجاح",
+        "error": "فشل فتح النزاع"
+      },
+      "deliver": {
+        "title": "تسليم العمل",
+        "order": "الطلب",
+        "receivePayment": "ستتلقى الدفع بمجرد أن",
+        "acceptsDelivery": "يقبل التسليم.",
+        "messageToClient": "رسالة إلى العميل",
+        "messagePlaceholder": "اشرح ما تقوم بتسليمه…",
+        "note": "بمجرد تسليم عملك،",
+        "willHave": "سيكون لديه حتى",
+        "daysToReview": "أيام للمراجعة والرد.",
+        "noAction": "إذا لم يتم اتخاذ أي إجراء خلال تلك الفترة، سيتم إطلاق دفعة",
+        "willBeReleased": "تلقائيًا لك من العميل.",
+        "deliverWork": "تسليم العمل",
+        "delivering": "جاري التسليم…",
+        "validation": {
+          "messageMin": "يجب أن تكون الرسالة 10 أحرف على الأقل",
+          "messageMax": "يجب ألا تتجاوز الرسالة 2000 حرف",
+          "filesMax": "يمكنك رفع ما يصل إلى 10 ملفات",
+          "fileSizeMax": "يجب أن يكون كل ملف أقل من 25 ميجابايت"
+        },
+        "success": "تم تسليم العمل بنجاح",
+        "error": "فشل تسليم الطلب"
+      },
+      "reviewSubmission": {
+        "title": "استلام العمل",
+        "titleReadOnly": "مراجعة التسليم",
+        "order": "الطلب",
+        "submittedBy": "تم الإرسال بواسطة",
+        "message": "الرسالة",
+        "files": "الملفات",
+        "noSubmission": "لم يتم العثور على تسليم.",
+        "deliverySubmitted": "تم إرسال هذا التسليم في",
+        "ifNoAction": "إذا لم تتخذ إجراءً بحلول",
+        "paymentReleased": "دفعة",
+        "willBeReleased": "سيتم إطلاقها تلقائيًا إلى",
+        "receiveWork": "استلام العمل",
+        "requestChanges": "طلب التعديلات",
+        "success": "تم إكمال الطلب بنجاح",
+        "error": "فشل إكمال الطلب"
+      },
+      "requestChanges": {
+        "title": "طلب التعديلات",
+        "message": "الرسالة",
+        "messagePlaceholder": "اشرح ما يحتاج إلى التغيير…",
+        "sendRequest": "إرسال الطلب",
+        "submitting": "جاري الإرسال…",
+        "validation": {
+          "messageMin": "يجب أن تكون الرسالة 10 أحرف على الأقل",
+          "messageMax": "يجب ألا تتجاوز الرسالة 2000 حرف",
+          "filesMax": "يمكنك رفع ما يصل إلى 10 ملفات",
+          "fileSizeMax": "يجب أن يكون كل ملف أقل من 25 ميجابايت"
+        },
+        "success": "تم إرسال طلب التعديل إلى المستقل",
+        "error": "فشل طلب التعديلات"
+      },
+      "changeRequest": {
+        "title": "طلب التعديل",
+        "order": "الطلب",
+        "requestedBy": "طلب بواسطة",
+        "message": "الرسالة",
+        "files": "الملفات",
+        "submittedOn": "تم إرسال طلب التعديل هذا في",
+        "notFound": "لم يتم العثور على طلب تعديل."
+      },
+      "orderDetails": {
+        "title": "تفاصيل الطلب",
+        "orderId": "رقم الطلب",
+        "buyer": "المشتري",
+        "seller": "البائع",
+        "packageType": "نوع الحزمة",
+        "quantity": "الكمية",
+        "orderDate": "تاريخ الطلب",
+        "dueDate": "تاريخ الاستحقاق",
+        "deliveredAt": "تم التسليم في",
+        "completedAt": "تم الإكمال في",
+        "cancelledAt": "تم الإلغاء في",
+        "serviceInformation": "معلومات الخدمة",
+        "serviceTitle": "عنوان الخدمة",
+        "description": "الوصف",
+        "selectedPackage": "الحزمة المختارة",
+        "requirements": "المتطلبات",
+        "specialInstructions": "تعليمات خاصة",
+        "invoice": "الفاتورة",
+        "subtotal": "المجموع الفرعي",
+        "serviceFee": "رسوم الخدمة",
+        "totalAmount": "المبلغ الإجمالي",
+        "paymentMethod": "طريقة الدفع:",
+        "fromJob": "من وظيفة",
+        "error": "فشل تحميل تفاصيل الطلب"
+      }
+    }
+  },
+  "CreateGig": {
+    "steps": {
+      "overview": "نظرة عامة",
+      "pricing": "التسعير",
+      "descriptionFaq": "الوصف والأسئلة الشائعة",
+      "requirements": "المتطلبات",
+      "gallery": "المعرض",
+      "publish": "النشر"
+    },
+    "stepTitles": {
+      "createGig": "إنشاء خدمتك",
+      "editGig": "تعديل خدمتك",
+      "packagesPricing": "الحزم والتسعير",
+      "faq": "الأسئلة الشائعة.",
+      "buyerRequirements": "متطلبات المشتري",
+      "galleryMedia": "المعرض والوسائط",
+      "publishTitle": "النشر"
+    },
+    "stepDescriptions": {
+      "overview": "لنبدأ باختيار فئة لخدمتك",
+      "pricing": "قم بإعداد حزم الخدمة وخيارات التسعير",
+      "faq": "قدم إجابة الأسئلة الشائعة.",
+      "requirements": "حدد المعلومات التي تحتاجها من المشترين للبدء",
+      "gallery": "اعرض أعمالك السابقة لجذب المشترين الجدد.",
+      "publish": "أكمل ونشر مشروعك."
+    },
+    "step1": {
+      "title": "التفاصيل الأساسية",
+      "subtitle": "ضع أساسًا مقنعًا لخدمتك.",
+      "gigTitle": "عنوان الخدمة",
+      "gigTitleDesc": "واضح وقابل للبحث ومحدد. أضف كلمتك الرئيسية.",
+      "gigBrief": "ملخص الخدمة",
+      "gigBriefDesc": "قيمة مقترحة قصيرة. ما المشكلة التي تحلها وكيف؟",
+      "category": "الفئة",
+      "categoryDesc": "اختر الفئة والفئة الفرعية الأكثر دقة.",
+      "subcategory": "الفئة الفرعية",
+      "searchTags": "علامات البحث",
+      "searchTagsDesc": "استخدم حتى 5 علامات يبحث عنها المشترون فعليًا.",
+      "tagsHint": "أحرف وأرقام فقط.",
+      "maxTags": "حد أقصى 5 علامات.",
+      "continue": "متابعة",
+      "validation": {
+        "titleRequired": "عنوان الخدمة مطلوب",
+        "titleMax": "لا يمكن أن يتجاوز عنوان الخدمة 100 حرف",
+        "briefRequired": "ملخص الخدمة مطلوب",
+        "briefMax": "لا يمكن أن يتجاوز ملخص الخدمة 500 حرف",
+        "categoryRequired": "الفئة مطلوبة",
+        "tagMax": "يجب أن تكون العلامة 50 حرفاً أو أقل",
+        "tagPattern": "يمكن أن تحتوي العلامات على أحرف وأرقام فقط",
+        "tagRequired": "العلامة مطلوبة",
+        "tagsMin": "علامة واحدة على الأقل مطلوبة",
+        "tagsMax": "الحد الأقصى 5 علامات مسموح"
+      }
+    },
+    "step2": {
+      "field": "الحقل",
+      "title": "العنوان",
+      "description": "الوصف",
+      "deliveryTime": "وقت التسليم (أيام)",
+      "revisions": "التعديلات",
+      "price": "السعر ($)",
+      "test": "اختبار (علامة)",
+      "features": "الميزات (3–5)",
+      "checkErrors": "تحقق من الأخطاء",
+      "back": "رجوع",
+      "continue": "متابعة",
+      "addFeature": "إضافة ميزة",
+      "packageTypes": {
+        "basic": "أساسي",
+        "standard": "قياسي",
+        "premium": "مميز"
+      },
+      "placeholders": {
+        "title": "مثال: شعار أساسي",
+        "description": "وصف قصير (ما المدرج؟)",
+        "deliveryTime": "3",
+        "revisions": "1",
+        "price": "50",
+        "feature": "ميزة {number}"
+      },
+      "validation": {
+        "packageTitleRequired": "عنوان الحزمة مطلوب",
+        "packageTitleMax": "الحد الأقصى 60 حرفاً",
+        "packageDescriptionRequired": "وصف الحزمة مطلوب",
+        "packageDescriptionMax": "الحد الأقصى 220 حرفاً",
+        "deliveryTimeRequired": "وقت التسليم مطلوب",
+        "deliveryTimeMin": "الحد الأدنى يوم واحد",
+        "deliveryTimeMax": "الحد الأقصى لوقت التسليم هو 1200 يوم",
+        "revisionsRequired": "التعديلات مطلوبة",
+        "revisionsMin": "لا يمكن أن يكون سالباً",
+        "revisionsMax": "كن واقعياً",
+        "priceRequired": "السعر مطلوب",
+        "priceMin": "يجب أن يكون السعر 1 على الأقل",
+        "priceMax": "يجب ألا يتجاوز السعر 100,000",
+        "testRequired": "حقل الاختبار مطلوب",
+        "featureRequired": "الميزة مطلوبة",
+        "featureMax": "يجب أن تكون الميزة 50 حرفاً أو أقل",
+        "featuresMin": "3 ميزات على الأقل",
+        "featuresMax": "5 ميزات كحد أقصى",
+        "atLeastOnePackage": "حزمة واحدة على الأقل مطلوبة"
+      }
+    },
+    "step3": {
+      "faqs": "الأسئلة الشائعة",
+      "searchPlaceholder": "البحث في الأسئلة الشائعة…",
+      "noFaqs": "لا توجد أسئلة شائعة بعد. أضف واحدة أدناه أو اختر من القوالب.",
+      "addNewFaq": "إضافة سؤال شائع جديد",
+      "question": "السؤال",
+      "answer": "الإجابة",
+      "addFaq": "إضافة سؤال شائع",
+      "back": "رجوع",
+      "continue": "متابعة",
+      "validation": {
+  "faqQuestionRequired": "السؤال مطلوب",
+  "faqQuestionMax": "يجب ألا يتجاوز السؤال 200 حرف",
+  "faqAnswerRequired": "الإجابة مطلوبة",
+  "faqAnswerMax": "يجب ألا تتجاوز الإجابة 1000 حرف",
+  "faqsMax": "يمكنك إضافة ما يصل إلى 12 سؤالًا فقط"
+      }
+    },
+    "step4": {
+      "questions": "الأسئلة",
+      "dragFree": "بدون سحب • بسيط • نظيف",
+      "noQuestions": "لا توجد أسئلة بعد",
+      "noQuestionsDesc": "ابدأ بإضافة سؤال أدناه — نص، خيارات متعددة، أو رفع ملف.",
+      "required": "مطلوب",
+      "optional": "اختياري",
+      "options": "الخيارات",
+      "addNewQuestion": "إضافة سؤال جديد",
+      "textMultipleFile": "نص • خيارات متعددة • ملف",
+      "questionLabel": "السؤال",
+      "questionPlaceholder": "اكتب سؤالاً",
+      "type": "النوع",
+      "selectType": "اختر النوع",
+      "textInput": "إدخال نص",
+      "multipleChoice": "خيارات متعددة",
+      "fileUpload": "رفع ملف",
+      "optionsLabel": "الخيارات",
+      "optionsPlaceholder": "اكتب خيارًا واضغط إضافة",
+      "atLeastOneOption": "يُطلب خيار واحد على الأقل للخيارات المتعددة",
+      "addQuestion": "إضافة سؤال",
+      "back": "رجوع",
+      "continue": "متابعة",
+      "validation" : {
+        "questionRequired": "السؤال مطلوب",
+  "questionMax": "يجب ألا يتجاوز السؤال 200 حرف",
+  "requirementTypeRequired": "نوع السؤال مطلوب",
+  "optionRequired": "الخيار مطلوب",
+  "optionMax": "يجب ألا يتجاوز الخيار 100 حرف",
+  "optionMin": "مطلوب خيار واحد على الأقل للأسئلة متعددة الاختيارات",
+  "optionMaxCount": "يمكنك إضافة ما يصل إلى 10 خيارات فقط",
+  "questionsMax": "يمكنك إضافة ما يصل إلى 12 سؤالًا فقط"
+      }
+    },
+    "step5": {
+      "images": "الصور (حتى 3)",
+      "imagesDesc": "اجذب انتباه المشترين المناسبين بأمثلة بصرية لخدماتك.",
+      "browseImages": "تصفح الصور",
+      "video": "فيديو (واحد فقط)",
+      "videoDesc": "اجذب انتباه المشترين المناسبين بأمثلة بصرية لخدماتك.",
+      "browseVideo": "تصفح الفيديو",
+      "document": "مستند (حتى 2)",
+      "documentDesc": "اجذب انتباه المشترين المناسبين بأمثلة بصرية لخدماتك.",
+      "browseDocuments": "تصفح المستندات",
+      "back": "رجوع",
+      "continue": "متابعة",
+      "validation": {
+        "imageInvalid": "يجب أن يكون كل ملف صورة صالحة (JPEG، PNG، WEBP، إلخ) وأقل من 5 ميجابايت.",
+        "imagesMin": "يجب رفع صورة واحدة على الأقل",
+        "imagesMax": "يمكنك رفع حتى 3 صور",
+        "videoInvalid": "يجب أن يكون الفيديو بتنسيق مدعوم (MP4، MOV، AVI، إلخ) وأقل من 50 ميجابايت.",
+        "videoMax": "يمكنك رفع فيديو واحد فقط",
+        "documentInvalid": "يجب أن تكون المستندات بتنسيق PDF أو Word أو PowerPoint أو Excel أو TXT وأقل من 25 ميجابايت.",
+        "documentsMax": "يمكنك رفع حتى مستندين"
+      }
+    },
+    "step6": {
+      "congratulations": "تهانينا!",
+      "almostDoneCreate": "أنت على وشك الانتهاء من خدمتك الأولى.",
+      "almostDoneUpdate": "أنت على وشك الانتهاء من تحديث خدمتك.",
+      "phoneVerification": "قبل أن تبدأ البيع على UpPhoto، هناك شيء أخير نحتاج منك القيام به: أمان حسابك مهم بالنسبة لنا. لذلك، نطلب من جميع البائعين التحقق من رقم هاتفهم قبل أن نتمكن من نشر خدمتهم الأولى.",
+      "phonePrivacy": "يبقى رقم هاتفك خاصًا ولا يُستخدم لأغراض التسويق. اقرأ المزيد في سياسة الخصوصية الخاصة بنا.",
+      "backToEdit": "رجوع للتعديل",
+      "updateGig": "تحديث الخدمة",
+      "publishGig": "نشر الخدمة"
+    },
+    "loading": {
+      "loadingGigCreator": "جاري تحميل منشئ الخدمة",
+      "gettingReady": "نحضر كل شيء لك..."
+    },
+    "toast": {
+      "serviceUpdated": "تم تحديث الخدمة بنجاح",
+      "serviceCreated": "تم إنشاء الخدمة بنجاح",
+      "failedToCreate": "فشل إنشاء الخدمة. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "BecomeSeller": {
+    "hero": {
+      "title": "الخدمات المستقلة",
+      "subtitle": "على بعد نقرة واحدة!",
+      "button": "كن بائعًا"
+    },
+    "stats": {
+      "gigBought": "يتم شراء خدمة كل",
+      "transactions": "المعاملات",
+      "priceRange": "نطاق السعر"
+    },
+    "howItWorks": {
+      "title": "كيف يعمل"
+    },
+    "steps": {
+      "createGig": {
+        "title": "إنشاء خدمة",
+        "subtitle": "سجل مجانًا، قم بإعداد خدمتك، واعرض عملك على جمهورنا العالمي."
+      },
+      "deliverWork": {
+        "title": "تقديم عمل رائع",
+        "subtitle": "احصل على إشعار عند استلام طلب واستخدم نظامنا لمناقشة التفاصيل مع العملاء."
+      },
+      "getPaid": {
+        "title": "احصل على أجرك",
+        "subtitle": "احصل على أجرك في الوقت المحدد، في كل مرة. الدفع متاح للسحب بمجرد تسويته."
+      }
+    },
+    "faqs": {
+      "whatCanISell": {
+        "question": "ماذا يمكنني بيعه؟",
+        "answer": "كن مبدعًا! يمكنك تقديم أي خدمة تريد طالما أنها قانونية وتتوافق مع شروطنا. هناك أكثر من 200 فئة يمكنك تصفحها للحصول على أفكار."
+      },
+      "howMuchMoney": {
+        "question": "كم من المال يمكنني كسبه؟",
+        "answer": "تعتمد أرباحك على الطلب وجودة وتميز خدمتك."
+      },
+      "howMuchTime": {
+        "question": "كم من الوقت سأحتاج للاستثمار؟",
+        "answer": "تقرر جدولك الخاص — من بدوام جزئي إلى التزام بدوام كامل."
+      },
+      "howDoIGetPaid": {
+        "question": "كيف أحصل على أجر؟",
+        "answer": "يتم معالجة المدفوعات بشكل آمن ونقلها مباشرة إلى الطريقة التي اخترتها."
+      },
+      "howMuchDoesItCost": {
+        "question": "كم يكلف؟",
+        "answer": "إنشاء حساب مجاني. نحن نأخذ رسوم خدمة فقط لكل طلب مكتمل."
+      },
+      "howDoIPrice": {
+        "question": "كيف أضع سعر خدمتي؟",
+        "answer": "تضع سعرك الخاص اعتمادًا على التعقيد والوقت والخبرة."
+      }
+    }
+  },
+  "Settings": {
+    "tabs": {
+      "account": "الحساب",
+      "security": "الأمان"
+    },
+    "account": {
+      "pendingEmail": "تم إرسال رابط تأكيد إلى <strong>{email}</strong>. يرجى التحقق من بريدك الوارد لتأكيد التغيير.",
+      "cancelRequest": "إلغاء الطلب",
+      "canceling": "جاري الإلغاء…",
+      "resendEmail": "إعادة إرسال البريد الإلكتروني",
+      "resending": "جاري الإعادة…",
+      "resendIn": "إعادة الإرسال خلال {seconds} ثانية",
+      "updateProfile": "هل تحتاج إلى تحديث ملفك الشخصي العام؟",
+      "username": "اسم المستخدم",
+      "email": "البريد الإلكتروني",
+      "saveChanges": "حفظ التغييرات",
+      "accountDeactivation": "إلغاء تفعيل الحساب",
+      "deactivationDescription": "ماذا يحدث عند إلغاء تفعيل حسابك؟",
+      "deactivationPoints": {
+        "profileHidden": "لن يتم عرض ملفك الشخصي وخدماتك بعد الآن.",
+        "ordersCancelled": "سيتم إلغاء الطلبات النشطة."
+      },
+      "leavingReason": "أغادر لأن",
+      "chooseReason": "اختر سببًا",
+      "reasons": {
+        "platform": "وجدت منصة أخرى",
+        "price": "مكلف جدًا",
+        "features": "غير راضٍ عن الميزات",
+        "other": "أخرى"
+      },
+      "tellUsWhy": "أخبرنا لماذا",
+      "yourReason": "سبب مغادرتك",
+      "deactivateAccount": "إلغاء تفعيل الحساب",
+      "confirmDeactivation": "تأكيد إلغاء التفعيل",
+      "confirmMessage": "هل أنت متأكد أنك تريد إلغاء تفعيل حسابك؟",
+      "cancel": "إلغاء",
+      "yesDeactivate": "نعم، إلغاء التفعيل",
+      "toast": {
+        "changesSaved": "تم حفظ التغييرات بنجاح!",
+        "failedToSave": "فشل حفظ التغييرات",
+        "emailResent": "تم إعادة إرسال بريد التأكيد!",
+        "failedToResend": "فشل إعادة إرسال البريد الإلكتروني",
+        "changeCanceled": "تم إلغاء طلب تغيير البريد الإلكتروني",
+        "failedToCancel": "فشل إلغاء طلب تغيير البريد الإلكتروني"
+      }
+    },
+    "security": {
+      "changePassword": "تغيير كلمة المرور",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "saveChanges": "حفظ التغييرات",
+      "connectedDevices": "الأجهزة المتصلة",
+      "noActiveSessions": "لا توجد جلسات نشطة.",
+      "thisDevice": "هذا الجهاز",
+      "signedOut": "تم تسجيل الخروج",
+      "lastActivity": "آخر نشاط {date}",
+      "signOut": "تسجيل الخروج",
+      "revoked": "تم إلغاؤه {date}",
+      "loadMoreSessions": "تحميل المزيد من الجلسات",
+      "signOutAllOthers": "تسجيل الخروج من جميع الأجهزة الأخرى",
+      "toast": {
+        "passwordUpdated": "✅ تم تحديث كلمة المرور بنجاح.",
+        "failedToUpdate": "فشل تحديث كلمة المرور"
+      }
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "description": "للحصول على تحديثات مهمة بخصوص نشاطك، لا يمكن تعطيل بعض الإشعارات.",
+      "type": "النوع",
+      "email": "البريد الإلكتروني",
+      "mobile": "الجوال",
+      "pushNotifications": "الإشعارات الفورية (للأجهزة المحمولة)",
+      "enableDisablePush": "تفعيل/تعطيل الإشعارات الفورية",
+      "tryMe": "جربني",
+      "enableDisableSound": "تفعيل/تعطيل الصوت",
+      "saveChanges": "حفظ التغييرات",
+      "toast": {
+        "settingsSaved": "تم حفظ الإعدادات بنجاح",
+        "failedToSave": "فشل حفظ الإعدادات"
+      }
+    }
+  },
+  "Notifications": {
+    "page": {
+      "title": "الإشعارات",
+      "markAllAsRead": "وضع علامة مقروءة على الكل ({count})",
+      "noNotifications": "لا توجد إشعارات بعد",
+      "noNotificationsDesc": "سنخطرك عند وصول شيء ما.",
+      "viewProposal": "عرض العرض",
+      "viewOrder": "عرض الطلب",
+      "markAsRead": "وضع علامة مقروءة",
+      "failedToLoad": "فشل تحميل الإشعارات"
+    }
+  },
+  "Payment": {
+    "cancel": {
+      "title": "تم إلغاء الدفع",
+      "description": "لم يتم خصم أي أموال. يمكنك المحاولة مرة أخرى في أي وقت.",
+      "backToJobs": "رجوع إلى وظائفي"
+    },
+    "success": {
+      "title": "تم الدفع بنجاح",
+      "description": "تم إنشاء طلبك وتمييزه كمدفوع.",
+      "orderSummary": "ملخص الطلب",
+      "orderId": "رقم الطلب:",
+      "titleLabel": "العنوان:",
+      "amount": "المبلغ:",
+      "status": "الحالة:",
+      "buyer": "المشتري:",
+      "seller": "البائع:",
+      "invoice": "الفاتورة:",
+      "orderNotFound": "الطلب غير موجود",
+      "orderNotFoundDesc": "لم نتمكن من استرداد تفاصيل طلبك.",
+      "goToOrders": "انتقل إلى طلباتي",
+      "goToMyOrders": "انتقل إلى طلباتي",
+      "backToHome": "رجوع إلى الصفحة الرئيسية",
+      "failedToLoad": "فشل تحميل تفاصيل الطلب"
+    },
+    "page": {
+      "title": "محاكاة الدفع",
+      "subtitle": "راجع طلبك وأكمل الدفع بأمان.",
+      "buyer": "المشتري",
+      "seller": "البائع",
+      "invoice": "الفاتورة #{number}",
+      "subtotal": "المجموع الفرعي",
+      "serviceFee": "رسوم الخدمة",
+      "platformPercent": "نسبة المنصة %",
+      "issuedAt": "تاريخ الإصدار",
+      "status": "الحالة",
+      "total": "الإجمالي",
+      "includesTaxes": "يشمل الضرائب والرسوم حيث ينطبق.",
+      "payNow": "ادفع الآن",
+      "processing": "جاري المعالجة…",
+      "cancel": "إلغاء",
+      "noOrderFound": "لم يتم العثور على طلب.",
+      "toast": {
+        "paymentSuccessful": "تم الدفع بنجاح!",
+        "failedToMarkPaid": "فشل تمييز الطلب كمدفوع",
+        "paymentCanceled": "تم إلغاء الدفع",
+        "failedToCancel": "فشل إلغاء الطلب",
+        "failedToLoad": "فشل تحميل الطلب"
+      }
+    }
+  },
+  "createProject": {
+    "crumb": {
+      "share": "شارك وصف الوظيفة",
+      "step1": "الخطوة 1: أضف بيانات النموذج الأول",
+      "step2": "الخطوة 2: أضف بيانات النموذج الثاني",
+      "step3": "الخطوة 3: اعرض الملخص",
+      "reset": "إعادة التعيين للبدء من جديد"
+    },
+    "hero": {
+      "title": "لنبدأ الحديث عن الميزانية والوقت",
+      "subtitle": "(هنا تقدم لنا الصورة الكاملة)",
+      "cta": "شاهد المزيد"
+    },
+    "banner": {
+      "q": "هل أنت مستقل؟",
+      "cta": "كن بائعًا"
+    },
+    "common": {
+      "back": "رجوع"
+    },
+    "step1": {
+      "titleLbl": "امنح مشروعك عنوانًا",
+      "titlePh": "أضف عنوان الوظيفة",
+      "descLbl": "ما الذي ترغب في إنجازه؟",
+      "descPh": "أضف وصف الوظيفة",
+      "attach": "إرفاق ملفات",
+      "catLbl": "أي فئة تناسب مشروعك أكثر؟",
+      "catPh": "اختر الفئة",
+      "budgetLbl": "الميزانية",
+      "budgetPh": "أدخل ميزانيتك",
+      "timeLbl": "الجدول الزمني",
+      "timePh": "أدخل مدة المشروع (مثال: أسبوعان)",
+      "submit": "أرسل وتطابق مع المستقلين"
+    },
+    "step2": {
+      "title": "أرغب في إنفاق",
+      "budgetPh": "أضف ميزانيتك",
+      "range": "النطاق المتوسط لهذه الخدمات 3,706$ - 13,706$",
+      "flex": "ميزانيتي مرنة",
+      "delivery": "تاريخ التسليم",
+      "deliveryPh": "تاريخ التسليم المفضل",
+      "note": "سنجد المستقلين المتاحين",
+      "review": "راجع مشروعك",
+      "opt": {
+        "asap": "في أسرع وقت (خلال أيام قليلة)",
+        "1w": "خلال أسبوع",
+        "2w": "خلال أسبوعين",
+        "1m": "خلال شهر",
+        "date": "اختر تاريخًا محددًا…"
+      }
+    },
+    "review": {
+      "project": "ملخص المشروع",
+      "bigPicture": "هنا تزودنا بالصورة الكاملة.",
+      "title": "العنوان",
+      "service": "الخدمة",
+      "description": "الوصف",
+      "attachment": "المرفقات",
+      "noFiles": "لا توجد ملفات مرفقة",
+      "continue": "متابعة",
+      "job": "ملخص الوظيفة",
+      "blurb": "إليك ملخص لتفضيلات وظيفتك.",
+      "budget": "الميزانية",
+      "deliverBy": "التسليم بحلول",
+      "reviewCta": "راجع مشروعك"
+    }
+  },
+  "Invite": {
+    "page": {
+      "hero": {
+        "title": "احصل على رصيد لإحالة الأصدقاء إلى UpPhoto",
+        "subtitle": "اكسب حتى 500 دولار أمريكي كرصيد — حتى 100 دولار أمريكي من كل إحالة."
+      },
+      "inviteFriends": "دعوة الأصدقاء عبر البريد الإلكتروني",
+      "addEmailsPlaceholder": "أضف عناوين البريد الإلكتروني (افصل بفواصل أو مسافات أو أسطر جديدة)",
+      "separateEmails": "افصل عناوين البريد الإلكتروني بفواصل أو مسافات أو أسطر جديدة.",
+      "previewEmail": "معاينة البريد الإلكتروني",
+      "clear": "مسح",
+      "valid": "صالح",
+      "invalid": "غير صالح",
+      "sending": "جاري الإرسال…",
+      "sendInvites": "إرسال الدعوات",
+      "successfullySent": "تم الإرسال بنجاح إلى {count} {count, plural, one {بريد إلكتروني} other {بريد إلكتروني}}.",
+      "uniqueLink": "رابط الدعوة الفريد الخاص بك",
+      "copy": "نسخ",
+      "copied": "تم النسخ!",
+      "shareLink": "شارك رابطك أو استخدم أزرار الوسائط الاجتماعية أدناه.",
+      "emailSubject": "موضوع البريد الإلكتروني",
+      "subjectPlaceholder": "الموضوع…",
+      "yourName": "اسمك (اختياري)",
+      "namePlaceholder": "مثال: محمد",
+      "message": "الرسالة",
+      "messagePlaceholder": "اكتب رسالة الدعوة الخاصة بك…",
+      "linkHint": "يمكنك استخدام '{link}' في رسالتك سيتم استبدالها برابط الدعوة الفريد الخاص بك.",
+      "emailPreview": "معاينة البريد الإلكتروني",
+      "to": "إلى:",
+      "subject": "الموضوع:",
+      "noRecipients": "لا يوجد مستلمون",
+      "openInEmailClient": "فتح في عميل البريد الإلكتروني",
+      "close": "إغلاق",
+      "errors": {
+        "subjectTooShort": "يجب أن يكون الموضوع 5 أحرف على الأقل.",
+        "messageTooShort": "يجب أن تكون الرسالة 7 أحرف على الأقل.",
+        "failedToSend": "فشل إرسال الدعوات. يرجى المحاولة مرة أخرى.",
+        "couldNotCopy": "تعذر نسخ الرابط."
+      }
+    }
+  },
+  "Cart": {
+    "page": {
+      "title": "سلة التسوق",
+      "subtitle": "هذه هي الخدمات في سلة التسوق الخاصة بك.",
+      "clearCart": "مسح السلة",
+      "clearing": "جاري المسح…",
+      "exploreServices": "استكشف الخدمات",
+      "emptyTitle": "سلة التسوق فارغة",
+      "emptyDescription": "استكشف الخدمات وأضفها إلى سلة التسوق لرؤيتها هنا.",
+      "viewService": "عرض الخدمة",
+      "remove": "إزالة",
+      "errors": {
+        "failedToRemove": "فشل إزالة العنصر",
+        "failedToClear": "فشل مسح السلة"
+      }
+    }
+  },
+  "Chat": {
     "received": "تم الاستلام ✅",
     "save": "حفظ",
-    "star": "تفضيل",
+    "star": "مفضلة",
     "more": "المزيد",
-    "close": "إغلاق",
-    "allMessages": "كل الرسائل",
-    "clear": "مسح",
-    "attach": "إرفاق",
-    "emoji": "رمز تعبيري",
-    "send": "إرسال",
     "noMatches": "لا توجد نتائج",
-    "about": "حول {name}",
     "labels": {
       "from": "من",
       "onPlatform": "على المنصة",
@@ -22,16 +1998,724 @@
       "responseRate": "معدل الاستجابة",
       "rating": "التقييم"
     },
-    "placeholders": {
-      "search": "ابحث باسم العميل",
-      "message": "أرسل رسالة"
-    },
+    "search": "ابحث باسم العميل",
     "menu": {
-      "markUnread": "وضع كغير مقروء",
+      "markUnread": "وضع علامة كغير مقروء",
       "mute": "كتم المحادثة",
       "block": "حظر المستخدم",
       "export": "تصدير المحادثة",
       "delete": "حذف المحادثة"
+    },
+    "allMessages": "جميع الرسائل",
+    "tabs": {
+      "all": "الكل",
+      "favorites": "المفضلة",
+      "archived": "المؤرشفة"
+    },
+    "clear": "مسح",
+    "searching": "جاري البحث…",
+    "noUsersFound": "لم يتم العثور على مستخدمين",
+    "noFavorites": "لا توجد مفضلة",
+    "noConversations": "لا توجد محادثات",
+    "noArchivedConversations": "لا توجد محادثات مؤرشفة",
+    "contactAdmin": "اتصل بالمسؤول",
+    "refresh": "تحديث",
+    "conversationWith": "محادثة مع {name}",
+    "unread": "{count} غير مقروء",
+    "page": "صفحة {current} / {total}",
+    "addFavorite": "إضافة إلى المفضلة",
+    "removeFavorite": "إزالة من المفضلة",
+    "favorite": "مفضلة",
+    "unfavorite": "إلغاء التفضيل",
+    "archive": "أرشفة",
+    "unarchive": "إلغاء الأرشفة",
+    "pin": "تثبيت",
+    "unpin": "إلغاء التثبيت",
+    "about": "حول {name}",
+    "contact": "جهة الاتصال",
+    "topRated": "الأعلى تقييماً",
+    "lastMessage": "آخر رسالة",
+    "onPlatform": "على المنصة",
+    "languages": "اللغات",
+    "level": "المستوى",
+    "responseRate": "معدل الاستجابة",
+    "ordersCompleted": "الطلبات المكتملة",
+    "role": "الدور",
+    "memberSince": "عضو منذ {date}",
+    "justNow": "الآن",
+    "timeAgo": {
+      "minutes": "منذ {count} دقيقة",
+      "hours": "منذ {count} ساعة",
+      "days": "منذ {count} يوم"
+    },
+    "you": "أنت",
+    "user": "المستخدم",
+    "noMessages": {
+      "title": "لا توجد رسائل بعد",
+      "subtitle": "بمجرد أن تبدأ المحادثة، ستظهر محادثتك هنا."
+    },
+    "loadOlderMessages": "تحميل رسائل أقدم ↑",
+    "newMessage": "رسالة جديدة",
+    "newMessageScroll": "رسالة جديدة - التمرير إلى الأسفل",
+    "removeAttachment": "إزالة المرفق",
+    "preview": "معاينة",
+    "send": "إرسال",
+    "emoji": "إيموجي",
+    "close": "إغلاق",
+    "attachFiles": "إرفاق ملفات",
+    "yourFiles": "ملفاتك",
+    "upload": "رفع",
+    "noFilesYet": "لا توجد ملفات بعد. استخدم \"رفع\".",
+    "useFiles": "استخدام {count} {count, plural, one {ملف} other {ملفات}}",
+    "deleteFile": "حذف الملف",
+    "filesUploaded": "تم رفع الملفات بنجاح",
+    "filesUploadFailed": "فشل رفع الملفات. يرجى المحاولة مرة أخرى.",
+    "fileDeleted": "تم حذف الملف بنجاح",
+    "fileDeleteFailed": "فشل حذف الملف. يرجى المحاولة مرة أخرى.",
+    "creatingConversation": "جاري إنشاء المحادثة...",
+    "conversationCreated": "تم إنشاء المحادثة بنجاح",
+    "conversationCreateFailed": "فشل إنشاء المحادثة",
+    "updatingFavorite": "جاري تحديث المفضلة لـ {name}...",
+    "addedToFavorites": "تمت إضافة {name} إلى المفضلة",
+    "removedFromFavorites": "تمت إزالة {name} من المفضلة",
+    "favoriteUpdateFailed": "فشل تحديث المفضلة لـ {name}",
+    "conversationPinned": "تم تثبيت المحادثة",
+    "conversationUnpinned": "تم إلغاء تثبيت المحادثة",
+    "conversationArchived": "تم أرشفة المحادثة",
+    "conversationUnarchived": "تم إلغاء أرشفة المحادثة",
+    "adminContactUnavailable": "جهة اتصال المسؤول غير متاحة.",
+    "adminContactFailed": "فشل الاتصال بالمسؤول",
+    "selectConversation": "اختر محادثة لبدء الدردشة",
+    "searchForUsers": "أو ابحث عن المستخدمين أعلاه لبدء محادثة جديدة",
+    "failedToLoadConversations": "فشل تحميل المحادثات",
+    "failedToLoadMessages": "فشل تحميل الرسائل",
+    "failedToSendMessage": "فشل إرسال الرسالة",
+    "aboutPanel": {
+      "about": "حول {name}",
+      "topRated": "الأعلى تقييماً",
+      "lastMessage": "آخر رسالة",
+      "onPlatform": "على المنصة",
+      "languages": "اللغات",
+      "level": "المستوى",
+      "responseRate": "معدل الاستجابة",
+      "ordersCompleted": "الطلبات المكتملة",
+      "role": "الدور",
+      "contact": "جهة الاتصال"
+    },
+    "placeholders": {
+      "search": "البحث في المحادثات",
+      "message": "اكتب رسالة…",
+      "selectConversation": "حدد محادثة لبدء الدردشة",
+      "searchUsers": "أو ابحث عن مستخدمين أعلاه لبدء محادثة جديدة"
+    }
+  },
+  "NotFound": {
+    "errorCode": "خطأ 404",
+    "title": "الصفحة غير موجودة",
+    "description": "عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها. حاول العودة، أو انتقل إلى الصفحة الرئيسية.",
+    "backToHome": "رجوع إلى الصفحة الرئيسية",
+    "goBack": "رجوع"
+  },
+  "OrderDeliveryTimer": {
+    "timeRemaining": "الوقت المتبقي للتسليم",
+    "expired": "انتهى وقت التسليم",
+    "days": "أيام",
+    "hours": "ساعات",
+    "minutes": "دقائق",
+    "seconds": "ثواني"
+  },
+  "Dashboard": {
+    "sidebar": {
+      "adminDashboard": "لوحة تحكم المسؤول",
+      "controlCenter": "مركز التحكم",
+      "close": "إغلاق",
+      "menuItems": {
+        "dashboard": "لوحة التحكم",
+        "users": "المستخدمون",
+        "categories": "الفئات",
+        "services": "الخدمات",
+        "jobs": "الوظائف",
+        "orders": "الطلبات",
+        "invoices": "الفواتير",
+        "disputes": "النزاعات",
+        "finance": "المالية",
+        "chat": "الدردشة",
+        "notifications": "الإشعارات",
+        "settings": "الإعدادات"
+      },
+      "descriptions": {
+        "dashboard": "مؤشرات الأداء الرئيسية والاتجاهات والإجراءات السريعة لمساحة العمل الخاصة بك.",
+        "users": "إدارة حسابات المستخدمين والأدوار والحالة والأذونات.",
+        "categories": "إنشاء وتنظيم الفئات للمحتوى والخدمات الخاصة بك.",
+        "services": "إضافة وتحرير ونشر الخدمات مع الأسعار والحزم.",
+        "jobs": "إضافة وتحرير ونشر الوظيفة.",
+        "orders": "تتبع وتنفيذ وتحديث حالات الطلبات والملاحظات.",
+        "invoices": "إنشاء وتنزيل وإدارة الفواتير والفوترة.",
+        "disputes": "طلب المدفوعات وعرض الأرصدة وسجل الدفع.",
+        "finance": "طلب المدفوعات وعرض الأرصدة وسجل الدفع.",
+        "chat": "المحادثات وصندوق الدعم والرسائل في الوقت الفعلي.",
+        "notifications": "جميع الإشعارات والرسائل وتنبيهات الدعم في مكان واحد.",
+        "settings": "الحساب والتفضيلات والتكاملات وخيارات النظام."
+      }
+    },
+    "header": {
+      "adminNotifications": "إشعارات المسؤول",
+      "new": "جديد",
+      "markAllRead": "وضع علامة مقروءة على الكل",
+      "markAsRead": "وضع علامة مقروءة",
+      "loadMore": "تحميل المزيد",
+      "loading": "جاري التحميل…",
+      "noNotifications": "لا توجد إشعارات",
+      "close": "إغلاق"
+    },
+    "categories": {
+      "title": "الفئات",
+      "error": "فشل جلب الفئات.",
+      "tabs": {
+        "all": "الكل",
+        "category": "الفئات الرئيسية",
+        "subcategory": "الفئات الفرعية"
+      },
+      "searchPlaceholder": "البحث في الفئات…",
+      "orderBy": "ترتيب حسب",
+      "sortOptions": {
+        "newest": "الأحدث",
+        "oldest": "الأقدم",
+        "az": "أ-ي",
+        "za": "ي-أ",
+        "top": "أفضل الفئات"
+      },
+      "addCategory": "إضافة فئة",
+      "toast": {
+        "iconUpdated": "تم تحديث أيقونة الفئة الأعلى",
+        "iconUpdateFailed": "فشل تحديث الأيقونة",
+        "removedFromTop": "تمت إزالة الفئة من الأعلى",
+        "removeTopFailed": "فشل إزالة حالة الأعلى"
+      },
+      "modal": {
+        "viewTitle": "تفاصيل الفئة",
+        "editTitle": "تحرير الفئة ({name})",
+        "createTitle": "إنشاء فئة",
+        "editTopTitle": "تحرير أيقونة الأعلى",
+        "markTopTitle": "وضع علامة كأعلى",
+        "type": "النوع",
+        "mainCategory": "الفئة الرئيسية",
+        "subcategory": "الفئة الفرعية",
+        "parentCategory": "الفئة الأصلية *",
+        "name": "الاسم *",
+        "namePlaceholder": "أدخل اسم الفئة",
+        "slug": "الرابط *",
+        "slugPlaceholder": "رابط-الفئة",
+        "description": "الوصف",
+        "close": "إغلاق",
+        "cancel": "إلغاء",
+        "saving": "جاري الحفظ…",
+        "updateCategory": "تحديث الفئة",
+        "createCategory": "إنشاء فئة",
+        "chooseIcon": "اختر الأيقونة",
+        "chooseFileHint": "اختر ملفًا ثم انقر فوق حفظ لتحديث أيقونة الأعلى.",
+        "saveIcon": "حفظ الأيقونة",
+        "unmarkTop": "إلغاء وضع الأعلى",
+        "removing": "جاري الإزالة…"
+      },
+      "actions": {
+        "view": "عرض",
+        "edit": "تحرير",
+        "delete": "حذف",
+        "markTop": "وضع علامة كأعلى",
+        "unmarkTop": "إلغاء وضع الأعلى"
+      },
+      "deleteConfirm": "حذف هذه الفئة؟ لا يمكن التراجع عن هذا.",
+      "deleting": "جاري حذف الفئة…",
+      "deleted": "تم حذف الفئة بنجاح.",
+      "deleteError": "خطأ في حذف الفئة (ربما لها خدمات مرتبطة).",
+      "validation": {
+        "nameRequired": "الاسم مطلوب",
+        "nameMax": "يجب ألا يزيد الاسم عن 70 حرفًا",
+        "slugRequired": "الرابط مطلوب",
+        "slugMax": "يجب ألا يزيد الرابط عن 70 حرفًا",
+        "slugInvalid": "يمكن أن يحتوي الرابط فقط على أحرف وأرقام وشرطات وشرطات سفلية",
+        "descriptionMax": "يجب ألا يزيد الوصف عن 300 حرف",
+        "parentRequired": "الفئة الأصلية مطلوبة للفئات الفرعية",
+        "imageInvalid": "رابط غير صالح"
+      }
+    },
+    "disputes": {
+      "title": "النزاعات",
+      "tabs": {
+        "all": "الكل",
+        "open": "مفتوح",
+        "inReview": "قيد المراجعة",
+        "closedNoPayout": "مغلق (بدون دفع)",
+        "resolved": "تم الحل",
+        "rejected": "مرفوض"
+      },
+      "searchPlaceholder": "البحث في النزاعات…",
+      "orderBy": "ترتيب حسب",
+      "sortOptions": {
+        "newest": "الأحدث",
+        "oldest": "الأقدم"
+      },
+      "columns": {
+        "id": "المعرف",
+        "subject": "الموضوع",
+        "order": "الطلب",
+        "owner": "المالك",
+        "client": "العميل",
+        "status": "الحالة",
+        "raisedBy": "تم رفعه بواسطة",
+        "created": "تم الإنشاء"
+      },
+      "actions": {
+        "view": "عرض",
+        "activity": "النشاط",
+        "propose": "اقتراح",
+        "openAgain": "فتح مرة أخرى",
+        "markInReview": "وضع علامة قيد المراجعة",
+        "closeOrder": "إغلاق (يستمر الطلب)",
+        "reject": "رفض",
+        "closing": "جاري الإغلاق",
+        "rejecting": "جاري الرفض…"
+      },
+      "modals": {
+        "detailsTitle": "تفاصيل النزاع",
+        "order": "الطلب",
+        "raisedBy": "تم رفعه بواسطة",
+        "subject": "الموضوع",
+        "type": "النوع",
+        "status": "الحالة",
+        "reason": "السبب",
+        "invoice": "الفاتورة",
+        "subtotal": "المجموع الفرعي",
+        "serviceFee": "رسوم الخدمة",
+        "total": "الإجمالي",
+        "noInvoice": "لم يتم العثور على فاتورة.",
+        "proposeTitle": "اقتراح / حل النزاع",
+        "subtotalEscrow": "المجموع الفرعي (الضمان)",
+        "serviceFeePlatform": "رسوم الخدمة (المنصة)",
+        "sellerAmount": "مبلغ البائع (الدفع)",
+        "buyerRefund": "استرداد المشتري (الائتمان)",
+        "closeOrderAs": "إغلاق الطلب كـ",
+        "completed": "مكتمل",
+        "cancelled": "ملغى",
+        "processing": "جاري المعالجة…",
+        "resolvePayout": "حل والدفع",
+        "activityTitle": "نشاط النزاع",
+        "amountsMustBePositive": "يجب أن تكون المبالغ ≥ 0.",
+        "amountsMustEqual": "يجب أن يساوي مبلغ البائع + استرداد المشتري المجموع الفرعي ({subtotal}).",
+        "cannotPayout": "لا يمكن الدفع: فاتورة مفقودة أو مجموع فرعي صفر.",
+        "failedToSave": "فشل حفظ الحل.",
+        "failedToLoad": "فشل تحميل النشاط."
+      },
+      "toast": {
+        "updatingStatus": "جاري تحديث الحالة إلى \"{status}\"…",
+        "statusUpdated": "تم تحديث الحالة إلى \"{status}\" بنجاح.",
+        "statusUpdateFailed": "فشل تحديث الحالة إلى \"{status}\".",
+        "resolvedPayout": "تم حل النزاع وإكمال الدفع.",
+        "resolvePayoutFailed": "فشل الحل والدفع."
+      }
+    },
+    "finance": {
+      "title": "المالية",
+      "kpis": {
+        "availableBalance": "الرصيد المتاح",
+        "readyToWithdraw": "جاهز للسحب",
+        "credits": "الائتمانات",
+        "refundCredits": "ائتمانات الاسترداد",
+        "earningsToDate": "الأرباح حتى الآن",
+        "lifetimeGross": "الإجمالي مدى الحياة",
+        "cancelledOrdersCredit": "ائتمان الطلبات الملغاة",
+        "holdbacks": "الاحتجازات من الإلغاءات"
+      },
+      "tabs": {
+        "all": "جميع المعاملات",
+        "escrowDeposit": "إيداع الضمان",
+        "escrowRelease": "إطلاق الضمان",
+        "withdrawal": "السحوبات"
+      },
+      "columns": {
+        "id": "المعرف",
+        "type": "النوع",
+        "amount": "المبلغ",
+        "status": "الحالة",
+        "description": "الوصف",
+        "date": "التاريخ"
+      },
+      "debit": " (مدين)"
+    },
+    "invoices": {
+      "title": "الفواتير",
+      "tabs": {
+        "all": "جميع الفواتير",
+        "paid": "مدفوع",
+        "pending": "قيد الانتظار",
+        "failed": "فشل"
+      },
+      "columns": {
+        "invoiceNumber": "رقم الفاتورة",
+        "order": "الطلب",
+        "buyer": "المشتري",
+        "subtotal": "المجموع الفرعي",
+        "serviceFee": "رسوم الخدمة",
+        "totalAmount": "المبلغ الإجمالي",
+        "platformPercent": "نسبة المنصة %",
+        "paymentStatus": "حالة الدفع",
+        "issuedDate": "تاريخ الإصدار",
+        "paymentMethod": "طريقة الدفع",
+        "na": "غير متاح"
+      }
+    },
+    "jobs": {
+      "title": "الوظائف",
+      "tabs": {
+        "all": "جميع الوظائف",
+        "pending": "قيد الانتظار",
+        "published": "منشور",
+        "awarded": "ممنوح",
+        "completed": "مكتمل",
+        "closed": "مغلق"
+      },
+      "searchPlaceholder": "البحث في الوظائف…",
+      "orderBy": "ترتيب حسب",
+      "sortOptions": {
+        "newest": "الأحدث",
+        "oldest": "الأقدم",
+        "budgetHigh": "الميزانية: من الأعلى إلى الأدنى",
+        "budgetLow": "الميزانية: من الأدنى إلى الأعلى"
+      },
+      "columns": {
+        "jobTitle": "عنوان الوظيفة",
+        "status": "الحالة",
+        "budget": "الميزانية",
+        "type": "النوع",
+        "postedBy": "نشر بواسطة",
+        "proposals": "العروض",
+        "created": "تم الإنشاء"
+      },
+      "actions": {
+        "view": "عرض",
+        "setPending": "تعيين قيد الانتظار",
+        "publish": "نشر",
+        "markAwarded": "وضع علامة ممنوح",
+        "complete": "إكمال",
+        "close": "إغلاق",
+        "delete": "حذف"
+      },
+      "modal": {
+        "title": "تفاصيل الوظيفة",
+        "jobTitle": "عنوان الوظيفة",
+        "status": "الحالة",
+        "description": "الوصف",
+        "budget": "الميزانية",
+        "budgetType": "نوع الميزانية",
+        "preferredDelivery": "التسليم المفضل",
+        "days": "أيام",
+        "proposals": "العروض",
+        "proposalsCount": "عروض",
+        "posted": "تم النشر",
+        "skillsRequired": "المهارات المطلوبة",
+        "attachments": "المرفقات",
+        "download": "تنزيل",
+        "additionalDetails": "تفاصيل إضافية",
+        "close": "إغلاق"
+      },
+      "toast": {
+        "publishing": "جاري نشر الوظيفة...",
+        "published": "تم نشر الوظيفة ✅",
+        "publishError": "خطأ في نشر الوظيفة.",
+        "changingStatus": "تغيير الحالة إلى {status}...",
+        "statusSet": "تم تعيين الحالة إلى {status}",
+        "statusError": "خطأ في تحديث حالة الوظيفة.",
+        "deleteConfirm": "حذف هذه الوظيفة؟ لا يمكن التراجع عن هذا.",
+        "deleting": "جاري حذف الوظيفة...",
+        "deleted": "تم حذف الوظيفة",
+        "deleteError": "خطأ في حذف الوظيفة.",
+        "fetchError": "فشل جلب الوظائف."
+      }
+    },
+    "orders": {
+      "title": "الطلبات",
+      "tabs": {
+        "all": "جميع الطلبات",
+        "pending": "قيد الانتظار",
+        "accepted": "مقبول",
+        "delivered": "تم التسليم",
+        "completed": "مكتمل",
+        "cancelled": "ملغى"
+      },
+      "searchPlaceholder": "البحث في الطلبات…",
+      "orderBy": "ترتيب حسب",
+      "sortOptions": {
+        "newest": "الأحدث",
+        "oldest": "الأقدم",
+        "priceHigh": "السعر: من الأعلى إلى الأدنى",
+        "priceLow": "السعر: من الأدنى إلى الأعلى"
+      },
+      "columns": {
+        "orderTitle": "عنوان الطلب",
+        "status": "الحالة",
+        "amount": "المبلغ",
+        "buyer": "المشتري",
+        "seller": "البائع",
+        "package": "الحزمة",
+        "orderDate": "تاريخ الطلب"
+      },
+      "actions": {
+        "view": "عرض",
+        "setPending": "تعيين قيد الانتظار",
+        "accept": "قبول",
+        "markDelivered": "وضع علامة تم التسليم",
+        "complete": "إكمال",
+        "cancel": "إلغاء",
+        "disputed": "نزاع"
+      },
+      "toast": {
+        "updatingStatus": "جاري تحديث حالة الطلب إلى {status}...",
+        "statusUpdated": "تم تحديث حالة الطلب إلى {status}",
+        "statusError": "خطأ في تحديث حالة الطلب."
+      }
+    },
+    "services": {
+      "title": "الخدمات",
+      "tabs": {
+        "all": "جميع الخدمات",
+        "active": "نشط",
+        "draft": "مسودات",
+        "pending": "قيد الانتظار",
+        "paused": "متوقف"
+      },
+      "searchPlaceholder": "البحث في الخدمات…",
+      "orderBy": "ترتيب حسب",
+      "sortOptions": {
+        "newest": "الأحدث",
+        "oldest": "الأقدم",
+        "az": "أ-ي",
+        "za": "ي-أ",
+        "mostOrdered": "الأكثر طلبًا",
+        "popular": "الأكثر شعبية"
+      },
+      "columns": {
+        "image": "الصورة",
+        "title": "العنوان",
+        "slug": "الرابط",
+        "status": "الحالة",
+        "seller": "البائع",
+        "performance": "الأداء",
+        "clicks": "نقرات",
+        "orders": "طلبات",
+        "created": "تم الإنشاء"
+      },
+      "actions": {
+        "view": "عرض",
+        "pending": "قيد الانتظار",
+        "activate": "تفعيل",
+        "pause": "إيقاف مؤقت",
+        "setDraft": "تعيين كمسودة",
+        "markPopular": "وضع علامة كشائع",
+        "unmarkPopular": "إلغاء وضع الشائع"
+      },
+      "modal": {
+        "viewTitle": "تفاصيل الخدمة",
+        "editTitle": "تحرير الخدمة",
+        "createTitle": "إنشاء خدمة",
+        "editPopularTitle": "تحرير أيقونة الشائع",
+        "markPopularTitle": "وضع علامة كشائع",
+        "title": "العنوان *",
+        "titlePlaceholder": "عنوان الخدمة",
+        "slug": "الرابط *",
+        "slugPlaceholder": "رابط-الخدمة",
+        "briefDescription": "وصف موجز",
+        "briefPlaceholder": "وصف قصير",
+        "fullDescription": "الوصف الكامل",
+        "category": "الفئة *",
+        "selectCategory": "اختر الفئة",
+        "subcategory": "الفئة الفرعية",
+        "selectSubcategory": "اختر الفئة الفرعية",
+        "selectCategoryFirst": "اختر الفئة أولاً",
+        "status": "الحالة",
+        "packages": "الحزم",
+        "addPackage": "إضافة حزمة",
+        "package": "الحزمة {index}",
+        "remove": "إزالة",
+        "packageType": "نوع الحزمة",
+        "packageTypePlaceholder": "أساسي، قياسي، ممتاز",
+        "packageTitle": "العنوان",
+        "packageTitlePlaceholder": "عنوان الحزمة",
+        "price": "السعر ($)",
+        "pricePlaceholder": "0.00",
+        "deliveryTime": "وقت التسليم (أيام)",
+        "deliveryTimePlaceholder": "3",
+        "revisions": "المراجعات",
+        "revisionsPlaceholder": "1",
+        "packageDescription": "الوصف",
+        "galleryImages": "صور المعرض",
+        "additionalOptions": "خيارات إضافية",
+        "fastDelivery": "تسليم سريع متاح",
+        "additionalRevision": "مراجعة إضافية متاحة",
+        "close": "إغلاق",
+        "cancel": "إلغاء",
+        "saving": "جاري الحفظ…",
+        "updateService": "تحديث الخدمة",
+        "createService": "إنشاء خدمة",
+        "chooseIcon": "اختر الأيقونة",
+        "chooseFileHint": "اختر ملفًا ثم انقر فوق حفظ لتحديث أيقونة الشائع.",
+        "saveIcon": "حفظ الأيقونة",
+        "unmarkPopular": "إلغاء وضع الشائع",
+        "removing": "جاري الإزالة…"
+      },
+      "toast": {
+        "updatingStatus": "جاري تحديث حالة الخدمة...",
+        "statusUpdated": "تم تحديث حالة الخدمة بنجاح!",
+        "statusError": "خطأ في تحديث حالة الخدمة.",
+        "iconUpdated": "تم تحديث أيقونة الشائع",
+        "iconUpdateFailed": "فشل تحديث الأيقونة",
+        "removedFromPopular": "تمت إزالة الخدمة من الشائع",
+        "removeFailed": "فشل إزالة حالة الشائع"
+      }
+    },
+    "settings": {
+      "title": "إعدادات المنصة",
+      "subtitle": "إدارة التكوين العام",
+      "saveSettings": "حفظ الإعدادات",
+      "saving": "جاري الحفظ...",
+      "saveChanges": "حفظ التغييرات",
+      "sections": {
+        "general": "الإعدادات العامة",
+        "financial": "الإعدادات المالية",
+        "legal": "القانونية والامتثال"
+      },
+      "fields": {
+        "siteName": "اسم الموقع",
+        "siteNamePlaceholder": "اسم منصتك",
+        "logo": "الشعار",
+        "orPasteUrl": "أو الصق رابط الصورة",
+        "logoHint": "يُنصح بـ PNG/SVG. المربع يعمل بشكل أفضل.",
+        "contactEmail": "البريد الإلكتروني للاتصال",
+        "contactEmailPlaceholder": "support@example.com",
+        "supportPhone": "هاتف الدعم",
+        "supportPhonePlaceholder": "+1234567890",
+        "platformFee": "رسوم المنصة (%)",
+        "defaultCurrency": "العملة الافتراضية (المعرف)",
+        "platformWalletOwner": "مالك محفظة المنصة (معرف المستخدم)",
+        "platformWalletPlaceholder": "مثال: 707a2de6-b83a-4f2b-b492-cca4cca0ef7f",
+        "platformWalletHint": "يتم إيداع الأموال من الفواتير المدفوعة هنا (الضمان). تأكد من أن هذا يطابق مستخدمًا صالحًا مع محفظة.",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsOfService": "شروط الخدمة",
+        "faqs": "الأسئلة الشائعة",
+        "faqsHint": "أضف أسئلة وإجابات للعرض عبر الموقع."
+      },
+      "tabs": {
+        "privacy": "سياسة الخصوصية",
+        "terms": "شروط الخدمة"
+      },
+      "preview": "معاينة",
+      "stats": {
+        "chars": "أحرف",
+        "words": "كلمات",
+        "tipPrivacy": "نصيحة: استخدم العناوين والفقرات القصيرة للقراءة.",
+        "tipTerms": "تضمين الاستردادات والتسليمات والنزاعات والقانون الحاكم."
+      },
+      "previewEmpty": "لا شيء للمعاينة بعد.",
+      "uploading": "جاري الرفع…",
+      "uploadLogo": "رفع الشعار",
+      "validation": {
+        "emailInvalid": "تنسيق بريد إلكتروني غير صالح",
+        "platformFeeMin": "يجب أن تكون رسوم المنصة 0% على الأقل",
+        "platformFeeMax": "لا يمكن أن تتجاوز رسوم المنصة 100%",
+        "logoRequired": "مسار الشعار مطلوب",
+        "logoInvalid": "يجب أن يكون رابط صورة صالح"
+      },
+      "toast": {
+        "saved": "تم حفظ الإعدادات بنجاح!",
+        "saveFailed": "فشل حفظ الإعدادات.",
+        "autoPublishEnabled": "سيتم نشر الوظائف على الفور.",
+        "autoPublishDisabled": "الوظائف تتطلب الآن موافقة المسؤول قبل النشر.",
+        "updateFailed": "فشل تحديث إعداد موافقة الوظيفة."
+      }
+    },
+    "users": {
+      "title": "المستخدمون",
+      "tabs": {
+        "all": "جميع المستخدمين",
+        "buyer": "المشترون",
+        "seller": "البائعون",
+        "admin": "المسؤولون"
+      },
+      "searchPlaceholder": "البحث في المستخدمين…",
+      "orderBy": "ترتيب حسب",
+      "sortOptions": {
+        "newest": "الأحدث",
+        "oldest": "الأقدم",
+        "az": "أ-ي",
+        "za": "ي-أ"
+      },
+      "filterBy": "تصفية حسب",
+      "filterOptions": {
+        "all": "الكل",
+        "active": "نشط",
+        "suspended": "معلق",
+        "deleted": "محذوف"
+      },
+      "columns": {
+        "avatar": "الصورة الرمزية",
+        "username": "اسم المستخدم",
+        "email": "البريد الإلكتروني",
+        "role": "الدور",
+        "status": "الحالة",
+        "joined": "انضم",
+        "lastLogin": "آخر تسجيل دخول"
+      },
+      "actions": {
+        "viewDetails": "عرض التفاصيل",
+        "editUser": "تحرير المستخدم",
+        "activate": "تفعيل",
+        "suspend": "تعليق",
+        "delete": "حذف",
+        "levels": {
+          "new": "جديد",
+          "lvl1": "المستوى 1",
+          "lvl2": "المستوى 2",
+          "top": "بائع متميز"
+        }
+      },
+      "modal": {
+        "title": "تفاصيل المستخدم",
+        "editTitle": "تحرير المستخدم {username}",
+        "userInformation": "معلومات المستخدم",
+        "memberSince": "عضو منذ:",
+        "lastLogin": "آخر تسجيل دخول:",
+        "never": "أبدًا",
+        "description": "الوصف:",
+        "noDescription": "لا يوجد وصف",
+        "skills": "المهارات:",
+        "noSkills": "لا توجد مهارات مدرجة",
+        "languages": "اللغات:",
+        "noLanguages": "لا توجد لغات مدرجة",
+        "referralCode": "رمز الإحالة:",
+        "noReferralCode": "لا يوجد رمز إحالة",
+        "close": "إغلاق",
+        "cancel": "إلغاء",
+        "saving": "جاري الحفظ...",
+        "saveChanges": "حفظ التغييرات"
+      },
+      "toast": {
+        "changingStatus": "تغيير الحالة إلى {status}...",
+        "statusChanged": "تم تغيير الحالة إلى {status} بنجاح",
+        "statusError": "فشل تغيير الحالة",
+        "deleteConfirm": "حذف هذا المستخدم؟",
+        "deleting": "جاري حذف المستخدم...",
+        "deleted": "تم حذف المستخدم",
+        "deleteError": "فشل حذف المستخدم",
+        "saving": "جاري حفظ التغييرات...",
+        "saved": "تم تحديث المستخدم بنجاح",
+        "saveError": "فشل تحديث المستخدم",
+        "changingLevel": "تغيير المستوى إلى {level}...",
+        "levelSet": "تم تعيين المستوى إلى {level}",
+        "levelError": "خطأ في تحديث مستوى المستخدم."
+      },
+      "validation": {
+        "invalidPhone": "رقم هاتف غير صالح"
+      }
     }
   }
 }

@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Check, Eraser } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 
 export default function SellerBudgetDropdown({
@@ -12,6 +13,7 @@ export default function SellerBudgetDropdown({
   customBudget,
   currencySymbol = '$', // تقدر تغيّرها لـ EGP مثلاً
 }) {
+  const t = useTranslations('Services.filters.budget');
   const BRAND = '#007a55';
   const rootRef = useRef(null);
 
@@ -27,11 +29,11 @@ export default function SellerBudgetDropdown({
   const labelForRange = id => {
     switch (id) {
       case 'u1000':
-        return `Under ${currencySymbol}1,000`;
+        return t('under', { amount: `${currencySymbol}1,000` });
       case 'm1000_3600':
-        return `Between ${currencySymbol}1,000 - ${currencySymbol}3,600`;
+        return t('between', { min: `${currencySymbol}1,000`, max: `${currencySymbol}3,600` });
       case 'h3600+':
-        return `Above ${currencySymbol}3,600`;
+        return t('above', { amount: `${currencySymbol}3,600` });
       default:
         return id;
     }
@@ -49,7 +51,7 @@ export default function SellerBudgetDropdown({
         label: labelForRange(id),
         count: Number(count) || 0,
       }))
-      .concat([{ id: 'custom', label: 'Custom Budget', count: null }]);
+      .concat([{ id: 'custom', label: t('customBudget'), count: null }]);
   }, [filterOptions, currencySymbol]);
 
   // ---- State
@@ -101,9 +103,9 @@ export default function SellerBudgetDropdown({
 
   // ---- Derived label
   const activeLabel = () => {
-    if (selectedId === 'custom' && customValue) return `Budget: ${currencySymbol}${fmtNumber(customValue)}`;
-    const t = tiers.find(t => t.id === selectedId);
-    return t ? t.label : 'Budget';
+    if (selectedId === 'custom' && customValue) return t('budgetWithAmount', { amount: `${currencySymbol}${fmtNumber(customValue)}` });
+    const tier = tiers.find(t => t.id === selectedId);
+    return tier ? tier.label : t('budget');
   };
 
   // ---- Handlers
@@ -187,7 +189,7 @@ export default function SellerBudgetDropdown({
           style={{ border: `1px solid ${BRAND}60` }}>
           <div className='py-4'>
             <div className='px-4'>
-              <h4 className='text-lg font-bold text-slate-900 mb-2'>Budget</h4>
+              <h4 className='text-lg font-bold text-slate-900 mb-2  text-start'>{t('budget')}</h4>
             </div>
 
             <div className='px-2 space-y-2'>
@@ -201,10 +203,10 @@ export default function SellerBudgetDropdown({
                   ${selectedId === 'custom' ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}>
                 <div className='h-[44px] rounded-md flex items-center px-4 text-sm' style={{ border: `2px solid ${BRAND}` }}>
                   <span className='text-slate-400 mr-2'>{currencySymbol}</span>
-                  <input type='text' inputMode='numeric' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' placeholder='Enter max amount' />
+                  <input type='text' inputMode='numeric' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' placeholder={t('enterMaxAmount')} />
                 </div>
 
-                <div className='mt-2 text-[11px] text-slate-400'>{customValue ? `You entered: ${currencySymbol}${fmtNumber(customValue)}` : 'Type a number only'}</div>
+                <div className='mt-2 text-[11px] text-slate-400'>{customValue ? t('youEntered', { amount: `${currencySymbol}${fmtNumber(customValue)}` }) : t('typeNumberOnly')}</div>
 
                 <div className='mt-3 border-t border-slate-200' />
               </div>

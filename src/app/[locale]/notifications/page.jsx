@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { notificationService } from '@/services/notificationService';
 import { toast } from 'react-hot-toast';
 import { Link } from '@/i18n/navigation';
@@ -13,6 +14,7 @@ import { useNotifications } from '@/context/NotificationContext';
 import { isErrorAbort } from '@/utils/helper';
 
 const NotificationsPage = () => {
+  const t = useTranslations('Notifications.page');
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, pages: 1 });
   const [pageNotifications, setPageNotifications] = useState([]);
@@ -48,11 +50,11 @@ const NotificationsPage = () => {
     } catch (error) {
       if (!isErrorAbort(error)) {
         console.error('Error loading notifications:', error);
-        toast.error('Failed to load notifications');
+        toast.error(t('failedToLoad'));
       }
     } finally {
       // Only clear loading if THIS request is still the active one
-      if (controllerRef.current === controller)
+      if (notificationsApiRef.current === controller)
         setLoading(false);
     }
   }, [pagination.page, pagination.limit]);
@@ -183,20 +185,20 @@ const NotificationsPage = () => {
   return (
     <div className=' !my-8 container  '>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Notifications</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('title')}</h1>
         {unreadNotificationCount > 0 && (
           <button
             onClick={markAllAsRead}
             className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base"
           >
-            Mark all as read ({unreadNotificationCount})
+            {t('markAllAsRead', { count: unreadNotificationCount })}
           </button>
         )}
       </div>
 
       {pageNotifications.length === 0 ? (
         <div className='text-center py-12'>
-          <NoResults mainText={'No notifications yet'} additionalText={"We'll notify you when something arrives."} />
+          <NoResults mainText={t('noNotifications')} additionalText={t('noNotificationsDesc')} />
         </div>
       ) : (
         <div className='bg-white shadow-sm rounded-lg overflow-hidden'>
@@ -216,7 +218,7 @@ const NotificationsPage = () => {
                     {getLink(notification.relatedEntityType, notification.relatedEntityId) && (
                       <div className='mt-3'>
                         <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>
-                          <span className='text-xs'>{notification.relatedEntityType === 'proposal' ? 'View Proposal' : 'View Order'}</span>
+                          <span className='text-xs'>{notification.relatedEntityType === 'proposal' ? t('viewProposal') : t('viewOrder')}</span>
                           <span className='text-blue-600 text-sm'>
                             {' '}
                             <MoveRight size={16} />{' '}
@@ -229,7 +231,7 @@ const NotificationsPage = () => {
                 {!notification.isRead && (
                   <div className='mt-3'>
                     <button onClick={() => markOneAsRead(notification.id)} className='text-xs text-blue-600 hover:text-blue-800 font-medium'>
-                      Mark as read
+                      {t('markAsRead')}
                     </button>
                   </div>
                 )}

@@ -338,6 +338,330 @@
     "copyFailed": "Failed to copy. Please try manually.",
     "unknownError": "An unknown error occurred."
   },
+  "GlobalSearch": {
+    "scopes": {
+      "services": "Services",
+      "jobs": "Jobs"
+    },
+    "placeholder": "Search",
+    "sections": {
+      "recent": "Recent",
+      "trySearchingFor": "Try searching for",
+      "live": "Live {scope}"
+    },
+    "loading": "Loading…",
+    "empty": {
+      "noMatching": "No matching {scope} yet"
+    },
+    "footer": {
+      "searchIn": "Search \"{query}\" in {scope}",
+      "enter": "Enter ↵"
+    },
+    "ariaLabels": {
+      "clear": "Clear",
+      "goToChat": "Go to chat"
+    }
+  },
+  "Header": {
+    "navigation": {
+      "explore": "Explore",
+      "services": "Services",
+      "allServices": "All Services",
+      "jobs": "Jobs",
+      "browseJobs": "Browse Jobs",
+      "createJob": "Create Job",
+      "myJobs": "My Jobs",
+      "myJobsBuyer": "My Jobs (Buyer)",
+      "myProposals": "My Proposals",
+      "dashboard": "Dashboard",
+      "becomeSeller": "Become Seller",
+      "becomeASeller": "Become a Seller"
+    },
+    "userMenu": {
+      "myProfile": "My Profile",
+      "myOrders": "My Orders",
+      "myDisputes": "My Disputes",
+      "myBilling": "My Billing",
+      "settings": "Settings",
+      "inviteNewUser": "Invite New User",
+      "shareYourJob": "Share Your Job",
+      "myServices": "My Services",
+      "createAService": "Create a Service",
+      "logout": "Logout",
+      "loggingOut": "Logging out…",
+      "email": "Email",
+      "user": "User",
+      "member": "member",
+      "menu": "Menu",
+      "myJobs": "My Jobs",
+      "becomeASeller": "Become a Seller"
+    },
+    "auth": {
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
+    }
+  },
+  "Auth": {
+    "hero": {
+      "title": "Start your success now!",
+      "subtitle": "Talented freelancers for any project…",
+      "features": [
+        "Fast, delightful onboarding",
+        "Secure, privacy-friendly sessions",
+        "Beautiful, accessible UI",
+        "Reliable authentication flow"
+      ]
+    },
+    "userType": "User Type",
+    "business": "Business",
+    "individual": "Individual",
+    "businessDescription": "For companies and organizations",
+    "individualDescription": "For personal use",
+    "selectUserType": "Select User Type",
+    "selectUserTypeDescription": "Please choose whether you're signing up as a business or individual",
+    "continueToExplore": "Continue to Explore",
+    "chooseMethod": "Choose your sign in method",
+    "emailMethod": "Sign in with your email",
+    "phoneMethod": "Sign in with your phone",
+    "otpMethod": "Enter the verification code",
+    "createAccount": "Create your account",
+    "phoneSignUp": "Sign up with your phone",
+    "verifyEmail": "Verify your email",
+    "resetPassword": "Reset your password",
+    "verifyIdentity": "Verify your identity",
+    "setNewPassword": "Set new password",
+    "passwordRequirements": "Please enter your new password",
+    "email": "Email",
+    "enterEmail": "Enter your email",
+    "password": "Password",
+    "enterPassword": "Enter your password",
+    "username": "Username",
+    "chooseUsername": "Choose a username",
+    "phoneNumber": "Phone Number",
+    "enterPhone": "Enter your phone number",
+    "newPassword": "New Password",
+    "otpCode": "Verification Code",
+    "enterOtp": "Enter verification code",
+    "referralCode": "Referral Code (optional)",
+    "enterReferral": "Enter referral code",
+    "role": {
+      "selectRole": "Select Role",
+      "buyer": "Buyer",
+      "seller": "Seller"
+    },
+    "success": {
+      "signedIn": "Successfully signed in!",
+      "otpSent": "Verification code sent to your email!",
+      "codeSent": "Verification code sented Successfully!",
+      "emailVerified": "Email verified successfully!",
+      "phoneVerified": "Phone verified successfully!",
+      "passwordReset": "Password reset successfully!",
+      "codeResent": "Verification code resent!",
+      "loggedInSuccessfully": "Logged in successfully!",
+      "userTypeUpdatedSuccessfully": "User type updated successfully!"
+    },
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "usernameMin": "Username must be at least 2 characters",
+      "usernameMax": "Username must be less than 30 characters",
+      "usernameInvalid": "Username can only contain letters, numbers, and spaces",
+      "usernameSpaces": "Username cannot contain consecutive spaces",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordMax": "Password must be at most 20 characters",
+      "passwordInvalidChars": "Password contains invalid characters. Only letters, numbers, and _ @ $ ! % * ? & are allowed",
+      "refMax": "Referral code must be at most 150 characters",
+      "phoneMin": "Phone number must be at least 6 digits long.",
+      "inValidOptionalPhone": "Phone number must be at least 6 digits if provided",
+      "passwordsMatch": "Passwords do not match",
+      "otpRequired": "Verification code is required",
+      "otpMax": "OTP must be at most 10 digits",
+      "otpNumbersOnly": "OTP must contain only numbers",
+      "otpLength": "Verification code must be 6 digits",
+      "otpInvalid": "Invalid verification code",
+      "loginFailed": "Login failed. Please check your credentials.",
+      "registrationFailed": "Registration failed. Please try again.",
+      "codeSendFailed": "Failed to send verification code. Please try again.",
+      "resetEmailFailed": "Failed to send reset email. Please try again.",
+      "passwordResetFailed": "Failed to reset password. Please try again.",
+      "resendFailed": "Failed to resend code. Please try again.",
+      "googleLoginFailed": "Failed to initiate Google login",
+      "appleLoginFailed": "Failed to initiate Apple login",
+      "incorrectEmailOrPassword": "Incorrect email or password",
+      "loginFailedTryAgain": "Login failed. Please try again.",
+      "emailConfirmationFailed": "Email confirmation failed. Please try again or contact support.",
+      "failedToCompleteLogin": "Failed to complete login",
+      "failedToUpdateUserType": "Failed to update user type",
+      "phoneNumberValidationMessage": "Please enter a valid phone number with at least 6 digits."
+    },
+    "enterNewPassword": "Enter new password",
+    "confirmPassword": "Confirm Password",
+    "confirmNewPassword": "Confirm your new password",
+    "sendCodeButton": "Send Verification Code",
+    "terms": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "forgotPassword": "Forgot?",
+    "signInTitle": "Sign in to your account",
+    "signInSubtitle": "Choose a method to continue",
+    "signInEmailTitle": "Sign in with Email",
+    "signInEmailSubtitle": "Enter your email and password",
+    "signInPhoneTitle": "Sign in with Phone",
+    "signInPhoneSubtitle": "Enter your phone number to receive a code",
+    "otpTitle": "Verify your code",
+    "otpSubtitle": "Enter the 6-digit code we sent you",
+    "registerTitle": "Create your account",
+    "registerSubtitle": "Choose a method to get started",
+    "registerEmailTitle": "Create account with Email",
+    "registerEmailSubtitle": "Fill in your details to sign up",
+    "registerPhoneTitle": "Create account with Phone",
+    "registerPhoneSubtitle": "We'll send you a verification code",
+    "verifyEmailTitle": "Verify your email",
+    "verifyEmailSubtitle": "Enter the code to activate your account",
+    "forgotPasswordTitle": "Forgot your password",
+    "forgotPasswordSubtitle": "Enter your email to receive a reset code",
+    "verifyIdentityTitle": "Verify your identity",
+    "verifyIdentitySubtitle": "Enter the code we sent to reset your password",
+    "resetPasswordTitle": "Set a new password",
+    "resetPasswordSubtitle": "Use at least 8 characters with letters & numbers",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "Choose a username",
+    "referralLabel": "Referral Code (Optional)",
+    "referralPlaceholder": "Enter referral code",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "Enter your phone number",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your new password",
+    "signInButton": "Sign In",
+    "createAccountButton": "Create Account",
+    "sendOtpButton": "Send OTP",
+    "resetPasswordButton": "Reset Password",
+    "verifyCodeButton": "Verify Code",
+    "continueWithGoogle": "Continue with Google",
+    "continueWithApple": "Continue with Apple",
+    "continueWithEmail": "Continue with Email",
+    "continueWithPhone": "Continue with Phone",
+    "resendCode": "Resend",
+    "resendIn": "Resend in {seconds}s",
+    "didntReceiveCode": "Didn't receive the code?",
+    "termsText": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
+    "roleLabel": "I want to be a",
+    "roleBuyer": "Buyer",
+    "roleSeller": "Seller",
+    "successRegister": "Verification code sent to your email!",
+    "successLogin": "Signed in successfully!",
+    "successOtp": "Email verified successfully!",
+    "successPasswordReset": "Password has been reset successfully!",
+    "errorInvalidOtp": "Invalid verification code. Please try again.",
+    "errorGeneral": "Something went wrong. Please try again.",
+    "title": "Start your success now!",
+    "taglines": [
+      "Talented freelancers for any project",
+      "Best freelancers for every project High-quality services for every budget",
+      "Trusted by 4+ million clients worldwide"
+    ],
+    "signInToYourAccount": "Sign in to your account",
+    "dontHaveAnAccount": "Don't have an account?",
+    "authConsentNotice": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
+    "back": "Back",
+    "continueWithYourEmail": "Continue with your email",
+    "forgotPasswordLink": "Forgot password?",
+    "loginButton": "Login",
+    "registerYourAccount": "Register your account",
+    "alreadyHaveAnAccount": "Already have an account?",
+    "registerButton": "Register",
+    "verifyYourEmail": "Verify your email",
+    "otpSentTo": "A 6-digit code has been sent to",
+    "enterCodeBelow": "Please enter the code below to verify your email.",
+    "verificationCodeLabel": "Verification Code",
+    "verificationCodePlaceholder": "Enter 6-digit code",
+    "verifyButton": "Verify",
+    "resendCodeIn": "Resend code in {count}",
+    "noEmailForOtp": "No email found for verification. Please go back and register again.",
+    "backToRegister": "Back to Register",
+    "forgotPasswordInstructions": "Enter your registered email address to receive a password reset link.",
+    "sendResetLinkButton": "Send Link",
+    "passwordResetEmailSent": "An email with a password reset link has been sent to your address. Please check your inbox.",
+    "passwordResetRequestFailedGeneric": "Failed to send password reset link. Please try again.",
+    "resetPasswordInstructions": "Enter your new password below.",
+    "confirmNewPasswordLabel": "Confirm New Password",
+    "confirmNewPasswordPlaceholder": "Confirm your new password",
+    "passwordResetSuccess": "Password reset successfully!",
+    "passwordResetFailedGeneric": "Failed to reset password. Please try again or request a new link.",
+    "invalidResetLinkTitle": "Invalid or Expired Link",
+    "invalidResetLinkMessage": "The password reset link is invalid or has expired. Please request a new one.",
+    "requestNewResetLink": "Request a New Reset Link"
+  },
+  "Home": {
+    "hero": {
+      "alt": "Helhal Hero Background",
+      "badge": "Hire top freelancers fast",
+      "title": "Hire talent you can trust.",
+      "subtitle": "Post an order, get tailored proposals, and start in hours—not weeks.",
+      "tagline": "Secure payments, transparent pricing, and a curated marketplace that respects your time.",
+      "trust": {
+        "safepay": "Secure Escrow",
+        "rated": "4.9★ average",
+        "talent": "Curated talent"
+      }
+    },
+    "categories": {
+      "error": {
+        "loadFailed": "Failed to load categories",
+        "loadFailedMessage": "Unable to load popular categories. Please try again later."
+      },
+      "browse": "Browse {name}"
+    },
+    "popularServices": {
+      "title": "Popular services",
+      "seeAll": "See all",
+      "from": "From {price}",
+      "bookNow": "Book now →",
+      "error": {
+        "loadFailed": "Failed to load popular services"
+      }
+    },
+    "whyChoose": {
+      "title": "Why choose Helhal?",
+      "items": {
+        "categories": {
+          "title": "Wide Categories",
+          "description": "From development to design and marketing—everything in one marketplace."
+        },
+        "pricing": {
+          "title": "Clear Pricing",
+          "description": "Upfront offers. No hidden fees. Pay safely when milestones are approved."
+        },
+        "quality": {
+          "title": "Verified Quality",
+          "description": "Ratings, portfolios, and vetted profiles to help you hire confidently."
+        },
+        "support": {
+          "title": "Responsive Support",
+          "description": "We've got your back with fast help and dispute resolution."
+        }
+      }
+    },
+    "clientsExperiences": {
+      "title": "Our Client's Experiences"
+    },
+    "cta": {
+      "title": "Ready to post your order?",
+      "subtitle": "Describe your project and get proposals within minutes.",
+      "postOrder": "Post an Order",
+      "loginToPost": "Login to Post an Order",
+      "browse": "Browse Services",
+      "sellerTitle": "Ready to publish your service?",
+      "sellerSubtitle": "Showcase your skills and start receiving orders.",
+      "createService": "Create a Service"
+    }
+  },
   "home": {
     "iosAppDevelopment": "iOS App Development",
     "wordpressDevelopers": "WordPress Developers",
@@ -374,7 +698,7 @@
         },
         "support": {
           "title": "Responsive Support",
-          "description": "We’ve got your back with fast help and dispute resolution."
+          "description": "We've got your back with fast help and dispute resolution."
         }
       }
     },
@@ -561,53 +885,6 @@
     "unknownError": "An unknown validation error occurred.",
     "errorSendingInvitation": "Failed to send invitation. Please try again."
   },
-  "Chat": {
-    "removeFavorite": "Remove from favorites",
-    "addFavorite": "Add to favorites",
-    "tabs": {
-      "all": "All",
-      "favorites": "Favorites",
-      "unread": "Unread"
-    },
-    "searching": "Searching...",
-    "noUsersFound": "No users found",
-    "noFavorites": "You don't have any favorite conversations",
-    "noConversations": "You don't have any conversations yet",
-    "you": "You",
-    "received": "Received ✅",
-    "save": "Save",
-    "star": "Star",
-    "more": "More",
-    "close": "Close",
-    "allMessages": "Messages",
-    "clear": "Clear",
-    "attach": "Attach",
-    "emoji": "Emoji",
-    "send": "Send",
-    "noMatches": "No matches",
-    "about": "About {name}",
-    "labels": {
-      "from": "From",
-      "onPlatform": "On Platform",
-      "english": "English",
-      "otherLanguage": "Other language",
-      "level": "Seller level",
-      "responseRate": "Response rate",
-      "rating": "Rating"
-    },
-    "search": "Search by Client Name",
-    "placeholders": {
-      "search": "Search by Client Name",
-      "message": "Send Message"
-    },
-    "menu": {
-      "markUnread": "Mark as unread",
-      "mute": "Mute conversation",
-      "block": "Block user",
-      "export": "Export chat",
-      "delete": "Delete chat"
-    }
-  },
   "CategoryPage": {
     "categoryNotFound": "Category Not Found",
     "categoryNotFoundDesc": "The category you are looking for doesn’t exist or has been removed. Please check the URL or explore other categories.",
@@ -674,9 +951,2174 @@
       "podcast": "Podcast"
     }
   },
+  "Explore": {
+    "cart": {
+      "addedToCart": "Added to cart",
+      "removedFromCart": "Removed from cart",
+      "failedUpdateCart": "Failed to update cart",
+      "removeFromCart": "Remove from cart",
+      "addToCart": "Add to cart"
+    },
+    "page": {
+      "hero": {
+        "title": "Freelance services",
+        "subtitle": "are just a click away!",
+        "seeMore": "See more"
+      },
+      "gigsYouMayLike": "Gigs you may like"
+    },
+    "hero": {
+      "quickActions": "Quick actions",
+      "welcomeBack": "Welcome back,",
+      "there": "there",
+      "subtitle": "Pick up where you left off, or knock out what's next.",
+      "cards": {
+        "guest": {
+          "title": "Create your account",
+          "lines": [
+            "Sign up to hire freelancers",
+            "Access personalized recommendations"
+          ],
+          "buttonLabel": "Join Now",
+          "chip": "New here?"
+        },
+        "buyer": {
+          "title": "Recommended for you",
+          "lines": [
+            "Get matched with freelancers",
+            "Create a job and get custom offers"
+          ],
+          "buttonLabel": "Start a Project",
+          "chip": "Get started"
+        },
+        "seller": {
+          "title": "Create your service",
+          "lines": [
+            "Showcase your skills",
+            "Start receiving client requests"
+          ],
+          "buttonLabel": "Add a Service",
+          "chip": "Boost visibility"
+        },
+        "completeProfile": {
+          "title": "Complete your account",
+          "lines": [
+            "Your profile is missing details.",
+            "Add your info to unlock all features."
+          ],
+          "buttonLabel": "Complete Your Profile",
+          "chip": "Action needed"
+        }
+      },
+      "defaultChip": "Suggested"
+    },
+    "discovery": {
+      "title": "Find by category",
+      "all": "All",
+      "showMore": "Show more",
+      "category": "Category",
+      "errors": {
+        "loadFailed": "Failed to load services"
+      },
+      "empty": {
+        "title": "No services found.",
+        "description": "Try another category or view all services.",
+        "resetFilters": "Reset filters"
+      }
+    },
+    "categories": {
+      "all": "All",
+      "allServices": "All services",
+      "noCategoriesAvailable": "No categories available",
+      "loading": "loading…"
+    }
+  },
+  "Services": {
+    "page": {
+      "browseCategories": "Browse Categories",
+      "featured": "Featured",
+      "empty": {
+        "title": "No featured services available at the moment.",
+        "description": "Please check back later or explore other categories."
+      }
+    },
+    "filters": {
+      "title": "Filters",
+      "subtitle": "Refine your search with custom options.",
+      "result": "result",
+      "results": "results",
+      "ratings": {
+        "rating5": "⭐⭐⭐⭐⭐ 5",
+        "rating4": "⭐⭐⭐⭐ 4+",
+        "rating3": "⭐⭐⭐ 3+",
+        "rating2": "⭐⭐ 2+",
+        "rating1": "⭐ 1+"
+      },
+      "revisions": {
+        "one": "1",
+        "two": "2",
+        "three": "3",
+        "fourPlus": "4+"
+      },
+      "sellerDetails": {
+        "title": "Filters",
+        "filter": "filter",
+        "filters": "filters",
+        "applied": "applied",
+        "sellerLevel": "Seller level",
+        "total": "total",
+        "sellerSpeaks": "Seller Speaks",
+        "languages": "languages",
+        "sellerCountries": "Seller Countries",
+        "countries": "countries",
+        "extras": "Extras",
+        "fastDelivery": "Fast delivery",
+        "additionalRevision": "Additional revision",
+        "levels": {
+          "lvl1": "Level 1",
+          "lvl2": "Level 2",
+          "lvl3": "Level 3",
+          "top": "Top Seller",
+          "new": "New Seller"
+        }
+      },
+      "budget": {
+        "under": "Under {amount}",
+        "between": "Between {min} - {max}",
+        "above": "Above {amount}",
+        "customBudget": "Custom Budget",
+        "budget": "Budget",
+        "budgetWithAmount": "Budget: {amount}",
+        "enterMaxAmount": "Enter max amount",
+        "youEntered": "You entered: {amount}",
+        "typeNumberOnly": "Type a number only"
+      },
+      "deliveryTime": {
+        "express24hrs": "Express 24 hrs",
+        "upto3Days": "Upto 3 Days",
+        "upto7Days": "Upto 7 Days",
+        "customDelivery": "Custom Delivery",
+        "deliveryTime": "Delivery Time",
+        "deliveryWithDays": "Delivery: {days} days",
+        "enterMaxDeliveryTime": "Enter max delivery time in days"
+      }
+    }
+  },
   "footer": {
     "showMore": "Show more",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "description": "A trusted services marketplace with clear pricing & secure escrow."
   },
-  "copyright": "© {{year}} Helhal. All rights reserved."
+  "copyright": "© {{year}} Helhal. All rights reserved.",
+  "Pagination": {
+    "previous": "Previous page",
+    "next": "Next page",
+    "jumpBack": "Jump back {{count}} pages",
+    "jumpForward": "Jump forward {{count}} pages"
+  },
+  "Jobs": {
+    "page": {
+      "findWork": "Find Work",
+      "findWorkSubtitle": "Hand-picked jobs. Smooth proposals. Land the gig.",
+      "myProposals": "My Proposals",
+      "selectCategory": "Select a category",
+      "anyBudgetType": "Any Budget Type",
+      "fixed": "Fixed",
+      "hourly": "Hourly",
+      "searchPlaceholder": "Search by title, description, or skills",
+      "noJobs": "No jobs right now",
+      "noJobsDescription": "Try widening your filters or check back later.",
+      "resetFilters": "Reset Filters",
+      "posted": "Posted",
+      "relatedToYou": "Related to you",
+      "viewAndApply": "View & Apply",
+      "jobDetails": "Job details",
+      "youPostedThis": "You posted this",
+      "summary": "Summary",
+      "preferredDelivery": "Preferred delivery",
+      "day": "day",
+      "days": "days",
+      "skillsAndExpertise": "Skills and Expertise",
+      "paymentMethodVerified": "Payment method verified",
+      "attachments": "Attachments",
+      "files": "Files",
+      "additionalDetails": "Additional Details",
+      "apply": "Apply",
+      "bidAmount": "Bid amount (SAR)",
+      "delivery": "Delivery (days)",
+      "coverLetter": "Cover letter",
+      "coverLetterPlaceholder": "Explain your approach, similar work, and timeline…",
+      "portfolioLinks": "Portfolio links (one per line)",
+      "portfolioLinksPlaceholder": "https://…\nhttps://…",
+      "cancel": "Cancel",
+      "submitting": "Submitting…",
+      "applyNow": "Apply now",
+      "proposalSubmitted": "Proposal submitted",
+      "fixedPrice": "Fixed-price",
+      "estBudget": "Est. Budget",
+      "justNow": "Just now",
+      "minute": "minute",
+      "minutes": "minutes",
+      "ago": "ago",
+      "hour": "hour",
+      "hours": "hours",
+      "validation": {
+        "min20Chars": "Min 20 characters",
+        "max3000Chars": "Max 3000 characters",
+        "required": "Required",
+        "enterNumber": "Enter a number",
+        "mustBePositive": "Must be positive",
+        "bidAmountMax": "Bid amount must not exceed 100,000",
+        "mustBeInteger": "Must be an integer",
+        "deliveryMax": "Maximum delivery time is 1200 days",
+        "invalidPortfolioUrls": "Invalid portfolio URLs",
+        "max10Links": "You can add up to 10 portfolio links",
+        "validUrls": "Each link must be a valid URL",
+        "maxLength": "Each link must not exceed 500 characters"
+      },
+      "errors": {
+        "failedToLoad": "Failed to load jobs",
+        "unableToOpen": "Unable to open job",
+        "failedToLoadJob": "Failed to load job",
+        "failedToSubmit": "Failed to submit"
+      }
+    },
+    "proposals": {
+      "title": "My Proposals",
+      "subtitle": "Track submissions, approvals, and outcomes.",
+      "all": "All",
+      "submitted": "submitted",
+      "accepted": "accepted",
+      "rejected": "rejected",
+      "noProposals": "No proposals found",
+      "noProposalsYet": "You haven't sent any proposals yet.",
+      "noStatusProposals": "No {status} proposals.",
+      "showLess": "Show less",
+      "showMore": "Show more",
+      "portfolio": "Portfolio",
+      "jobDetails": "Job details",
+      "days": "days",
+      "errors": {
+        "failedToLoad": "Failed to load proposals"
+      }
+    }
+  },
+  "AttachmentList": {
+    "preview": "Preview",
+    "previewFile": "Preview File",
+    "cannotPreview": "This file cannot be previewed directly.",
+    "openInNewTab": "Open in New Tab",
+    "download": "Download"
+  },
+  "Client": {
+    "aboutTheClient": "About the client"
+  },
+  "CategorySelect": {
+    "selectOption": "Select an option",
+    "loading": "Loading...",
+    "search": "Search {type}…",
+    "noFound": "No {type}s found",
+    "create": "Create \"{name}\"",
+    "alreadyExists": "Already exists",
+    "created": "Created \"{name}\"",
+    "errors": {
+      "failedToLoad": "Failed to load options",
+      "failedToCreate": "Failed to create"
+    }
+  },
+  "AdvancedJobsDropdown": {
+    "advanced": "Advanced",
+    "filter": "filter",
+    "filters": "filters",
+    "applied": "applied",
+    "sortBy": "Sort by",
+    "newest": "Newest",
+    "budgetAsc": "Budget ↑",
+    "budgetDesc": "Budget ↓",
+    "quickToggles": "Quick toggles",
+    "clientSideFilters": "Client-side filters",
+    "max7Days": "≤ 7 days",
+    "withAttachments": "With attachments"
+  },
+  "Profile": {
+    "page": {
+      "level": "Level {level}",
+      "topRated": "Top Rated",
+      "username": "Username",
+      "from": "From",
+      "memberSince": "Member Since",
+      "lastLogin": "Last Login",
+      "referralCode": "Referral Code",
+      "referralStats": "Referral Stats",
+      "referrals": "referrals",
+      "rewards": "rewards",
+      "referredBy": "Referred By",
+      "sellerSettings": "Seller Settings",
+      "deliveryTime": "Delivery Time (e.g., 3 days)",
+      "responseTime": "Response Time (hours)",
+      "ageGroup": "Age Group",
+      "revisions": "Revisions",
+      "sellerLevel": "Seller Level (lvl1/lvl2/new/top)",
+      "financials": "Financials",
+      "balance": "Balance",
+      "totalSpent": "Total Spent",
+      "totalEarned": "Total Earned",
+      "reputationPoints": "Reputation Points",
+      "topRatedReadonly": "Top Rated (readonly from stats)",
+      "yes": "Yes",
+      "no": "No",
+      "preferences": "Preferences (JSON)",
+      "invalidJSON": "Invalid JSON",
+      "introVideo": "Intro video",
+      "introVideoSubtitle": "Stand out with a short introduction video.",
+      "uploading": "Uploading…",
+      "replaceVideo": "Replace Video",
+      "uploadVideo": "Upload Video",
+      "uploadIntroVideo": "Upload intro video",
+      "maxSize": "Max size: {size}MB.",
+      "portfolio": "Portfolio",
+      "addImages": "Add Images",
+      "upload": "Upload",
+      "images": "images",
+      "uploadingCount": "Uploading {count}…",
+      "portfolioFile": "Portfolio file",
+      "portfolioFileSubtitle": "PDF, TXT, DOC, DOCX, XLS, XLSX, PPT, PPTX (max ~25MB). One file at a time.",
+      "replaceFile": "Replace file",
+      "uploadFile": "Upload file",
+      "noFileUploaded": "No file uploaded yet.",
+      "deleting": "Deleting…",
+      "delete": "Delete",
+      "savingProfile": "Saving profile...",
+      "profileUpdated": "Profile updated successfully ✅",
+      "profileUpdateFailed": "Failed to update profile ❌",
+      "referralCodeCopied": "Referral code copied to clipboard ✅",
+      "noReferralCode": "No referral code found",
+      "unsavedChanges": "You have unsaved changes",
+      "unsavedChangesDesc": "Don't lose your edits. Save now or discard them.",
+      "discard": "Discard",
+      "saveChanges": "Save changes",
+      "ordersCompleted": "Orders Completed",
+      "allTime": "All-time",
+      "repeatBuyers": "Repeat Buyers",
+      "uniqueCustomers": "Unique customers",
+      "responseTimeAverage": "Average time",
+      "responseTimeNotCalculated": "Not yet calculated"
+    },
+    "public": {
+      "failedToLoad": "Failed to load user. Try again.",
+      "unknown": "Unknown",
+      "memberSince": "Member since",
+      "lastLogin": "Last login",
+      "message": "Message",
+      "orders": "Orders",
+      "repeatBuyers": "Repeat Buyers",
+      "responseTime": "Response Time",
+      "averageTime": "Average time",
+      "notYetCalculated": "Not yet calculated",
+      "about": "About",
+      "noDescription": "No description provided.",
+      "verified": "Verified",
+      "proMember": "Pro Member",
+      "contact": "Contact",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country",
+      "account": "Account",
+      "userId": "User ID",
+      "created": "Created",
+      "updated": "Updated",
+      "activity": "Activity",
+      "lastActivity": "Last Activity",
+      "deliveryTime": "Delivery Time",
+      "deactivatedAt": "Deactivated At",
+      "noIntroVideo": "This user hasn't uploaded an intro video yet.",
+      "noPortfolio": "This user has no portfolio items yet.",
+      "noFileUploaded": "No file uploaded.",
+      "introVideo": "Intro video",
+      "portfolio": "Portfolio",
+      "portfolioFile": "Portfolio file",
+      "services": "Services",
+      "noServices": "No services yet.",
+      "jobs": "Jobs",
+      "noJobs": "No jobs yet.",
+      "postedBy": "Posted by",
+      "untitledService": "Untitled service",
+      "untitledJob": "Untitled job",
+      "from": "From",
+      "rating": "Rating",
+      "type": "Type",
+      "budget": "Budget",
+      "copy": "Copy",
+      "hourly": "Hourly",
+      "fixed": "Fixed"
+    },
+    "infoCard": {
+      "description": "Description",
+      "editDescription": "Edit description",
+      "finishEditingDescription": "Finish editing description",
+      "tellBuyers": "Tell buyers about yourself…",
+      "useClearSummary": "Use a clear, professional summary. Ctrl/Cmd+Enter to save.",
+      "characters": "characters",
+      "languages": "Languages",
+      "addLanguage": "Add language",
+      "skills": "Skills",
+      "addSkill": "Add skill",
+      "noItemsAdded": "No items added",
+      "addItem": "Add item",
+      "save": "Save",
+      "skillAlreadyAdded": "This skill already added",
+      "education": "Education",
+      "addEducation": "Add education",
+      "addEducationModal": "Add Education",
+      "noEducationAdded": "No education added",
+      "degree": "Degree",
+      "degreeRequired": "Degree is required",
+      "degreeMaxLength": "Degree must be {max} characters or less",
+      "institution": "Institution",
+      "institutionRequired": "Institution is required",
+      "institutionMaxLength": "Institution must be {max} characters or less",
+      "year": "Year",
+      "yearRequired": "Year is required",
+      "yearRange": "Year must be between {min} and {max}",
+      "saveItem": "Save item",
+      "educationAlreadyAdded": "This education already added",
+      "certification": "Certification",
+      "addCertification": "Add certification",
+      "addCertificationModal": "Add Certification",
+      "noCertificationsAdded": "No certifications added",
+      "name": "Name",
+      "nameRequired": "Name is required",
+      "nameMaxLength": "Name must be {max} characters or less",
+      "issuingOrganization": "Issuing Organization",
+      "issuingOrganizationRequired": "Issuing Organization is required",
+      "issuingOrganizationMaxLength": "Issuing Organization must be {max} characters or less",
+      "certificationAlreadyAdded": "This certification already added",
+      "selectLanguage": "Select Language",
+      "chooseLanguage": "Choose a language",
+      "add": "Add",
+      "country": "Country",
+      "selectCountry": "Select country",
+      "accountType": "Account Type",
+      "selectType": "Select type",
+      "errors": {
+        "failedToLoadCountries": "Failed to load countries"
+      }
+    }
+  },
+  "MyJobs": {
+    "page": {
+      "title": "My Jobs",
+      "createNewJob": "Create New Job",
+      "tabs": {
+        "all": "All",
+        "pending": "Pending",
+        "published": "Published",
+        "awarded": "Awarded",
+        "completed": "Completed"
+      },
+      "noJobs": "No jobs available at the moment",
+      "noJobsDescription": "Looks like no jobs are available right now. Check back later!",
+      "createNewJobButton": "Create a New Job",
+      "deleteConfirm": "Are you sure you want to delete this job?",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "jobDetails": "Job details",
+      "summary": "Summary",
+      "preferredDelivery": "Preferred delivery",
+      "day": "day",
+      "days": "days",
+      "skillsAndExpertise": "Skills and Expertise",
+      "aboutTheClient": "About the client",
+      "posted": "Posted",
+      "attachments": "Attachments",
+      "files": "Files",
+      "additionalDetails": "Additional Details",
+      "hourly": "Hourly",
+      "fixedPrice": "Fixed-price",
+      "errors": {
+        "unableToOpen": "Unable to open job",
+        "failedToLoadJob": "Failed to load job",
+        "failedToUpdateStatus": "Failed to update job status"
+      }
+    },
+    "proposals": {
+      "title": "Job Proposals",
+      "proposal": "proposal",
+      "proposals": "proposals",
+      "received": "received",
+      "jobBudget": "Job budget",
+      "preferredDeliveryTime": "Preferred delivery time",
+      "daysPreferred": "{days} days preferred",
+      "viewMyJobs": "View my jobs",
+      "searchPlaceholder": "Search by freelancer, email, or cover letter…",
+      "status": {
+        "all": "All",
+        "submitted": "Submitted",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "sort": {
+        "recent": "Recent",
+        "amountAsc": "Amount ↑",
+        "amountDesc": "Amount ↓",
+        "timeAsc": "Delivery time ↑",
+        "timeDesc": "Delivery time ↓"
+      },
+      "selectKeys": {
+        "status": "Status",
+        "sort": "Sort"
+      },
+      "bidType": {
+        "bid": "bid",
+        "fixed": "fixed",
+        "hourly": "hourly"
+      },
+      "noMatching": "No matching proposals",
+      "noMatchingDescription": "Try changing filters or search terms. You can also edit your job to attract more freelancers.",
+      "showYourJobs": "Show your jobs",
+      "sellerLevel": "Seller level",
+      "memberSince": "Member since",
+      "portfolio": "Portfolio",
+      "coverLetter": "Cover Letter",
+      "acceptProposal": "Accept Proposal",
+      "reject": "Reject",
+      "message": "Message",
+      "acceptConfirmTitle": "Accept this proposal?",
+      "acceptConfirmMessage": "This will mark the proposal as <strong>Accepted</strong> and notify the freelancer.",
+      "confirmAccept": "Confirm Accept",
+      "daysDelivery": "{days} days delivery",
+      "cancel": "Cancel",
+      "attachments": "Attachments",
+      "errors": {
+        "failedToLoad": "Failed to load proposals",
+        "failedToUpdate": "Failed to update proposal status"
+      },
+      "success": {
+        "proposalRejected": "Proposal rejected",
+        "proposalAccepted": "Proposal accepted"
+      }
+    }
+  },
+  "CreateJob": {
+    "steps": {
+      "step1": "Project Details",
+      "step2": "Budget & Delivery",
+      "step3": "Review & Submit"
+    },
+    "reset": "Reset",
+    "hero": {
+      "step1Title": "Let the matching begin..",
+      "step1Subtitle": "This is where you fill us in on the big picture.",
+      "step2Title": "Now let's talk budget and timing",
+      "step2Subtitle": "This is where you provide us with the full picture.",
+      "step3Title": "Ready to review your job?",
+      "step3Subtitle": "This is where you start making final decisions."
+    },
+    "form": {
+      "titleLabel": "Give your project job a title",
+      "titleHint": "Keep it short and simple - this will help us match you to the right category.",
+      "titlePlaceholder": "Enter project title",
+      "descriptionLabel": "Project Description",
+      "descriptionPlaceholder": "Describe your project in detail",
+      "categoryLabel": "Category",
+      "categoryPlaceholder": "Select a category",
+      "subcategoryLabel": "SubCategory",
+      "subcategoryPlaceholder": "Select a subcategory",
+      "subcategoryPlaceholderFirst": "Select a category first",
+      "skillsLabel": "Skills Required *",
+      "skillsPlaceholder": "Add a skill (e.g., WordPress)",
+      "skillsValidation": "Please provide at least one skill.",
+      "additionalInfoLabel": "Additional Information (Optional)",
+      "additionalInfoPlaceholder": "Any additional details or requirements",
+      "budgetLabel": "Budget",
+      "budgetPlaceholder": "Enter budget",
+      "budgetHint": "Enter your budget amount",
+      "budgetTypeLabel": "Budget Type",
+      "budgetTypeFixed": "Fixed Price",
+      "budgetTypeHourly": "Hourly Rate",
+      "preferredDeliveryLabel": "Preferred Delivery (Days)",
+      "preferredDeliveryPlaceholder": "Enter number of days",
+      "preferredDeliveryHint": "Estimated delivery time in days",
+      "back": "Back",
+      "next": "Next",
+      "publishJob": "Publish Job"
+    },
+    "review": {
+      "projectDetailsTitle": "Project Details",
+      "projectDetailsSubtitle": "Review your project information",
+      "budgetDeliveryTitle": "Budget & Delivery",
+      "budgetDeliverySubtitle": "Budget and delivery details",
+      "edit": "Edit",
+      "title": "Title",
+      "description": "Description",
+      "category": "Category",
+      "subcategory": "Subcategory",
+      "skillsRequired": "Skills Required",
+      "additionalInformation": "Additional Information",
+      "attachments": "Attachments",
+      "noFilesAttached": "No files attached",
+      "budget": "Budget",
+      "deliveryDays": "Delivery Days",
+      "notSpecified": "Not specified"
+    },
+    "validation": {
+      "titleRequired": "Title is required",
+      "titleMin": "Title must be at least 5 characters",
+      "titleMax": "Title must be at most 100 characters",
+      "descriptionRequired": "Description is required",
+      "descriptionMin": "Description must be at least 12 characters",
+      "descriptionMax": "Description must be at most 15,000 characters",
+      "categoryRequired": "Category is required",
+      "skillMin": "Each skill must be at least {min} characters",
+      "skillMax": "Each skill must be at most {max} characters",
+      "skillsMin": "At least one skill is required",
+      "skillsMax": "You can add up to {max} skills",
+      "skillsRequired": "Skills are required",
+      "attachmentsMax": "You can upload up to 10 attachments",
+      "additionalInfoMax": "Additional info must be at most 5,000 characters",
+      "budgetMin": "Budget must be at least 1",
+      "budgetMax": "Budget must not exceed 100,000",
+      "budgetRequired": "Budget is required",
+      "budgetTypeInvalid": "Budget type must be fixed or hourly",
+      "budgetTypeRequired": "Budget type is required",
+      "deliveryMin": "Minimum 1 day",
+      "deliveryMax": "Maximum delivery time is 1200 days",
+      "deliveryRequired": "Preferred Delivery Days is required"
+    },
+    "toast": {
+      "creating": "Creating your job…",
+      "updating": "Updating your job",
+      "jobLive": "Your job is live 🎉 Sellers can apply now.",
+      "submittedForReview": "Submitted for review ✅ An admin will approve it soon.",
+      "jobCreated": "Job created ✅",
+      "jobPublished": "Job published ✅ It's now visible to sellers.",
+      "draftUpdated": "Draft updated 💾",
+      "jobUpdated": "Job updated ✅",
+      "failed": "Failed: {message}",
+      "somethingWentWrong": "Something went wrong"
+    }
+  },
+  "TabsPagination": {
+    "prev": "Prev",
+    "next": "Next",
+    "page": "Page {current} of {total}",
+    "selectItemsPerPage": "Select items per page"
+  },
+  "JobCard": {
+    "hourly": "Hourly",
+    "fixedPrice": "Fixed price",
+    "deliveryDays": "Delivery Days",
+    "noDescription": "No description provided",
+    "extraDetails": "Extra details",
+    "attachments": "Attachments",
+    "file": "file",
+    "files": "files",
+    "deleteJob": "Delete job",
+    "viewProposals": "View Proposals ({count})"
+  },
+  "MyGigs": {
+    "title": "My Gigs",
+    "createNewGig": "Create a new Gig",
+    "tabs": {
+      "all": "All",
+      "active": "Active",
+      "pending": "Pending",
+      "draft": "Draft",
+      "denied": "Denied",
+      "paused": "Paused"
+    },
+    "columns": {
+      "gig": "Gig",
+      "service": "Service",
+      "clicks": "Clicks",
+      "ordersCount": "Orders Count",
+      "startingPrice": "Starting Price",
+      "status": "Status",
+      "createdDate": "Created Date"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "draft": "Draft",
+      "denied": "Denied",
+      "paused": "Paused"
+    },
+    "delete": {
+      "title": "Delete Gig",
+      "confirm": "Are you sure you want to delete this gig <strong>{title}</strong>? This action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete": "Delete"
+    },
+    "toast": {
+      "deleting": "Deleting \"{title}\"...",
+      "deleted": "\"{title}\" deleted successfully",
+      "failed": "Failed to delete \"{title}\""
+    }
+  },
+  "MyDisputes": {
+    "title": "My Disputes",
+    "searchPlaceholder": "Search disputes (title, status, id, user)…",
+    "noDisputes": "No disputes found",
+    "noDisputesDesc": "Try adjusting your search or reloading.",
+    "noDisputeSelected": "No dispute selected",
+    "noDisputeSelectedDesc": "Please choose a dispute from the list on the left to view its details, messages, and resolution status.",
+    "notFound": "Dispute not found",
+    "notFoundDesc": "The dispute you selected could not be located. It may have been removed or the link is invalid.",
+    "order": "Order",
+    "freelancer": "Freelancer:",
+    "client": "Client:",
+    "status": "Status:",
+    "raisedBy": "Raised By:",
+    "you": "You",
+    "otherParty": "Other party",
+    "opened": "Opened:",
+    "subject": "Subject",
+    "type": "Type",
+    "reason": "Reason",
+    "invoice": "Invoice",
+    "subtotal": "Subtotal (escrow)",
+    "serviceFee": "Service fee",
+    "total": "Total",
+    "viewResolution": "View resolution",
+    "proposedResolution": "Proposed Resolution",
+    "resolution": {
+      "sellerAmount": "Seller amount",
+      "buyerRefund": "Buyer refund",
+      "note": "Note",
+      "decidedBy": "Decided by"
+    },
+    "errors": {
+      "unableToLoad": "Unable to load dispute.",
+      "failedToLoad": "Failed to load activity."
+    }
+  },
+  "MyBilling": {
+    "tabs": {
+      "billingHistory": "Billing History",
+      "billingInformation": "Billing Information",
+      "availableBalances": "Available Balances",
+      "paymentMethods": "Payment Methods"
+    },
+    "billingHistory": {
+      "title": "Billing History",
+      "searchByDate": "Search by date",
+      "searchByOrder": "Search by order number",
+      "loading": "Loading...",
+      "columns": {
+        "date": "Date",
+        "document": "Document",
+        "type": "Type",
+        "order": "Order",
+        "currency": "Currency",
+        "total": "Total"
+      }
+    },
+    "availableBalances": {
+      "title": "Available balances",
+      "loading": "Loading balances...",
+      "earningsToDate": {
+        "title": "Earnings to date",
+        "description": "Available for withdraw or purchases."
+      },
+      "availableBalance": {
+        "title": "Available Balance",
+        "description": "Use for purchases."
+      },
+      "credits": {
+        "title": "Credits",
+        "description": "Earn Upphoto Credits."
+      },
+      "phoneVerification": {
+        "title": "Phone Verification",
+        "description": "Refer people you know and everyone benefits!",
+        "button": "Verify Phone"
+      }
+    },
+    "billingInformation": {
+      "title": "Billing Information",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "John Doe",
+      "state": "State",
+      "statePlaceholder": "Gadah",
+      "country": "Country",
+      "selectCountry": "Select Country",
+      "saudiResident": "Are you a citizen / resident of Saudi Arabia",
+      "select": "Select",
+      "yes": "Yes",
+      "no": "No",
+      "invoices": "Invoices",
+      "invoicesDesc": "You will find your invoices under the billing history tab",
+      "inboxMessages": "Inbox Messages",
+      "saveChanges": "Save Changes",
+      "saving": "Saving...",
+      "loading": "Loading...",
+      "errors": {
+        "loading": "Error loading billing information",
+        "updating": "Error updating billing information"
+      },
+      "success": "Billing information updated successfully!"
+    },
+    "paymentMethods": {
+      "title": "Bank Account Information",
+      "yourBankAccounts": "Your Bank Accounts",
+      "iban": "IBAN:",
+      "default": "Default",
+      "setDefault": "Set Default",
+      "delete": "Delete",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "Bader Alkhamees",
+      "ibanLabel": "International Bank Account Number",
+      "ibanPlaceholder": "Enter IBAN",
+      "clientId": "Client Id",
+      "clientIdPlaceholder": "Enter client ID",
+      "clientSecret": "Client secret",
+      "clientSecretPlaceholder": "Enter client secret",
+      "country": "Country",
+      "selectCountry": "Select Country",
+      "state": "State",
+      "statePlaceholder": "Gadah",
+      "mobileNumber": "Mobile number",
+      "mobileNumberPlaceholder": "+966555521471",
+      "addBankAccount": "Add Bank Account",
+      "adding": "Adding...",
+      "deleteConfirm": "Are you sure you want to delete this bank account?",
+      "errors": {
+        "loading": "Error loading bank accounts",
+        "adding": "Error adding bank account",
+        "deleting": "Error deleting bank account",
+        "settingDefault": "Error setting default bank account"
+      },
+      "success": {
+        "added": "Bank account added successfully!",
+        "deleted": "Bank account deleted successfully!",
+        "defaultUpdated": "Default bank account updated successfully!"
+      }
+    }
+  },
+  "Table": {
+    "emptyState": {
+      "title": "No results found",
+      "subtitle": "Try adjusting filters, clearing search, or changing the date range.",
+      "clearFilters": "Clear filters",
+      "reload": "Reload"
+    },
+    "action": "Action",
+    "nothingToShow": {
+      "title": "Nothing to show here",
+      "subtitle": "No rows match your current filters. You can clear filters or try a different search."
+    },
+    "showing": "Showing {from}-{to} of {total}"
+  },
+  "DisputeChat": {
+    "thread": "Thread",
+    "noMessages": {
+      "title": "No messages yet",
+      "subtitle": "Start the conversation by sending the first message."
+    },
+    "newerMessages": "Newer messages",
+    "replyingTo": "Replying to <b>{username}</b>: \"{message}\"",
+    "cancel": "cancel",
+    "writeMessage": "Write a message…",
+    "send": "Send",
+    "reply": "↩ Reply",
+    "replyToMessage": "Reply to this message",
+    "goToParent": "Go to parent message",
+    "inReplyTo": "In reply to <b>{username}</b>: \"{message}\"",
+    "system": "System",
+    "user": "User",
+    "me": "Me",
+    "proposedResolution": {
+      "simple": "Proposed resolution: {resolution}",
+      "detailed": "Proposed resolution → Seller: {sellerAmount} • Buyer refund: {buyerRefund}{note}"
+    },
+    "errors": {
+      "failedToSend": "Failed to send message."
+    }
+  },
+  "MyOrders": {
+    "page": {
+      "title": "Manage Orders",
+      "searchPlaceholder": "Search by order number or status",
+      "tabs": {
+        "all": "All",
+        "active": "Active",
+        "delivered": "Delivered",
+        "changeRequested": "Change Requested",
+        "completed": "Completed",
+        "disputed": "Disputed",
+        "canceled": "Canceled"
+      },
+      "columns": {
+        "serviceImg": "Service img",
+        "serviceJob": "Service / Job",
+        "freelancer": "Freelancer",
+        "client": "Client",
+        "orderDate": "Order date",
+        "total": "Total",
+        "status": "Status"
+      },
+      "badges": {
+        "job": "Job",
+        "service": "Service"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "chat": "Chat",
+        "reviewSubmission": "Review Submission",
+        "viewChangeRequest": "View Change Request",
+        "deliver": "Deliver",
+        "delivering": "Delivering…",
+        "receive": "Receive",
+        "submitting": "Submitting…",
+        "openDispute": "Open Dispute",
+        "opening": "Opening…",
+        "viewDispute": "View Dispute",
+        "pay": "Pay",
+        "cancelOrder": "Cancel Order",
+        "cancelling": "Cancelling…"
+      },
+      "errors": {
+        "failedToLoad": "Failed to load orders.",
+        "failedToCancel": "Failed to cancel order"
+      },
+      "cancelConfirm": "Are you sure you want to cancel this order?",
+      "paymentCanceled": "Payment canceled"
+    },
+    "modals": {
+      "notifications": {
+        "title": "Notifications",
+        "markAllAsRead": "Read all",
+        "viewAll": "View all",
+        "allCaughtUp": "You're all caught up!",
+        "view": "View",
+        "new": "New",
+        "markAsRead": "Mark as read"
+      },
+      "dispute": {
+        "title": "Open a Dispute",
+        "order": "Order",
+        "aboutToOpen": "You are about to open a",
+        "dispute": "dispute",
+        "against": "against the",
+        "forOrder": "for the order:",
+        "whatAbout": "What is this dispute about?",
+        "subject": "Dispute Subject",
+        "subjectPlaceholder": "Enter a clear subject for your dispute",
+        "detailedExplanation": "Detailed Explanation",
+        "explanationPlaceholder": "Explain clearly what went wrong, what was expected, and what resolution you are seeking…",
+        "explanationHint": "Provide enough details about the problem so we can understand your dispute.",
+        "submit": "Submit Dispute",
+        "submitting": "Submitting…",
+        "types": {
+          "money": "Money issues",
+          "quality": "Work quality concerns",
+          "requirements": "Requirements not met",
+          "other": "Other issue"
+        },
+        "validation": {
+          "typeRequired": "Please select a dispute type",
+          "subjectMin": "Subject must be at least 3 characters",
+          "subjectMax": "Subject must be no more than 250 characters",
+          "messageMin": "Message must be at least 8 characters",
+          "messageMax": "Message must be no more than 2000 characters"
+        },
+        "success": "Dispute opened successfully",
+        "error": "Failed to open dispute"
+      },
+      "deliver": {
+        "title": "Deliver Work",
+        "order": "Order",
+        "receivePayment": "You'll receive payment once",
+        "acceptsDelivery": "accepts the delivery.",
+        "messageToClient": "Message to Client",
+        "messagePlaceholder": "Describe what you're delivering…",
+        "note": "Once you deliver your work,",
+        "willHave": "will have up to",
+        "daysToReview": "days to review and respond.",
+        "noAction": "If no action is taken within that period, a payment of",
+        "willBeReleased": "will be automatically released to you from the client.",
+        "deliverWork": "Deliver Work",
+        "delivering": "Delivering…",
+        "validation": {
+          "messageMin": "Message must be at least 10 characters",
+          "messageMax": "Message must be at most 2000 characters",
+          "filesMax": "You can upload up to 10 files",
+          "fileSizeMax": "Each file must be less than 25MB"
+        },
+        "success": "Work delivered successfully",
+        "error": "Failed to deliver order"
+      },
+      "reviewSubmission": {
+        "title": "Receive Work",
+        "titleReadOnly": "Review Submission",
+        "order": "Order",
+        "submittedBy": "Submitted by",
+        "message": "Message",
+        "files": "Files",
+        "noSubmission": "No submission found.",
+        "deliverySubmitted": "This delivery was submitted on",
+        "ifNoAction": "If you don't take action by",
+        "paymentReleased": "a payment of",
+        "willBeReleased": "will be automatically released to",
+        "receiveWork": "Receive Work",
+        "requestChanges": "Request Changes",
+        "success": "Order completed successfully",
+        "error": "Failed to complete order"
+      },
+      "requestChanges": {
+        "title": "Request Changes",
+        "message": "Message",
+        "messagePlaceholder": "Explain what needs to be changed…",
+        "sendRequest": "Send Request",
+        "submitting": "Submitting…",
+        "validation": {
+          "messageMin": "Message must be at least 10 characters",
+          "messageMax": "Message must be at most 2000 characters",
+          "filesMax": "You can upload up to 10 files",
+          "fileSizeMax": "Each file must be less than 25MB"
+        },
+        "success": "Change request sent to the freelancer",
+        "error": "Failed to request changes"
+      },
+      "changeRequest": {
+        "title": "Change Request",
+        "order": "Order",
+        "requestedBy": "Requested by",
+        "message": "Message",
+        "files": "Files",
+        "submittedOn": "This change request was submitted on",
+        "notFound": "No change request found."
+      },
+      "orderDetails": {
+        "title": "Order Details",
+        "orderId": "Order ID",
+        "buyer": "Buyer",
+        "seller": "Seller",
+        "packageType": "Package Type",
+        "quantity": "Quantity",
+        "orderDate": "Order Date",
+        "dueDate": "Due Date",
+        "deliveredAt": "Delivered At",
+        "completedAt": "Completed At",
+        "cancelledAt": "Cancelled At",
+        "serviceInformation": "Service Information",
+        "serviceTitle": "Service Title",
+        "description": "Description",
+        "selectedPackage": "Selected Package",
+        "requirements": "Requirements",
+        "specialInstructions": "Special instructions",
+        "invoice": "Invoice",
+        "subtotal": "Subtotal",
+        "serviceFee": "Service Fee",
+        "totalAmount": "Total Amount",
+        "paymentMethod": "Payment Method:",
+        "fromJob": "From Job",
+        "error": "Failed to load order details"
+      }
+    }
+  },
+  "CreateGig": {
+    "steps": {
+      "overview": "Overview",
+      "pricing": "Pricing",
+      "descriptionFaq": "Description & FAQ",
+      "requirements": "Requirements",
+      "gallery": "Gallery",
+      "publish": "Publish"
+    },
+    "stepTitles": {
+      "createGig": "Create Your Gig",
+      "editGig": "Edit Your Gig",
+      "packagesPricing": "Packages & Pricing",
+      "faq": "Frequently Asked Questions.",
+      "buyerRequirements": "Buyer Requirements",
+      "galleryMedia": "Gallery & Media",
+      "publishTitle": "Publish"
+    },
+    "stepDescriptions": {
+      "overview": "Let's start by choosing a category for your service",
+      "pricing": "Set up your service packages and pricing options",
+      "faq": "Provide the answer frequently asked questions.",
+      "requirements": "Specify what information you need from buyers to get started",
+      "gallery": "Showcase your previous work to attract new buyers.",
+      "publish": "Finalize and publish your project."
+    },
+    "step1": {
+      "title": "Basic Details",
+      "subtitle": "Set a compelling foundation for your gig.",
+      "gigTitle": "Gig title",
+      "gigTitleDesc": "Clear, searchable, and specific. Include your main keyword.",
+      "gigBrief": "Gig brief",
+      "gigBriefDesc": "Short value proposition. What problem do you solve and how?",
+      "category": "Category",
+      "categoryDesc": "Pick the most accurate category and subcategory.",
+      "subcategory": "SubCategory",
+      "searchTags": "Search tags",
+      "searchTagsDesc": "Use up to 5 tags that buyers would actually search.",
+      "tagsHint": "Letters and numbers only.",
+      "maxTags": "Max 5 tags.",
+      "continue": "Continue"
+    },
+    "step2": {
+      "field": "Field",
+      "title": "Title",
+      "description": "Description",
+      "deliveryTime": "Delivery Time (days)",
+      "revisions": "Revisions",
+      "price": "Price ($)",
+      "test": "Test (flag)",
+      "features": "Features (3–5)",
+      "checkErrors": "Check errors",
+      "back": "Back",
+      "continue": "Continue",
+      "addFeature": "Add feature"
+    },
+    "step3": {
+      "faqs": "FAQs",
+      "searchPlaceholder": "Search FAQs…",
+      "noFaqs": "No FAQs yet. Add one below or pick from presets.",
+      "addNewFaq": "Add New FAQ",
+      "question": "Question",
+      "answer": "Answer",
+      "addFaq": "Add FAQ",
+      "back": "Back",
+      "continue": "Continue"
+    },
+    "step4": {
+      "questions": "Questions",
+      "dragFree": "Drag-free • Minimal • Clean",
+      "noQuestions": "No questions yet",
+      "noQuestionsDesc": "Start by adding a question below — text, multiple choice, or file upload.",
+      "required": "Required",
+      "optional": "Optional",
+      "options": "Options",
+      "addNewQuestion": "Add New Question",
+      "textMultipleFile": "Text • Multiple Choice • File",
+      "questionLabel": "Question",
+      "questionPlaceholder": "write a question",
+      "type": "Type",
+      "selectType": "Select type",
+      "textInput": "Text Input",
+      "multipleChoice": "Multiple Choice",
+      "fileUpload": "File Upload",
+      "optionsLabel": "Options",
+      "optionsPlaceholder": "Type an option and press Add",
+      "atLeastOneOption": "At least one option is required for multiple choice",
+      "addQuestion": "Add Question",
+      "back": "Back",
+      "continue": "Continue"
+    },
+    "step5": {
+      "images": "Images (up to 3)",
+      "imagesDesc": "Get noticed by the right buyers with visual examples of your services.",
+      "browseImages": "Browse Images",
+      "video": "Video (One Only)",
+      "videoDesc": "Get noticed by the right buyers with visual examples of your services.",
+      "browseVideo": "Browse video",
+      "document": "Document (up to 2)",
+      "documentDesc": "Get noticed by the right buyers with visual examples of your services.",
+      "browseDocuments": "Browse documents",
+      "back": "Back",
+      "continue": "Continue"
+    },
+    "step6": {
+      "congratulations": "Congratulations!",
+      "almostDoneCreate": "You're almost done with your first Gig.",
+      "almostDoneUpdate": "You're almost done updating your Gig.",
+      "phoneVerification": "Before you start selling on UpPhoto, there is one last thing we need you to do: The security of your account is important to us. Therefore, we require all our sellers to verify their phone number before we can publish their first Gig.",
+      "phonePrivacy": "Your phone number remains private and is not used for marketing purposes. See more in our Privacy Policy.",
+      "backToEdit": "Back to Edit",
+      "updateGig": "Update Gig",
+      "publishGig": "Publish Gig"
+    },
+    "loading": {
+      "loadingGigCreator": "Loading your gig creator",
+      "gettingReady": "Getting everything ready for you..."
+    },
+    "toast": {
+      "serviceUpdated": "Service updated successfully",
+      "serviceCreated": "Service created successfully",
+      "failedToCreate": "Failed to create gig. Please try again."
+    }
+  },
+  "BecomeSeller": {
+    "hero": {
+      "title": "Freelance services",
+      "subtitle": "are just a click away!",
+      "button": "Become a Seller"
+    },
+    "stats": {
+      "gigBought": "A Gig is Bought Every",
+      "transactions": "Transactions",
+      "priceRange": "Price Range"
+    },
+    "howItWorks": {
+      "title": "How it Works"
+    },
+    "steps": {
+      "createGig": {
+        "title": "Create a Gig",
+        "subtitle": "Sign up for free, set up your Gig, and offer your work to our global audience."
+      },
+      "deliverWork": {
+        "title": "Deliver great work",
+        "subtitle": "Get notified when you get an order and use our system to discuss details with customers."
+      },
+      "getPaid": {
+        "title": "Get paid",
+        "subtitle": "Get paid on time, every time. Payment is available for withdrawal as soon as it clears."
+      }
+    },
+    "faqs": {
+      "whatCanISell": {
+        "question": "What can I sell?",
+        "answer": "Be creative! You can offer any service you wish as long as it's legal and complies with our terms. There are over 200 categories you can browse to get ideas."
+      },
+      "howMuchMoney": {
+        "question": "How much money can I make?",
+        "answer": "Your earnings depend on the demand, quality, and uniqueness of your service."
+      },
+      "howMuchTime": {
+        "question": "How much time will I need to invest?",
+        "answer": "You decide your own schedule — from part-time to full-time commitment."
+      },
+      "howDoIGetPaid": {
+        "question": "How do I get paid?",
+        "answer": "Payments are securely processed and transferred directly to your chosen method."
+      },
+      "howMuchDoesItCost": {
+        "question": "How much does it cost?",
+        "answer": "Creating an account is free. We only take a service fee per completed order."
+      },
+      "howDoIPrice": {
+        "question": "How do I price my service?",
+        "answer": "You set your own price depending on complexity, time, and expertise."
+      }
+    }
+  },
+  "Settings": {
+    "tabs": {
+      "account": "Account",
+      "security": "Security"
+    },
+    "account": {
+      "pendingEmail": "A confirmation link has been sent to <strong>{email}</strong>. Please check your inbox to confirm the change.",
+      "cancelRequest": "Cancel request",
+      "canceling": "Canceling…",
+      "resendEmail": "Resend Email",
+      "resending": "Resending…",
+      "resendIn": "Resend in {seconds}s",
+      "updateProfile": "Need to update your public profile?",
+      "username": "Username",
+      "email": "Email",
+      "saveChanges": "Save Changes",
+      "accountDeactivation": "Account deactivation",
+      "deactivationDescription": "What happens when you deactivate your account?",
+      "deactivationPoints": {
+        "profileHidden": "Your profile and Gigs won't be shown anymore.",
+        "ordersCancelled": "Active orders will be cancelled."
+      },
+      "leavingReason": "I'm leaving because",
+      "chooseReason": "Choose a Reason",
+      "reasons": {
+        "platform": "I found another platform",
+        "price": "Too expensive",
+        "features": "Not satisfied with features",
+        "other": "Other"
+      },
+      "tellUsWhy": "Please tell us why",
+      "yourReason": "Your reason for leaving",
+      "deactivateAccount": "Deactivate Account",
+      "confirmDeactivation": "Confirm Deactivation",
+      "confirmMessage": "Are you sure you want to deactivate your account?",
+      "cancel": "Cancel",
+      "yesDeactivate": "Yes, Deactivate",
+      "toast": {
+        "changesSaved": "Changes saved successfully!",
+        "failedToSave": "Failed to save changes",
+        "emailResent": "Confirmation email resent!",
+        "failedToResend": "Failed to resend email",
+        "changeCanceled": "Email change request canceled",
+        "failedToCancel": "Failed to cancel email change"
+      }
+    },
+    "security": {
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "saveChanges": "Save Changes",
+      "connectedDevices": "Connected Devices",
+      "noActiveSessions": "No active sessions.",
+      "thisDevice": "THIS DEVICE",
+      "signedOut": "SIGNED OUT",
+      "lastActivity": "Last activity {date}",
+      "signOut": "Sign Out",
+      "revoked": "Revoked {date}",
+      "loadMoreSessions": "Load More Sessions",
+      "signOutAllOthers": "Sign Out From All Other Devices",
+      "toast": {
+        "passwordUpdated": "✅ Your password has been updated successfully.",
+        "failedToUpdate": "Failed to update password"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "For important updates regarding your activity, certain notifications cannot be disabled.",
+      "type": "Type",
+      "email": "Email",
+      "mobile": "Mobile",
+      "pushNotifications": "Push notifications (for mobile devices)",
+      "enableDisablePush": "Enable/disable push notifications",
+      "tryMe": "Try Me",
+      "enableDisableSound": "Enable/disable sound",
+      "saveChanges": "Save Changes",
+      "toast": {
+        "settingsSaved": "Settings saved successfully",
+        "failedToSave": "Failed to save settings"
+      }
+    }
+  },
+  "Notifications": {
+    "page": {
+      "title": "Notifications",
+      "markAllAsRead": "Mark all as read ({count})",
+      "noNotifications": "No notifications yet",
+      "noNotificationsDesc": "We'll notify you when something arrives.",
+      "viewProposal": "View Proposal",
+      "viewOrder": "View Order",
+      "markAsRead": "Mark as read",
+      "failedToLoad": "Failed to load notifications"
+    }
+  },
+  "Payment": {
+    "cancel": {
+      "title": "Payment Canceled",
+      "description": "No money was charged. You can try again anytime.",
+      "backToJobs": "Back to My Jobs"
+    },
+    "success": {
+      "title": "Payment Successful",
+      "description": "Your order has been created and marked as paid.",
+      "orderSummary": "Order Summary",
+      "orderId": "Order ID:",
+      "titleLabel": "Title:",
+      "amount": "Amount:",
+      "status": "Status:",
+      "buyer": "Buyer:",
+      "seller": "Seller:",
+      "invoice": "Invoice:",
+      "orderNotFound": "Order not found",
+      "orderNotFoundDesc": "We could not retrieve your order details.",
+      "goToOrders": "Go to My Orders",
+      "goToMyOrders": "Go to My Orders",
+      "backToHome": "Back to Home",
+      "failedToLoad": "Failed to load order details"
+    },
+    "page": {
+      "title": "Checkout Simulation",
+      "subtitle": "Review your order and complete payment securely.",
+      "buyer": "Buyer",
+      "seller": "Seller",
+      "invoice": "Invoice #{number}",
+      "subtotal": "Subtotal",
+      "serviceFee": "Service Fee",
+      "platformPercent": "Platform %",
+      "issuedAt": "Issued At",
+      "status": "Status",
+      "total": "Total",
+      "includesTaxes": "Includes taxes and fees where applicable.",
+      "payNow": "Pay Now",
+      "processing": "Processing…",
+      "cancel": "Cancel",
+      "noOrderFound": "No order found.",
+      "toast": {
+        "paymentSuccessful": "Payment successful!",
+        "failedToMarkPaid": "Failed to mark order paid",
+        "paymentCanceled": "Payment canceled",
+        "failedToCancel": "Failed to cancel order",
+        "failedToLoad": "Failed to load order"
+      }
+    }
+  },
+  "Invite": {
+    "page": {
+      "hero": {
+        "title": "Take the credit for referring friends to UpPhoto",
+        "subtitle": "Earn up to <b>US$500</b> in credits — up to <b>US$100</b> from each referral."
+      },
+      "inviteFriends": "Invite friends through email",
+      "addEmailsPlaceholder": "Add emails (separate with commas, spaces, or new lines)",
+      "separateEmails": "Separate emails with commas, spaces, or new lines.",
+      "previewEmail": "Preview Email",
+      "clear": "Clear",
+      "valid": "valid",
+      "invalid": "invalid",
+      "sending": "Sending…",
+      "sendInvites": "Send invites",
+      "successfullySent": "Successfully sent to {count} {count, plural, one {email} other {emails}}.",
+      "uniqueLink": "Your unique invite link",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "shareLink": "Share your link or use social buttons below.",
+      "emailSubject": "Email subject",
+      "subjectPlaceholder": "Subject…",
+      "yourName": "Your name (optional)",
+      "namePlaceholder": "e.g., Mohamed",
+      "message": "Message",
+      "messagePlaceholder": "Write your invite message…",
+      "linkHint": "You can use <code>{'{link}'}</code> in your message—it will be replaced with your unique invite URL.",
+      "emailPreview": "Email preview",
+      "to": "To:",
+      "subject": "Subject:",
+      "noRecipients": "No recipients",
+      "openInEmailClient": "Open in email client",
+      "close": "Close",
+      "errors": {
+        "subjectTooShort": "Subject must be at least 5 characters.",
+        "messageTooShort": "Message must be at least 7 characters.",
+        "failedToSend": "Failed to send invites. Please try again.",
+        "couldNotCopy": "Could not copy the link."
+      }
+    }
+  },
+  "Cart": {
+    "page": {
+      "title": "My Cart",
+      "subtitle": "These are the services in your cart.",
+      "clearCart": "Clear Cart",
+      "clearing": "Clearing…",
+      "exploreServices": "Explore Services",
+      "emptyTitle": "Your cart is empty",
+      "emptyDescription": "Explore services and add them to your cart to see them here.",
+      "viewService": "View Service",
+      "remove": "Remove",
+      "errors": {
+        "failedToRemove": "Failed to remove item",
+        "failedToClear": "Failed to clear cart"
+      }
+    }
+  },
+  "Chat": {
+    "received": "Received ✅",
+    "save": "Save",
+    "star": "Star",
+    "more": "More",
+    "noMatches": "No matches",
+    "labels": {
+      "from": "From",
+      "onPlatform": "On Platform",
+      "english": "English",
+      "otherLanguage": "Other language",
+      "level": "Seller level",
+      "responseRate": "Response rate",
+      "rating": "Rating"
+    },
+    "search": "Search by Client Name",
+    "menu": {
+      "markUnread": "Mark as unread",
+      "mute": "Mute conversation",
+      "block": "Block user",
+      "export": "Export chat",
+      "delete": "Delete chat"
+    },
+    "allMessages": "All messages",
+    "tabs": {
+      "all": "All",
+      "favorites": "Favorites",
+      "archived": "Archived"
+    },
+    "placeholders": {
+      "search": "Search conversations",
+      "message": "Write a message…"
+    },
+    "clear": "Clear",
+    "searching": "Searching…",
+    "noUsersFound": "No users found",
+    "noFavorites": "No favorites",
+    "noConversations": "No conversations",
+    "noArchivedConversations": "No archived conversations",
+    "contactAdmin": "Contact admin",
+    "refresh": "Refresh",
+    "conversationWith": "Conversation with {name}",
+    "unread": "{count} unread",
+    "page": "Page {current} / {total}",
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites",
+    "favorite": "Favorite",
+    "unfavorite": "Unfavorite",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "about": "About {name}",
+    "contact": "Contact",
+    "topRated": "Top Rated",
+    "lastMessage": "Last message",
+    "onPlatform": "On platform",
+    "languages": "Languages",
+    "level": "Level",
+    "responseRate": "Response rate",
+    "ordersCompleted": "Orders completed",
+    "role": "Role",
+    "memberSince": "Member since {date}",
+    "justNow": "Just now",
+    "timeAgo": {
+      "minutes": "{count}m ago",
+      "hours": "{count}h ago",
+      "days": "{count}d ago"
+    },
+    "you": "You",
+    "user": "User",
+    "noMessages": {
+      "title": "No messages yet",
+      "subtitle": "Once you start chatting, your conversation will appear here."
+    },
+    "loadOlderMessages": "Load older messages ↑",
+    "newMessage": "New message",
+    "newMessageScroll": "New message - scroll to bottom",
+    "removeAttachment": "Remove attachment",
+    "preview": "Preview",
+    "send": "Send",
+    "emoji": "Emoji",
+    "close": "Close",
+    "attachFiles": "Attach files",
+    "yourFiles": "Your files",
+    "upload": "Upload",
+    "noFilesYet": "No files yet. Use \"Upload\".",
+    "useFiles": "Use {count} {count, plural, one {file} other {files}}",
+    "deleteFile": "Delete file",
+    "filesUploaded": "Files uploaded successfully",
+    "filesUploadFailed": "Failed to upload files. Please try again.",
+    "fileDeleted": "File deleted successfully",
+    "fileDeleteFailed": "Failed to delete file. Please try again.",
+    "creatingConversation": "Creating conversation...",
+    "conversationCreated": "Conversation created successfully",
+    "conversationCreateFailed": "Failed to create conversation",
+    "updatingFavorite": "Updating favorite for {name}...",
+    "addedToFavorites": "Added {name} to favorites",
+    "removedFromFavorites": "Removed {name} from favorites",
+    "favoriteUpdateFailed": "Failed to update favorite for {name}",
+    "conversationPinned": "Conversation pinned",
+    "conversationUnpinned": "Conversation unpinned",
+    "conversationArchived": "Conversation archived",
+    "conversationUnarchived": "Conversation unarchived",
+    "adminContactUnavailable": "Admin contact unavailable.",
+    "adminContactFailed": "Failed to contact admin",
+    "selectConversation": "Select a conversation to start chatting",
+    "searchForUsers": "Or search for users above to start a new conversation",
+    "failedToLoadConversations": "Failed to load conversations",
+    "failedToLoadMessages": "Failed to load messages",
+    "failedToSendMessage": "Failed to send message"
+  },
+  "NotFound": {
+    "errorCode": "Error 404",
+    "title": "Page not found",
+    "description": "Sorry, the page you're looking for doesn't exist or has been moved. Try going back, or head to the homepage.",
+    "backToHome": "Back to Home",
+    "goBack": "Go Back"
+  },
+  "OrderDeliveryTimer": {
+    "timeRemaining": "Time Remaining to Delivery",
+    "expired": "Delivery time has passed",
+    "days": "days",
+    "hours": "hours",
+    "minutes": "minutes",
+    "seconds": "seconds"
+  },
+  "Dashboard": {
+    "sidebar": {
+      "adminDashboard": "Admin Dashboard",
+      "controlCenter": "Control Center",
+      "close": "Close",
+      "menuItems": {
+        "dashboard": "Dashboard",
+        "users": "Users",
+        "categories": "Categories",
+        "services": "Services",
+        "jobs": "Jobs",
+        "orders": "Orders",
+        "invoices": "Invoices",
+        "disputes": "Disputes",
+        "finance": "Finance",
+        "chat": "Chat",
+        "notifications": "Notifications",
+        "settings": "Settings"
+      },
+      "descriptions": {
+        "dashboard": "KPIs, trends, and quick actions for your workspace.",
+        "users": "Manage user accounts, roles, status, and permissions.",
+        "categories": "Create and organize categories for your content and services.",
+        "services": "Add, edit, and publish services with pricing and packages.",
+        "jobs": "Add, edit, and publish Job.",
+        "orders": "Track, fulfill, and update order statuses and notes.",
+        "invoices": "Generate, download, and manage invoices and billing.",
+        "disputes": "Request payouts, view balances, and payment history.",
+        "finance": "Request payouts, view balances, and payment history.",
+        "chat": "Conversations, support inbox, and real-time messages.",
+        "notifications": "All notifications, messages, and support alerts in one place.",
+        "settings": "Account, preferences, integrations, and system options."
+      }
+    },
+    "header": {
+      "adminNotifications": "Admin Notifications",
+      "new": "new",
+      "markAllRead": "Mark all read",
+      "markAsRead": "Mark as read",
+      "loadMore": "Load more",
+      "loading": "Loading…",
+      "noNotifications": "No notifications",
+      "close": "Close"
+    },
+    "categories": {
+      "title": "Categories",
+      "error": "Failed to fetch categories.",
+      "tabs": {
+        "all": "All",
+        "category": "Main Categories",
+        "subcategory": "Subcategories"
+      },
+      "searchPlaceholder": "Search categories…",
+      "orderBy": "Order by",
+      "sortOptions": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "az": "A–Z",
+        "za": "Z–A",
+        "top": "Top Categories"
+      },
+      "addCategory": "Add Category",
+      "toast": {
+        "iconUpdated": "Top category icon updated",
+        "iconUpdateFailed": "Failed to update icon",
+        "removedFromTop": "Category removed from top",
+        "removeTopFailed": "Failed to remove top status"
+      },
+      "modal": {
+        "viewTitle": "Category Details",
+        "editTitle": "Edit Category ({name})",
+        "createTitle": "Create Category",
+        "editTopTitle": "Edit Top Icon",
+        "markTopTitle": "Mark as Top",
+        "type": "Type",
+        "mainCategory": "Main Category",
+        "subcategory": "Subcategory",
+        "parentCategory": "Parent Category *",
+        "name": "Name *",
+        "namePlaceholder": "Enter category name",
+        "slug": "Slug *",
+        "slugPlaceholder": "category-slug",
+        "description": "Description",
+        "close": "Close",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "updateCategory": "Update Category",
+        "createCategory": "Create Category",
+        "chooseIcon": "Choose Icon",
+        "chooseFileHint": "Choose a file then click Save to update the top icon.",
+        "saveIcon": "Save Icon",
+        "unmarkTop": "Unmark Top",
+        "removing": "Removing…"
+      },
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete",
+        "markTop": "Mark as Top",
+        "unmarkTop": "Unmark as Top"
+      },
+      "deleteConfirm": "Delete this category? This cannot be undone.",
+      "deleting": "Deleting category…",
+      "deleted": "Category deleted successfully.",
+      "deleteError": "Error deleting category (maybe it has related services).",
+      "validation": {
+        "nameRequired": "Name is required",
+        "nameMax": "Name must be at most 70 characters",
+        "slugRequired": "Slug is required",
+        "slugMax": "Slug must be at most 70 characters",
+        "slugInvalid": "Slug can only contain letters, numbers, hyphens, and underscores",
+        "descriptionMax": "Description must be at most 300 characters",
+        "parentRequired": "Parent category is required for subcategories",
+        "imageInvalid": "Invalid URL"
+      }
+    },
+    "disputes": {
+      "title": "Disputes",
+      "tabs": {
+        "all": "All",
+        "open": "Open",
+        "inReview": "In review",
+        "closedNoPayout": "Closed (no payout)",
+        "resolved": "Resolved",
+        "rejected": "Rejected"
+      },
+      "searchPlaceholder": "Search disputes…",
+      "orderBy": "Order by",
+      "sortOptions": {
+        "newest": "Newest",
+        "oldest": "Oldest"
+      },
+      "columns": {
+        "id": "ID",
+        "subject": "Subject",
+        "order": "Order",
+        "owner": "Owner",
+        "client": "Client",
+        "status": "Status",
+        "raisedBy": "Raised by",
+        "created": "Created"
+      },
+      "actions": {
+        "view": "View",
+        "activity": "Activity",
+        "propose": "Propose",
+        "openAgain": "Open Again",
+        "markInReview": "Mark In Review",
+        "closeOrder": "Close (order continues)",
+        "reject": "Reject",
+        "closing": "Closing",
+        "rejecting": "Rejecting…"
+      },
+      "modals": {
+        "detailsTitle": "Dispute details",
+        "order": "Order",
+        "raisedBy": "Raised by",
+        "subject": "Subject",
+        "type": "Type",
+        "status": "Status",
+        "reason": "Reason",
+        "invoice": "Invoice",
+        "subtotal": "Subtotal",
+        "serviceFee": "Service fee",
+        "total": "Total",
+        "noInvoice": "No invoice found.",
+        "proposeTitle": "Propose / Resolve Dispute",
+        "subtotalEscrow": "Subtotal (escrow)",
+        "serviceFeePlatform": "Service fee (platform)",
+        "sellerAmount": "Seller amount (payout)",
+        "buyerRefund": "Buyer refund (credit)",
+        "closeOrderAs": "Close order as",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "processing": "Processing…",
+        "resolvePayout": "Resolve & Payout",
+        "activityTitle": "Dispute Activity",
+        "amountsMustBePositive": "Amounts must be ≥ 0.",
+        "amountsMustEqual": "Seller + Buyer refund must equal subtotal ({subtotal}).",
+        "cannotPayout": "Cannot payout: missing invoice or zero subtotal.",
+        "failedToSave": "Failed to save resolution.",
+        "failedToLoad": "Failed to load activity."
+      },
+      "toast": {
+        "updatingStatus": "Updating status to \"{status}\"…",
+        "statusUpdated": "Status updated to \"{status}\" successfully.",
+        "statusUpdateFailed": "Failed to update status to \"{status}\".",
+        "resolvedPayout": "Dispute resolved and payout completed.",
+        "resolvePayoutFailed": "Resolve & payout failed."
+      }
+    },
+    "finance": {
+      "title": "Finance",
+      "kpis": {
+        "availableBalance": "Available Balance",
+        "readyToWithdraw": "Ready to withdraw",
+        "credits": "Credits",
+        "refundCredits": "Refund credits",
+        "earningsToDate": "Earnings to Date",
+        "lifetimeGross": "Lifetime gross",
+        "cancelledOrdersCredit": "Cancelled Orders Credit",
+        "holdbacks": "Holdbacks from cancellations"
+      },
+      "tabs": {
+        "all": "All Transactions",
+        "escrowDeposit": "Escrow Deposit",
+        "escrowRelease": "Escrow Release",
+        "withdrawal": "Withdrawals"
+      },
+      "columns": {
+        "id": "ID",
+        "type": "Type",
+        "amount": "Amount",
+        "status": "Status",
+        "description": "Description",
+        "date": "Date"
+      },
+      "debit": " (debit)"
+    },
+    "invoices": {
+      "title": "Invoices",
+      "tabs": {
+        "all": "All Invoices",
+        "paid": "Paid",
+        "pending": "Pending",
+        "failed": "Failed"
+      },
+      "columns": {
+        "invoiceNumber": "Invoice Number",
+        "order": "Order",
+        "buyer": "Buyer",
+        "subtotal": "Subtotal",
+        "serviceFee": "Service Fee",
+        "totalAmount": "Total Amount",
+        "platformPercent": "Platform %",
+        "paymentStatus": "Payment Status",
+        "issuedDate": "Issued Date",
+        "paymentMethod": "Payment Method",
+        "na": "N/A"
+      }
+    },
+    "jobs": {
+      "title": "Jobs",
+      "tabs": {
+        "all": "All Jobs",
+        "pending": "Pending",
+        "published": "Published",
+        "awarded": "Awarded",
+        "completed": "Completed",
+        "closed": "Closed"
+      },
+      "searchPlaceholder": "Search jobs…",
+      "orderBy": "Order by",
+      "sortOptions": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "budgetHigh": "Budget: High to Low",
+        "budgetLow": "Budget: Low to High"
+      },
+      "columns": {
+        "jobTitle": "Job Title",
+        "status": "Status",
+        "budget": "Budget",
+        "type": "Type",
+        "postedBy": "Posted By",
+        "proposals": "Proposals",
+        "created": "Created"
+      },
+      "actions": {
+        "view": "View",
+        "setPending": "Set Pending",
+        "publish": "Publish",
+        "markAwarded": "Mark Awarded",
+        "complete": "Complete",
+        "close": "Close",
+        "delete": "Delete"
+      },
+      "modal": {
+        "title": "Job Details",
+        "jobTitle": "Job Title",
+        "status": "Status",
+        "description": "Description",
+        "budget": "Budget",
+        "budgetType": "Budget Type",
+        "preferredDelivery": "Preferred Delivery",
+        "days": "days",
+        "proposals": "Proposals",
+        "proposalsCount": "proposals",
+        "posted": "Posted",
+        "skillsRequired": "Skills Required",
+        "attachments": "Attachments",
+        "download": "Download",
+        "additionalDetails": "Additional Details",
+        "close": "Close"
+      },
+      "toast": {
+        "publishing": "Publishing job...",
+        "published": "Job published ✅",
+        "publishError": "Error publishing job.",
+        "changingStatus": "Changing status to {status}...",
+        "statusSet": "Status set to {status}",
+        "statusError": "Error updating job status.",
+        "deleteConfirm": "Delete this job? This cannot be undone.",
+        "deleting": "Deleting job...",
+        "deleted": "Job deleted",
+        "deleteError": "Error deleting job.",
+        "fetchError": "Failed to fetch jobs."
+      }
+    },
+    "orders": {
+      "title": "Orders",
+      "tabs": {
+        "all": "All Orders",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "delivered": "Delivered",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "searchPlaceholder": "Search orders…",
+      "orderBy": "Order by",
+      "sortOptions": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "priceHigh": "Price: High to Low",
+        "priceLow": "Price: Low to High"
+      },
+      "columns": {
+        "orderTitle": "Order Title",
+        "status": "Status",
+        "amount": "Amount",
+        "buyer": "Buyer",
+        "seller": "Seller",
+        "package": "Package",
+        "orderDate": "Order Date"
+      },
+      "actions": {
+        "view": "View",
+        "setPending": "Set Pending",
+        "accept": "Accept",
+        "markDelivered": "Mark Delivered",
+        "complete": "Complete",
+        "cancel": "Cancel",
+        "disputed": "Disputed"
+      },
+      "toast": {
+        "updatingStatus": "Updating order status to {status}...",
+        "statusUpdated": "Order status updated to {status}",
+        "statusError": "Error updating order status."
+      }
+    },
+    "services": {
+      "title": "Services",
+      "tabs": {
+        "all": "All Services",
+        "active": "Active",
+        "draft": "Drafts",
+        "pending": "Pending",
+        "paused": "Paused"
+      },
+      "searchPlaceholder": "Search services…",
+      "orderBy": "Order by",
+      "sortOptions": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "az": "A–Z",
+        "za": "Z–A",
+        "mostOrdered": "Most Ordered",
+        "popular": "Most Popular"
+      },
+      "columns": {
+        "image": "Image",
+        "title": "Title",
+        "slug": "Slug",
+        "status": "Status",
+        "seller": "Seller",
+        "performance": "Performance",
+        "clicks": "clicks",
+        "orders": "orders",
+        "created": "Created"
+      },
+      "actions": {
+        "view": "View",
+        "pending": "Pending",
+        "activate": "Activate",
+        "pause": "Pause",
+        "setDraft": "Set to Draft",
+        "markPopular": "Mark as Popular",
+        "unmarkPopular": "Unmark as Popular"
+      },
+      "modal": {
+        "viewTitle": "Service Details",
+        "editTitle": "Edit Service",
+        "createTitle": "Create Service",
+        "editPopularTitle": "Edit Popular Icon",
+        "markPopularTitle": "Mark as Popular",
+        "title": "Title *",
+        "titlePlaceholder": "Service title",
+        "slug": "Slug *",
+        "slugPlaceholder": "service-slug",
+        "briefDescription": "Brief Description",
+        "briefPlaceholder": "Short description",
+        "fullDescription": "Full Description",
+        "category": "Category *",
+        "selectCategory": "Select category",
+        "subcategory": "Subcategory",
+        "selectSubcategory": "Select subcategory",
+        "selectCategoryFirst": "Select category first",
+        "status": "Status",
+        "packages": "Packages",
+        "addPackage": "Add Package",
+        "package": "Package {index}",
+        "remove": "Remove",
+        "packageType": "Package Type",
+        "packageTypePlaceholder": "Basic, Standard, Premium",
+        "packageTitle": "Title",
+        "packageTitlePlaceholder": "Package title",
+        "price": "Price ($)",
+        "pricePlaceholder": "0.00",
+        "deliveryTime": "Delivery Time (days)",
+        "deliveryTimePlaceholder": "3",
+        "revisions": "Revisions",
+        "revisionsPlaceholder": "1",
+        "packageDescription": "Description",
+        "galleryImages": "Gallery Images",
+        "additionalOptions": "Additional Options",
+        "fastDelivery": "Fast Delivery Available",
+        "additionalRevision": "Additional Revision Available",
+        "close": "Close",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "updateService": "Update Service",
+        "createService": "Create Service",
+        "chooseIcon": "Choose Icon",
+        "chooseFileHint": "Choose a file then click Save to update the popular icon.",
+        "saveIcon": "Save Icon",
+        "unmarkPopular": "Unmark Popular",
+        "removing": "Removing…"
+      },
+      "toast": {
+        "updatingStatus": "Updating service status...",
+        "statusUpdated": "Service status updated successfully!",
+        "statusError": "Error updating service status.",
+        "iconUpdated": "Popular icon updated",
+        "iconUpdateFailed": "Failed to update icon",
+        "removedFromPopular": "Service removed from popular",
+        "removeFailed": "Failed to remove popular status"
+      }
+    },
+    "settings": {
+      "title": "Platform Settings",
+      "subtitle": "Manage global configuration",
+      "saveSettings": "Save Settings",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "sections": {
+        "general": "General Settings",
+        "financial": "Financial Settings",
+        "legal": "Legal & Compliance"
+      },
+      "fields": {
+        "siteName": "Site Name",
+        "siteNamePlaceholder": "Your Platform Name",
+        "logo": "Logo",
+        "orPasteUrl": "Or paste image URL",
+        "logoHint": "PNG/SVG recommended. Square works best.",
+        "contactEmail": "Contact Email",
+        "contactEmailPlaceholder": "support@example.com",
+        "supportPhone": "Support Phone",
+        "supportPhonePlaceholder": "+1234567890",
+        "platformFee": "Platform Fee (%)",
+        "defaultCurrency": "Default Currency (ID)",
+        "platformWalletOwner": "Platform Wallet Owner (User ID)",
+        "platformWalletPlaceholder": "e.g. 707a2de6-b83a-4f2b-b492-cca4cca0ef7f",
+        "platformWalletHint": "Funds from paid invoices are deposited here (escrow). Ensure this maps to a valid User with a Wallet.",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service",
+        "faqs": "FAQs",
+        "faqsHint": "Add questions and answers to display across the site."
+      },
+      "tabs": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service"
+      },
+      "preview": "Preview",
+      "stats": {
+        "chars": "chars",
+        "words": "words",
+        "tipPrivacy": "Tip: use headings and short paragraphs for readability.",
+        "tipTerms": "Include refunds, deliveries, disputes, and governing law."
+      },
+      "previewEmpty": "Nothing to preview yet.",
+      "uploading": "Uploading…",
+      "uploadLogo": "Upload Logo",
+      "validation": {
+        "emailInvalid": "Invalid email format",
+        "platformFeeMin": "Platform fee must be at least 0%",
+        "platformFeeMax": "Platform fee cannot exceed 100%",
+        "logoRequired": "Logo path is required",
+        "logoInvalid": "Must be a valid image URL"
+      },
+      "toast": {
+        "saved": "Settings saved successfully!",
+        "saveFailed": "Failed to save settings.",
+        "autoPublishEnabled": "Jobs will be published immediately.",
+        "autoPublishDisabled": "Jobs now require admin approval before publishing.",
+        "updateFailed": "Failed to update job approval setting."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "tabs": {
+        "all": "All Users",
+        "buyer": "Buyers",
+        "seller": "Sellers",
+        "admin": "Admins"
+      },
+      "searchPlaceholder": "Search users…",
+      "orderBy": "Order by",
+      "sortOptions": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "az": "A–Z",
+        "za": "Z–A"
+      },
+      "filterBy": "filter by",
+      "filterOptions": {
+        "all": "All",
+        "active": "Active",
+        "suspended": "Suspended",
+        "deleted": "Deleted"
+      },
+      "columns": {
+        "avatar": "Avatar",
+        "username": "Username",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "lastLogin": "Last Login"
+      },
+      "actions": {
+        "viewDetails": "View Details",
+        "editUser": "Edit User",
+        "activate": "Activate",
+        "suspend": "Suspend",
+        "delete": "Delete",
+        "levels": {
+          "new": "New",
+          "lvl1": "Level 1",
+          "lvl2": "Level 2",
+          "top": "Top Seller"
+        }
+      },
+      "modal": {
+        "title": "User Details",
+        "editTitle": "Edit User {username}",
+        "userInformation": "User Information",
+        "memberSince": "Member Since:",
+        "lastLogin": "Last Login:",
+        "never": "Never",
+        "description": "Description:",
+        "noDescription": "No description",
+        "skills": "Skills:",
+        "noSkills": "No skills listed",
+        "languages": "Languages:",
+        "noLanguages": "No languages listed",
+        "referralCode": "Referral Code:",
+        "noReferralCode": "No Referral Code",
+        "close": "Close",
+        "cancel": "Cancel",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes"
+      },
+      "toast": {
+        "changingStatus": "Changing status to {status}...",
+        "statusChanged": "Status changed to {status} successfully",
+        "statusError": "Failed to change status",
+        "deleteConfirm": "Delete this user?",
+        "deleting": "Deleting user...",
+        "deleted": "User deleted",
+        "deleteError": "Failed to delete user",
+        "saving": "Saving changes...",
+        "saved": "User updated successfully",
+        "saveError": "Failed to update user",
+        "changingLevel": "Changing level to {level}...",
+        "levelSet": "Level set to {level}",
+        "levelError": "Error updating user level."
+      },
+      "validation": {
+        "invalidPhone": "Invalid Phone"
+      }
+    }
+  }
 }

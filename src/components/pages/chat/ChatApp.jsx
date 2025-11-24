@@ -136,7 +136,7 @@ const useChat = () => {
         setThreads(prev => {
           const newConversation = {
             id: conversationId,
-            name: other?.username || 'User',
+            name: other?.username || t('user'),
             email: other?.email,
             avatar: other?.profileImage || '/default-avatar.png',
             active: false,
@@ -266,20 +266,21 @@ const useChat = () => {
   }, [threads]);
 
 
+  const t = useTranslation('Chat');
   const formatTime = useCallback(dateString => {
-    if (!dateString) return 'Just now';
+    if (!dateString) return t('justNow');
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = +now - +date;
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) return t('justNow');
+    if (diffMins < 60) return t('timeAgo.minutes', { count: diffMins });
+    if (diffHours < 24) return t('timeAgo.hours', { count: diffHours });
+    if (diffDays < 7) return t('timeAgo.days', { count: diffDays });
     return date.toLocaleDateString();
-  }, []);
+  }, [t]);
 
   const formatDate = useCallback(dateString => {
     if (!dateString) return '—';
@@ -297,14 +298,14 @@ const useChat = () => {
       id: m.id,
       clientMessageId: m.clientMessageId,
       authorId: senderId,
-      authorName: me ? 'You' : (m.sender && m.sender.username) || m.authorName || 'User',
+      authorName: me ? t('you') : (m.sender && m.sender.username) || m.authorName || t('user'),
       authorAvatar: me ? (m.sender && m.sender.profileImage) || m.authorAvatar : (m.sender && m.sender.profileImage) || m.authorAvatar,
       text: m.message || m.text || '',
       attachments: atts,
       createdAt: createdRaw ? new Date(createdRaw).toLocaleString() : new Date().toLocaleString(),
       me,
     };
-  }, []);
+  }, [t]);
 
 
 
@@ -386,7 +387,7 @@ const useChat = () => {
 
     return {
       id: conv.id,
-      name: other?.username || 'User',
+      name: other?.username || t('user'),
       email: other?.email,
       avatar: other?.profileImage || '/default-avatar.png',
       active: false,
@@ -396,7 +397,7 @@ const useChat = () => {
         id: other?.id,
         name: other?.username || '—',
         from: formatDate(conv.lastMessageAt),
-        onPlatform: other?.memberSince ? 'Member since ' + formatDate(other.memberSince) : '—',
+        onPlatform: other?.memberSince ? t('memberSince', { date: formatDate(other.memberSince) }) : '—',
         languages: other?.languages?.join(', ') || '—',
         level: other?.sellerLevel ? other?.sellerLevel : '—',
         responseRate: other?.responseTime ? `${other.responseTime} hrs` : '—',
@@ -411,7 +412,7 @@ const useChat = () => {
       isArchived: false,
       lastMessageAt: conv.lastMessageAt,
     };
-  }, [user])
+  }, [user, t, formatTime, formatDate])
 
   const conversationsApiRef = useRef(null)
   const fetchConversations = useCallback(async (page = 1, options = { silent: false }) => {
@@ -953,8 +954,8 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
           ) : (
             <div className='flex-1  max-h-[540px] h-full flex flex-col items-center justify-center p-6 text-center'>
               <Image src='/icons/chat-placeholder.png' alt='Start a conversation' width={200} height={200} />
-              <p className='text-gray-600 text-lg -mt-4 mb-1'>Select a conversation to start chatting</p>
-              <p className='text-gray-400 text-sm'>Or search for users above to start a new conversation</p>
+              <p className='text-gray-600 text-lg -mt-4 mb-1'>{t('placeholders.selectConversation')}</p>
+              <p className='text-gray-400 text-sm'>{t('placeholders.searchUsers')}</p>
               <div className='w-full max-w-xl mt-8 space-y-4'>
                 <MessageSkeletonBubble />
                 <MessageSkeletonBubble me />
@@ -984,13 +985,14 @@ export function Panel({ children, cdCard, className }) {
 
 /* ------------------------------- ABOUT ------------------------------- */
 export function AboutPanel({ about = {} }) {
+  const t = useTranslation('Chat');
   return (
     <div className="w-full">
       <h2 className="text-2xl font-semibold flex flex-wrap items-center justify-between gap-2 min-w-0">
-        <span className="truncate">{`About ${about.name || 'Contact'}`}</span>
+        <span className="truncate">{t('aboutPanel.about', { name: about.name || 'Contact' })}</span>
         {about.topRated && (
           <span className="shrink-0 text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
-            Top Rated
+            {t('aboutPanel.topRated')}
           </span>
         )}
       </h2>
@@ -998,13 +1000,13 @@ export function AboutPanel({ about = {} }) {
 
       <div className="mt-3 h-px w-full bg-slate-200" />
       <dl className="mt-4 space-y-4">
-        <Row label="Last message" value={about.from || '—'} />
-        <Row label="On platform" value={about.onPlatform || '—'} />
-        <Row label="Languages" value={about.languages || '—'} />
-        <Row label="Level" value={about.level || '—'} />
-        <Row label="Response rate" value={about.responseRate || '—'} />
-        <Row label="Orders completed" value={about.ordersCompleted ?? '—'} />
-        <Row label="Role" value={about.role || '—'} />
+        <Row label={t('aboutPanel.lastMessage')} value={about.from || '—'} />
+        <Row label={t('aboutPanel.onPlatform')} value={about.onPlatform || '—'} />
+        <Row label={t('aboutPanel.languages')} value={about.languages || '—'} />
+        <Row label={t('aboutPanel.level')} value={about.level || '—'} />
+        <Row label={t('aboutPanel.responseRate')} value={about.responseRate || '—'} />
+        <Row label={t('aboutPanel.ordersCompleted')} value={about.ordersCompleted ?? '—'} />
+        <Row label={t('aboutPanel.role')} value={about.role || '—'} />
       </dl>
     </div>
   );

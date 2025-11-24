@@ -6,15 +6,12 @@ import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don'
 import { useTranslations } from 'next-intl';
 import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
-import api from '@/lib/axios';
 import { localImageLoader } from '@/utils/helper';
-import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 import { useAuth } from '@/context/AuthContext';
 import { useValues } from '@/context/GlobalContext';
 import Img from '../atoms/Img';
 import Logo from '../common/Logo';
 import NotificationPopup, { getLink } from '../common/NotificationPopup';
-import { useNotifications } from '@/context/NotificationContext';
 import { useSocket } from '@/context/SocketContext';
 
 /* =========================================================
@@ -32,14 +29,12 @@ export const Divider = ({ className = '' }) => <div className={`my-1 border-t bo
 
 
 
-
-
-
 /* =========================================================
    Header
    ========================================================= */
 export default function Header() {
   const t = useTranslations('layout');
+  const tHeader = useTranslations('Header');
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -58,19 +53,19 @@ export default function Header() {
 
   const buildNavLinks = u => {
     const common = [
-      { href: '/explore', label: 'Explore', icon: <Compass className='h-5 w-5' /> },
+      { href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> },
       {
-        label: 'Services',
+        label: tHeader('navigation.services'),
         icon: <Briefcase className='h-5 w-5' />,
         children: [
           {
             href: '/services',
-            label: 'Services',
+            label: tHeader('navigation.services'),
             icon: <Briefcase className='h-4 w-4' />,
           },
           {
             href: '/services/all',
-            label: 'All Services',
+            label: tHeader('navigation.allServices'),
             icon: <ListChecks className='h-4 w-4' />,
           },
         ],
@@ -81,22 +76,22 @@ export default function Header() {
 
     const guest = [
       {
-        label: 'Jobs',
+        label: tHeader('navigation.jobs'),
         icon: <Briefcase className='h-5 w-5' />,
         children: [
-          { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
+          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
         ],
       },
     ]
     // Buyer-only
     const buyer = [
       {
-        label: 'Jobs',
+        label: tHeader('navigation.jobs'),
         icon: <Briefcase className='h-5 w-5' />,
         children: [
-          { href: '/share-job-description', label: 'Create Job', icon: <FilePlus2 className='h-4 w-4' /> },
-          { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
-          { href: '/my-jobs', label: 'My Jobs (Buyer)', icon: <ClipboardList className='h-4 w-4' /> },
+          { href: '/share-job-description', label: tHeader('navigation.createJob'), icon: <FilePlus2 className='h-4 w-4' /> },
+          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+          { href: '/my-jobs', label: tHeader('navigation.myJobsBuyer'), icon: <ClipboardList className='h-4 w-4' /> },
         ],
       },
     ];
@@ -104,11 +99,11 @@ export default function Header() {
     // Seller-only
     const seller = [
       {
-        label: 'Jobs',
+        label: tHeader('navigation.jobs'),
         icon: <Briefcase className='h-5 w-5' />,
         children: [
-          { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
-          { href: '/jobs/proposals', label: 'My Proposals', icon: <FileText className='h-4 w-4' /> },
+          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+          { href: '/jobs/proposals', label: tHeader('navigation.myProposals'), icon: <FileText className='h-4 w-4' /> },
         ],
       },
     ];
@@ -116,19 +111,19 @@ export default function Header() {
     // Seller-only
     const admin = [
       {
-        label: 'Jobs',
+        label: tHeader('navigation.jobs'),
         icon: <Briefcase className='h-5 w-5' />,
         children: [
-          { href: '/jobs', label: 'Browse Jobs', icon: <ListTree className='h-4 w-4' /> },
+          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
         ],
       },
-      { href: '/dashboard', label: 'Dashboard', icon: <LucideLayoutDashboard className='h-4 w-4' /> },
+      { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
     ];
 
 
     // Conditional + common
-    if (isGuest) return [...common, ...guest, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }]
-    if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: 'Become Seller', icon: <Store className='h-5 w-5' /> }];
+    if (isGuest) return [...common, ...guest, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }]
+    if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }];
     if (u?.role === 'seller') return [...common, ...seller];
     if (u?.role === 'admin') return [...common, ...admin];
     return [...common]; // fallback if no role
@@ -141,24 +136,26 @@ export default function Header() {
     if (role === 'guest') return [];
 
     const common = [
-      { href: '/profile', label: 'My Profile', icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
-      { href: '/my-orders', label: 'My Orders', icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
-      { href: '/my-disputes', label: 'My Disputes', icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/my-disputes'), order: 4 },
-      { href: '/my-billing', label: 'My Billing', icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
-      { href: '/settings', label: 'Settings', icon: <Settings size={18} className='text-gray-500' />, active: pathname.startsWith('/settings'), order: 16 },
-      { href: '/invite', label: 'Invite New User', icon: <UserPlus size={18} className='text-gray-500' />, active: pathname.startsWith('/invite'), order: 17 },
+      { href: '/profile', label: tHeader('userMenu.myProfile'), icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
+      { href: '/my-billing', label: tHeader('userMenu.myBilling'), icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
+      { href: '/settings', label: tHeader('userMenu.settings'), icon: <Settings size={18} className='text-gray-500' />, active: pathname.startsWith('/settings'), order: 16 },
+      { href: '/invite', label: tHeader('userMenu.inviteNewUser'), icon: <UserPlus size={18} className='text-gray-500' />, active: pathname.startsWith('/invite'), order: 17 },
       { divider: true, order: 8 },
     ];
 
     const buyer = [
-      { href: '/share-job-description', label: 'Share Your Job', icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/share-job-description'), order: 10 },
-      { href: '/my-jobs', label: 'My Jobs', icon: <Briefcase size={18} className='text-gray-500' />, active: pathname.startsWith('/my-jobs'), order: 11 },
-      { href: '/become-seller', label: 'Become a Seller', icon: <DollarSign size={18} className='text-gray-500' />, active: pathname.startsWith('/become-seller'), order: 12 },
+      { href: '/share-job-description', label: tHeader('userMenu.shareYourJob'), icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/share-job-description'), order: 10 },
+      { href: '/my-jobs', label: tHeader('userMenu.myJobs'), icon: <Briefcase size={18} className='text-gray-500' />, active: pathname.startsWith('/my-jobs'), order: 11 },
+      { href: '/become-seller', label: tHeader('userMenu.becomeASeller'), icon: <DollarSign size={18} className='text-gray-500' />, active: pathname.startsWith('/become-seller'), order: 12 },
+      { href: '/my-orders', label: tHeader('userMenu.myOrders'), icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
+      { href: '/my-disputes', label: tHeader('userMenu.myDisputes'), icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/my-disputes'), order: 4 },
     ];
 
     const seller = [
-      { href: '/my-gigs', label: 'My Services', icon: <LayoutGrid size={18} className='text-gray-500' />, active: pathname.startsWith('/my-gigs'), order: 14 },
-      { href: '/create-gig', label: 'Create a Service', icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/create-gig'), order: 15 },
+      { href: '/my-gigs', label: tHeader('userMenu.myServices'), icon: <LayoutGrid size={18} className='text-gray-500' />, active: pathname.startsWith('/my-gigs'), order: 14 },
+      { href: '/create-gig', label: tHeader('userMenu.createAService'), icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/create-gig'), order: 15 },
+      { href: '/my-orders', label: tHeader('userMenu.myOrders'), icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
+      { href: '/my-disputes', label: tHeader('userMenu.myDisputes'), icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/my-disputes'), order: 4 },
     ];
 
     const items = [...common];
@@ -237,10 +234,10 @@ export default function Header() {
           ) : (
             <div className='flex items-center gap-2 md:gap-3'>
               <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-emerald-700 transition-colors rounded-xl'>
-                Sign In
+                {tHeader('auth.signIn')}
               </Link>
               <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors'>
-                Sign Up
+                {tHeader('auth.signUp')}
               </Link>
               <MobileToggle toggleMobileNav={toggleMobileNav} isMobileNavOpen={isMobileNavOpen} />
             </div>
@@ -267,6 +264,7 @@ const MobileToggle = ({ toggleMobileNav, isMobileNavOpen }) => {
    ========================================================= */
 const AvatarDropdown = ({ user, navItems, onLogout }) => {
   const t = useTranslations('layout');
+  const tHeader = useTranslations('Header');
   const [isOpen, setIsOpen] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
   const dropdownRef = useRef(null);
@@ -297,7 +295,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }} transition={{ type: 'spring', damping: 20, stiffness: 300 }} className='absolute right-0 mt-0 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl z-50'>
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }} transition={{ type: 'spring', damping: 20, stiffness: 300 }} className='absolute end-0 mt-0 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl z-50'>
             <UserMiniCard user={user} />
 
             <Divider className='!my-0' />
@@ -320,7 +318,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
             <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-4 py-3 text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors' disabled={isLogoutLoading}>
               <LogOut size={16} />
-              {isLogoutLoading ? t('loggingOut') || 'Logging out…' : t('logoutLink') || 'Logout'}
+              {isLogoutLoading ? tHeader('userMenu.loggingOut') : tHeader('userMenu.logout')}
             </motion.button>
           </motion.div>
         )}
@@ -388,7 +386,7 @@ export function DropdownItem({ label, icon, active, children }) {
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute left-0 mt-2 w-[240px] rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute start-0 mt-2 w-[240px] rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         {children}
       </motion.div>
     </div>
@@ -415,6 +413,7 @@ function DropdownPanel({ items = [] }) {
    Mobile Drawer
    ========================================================= */
 function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLogout, isLogoutLoading }) {
+  const tHeader = useTranslations('Header');
   return (
     <AnimatePresence>
       {open && (
@@ -429,7 +428,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               <div className='relative px-4 pt-4 pb-3'>
                 <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-50/70 to-transparent pointer-events-none' />
                 <div className='relative flex items-center justify-between'>
-                  <span className='text-sm font-semibold text-slate-700'>Menu</span>
+                  <span className='text-sm font-semibold text-slate-700'>{tHeader('userMenu.menu')}</span>
                   <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Close' autoFocus>
                     <X className='h-5 w-5 text-slate-600' />
                   </button>
@@ -444,9 +443,9 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                     <Img src={user.profileImage} altSrc={'/images/placeholder-avatar.png'} alt={`avatar`} width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm h-11 w-11' />
                   </motion.div>
                   <div className='min-w-0'>
-                    <p className='text-sm text-slate-900 font-medium truncate'>{user.username || 'User'}</p>
+                    <p className='text-sm text-slate-900 font-medium truncate'>{user.username || tHeader('userMenu.user')}</p>
                     <p className='text-xs text-slate-500 truncate'>{user.email}</p>
-                    <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full capitalize'>{user.role || 'member'}</span>
+                    <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full capitalize'>{user.role || tHeader('userMenu.member')}</span>
                   </div>
                 </div>
               )}
@@ -507,7 +506,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                 <div className='mx-2'>
                   <motion.button onClick={onLogout} className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-slate-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
                     <LogOut size={16} />
-                    {isLogoutLoading ? 'Logging out…' : 'Logout'}
+                    {isLogoutLoading ? tHeader('userMenu.loggingOut') : tHeader('userMenu.logout')}
                   </motion.button>
                 </div>
               )}
@@ -558,7 +557,8 @@ export const getInitials = name =>
     .join('') || 'U';
 
 function UserMiniCard({ user }) {
-  const name = user?.username || 'User';
+  const tHeader = useTranslations('Header');
+  const name = user?.username || tHeader('userMenu.user');
   const email = user?.email || '';
   const role = (user?.role || 'member').toLowerCase();
   const { chip } = roleStyles[role] || roleStyles.member;
@@ -600,7 +600,7 @@ function UserMiniCard({ user }) {
           {email && (
             <a href={`mailto:${email}`} className='inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition' title='Send email'>
               <Mail className='h-3.5 w-3.5' />
-              Email
+              {tHeader('userMenu.email')}
             </a>
           )}
         </div>

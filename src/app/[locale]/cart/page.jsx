@@ -8,8 +8,10 @@ import NoResults from '@/components/common/NoResults';
 import Img from '@/components/atoms/Img';
 import Button from '@/components/atoms/Button';
 import { useValues } from '@/context/GlobalContext';
+import { useTranslations } from 'next-intl';
 
 export default function CartPage() {
+  const t = useTranslations('Cart.page');
   const { cart, loadingCart: loading, setCart } = useValues();
   const [busy, setBusy] = useState(null); // serviceId currently mutating
   const [error, setError] = useState(null);
@@ -28,7 +30,7 @@ export default function CartPage() {
       await api.delete(`/cart/item/${serviceId}`);
     } catch (e) {
       setCart(prev);
-      setError(e?.response?.data?.message ?? 'Failed to remove item');
+      setError(e?.response?.data?.message ?? t('errors.failedToRemove'));
     } finally {
       setBusy(null);
     }
@@ -44,7 +46,7 @@ export default function CartPage() {
       await api.delete('/cart');
     } catch (e) {
       setCart(prev);
-      setError(e?.response?.data?.message ?? 'Failed to clear cart');
+      setError(e?.response?.data?.message ?? t('errors.failedToClear'));
     } finally {
       setBusy(null);
     }
@@ -57,27 +59,27 @@ export default function CartPage() {
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">My Cart</h1>
-            <p className="text-slate-600">These are the services in your cart.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">{t('title')}</h1>
+            <p className="text-slate-600">{t('subtitle')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {hasItems && (
               <Button
-                name={busy === 'all' ? 'Clearing…' : 'Clear Cart'}
+                name={busy === 'all' ? t('clearing') : t('clearCart')}
                 color="red"
                 onClick={clearCart}
                 disabled={busy === 'all'}
                 className="!w-fit !px-4"
-                aria-label="Clear cart"
+                aria-label={t('clearCart')}
               />
             )}
             <Button
-              name="Explore Services"
+              name={t('exploreServices')}
               color="secondary"
               href="/services"
               disabled={busy === 'all'}
               className="!w-fit !px-4"
-              aria-label="Explore services"
+              aria-label={t('exploreServices')}
             />
           </div>
         </div>
@@ -98,9 +100,9 @@ export default function CartPage() {
 
         {!loading && !hasItems && (
           <NoResults
-            mainText="Your cart is empty"
-            additionalText="Explore services and add them to your cart to see them here."
-            buttonText="Explore Services"
+            mainText={t('emptyState.mainText')}
+            additionalText={t('emptyState.additionalText')}
+            buttonText={t('emptyState.buttonText')}
             buttonLink="/services"
           />
         )}
@@ -136,8 +138,8 @@ export default function CartPage() {
                         onClick={() => removeFromCart(service.id)}
                         disabled={busy === service.id}
                         className="p-2 rounded-md hover:bg-red-50 border border-transparent hover:border-red-200 text-red-600 disabled:opacity-60"
-                        title="Remove"
-                        aria-label="Remove from cart"
+                        title={t('remove')}
+                        aria-label={t('remove')}
                       >
                         {busy === service.id ? (
                           <Loader2 className="h-5 w-5 animate-spin" />
@@ -149,8 +151,8 @@ export default function CartPage() {
                     <Button
                       href={`/services/category/${service?.slug ?? ''}`}
                       className="mt-3 sm:mt-4 w-full"
-                      name="View Service"
-                      aria-label="View service"
+                      name={t('viewService')}
+                      aria-label={t('viewService')}
                     />
                   </div>
                 </div>

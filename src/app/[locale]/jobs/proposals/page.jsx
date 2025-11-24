@@ -3,13 +3,14 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import api from '@/lib/axios';
 import Button from '@/components/atoms/Button';
 import NoResults from '@/components/common/NoResults';
 import TabsPagination from '@/components/common/TabsPagination';
 import { Modal } from '@/components/common/Modal';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Banknote, CalendarDays, Clock, FolderOpen, User2, ArrowLeftRight, ShowerHeadIcon, Eye, Share, Share2, UserPen, ArrowUpDown, ArrowUp, ArrowUp01, ArrowUp01Icon } from 'lucide-react';
+import { Banknote, CalendarDays, Clock, FolderOpen, User2, ArrowUp } from 'lucide-react';
 import AttachmentList from '@/components/common/AttachmentList';
 import toast from 'react-hot-toast';
 import Tabs from '@/components/common/Tabs';
@@ -50,6 +51,7 @@ function statusTone(s) {
 // Page
 // -------------------------------------------------
 export default function SellerProposalsPage() {
+  const t = useTranslations('Jobs.proposals');
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -88,7 +90,7 @@ export default function SellerProposalsPage() {
       } catch (e) {
         if (!isErrorAbort(e)) {
           console.error(e);
-          toast.error('Failed to load proposals');
+          toast.error(t('errors.failedToLoad'));
         }
       } finally {
         // Only clear loading if THIS request is still the active one
@@ -102,16 +104,16 @@ export default function SellerProposalsPage() {
     <div className='container !mb-12 !mt-6 min-h-[700px] '>
       <div className='card flex items-center justify-between '>
         <div>
-          <h1 className='text-3xl font-extrabold tracking-tight text-slate-900'>My Proposals</h1>
-          <p className='mt-1 text-slate-600'>Track submissions, approvals, and outcomes.</p>
+          <h1 className='text-3xl font-extrabold tracking-tight text-slate-900'>{t('title')}</h1>
+          <p className='mt-1 text-slate-600'>{t('subtitle')}</p>
         </div>
 
         <Tabs
           tabs={[
-            { label: 'All', value: 'all' },
-            { label: 'submitted', value: 'submitted' },
-            { label: 'accepted', value: 'accepted' },
-            { label: 'rejected', value: 'rejected' },
+            { label: t('all'), value: 'all' },
+            { label: t('submitted'), value: 'submitted' },
+            { label: t('accepted'), value: 'accepted' },
+            { label: t('rejected'), value: 'rejected' },
           ]}
           setActiveTab={tab => { setTab(tab); resetPage() }}
           activeTab={tab}
@@ -129,7 +131,7 @@ export default function SellerProposalsPage() {
           ))
         ) : (
           <div className='md:col-span-2 lg:col-span-3'>
-            <NoResults mainText='No proposals found' additionalText={tab === 'all' ? "You haven't sent any proposals yet." : `No ${tab} proposals.`} />
+            <NoResults mainText={t('noProposals')} additionalText={tab === 'all' ? t('noProposalsYet') : t('noStatusProposals', { status: tab })} />
           </div>
         )}
       </motion.div>
@@ -147,7 +149,7 @@ export default function SellerProposalsPage() {
 
       <AnimatePresence>
         {viewer.open && viewer.job && (
-          <Modal title={'Job details'} onClose={() => setViewer({ open: false, job: null })}>
+          <Modal title={t('jobDetails')} onClose={() => setViewer({ open: false, job: null })}>
             <JobDetails job={viewer.job} />
           </Modal>
         )}
@@ -160,6 +162,7 @@ export default function SellerProposalsPage() {
 // Cards
 // -------------------------------------------------
 function ProposalCard({ proposal, onOpenJob }) {
+  const t = useTranslations('Jobs.proposals');
   const [expanded, setExpanded] = useState(false);
   const submitted = (proposal?.submittedAt || proposal?.created_at || '').split('T')[0];
   const buyerName = proposal?.job?.buyer?.username || '—';
@@ -214,7 +217,7 @@ function ProposalCard({ proposal, onOpenJob }) {
                 onClick={() => setExpanded(!expanded)}
                 className="mt-1 text-xs text-emerald-600 hover:underline"
               >
-                {expanded ? 'Show less' : 'Show more'}
+                {expanded ? t('showLess') : t('showMore')}
               </button>
             )}
           </div>
@@ -225,7 +228,7 @@ function ProposalCard({ proposal, onOpenJob }) {
             <Banknote className='h-4 w-4' /> {proposal?.bidAmount}
           </span>
           <span className={chip}>
-            <Clock className='h-4 w-4' /> {proposal?.deliveryDays} days
+            <Clock className='h-4 w-4' /> {proposal?.deliveryDays} {t('days')}
           </span>
           <span className={chip}>
             <CalendarDays className='h-4 w-4' /> {submitted}
@@ -235,7 +238,7 @@ function ProposalCard({ proposal, onOpenJob }) {
         {/* Portfolio Links */}
         {portfolioLinks.length > 0 && (
           <div className="mt-4 space-y-1">
-            <p className="text-sm font-medium text-slate-700">Portfolio</p>
+            <p className="text-sm font-medium text-slate-700">{t('portfolio')}</p>
             <ul className="space-y-1">
               {portfolioLinks.map((url, idx) => (
                 <li key={idx}>
@@ -294,6 +297,7 @@ function CardSkeleton() {
 // Job details reuse (from job viewer)
 // -------------------------------------------------
 function JobDetails({ job }) {
+  const t = useTranslations('Jobs');
   const buyerName = job?.buyer?.username || '—';
   const buyerInitials = useMemo(
     () =>
@@ -320,7 +324,7 @@ function JobDetails({ job }) {
           {job.budgetType === 'hourly' ? '/hr' : ''}
         </span>
         <span className={chip}>
-          <Clock className='h-4 w-4' /> {job.preferredDeliveryDays ?? '—'} days
+          <Clock className='h-4 w-4' /> {job.preferredDeliveryDays ?? '—'} {t('page.days')}
         </span>
         <span className={chip}>
           <CalendarDays className='h-4 w-4' /> {created}
@@ -342,7 +346,7 @@ function JobDetails({ job }) {
       {Array.isArray(job?.attachments) && job.attachments.length > 0 && (
         <div className='mt-5 rounded-xl border border-slate-200 p-3'>
           <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-            <FolderOpen className='h-4 w-4' /> Attachments
+            <FolderOpen className='h-4 w-4' /> {t('page.attachments')}
           </div>
           <AttachmentList attachments={job.attachments} />
         </div>
@@ -350,7 +354,7 @@ function JobDetails({ job }) {
 
       {Array.isArray(job?.skillsRequired) && job.skillsRequired.length > 0 && (
         <div className='mt-4'>
-          <div className='text-sm font-semibold text-slate-800 mb-2'>Skills</div>
+          <div className='text-sm font-semibold text-slate-800 mb-2'>{t('page.skillsAndExpertise')}</div>
           <div className='flex flex-wrap gap-2'>
             {job.skillsRequired.map((s, i) => (
               <span key={i} className='gradient text-white px-3 py-1 rounded-full text-sm font-medium'>

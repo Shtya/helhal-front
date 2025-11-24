@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useTranslations } from 'next-intl';
 
 export default function OrderDeliveryTimer({ order }) {
+    const t = useTranslations('OrderDeliveryTimer');
 
     const [remaining, setRemaining] = useState({
         years: 0,
@@ -62,9 +64,9 @@ export default function OrderDeliveryTimer({ order }) {
         <div>
             <div className="pt-5 border-t border-slate-200">
                 <p className="text-lg font-semibold text-slate-900 mb-2 flex items-center gap-1">
-                    <span className="text-emerald-600">⏳</span> Time Remaining to Delivery
+                    <span className="text-emerald-600">⏳</span> {t('timeRemaining')}
                 </p>
-                {remaining.expired ? (<p className="text-center text-sm text-red-600 mt-4">Delivery time has passed</p>)
+                {remaining.expired ? (<p className="text-center text-sm text-red-600 mt-4">{t('expired')}</p>)
                     : (<div className="inline-flex items-center px-3 py-1.5">
                         <div className="flex items-center justify-center w-full gap-6 count-down-main">
                             {/* Days */}
@@ -74,7 +76,7 @@ export default function OrderDeliveryTimer({ order }) {
                                         {remaining.days}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">days</p>
+                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">{t('days')}</p>
                             </div>
 
                             {/* Hours */}
@@ -84,7 +86,7 @@ export default function OrderDeliveryTimer({ order }) {
                                         {remaining.hours}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">hours</p>
+                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">{t('hours')}</p>
                             </div>
 
                             {/* Minutes */}
@@ -94,7 +96,7 @@ export default function OrderDeliveryTimer({ order }) {
                                         {remaining.minutes}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">minutes</p>
+                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">{t('minutes')}</p>
                             </div>
 
                             {/* Seconds */}
@@ -104,7 +106,7 @@ export default function OrderDeliveryTimer({ order }) {
                                         {remaining.seconds}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">seconds</p>
+                                <p className="text-sm font-normal text-emerald-700 mt-1 text-center w-full">{t('seconds')}</p>
                             </div>
                         </div>
                     </div>

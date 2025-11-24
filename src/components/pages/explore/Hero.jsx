@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 import { MailPlus, UserRoundCog, UserIcon, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -101,58 +102,64 @@ const item = {
   show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: 'easeOut' } },
 };
 export default function Hero() {
+  const t = useTranslations('Explore');
   const { user, role } = useAuth();
 
   const cards = [];
 
   // Conditionally push the first card based on role
   if (role === 'guest') {
+    const cardData = t.raw('hero.cards.guest');
     cards.push({
       id: 'create-account',
       icon: <UserRoundCog className='h-6 w-6' />,
-      title: 'Create your account',
-      lines: ['Sign up to hire freelancers', 'Access personalized recommendations'],
-      buttonLabel: 'Join Now',
+      title: cardData.title,
+      lines: cardData.lines,
+      buttonLabel: cardData.buttonLabel,
       href: '/auth?tab=register',
       accent: 'from-emerald-400/20 to-emerald-400/0',
-      chip: 'New here?',
+      chip: cardData.chip,
     });
   } else if (role === 'buyer') {
+    const cardData = t.raw('hero.cards.buyer');
     cards.push({
       id: 'recommended',
       icon: <MailPlus className='h-6 w-6' />,
-      title: 'Recommended for you',
-      lines: ['Get matched with freelancers', 'Create a job and get custom offers'],
-      buttonLabel: 'Start a Project',
+      title: cardData.title,
+      lines: cardData.lines,
+      buttonLabel: cardData.buttonLabel,
       href: '/share-job-description',
       accent: 'from-emerald-400/20 to-emerald-400/0',
-      chip: 'Get started',
+      chip: cardData.chip,
     });
   } else if (role === 'seller') {
+    const cardData = t.raw('hero.cards.seller');
     cards.push({
       id: 'create-service',
       icon: <MailPlus className='h-6 w-6' />,
-      title: 'Create your service',
-      lines: ['Showcase your skills', 'Start receiving client requests'],
-      buttonLabel: 'Add a Service',
+      title: cardData.title,
+      lines: cardData.lines,
+      buttonLabel: cardData.buttonLabel,
       href: '/create-gig',
       accent: 'from-emerald-400/20 to-emerald-400/0',
-      chip: 'Boost visibility',
+      chip: cardData.chip,
     });
   }
   // No card pushed for admin
 
-  if (role !== 'guest')
+  if (role !== 'guest') {
+    const cardData = t.raw('hero.cards.completeProfile');
     cards.push({
       id: 'complete-profile',
       icon: <UserRoundCog className='h-6 w-6' />,
-      title: 'Complete your account',
-      lines: ['Your profile is missing details.', 'Add your info to unlock all features.'],
-      buttonLabel: 'Complete Your Profile',
+      title: cardData.title,
+      lines: cardData.lines,
+      buttonLabel: cardData.buttonLabel,
       href: '/profile',
       accent: 'from-emerald-400/20 to-emerald-400/0',
-      chip: 'Action needed',
+      chip: cardData.chip,
     });
+  }
 
   return (
     <section className='relative my-10 rounded-lg overflow-hidden border border-slate-200 bg-gradient-to-br from-white via-white to-slate-50'>
@@ -164,18 +171,18 @@ export default function Hero() {
       <div className='relative z-10 px-6 py-10 md:px-10 md:py-14'>
         <motion.div variants={container} initial='hidden' animate='show'>
           <motion.p variants={item} className='mb-2 text-sm text-slate-500'>
-            Quick actions
+            {t('hero.quickActions')}
           </motion.p>
 
           <motion.h1 variants={item} className='text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900'>
-            Welcome back,&nbsp;
+            {t('hero.welcomeBack')}&nbsp;
             <span className='bg-gradient-to-r from-emerald-800 to-emerald-500 bg-clip-text text-transparent'>
-              {user?.username || 'there'}
+              {user?.username || t('hero.there')}
             </span>
           </motion.h1>
 
           <motion.p variants={item} className='mt-2 text-slate-600'>
-            Pick up where you left off, or knock out what’s next.
+            {t('hero.subtitle')}
           </motion.p>
 
           <motion.div variants={item} className='mt-8 w-full max-w-[1000px] grid gap-5 sm:grid-cols-2'>
@@ -190,7 +197,9 @@ export default function Hero() {
 }
 
 
-function ActionCard({ icon, title, lines, buttonLabel, href, accent = 'from-emerald-400/15 to-emerald-400/0', chip = 'Suggested', delay = 0 }) {
+function ActionCard({ icon, title, lines, buttonLabel, href, accent = 'from-emerald-400/15 to-emerald-400/0', chip, delay = 0 }) {
+  const t = useTranslations('Explore');
+  const displayChip = chip || t('hero.defaultChip');
   return (
     <motion.article initial={{ opacity: 0, y: 12, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4, ease: 'easeOut', delay }} whileHover={{ y: -2 }} className='group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow'>
       {/* light gradient accent on hover */}
@@ -199,7 +208,7 @@ function ActionCard({ icon, title, lines, buttonLabel, href, accent = 'from-emer
       <div className='flex items-center justify-between'>
         <div className='inline-flex items-center gap-3'>
           <div className='grid h-11 w-11 place-items-center rounded-xl bg-slate-50 ring-1 ring-slate-200 text-slate-700'>{icon}</div>
-          <div className='rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600'>{chip}</div>
+          <div className='rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600'>{displayChip}</div>
         </div>
 
         <ArrowRight className='h-5 w-5 text-slate-400 group-hover:text-slate-600 transition' />

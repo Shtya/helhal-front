@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 import api from '@/lib/axios';
@@ -13,6 +14,7 @@ async function getOrder(orderId) {
 }
 
 export default function PaymentSuccessPage() {
+  const t = useTranslations('Payment.success');
   const searchParams = useSearchParams();
   const orderId = searchParams.get('orderId');
 
@@ -33,12 +35,12 @@ export default function PaymentSuccessPage() {
         setOrder(data);
       } catch (err) {
         console.error(err);
-        toast.error('Failed to load order details');
+        toast.error(t('failedToLoad'));
       } finally {
         setLoading(false);
       }
     })();
-  }, [orderId]);
+  }, [orderId, t]);
 
   if (loading) {
     return (
@@ -59,10 +61,10 @@ export default function PaymentSuccessPage() {
     return (
       <div className='py-16'>
         <div className="container max-w-lg text-center">
-          <h1 className="mb-4 text-2xl font-bold text-rose-600">Order not found</h1>
-          <p className="mb-6 text-slate-600">We could not retrieve your order details.</p>
+          <h1 className="mb-4 text-2xl font-bold text-rose-600">{t('orderNotFound')}</h1>
+          <p className="mb-6 text-slate-600">{t('orderNotFoundDesc')}</p>
           <Link href="/my-orders" className="text-emerald-700 underline">
-            Go to My Orders
+            {t('goToOrders')}
           </Link>
         </div >
       </div>
@@ -77,28 +79,28 @@ export default function PaymentSuccessPage() {
           <span className="text-4xl">🎉</span>
         </div>
 
-        <h1 className="mb-3 text-3xl font-bold text-emerald-600">Payment Successful</h1>
-        <p className="mb-10 text-slate-700">Your order has been created and marked as paid.</p>
+        <h1 className="mb-3 text-3xl font-bold text-emerald-600">{t('title')}</h1>
+        <p className="mb-10 text-slate-700">{t('description')}</p>
 
         {/* Order summary */}
         <div className="rounded-2xl border bg-white shadow-sm p-6 text-left space-y-4">
-          <h2 className="text-xl font-semibold text-slate-900">Order Summary</h2>
-          <p><span className="font-medium">Order ID:</span> {order.id}</p>
-          <p><span className="font-medium">Title:</span> {order.title}</p>
-          <p><span className="font-medium">Amount:</span> {order.totalAmount} {order.invoices?.[0]?.currencyId || 'USD'}</p>
-          <p><span className="font-medium">Status:</span> <span className="text-emerald-600">{order.status}</span></p>
-          <p><span className="font-medium">Buyer:</span> {order.buyer?.username}</p>
-          <p><span className="font-medium">Seller:</span> {order.seller?.username}</p>
-          <p><span className="font-medium">Invoice:</span> {order.invoices?.[0]?.invoiceNumber}</p>
+          <h2 className="text-xl font-semibold text-slate-900">{t('orderSummary')}</h2>
+          <p><span className="font-medium">{t('orderId')}</span> {order.id}</p>
+          <p><span className="font-medium">{t('titleLabel')}</span> {order.title}</p>
+          <p><span className="font-medium">{t('amount')}</span> {order.totalAmount} {order.invoices?.[0]?.currencyId || 'USD'}</p>
+          <p><span className="font-medium">{t('status')}</span> <span className="text-emerald-600">{order.status}</span></p>
+          <p><span className="font-medium">{t('buyer')}</span> {order.buyer?.username}</p>
+          <p><span className="font-medium">{t('seller')}</span> {order.seller?.username}</p>
+          <p><span className="font-medium">{t('invoice')}</span> {order.invoices?.[0]?.invoiceNumber}</p>
         </div>
 
         {/* Actions */}
         <div className="mt-8 flex flex-col  sm:flex-row justify-center gap-4">
           <Link href="/my-orders">
-            <Button name="Go to My Orders" color="green" />
+            <Button name={t('goToMyOrders')} color="green" />
           </Link>
           <Link href="/">
-            <Button name="Back to Home" color="secondary" />
+            <Button name={t('backToHome')} color="secondary" />
           </Link>
         </div>
       </div>

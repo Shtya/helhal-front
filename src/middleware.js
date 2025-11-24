@@ -17,6 +17,9 @@ const PUBLIC_ROUTES = [
   '/explore',
   '/services',
   '/become-seller',
+  'invite',
+  'jobs',
+  'profile/:id',
   '/'
 ];
 
@@ -24,12 +27,17 @@ const PUBLIC_ROUTES = [
 const BUYER_ROUTES = [
   '/share-job-description',
   '/my-jobs',
+  'my-disputes',
+  'my-orders'
 ];
 
 // Only sellers
 const SELLER_ROUTES = [
   '/create-gig',
   '/my-gigs',
+  '/jobs/proposals',
+  'my-disputes',
+  'my-orders'
 ];
 
 // Only admins
@@ -52,7 +60,11 @@ export async function middleware(request) {
   // -----------------------------
   // 1) PUBLIC ROUTES → always allowed
   // -----------------------------
-  if (PUBLIC_ROUTES.includes(pathWithoutLocale)) {
+  const isPublic =
+    PUBLIC_ROUTES.includes(pathWithoutLocale) ||
+    /^\/profile\/[^/]+$/.test(pathWithoutLocale); // allow /profile/:id but not /profile
+
+  if (isPublic) {
     return intlMiddleware(request);
   }
 

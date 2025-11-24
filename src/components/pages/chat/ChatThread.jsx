@@ -8,19 +8,25 @@ import { FaSpinner } from 'react-icons/fa';
 import { HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
 import Link from 'next/link';
 import { MessageSkeletonBubble } from './ChatApp';
+import { useTranslations } from 'next-intl';
 
-export const NoMessagesPlaceholder = () => (
-  <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 text-slate-500 rounded-xl p-6">
-    <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400" />
-    <p className="text-sm max-w-xs">
-      No messages yet. Once you start chatting, your conversation will appear here.
-    </p>
-  </div>
-);
+export const NoMessagesPlaceholder = () => {
+  const t = useTranslations('Chat.thread');
+  return (
+    <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 text-slate-500 rounded-xl p-6">
+      <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400" />
+      <p className="text-sm max-w-xs">
+        {t('noMessages')}
+      </p>
+    </div>
+  );
+};
 
 const emojiRange = Array.from({ length: 80 }, (_, i) => String.fromCodePoint(0x1F600 + i));
 
-export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, loadingOlder, onLoadOlder, thread, messages, onSend, t, isFavorite, isPinned, isArchived, toggleFavorite, togglePin, toggleArchive, isConnected, currentUser }) {
+export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, loadingOlder, onLoadOlder, thread, messages, onSend, t: tProp, isFavorite, isPinned, isArchived, toggleFavorite, togglePin, toggleArchive, isConnected, currentUser }) {
+  const t = useTranslations('Chat.thread');
+  const tChat = useTranslations('Chat');
   const [text, setText] = useState('');
   const [assets, setAssets] = useState([]);
   const [sending, setSending] = useState(false);
@@ -217,11 +223,11 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
             <Star size={20} fill={isFavorite ? 'currentColor' : 'none'} />
           </AccessibleButton>
 
-          <AccessibleButton title={isArchived ? 'Unarchive' : 'Archive'} onClick={toggleArchive} ariaLabel={isArchived ? 'Unarchive' : 'Archive'} className={`p-2 rounded-lg transition-colors ${isArchived ? 'text-slate-700 bg-slate-100' : 'text-gray-500 hover:bg-gray-100'}`}>
+          <AccessibleButton title={isArchived ? t('unarchive') : t('archive')} onClick={toggleArchive} ariaLabel={isArchived ? t('unarchive') : t('archive')} className={`p-2 rounded-lg transition-colors ${isArchived ? 'text-slate-700 bg-slate-100' : 'text-gray-500 hover:bg-gray-100'}`}>
             <Archive size={20} />
           </AccessibleButton>
 
-          <AccessibleButton title={isPinned ? 'Unpin' : 'Pin'} onClick={togglePin} ariaLabel={isPinned ? 'Unpin' : 'Pin'} className={`p-2 rounded-lg transition-colors ${isPinned ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-100'}`}>
+          <AccessibleButton title={isPinned ? t('unpin') : t('pin')} onClick={togglePin} ariaLabel={isPinned ? t('unpin') : t('pin')} className={`p-2 rounded-lg transition-colors ${isPinned ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-100'}`}>
             <Pin size={20} />
           </AccessibleButton>
         </div>
@@ -247,7 +253,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
                     onClick={() => onLoadOlder?.()}
                     className='text-blue-500 text-sm hover:underline'
                   >
-                    Load older messages ↑
+                    {t('loadOlderMessages')}
                   </button>
                 )}
               </div>
@@ -274,10 +280,10 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
               <AccessibleButton
                 onClick={handleScrollToBottom}
                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-colors text-sm font-medium"
-                ariaLabel="New message - scroll to bottom"
-                title="New message - scroll to bottom"
+                ariaLabel={t('newMessageScroll')}
+                title={t('newMessageScroll')}
               >
-                <span>New message</span>
+                <span>{t('newMessage')}</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -325,7 +331,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
       {/* Message Input */}
       <div className='mt-3'>
         <form className='flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 ' onSubmit={handleSubmit}>
-          <input ref={inputRef} type='text' placeholder={t('placeholders.message')} aria-label={t('placeholders.message')} className='w-full bg-transparent text-[14px] placeholder:text-slate-400 focus:outline-none' value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown} disabled={sending} />
+          <input ref={inputRef} type='text' placeholder={tChat('placeholders.message')} aria-label={tChat('placeholders.message')} className='w-full bg-transparent text-[14px] placeholder:text-slate-400 focus:outline-none' value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown} disabled={sending} />
 
           {/* Attach */}
           <AttachFilesButton hiddenFiles={true} onChange={selectedAssets => setAssets(selectedAssets)} className='!m-0' />

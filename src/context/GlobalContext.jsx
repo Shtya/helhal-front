@@ -12,6 +12,23 @@ export const GlobalProvider = ({ children }) => {
   const [loadingCategory, setLoadingCategory] = useState(true);
   const [loadingCart, setLoadingCart] = useState(true);
 
+  const [settings, setSettings] = useState(); // ← added
+  const [loadingSettings, setLoadingSettings] = useState(true); // ← added
+
+
+  // NEW — fetch public settings
+  const fetchSettings = async () => {
+    try {
+      setLoadingSettings(true);
+      const res = await api.get("settings/public");
+      setSettings(res.data);
+    } catch {
+      setSettings({});
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
+
   const fetchCategories = async () => {
     try {
       setLoadingCategory(true);
@@ -42,12 +59,15 @@ export const GlobalProvider = ({ children }) => {
   useEffect(() => {
     fetchCategories();
     fetchCart();
+    fetchSettings();
   }, []);
 
   return <GlobalContext.Provider value={{
     cart,
     setCart,
     categories,
+    settings,
+    loadingSettings,
     loadingCategory,
     loadingCart,
   }}>{children}</GlobalContext.Provider>;

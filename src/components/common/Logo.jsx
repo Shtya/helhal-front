@@ -6,7 +6,7 @@ const springy = { type: 'spring', stiffness: 500, damping: 30, mass: 0.6 };
 
 export default function Logo({ textHideMobile = true }) {
     return (
-        <Link href='/' className='flex items-center group'>
+        <Link href='/' className='flex items-center gap-1 group'>
             <motion.div whileHover={{ rotate: -4, scale: 1.05 }} transition={springy}>
                 <Image src='/images/helhal-logo.png' alt='Logo' width={42} height={42} priority className='rounded-xl shadow-sm' />
             </motion.div>

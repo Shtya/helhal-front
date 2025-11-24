@@ -42,14 +42,14 @@ const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, show
 
         {/* Action button */}
         {actionIcon && showAction && (
-          <button onClick={handleSearch} className='absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition'>
+          <button onClick={handleSearch} className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition'>
             <img src={actionIcon} alt='action icon' className='w-full' />
           </button>
         )}
       </div>
 
       {!actionIcon && showAction && (
-        <button onClick={handleSearch} className='absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md  bg-second  text-white hover:opacity-90 duration-300 hover:scale-[1.05] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 cursor-pointer'>
+        <button onClick={handleSearch} className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md  bg-second  text-white hover:opacity-90 duration-300 hover:scale-[1.05] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 cursor-pointer'>
           <ArrowRight className='w-5 h-5' />
         </button>
       )}

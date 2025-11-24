@@ -74,7 +74,7 @@ function LinksSection({ titleKey, links, directTexts = false }) {
               </li>
             ))}
             {links.length > 5 && (
-              <button onClick={() => setShowMore(!showMore)} className='text-sm text-emerald-700 hover:text-emerald-800 mt-2 w-full text-left font-semibold'>
+              <button onClick={() => setShowMore(!showMore)} className='text-sm  text-emerald-700 hover:text-emerald-800 mt-2 w-fullfont-semibold'>
                 {showMore ? t('footer.showLess') : t('footer.showMore')}
               </button>
             )}
@@ -92,7 +92,7 @@ function LinksSection({ titleKey, links, directTexts = false }) {
           </li>
         ))}
         {links.length > 5 && (
-          <button onClick={() => setShowMore(!showMore)} className='text-sm text-emerald-700 hover:text-emerald-800 mt-2 w-full text-left font-semibold'>
+          <button onClick={() => setShowMore(!showMore)} className='text-sm text-emerald-700 hover:text-emerald-800 mt-2 w-fullfont-semibold'>
             {showMore ? t('footer.showLess') : t('footer.showMore')}
           </button>
         )}
@@ -143,12 +143,12 @@ function LanguageSwitcher() {
 
 /* ===================== TRUST ROW ===================== */
 function TrustRow() {
-  const t = useTranslations('home');
+  const t = useTranslations('Home');
   return (
     <div className='flex flex-wrap items-center gap-3'>
-      <Pill>{t('trust.safepay', { default: 'Secure Escrow' })}</Pill>
-      <Pill>{t('trust.rated', { default: '4.9★ average' })}</Pill>
-      <Pill>{t('trust.talent', { default: 'Curated talent' })}</Pill>
+      <Pill>{t('hero.trust.safepay')}</Pill>
+      <Pill>{t('hero.trust.rated')}</Pill>
+      <Pill>{t('hero.trust.talent')}</Pill>
     </div>
   );
 }
@@ -233,7 +233,7 @@ export function Footer() {
               <img src='/logo.png' alt='Helhal' width={50} height={50} className='rounded-xl' />
               <div>
                 <h2 className='text-2xl font-extrabold text-gray-900'>Helhal</h2>
-                <p className='text-sm text-gray-600'>{locale === 'ar' ? 'سوق خدمات موثوق بتسعير واضح ودفع آمن.' : 'A trusted services marketplace with clear pricing & secure escrow.'}</p>
+                <p className='text-sm text-gray-600'>{t('footer.description')}</p>
               </div>
             </div>
 

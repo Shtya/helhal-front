@@ -11,11 +11,13 @@ import { useAuth } from '@/context/AuthContext';
 import z from 'zod';
 import toast from 'react-hot-toast';
 import api from '@/lib/axios';
+import { useTranslations } from 'next-intl';
 
-const emailSchema = z.string().email();
+const emailSchema = z.email();
 
 export default function Invite() {
   // ======= State =======
+  const t = useTranslations('Invite.page');
   const { user } = useAuth();
   const [rawEmails, setRawEmails] = useState('');
   const [validEmails, setValidEmails] = useState([]);
@@ -24,24 +26,14 @@ export default function Invite() {
   const [link, setLink] = useState('');
 
   const [copied, setCopied] = useState(false);
-  const [subject, setSubject] = useState('Join me on Helhal');
-  const [senderName, setSenderName] = useState(user?.username || ''); // اختياري لتخصيص الرسالة
+  const [subject, setSubject] = useState('');
+  const [senderName, setSenderName] = useState(user?.username || '');
 
   useEffect(() => {
     setSenderName(user?.username || '');
   }, [user])
 
-  const [message, setMessage] = useState(
-    `Hi there,
-
-I’ve been using Helhal, a secure and transparent freelance platform where clients and professionals connect with confidence. It offers clear pricing, curated talent, and escrow protection for every project.
-
-I think you’d find it valuable—whether you're hiring or offering services.
-
-👉 {link}
-
-Let me know if you sign up—I’d love to collaborate or help you get started.`
-  );
+  const [message, setMessage] = useState('');
 
 
   const [sending, setSending] = useState(false);
@@ -129,7 +121,7 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
     } catch {
-      alert('Could not copy the link.');
+      toast.error(t('errors.couldNotCopy'));
     }
   };
 
@@ -137,12 +129,12 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
     if (!canSend) return;
 
     if (subject.trim().length < 5) {
-      toast.error('Subject must be at least 5 characters.');
+      toast.error(t('errors.subjectTooShort'));
       return;
     }
 
     if (message.trim().length < 7) {
-      toast.error('Message must be at least 7 characters.');
+      toast.error(t('errors.messageTooShort'));
       return;
     }
 
@@ -156,11 +148,11 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
         message: message.trim(),
       });
 
-      toast.success(`Successfully sent to ${validEmails.length} ${validEmails.length === 1 ? 'email' : 'emails'}.`);
+      toast.success(t('successfullySent', { count: validEmails.length }));
       setSentCount(validEmails.length);
       setRawEmails('');
     } catch (e) {
-      toast.error('Failed to send invites. Please try again.');
+      toast.error(t('errors.failedToSend'));
     } finally {
       setSending(false);
     }
@@ -187,10 +179,8 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
         data-aos='fade-up'>
         <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/40 to-black/50' />
         <div className='relative z-10 max-w-4xl mx-auto px-6 text-white' data-aos='zoom-in' data-aos-delay='150'>
-          <h1 className='text-left text-3xl md:text-5xl font-extrabold mb-4 leading-tight'>Take the credit for referring friends to UpPhoto</h1>
-          <p className='text-left text-lg md:text-2xl text-white/90'>
-            Earn up to <b>US$500</b> in credits — up to <b>US$100</b> from each referral.
-          </p>
+          <h1 className='text-left text-3xl md:text-5xl font-extrabold mb-4 leading-tight' dangerouslySetInnerHTML={{ __html: t('hero.title') }} />
+          <p className='text-left text-lg md:text-2xl text-white/90' dangerouslySetInnerHTML={{ __html: t('hero.subtitle') }} />
         </div>
       </section>
 
@@ -200,17 +190,17 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
         <div className='grid grid-cols-1 lg:grid-cols-2 max-w-[1100px] mx-auto gap-8 items-start'>
           {/* Emails */}
           <div className='flex flex-col gap-4' data-aos='fade-right' data-aos-delay='200'>
-            <Input cnInput='!h-[52px] !rounded-xl' label='Invite friends through email' cnLabel='text-base md:text-lg' placeholder='Add emails (separate with commas, spaces, or new lines)' actionIcon='/icons/send-arrow.svg' onAction={handleSendInvites} value={rawEmails} onChange={(e) => setRawEmails(e.target.value)} className='h-[56px]' disabled={sending} />
+            <Input cnInput='!h-[52px] !rounded-xl' label={t('inviteFriends')} cnLabel='text-base md:text-lg' placeholder={t('addEmailsPlaceholder')} actionIcon='/icons/send-arrow.svg' onAction={handleSendInvites} value={rawEmails} onChange={(e) => setRawEmails(e.target.value)} className='h-[56px]' disabled={sending} />
 
             {/* Helper + Preview */}
             <div className='flex flex-wrap items-center justify-between mt-5 gap-3 text-sm'>
-              <span className='text-slate-600'>Separate emails with commas, spaces, or new lines.</span>
+              <span className='text-slate-600'>{t('separateEmails')}</span>
               <div className='flex items-center gap-3'>
                 <button onClick={() => setShowPreview(true)} className='text-emerald-700 hover:text-emerald-800 underline underline-offset-2'>
-                  Preview Email
+                  {t('previewEmail')}
                 </button>
                 <button onClick={() => setRawEmails('')} className='text-slate-500 hover:text-slate-700 underline underline-offset-2'>
-                  Clear
+                  {t('clear')}
                 </button>
               </div>
             </div>
@@ -234,15 +224,15 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
             {/* Stats + Send button */}
             <div className='mt-1 flex items-center justify-between'>
               <div className='text-sm text-slate-600'>
-                <b className='text-emerald-700'>{validEmails.length}</b> valid • <b className='text-rose-600'>{invalidEmails.length}</b> invalid
+                <b className='text-emerald-700'>{validEmails.length}</b> {t('valid')} • <b className='text-rose-600'>{invalidEmails.length}</b> {t('invalid')}
               </div>
 
               <button onClick={handleSendInvites} disabled={!canSend} className='inline-flex items-center gap-2 rounded-xl bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed'>
                 {sending ? (
-                  <span className='animate-pulse'>Sending…</span>
+                  <span className='animate-pulse'>{t('sending')}</span>
                 ) : (
                   <div className='cursor-pointer flex items-center gap-2 '>
-                    Send invites
+                    {t('sendInvites')}
                     <img src='/icons/send-arrow.svg' alt='' className='w-4' />
                   </div>
                 )}
@@ -251,30 +241,28 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
 
             {sentCount > 0 && (
               <div className='text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2' data-aos='fade-in'>
-                Successfully sent to {sentCount} {sentCount === 1 ? 'email' : 'emails'}.
+                {t('successfullySent', { count: sentCount })}
               </div>
             )}
           </div>
 
           {/* Link + personalization */}
           <div className='flex flex-col gap-5' data-aos='fade-left' data-aos-delay='200'>
-            <Input cnInput='!h-[52px] !rounded-xl' label='Your unique invite link' cnLabel='text-base md:text-lg' placeholder='https://…' actionIcon='/icons/copy.svg' onAction={handleCopy} value={link} onChange={setLink} className='h-[56px]' />
+            <Input cnInput='!h-[52px] !rounded-xl' label={t('uniqueLink')} cnLabel='text-base md:text-lg' placeholder='https://…' actionIcon='/icons/copy.svg' onAction={handleCopy} value={link} onChange={setLink} className='h-[56px]' />
             <div className='flex items-center gap-3 mt-5 '>
               <button onClick={handleCopy} className='h-9 px-4 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition'>
-                Copy
+                {t('copy')}
               </button>
-              <span className={`text-sm ${copied ? 'text-emerald-700' : 'text-slate-500'}`}>{copied ? 'Copied!' : 'Share your link or use social buttons below.'}</span>
+              <span className={`text-sm ${copied ? 'text-emerald-700' : 'text-slate-500'}`}>{copied ? t('copied') : t('shareLink')}</span>
             </div>
 
             <div className='rounded-xl border border-slate-200 p-4 bg-slate-50/50' data-aos='fade-up' data-aos-delay='50'>
               <div className='grid grid-cols-1 md:grid-cols-2 mb-3 gap-3'>
-                <Input label='Email subject' placeholder='Subject…' value={subject} onChange={e => setSubject(e.target.value)} />
-                <Input label='Your name (optional)' placeholder='e.g., Mohamed' value={senderName} onChange={e => setSenderName(e.target.value)} />
+                <Input label={t('emailSubject')} placeholder={t('subjectPlaceholder')} value={subject} onChange={e => setSubject(e.target.value)} />
+                <Input label={t('yourName')} placeholder={t('namePlaceholder')} value={senderName} onChange={e => setSenderName(e.target.value)} />
               </div>
-              <Textarea placeholder='Write your invite message…' value={message} onChange={e => setMessage(e.target.value)} rows={6} label={`Message`} />
-              <p className='mt-1 text-xs text-[#6B7280]'>
-                You can use <code>{'{link}'}</code> in your message—it will be replaced with your unique invite URL.
-              </p>
+              <Textarea placeholder={t('messagePlaceholder')} value={message} onChange={e => setMessage(e.target.value)} rows={6} label={t('message')} />
+              <p className='mt-1 text-xs text-[#6B7280]'  >{t('linkHint')}</p>
 
             </div>
           </div>
@@ -295,28 +283,28 @@ Let me know if you sign up—I’d love to collaborate or help you get started.`
         <div className='fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4' data-aos='fade-in'>
           <div className='bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6' data-aos='zoom-in'>
             <div className='flex items-center justify-between mb-4'>
-              <h3 className='text-lg font-semibold'>Email preview</h3>
-              <button onClick={() => setShowPreview(false)} className='w-8 h-8 rounded-lg hover:bg-slate-100 grid place-items-center' aria-label='Close'>
+              <h3 className='text-lg font-semibold'>{t('emailPreview')}</h3>
+              <button onClick={() => setShowPreview(false)} className='w-8 h-8 rounded-lg hover:bg-slate-100 grid place-items-center' aria-label={t('close')}>
                 ✕
               </button>
             </div>
 
             <div className='space-y-3'>
               <div className='text-sm text-slate-600'>
-                <b>To:</b> {validEmails.length ? validEmails.join(', ') : <span className='italic'>No recipients</span>}
+                <b>{t('to')}</b> {validEmails.length ? validEmails.join(', ') : <span className='italic'>{t('noRecipients')}</span>}
               </div>
               <div className='text-sm text-slate-600'>
-                <b>Subject:</b> {subject}
+                <b>{t('subject')}</b> {subject}
               </div>
               <pre className='mt-2 text-sm bg-slate-50 border border-slate-200 rounded-xl p-3 whitespace-pre-wrap'>{inviteBodyResolved}</pre>
             </div>
 
             <div className='mt-6 flex items-center justify-end gap-3'>
               <a href={gmailHref} className='rounded-xl bg-slate-900 text-white px-4 py-2 text-sm hover:bg-black transition'>
-                Open in email client
+                {t('openInEmailClient')}
               </a>
               <button onClick={() => setShowPreview(false)} className='rounded-xl border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 transition'>
-                Close
+                {t('close')}
               </button>
             </div>
           </div>

@@ -3,12 +3,14 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Search, Clock, ChevronDown, ExternalLink, Loader2, X } from 'lucide-react';
 import api from '@/lib/axios';
 import { apiService } from '@/services/GigServices';
 import { useDebounce } from '@/hooks/useDebounce';
 
 export default function GlobalSearch({ className = '', isMobileNavOpen }) {
+  const t = useTranslations('GlobalSearch');
   const BRAND = '#108A0090';
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,8 +33,8 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
   // ---------- Scopes (select lives **inside** the input)
   const scopes = [
-    { label: 'Services', value: 'services', path: '/services/all' },
-    { label: 'Jobs', value: 'jobs', path: '/jobs' },
+    { label: t('scopes.services'), value: 'services', path: '/services/all' },
+    { label: t('scopes.jobs'), value: 'jobs', path: '/jobs' },
     // { label: 'Sellers', value: 'sellers', path: '/sellers' },
   ];
   const [scopeIndex, setScopeIndex] = useState(0);
@@ -234,7 +236,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   return (
     <div className='max-xl:ms-auto'>
 
-      <button onClick={() => setMobileOpen(p => !p)} aria-label='Go to chat' className=' xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
+      <button onClick={() => setMobileOpen(p => !p)} aria-label={t('ariaLabels.goToChat')} className=' xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
         <Search className='h-5 w-5 text-slate-600' />
       </button>
       <div ref={rootRef} className={`relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"}  top-16 md:top-[88px] left-0 right-0 max-xl:bg-white  xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
@@ -292,14 +294,14 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                     cycleScope(e.key === 'ArrowRight' ? +1 : -1);
                   }
                 }}
-                placeholder='Search'
+                placeholder={t('placeholder')}
                 className='peer w-full bg-transparent outline-none placeholder:text-slate-400'
               />
 
               {/* Clear & spinner */}
               {loading && <Loader2 className='h-4 w-4 animate-spin text-slate-400' />}
               {q && !loading && (
-                <button onClick={() => setQ('')} className='rounded-md p-1 text-slate-500 hover:bg-slate-100' aria-label='Clear'>
+                <button onClick={() => setQ('')} className='rounded-md p-1 text-slate-500 hover:bg-slate-100' aria-label={t('ariaLabels.clear')}>
                   <X className='h-4 w-4' />
                 </button>
               )}
@@ -308,7 +310,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
           {/* Scope menu anchored to input (left) */}
           {scopeOpen && (
-            <div className='absolute left-2 xl:left-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
+            <div className='absolute start-2 xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
               {scopes.map((opt, i) => (
                 <button
                   key={opt.value}
@@ -331,7 +333,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
                 {/* Live records */}
                 {q.trim() && (
-                  <Section title={`Live ${scope.label}`} loading={loading} empty={records.length === 0 && !loading} emptyHint={loading ? '' : `No matching ${scope.label.toLowerCase()} yet`}>
+                  <Section title={t('sections.live', { scope: scope.label })} loading={loading} empty={records.length === 0 && !loading} emptyHint={loading ? '' : t('empty.noMatching', { scope: scope.label.toLowerCase() })}>
                     {records.map((r, i) => (
                       <Row
                         key={r.id || `${scope.value}-${i}`}
@@ -355,7 +357,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
                 {/* Recent */}
                 {recent.length > 0 && (
-                  <Section title='Recent'>
+                  <Section title={t('sections.recent')}>
                     {recent.map((r, i) => (
                       <Row key={`r-${r}-${i}`} icon={<Clock className='h-4 w-4' />} active={highlight.section === 'recent' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'recent', index: i })} onClick={() => handleChoose({ type: 'recent', label: r })}>
                         <High text={r} query={q} />
@@ -365,7 +367,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                 )}
 
                 {/* Suggestions */}
-                <Section title='Try searching for'>
+                <Section title={t('sections.trySearchingFor')}>
                   {suggestions.map((s, i) => (
                     <Row key={`s-${s}`} icon={<Search className='h-4 w-4' />} active={highlight.section === 'suggest' && highlight.index === i} onMouseEnter={() => setHighlight({ section: 'suggest', index: i })} onClick={() => handleChoose({ type: 'suggest', label: s })}>
                       <High text={s} query={q} />
@@ -377,9 +379,9 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
               {/* Footer CTA */}
               <button onClick={() => go(q)} className='flex  w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-emerald-50'>
                 <span className='break-all'>
-                  Search “{q || '…'}” in <span className='font-semibold'>{scope.label}</span>
+                  {t('footer.searchIn', { query: q || '…', scope: scope.label })}
                 </span>
-                <span className='text-[11px] text-slate-400'>Enter ↵</span>
+                <span className='text-[11px] text-slate-400'>{t('footer.enter')}</span>
               </button>
             </div>
           )}
@@ -405,10 +407,11 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 }
 
 function Section({ title, children, loading = false, empty = false, emptyHint = '' }) {
+  const t = useTranslations('GlobalSearch');
   return (
     <div className='py-1'>
       <div className='sticky -top-2 z-[1] bg-white/95 backdrop-blur px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500'>{title}</div>
-      {loading && <div className='px-2 pb-2 text-sm text-slate-500'>Loading…</div>}
+      {loading && <div className='px-2 pb-2 text-sm text-slate-500'>{t('loading')}</div>}
       {empty && !loading && <div className='px-2 pb-2 text-sm text-slate-400'>{emptyHint}</div>}
       {children}
     </div>

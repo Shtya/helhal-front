@@ -25,6 +25,7 @@ import { MdOutlineLockOpen } from 'react-icons/md';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
+import { useTranslations } from 'next-intl';
 
 
 function UserMini({ user }) {
@@ -78,16 +79,18 @@ function MessageNode({ node, onReply, level = 0 }) {
     </div>
   );
 }
-const TABS = [
-  { label: 'All', value: 'all' },
-  { label: 'Open', value: DisputeStatus.OPEN },
-  { label: 'In review', value: DisputeStatus.IN_REVIEW },
-  { label: 'Closed (no payout)', value: DisputeStatus.CLOSED_NO_PAYOUT },
-  { label: 'Resolved', value: DisputeStatus.RESOLVED },
-  { label: 'Rejected', value: DisputeStatus.REJECTED },
+const getTabs = (t) => [
+  { label: t('Dashboard.disputes.tabs.all'), value: 'all' },
+  { label: t('Dashboard.disputes.tabs.open'), value: DisputeStatus.OPEN },
+  { label: t('Dashboard.disputes.tabs.inReview'), value: DisputeStatus.IN_REVIEW },
+  { label: t('Dashboard.disputes.tabs.closedNoPayout'), value: DisputeStatus.CLOSED_NO_PAYOUT },
+  { label: t('Dashboard.disputes.tabs.resolved'), value: DisputeStatus.RESOLVED },
+  { label: t('Dashboard.disputes.tabs.rejected'), value: DisputeStatus.REJECTED },
 ];
 
 export default function DisputesPage() {
+  const t = useTranslations();
+  const TABS = getTabs(t);
   const [activeTab, setActiveTab] = useState('all');
   const [filters, setFilters] = useState({
     page: 1,
@@ -148,14 +151,14 @@ export default function DisputesPage() {
 
   const columns = useMemo(
     () => [
-      { key: 'id', label: 'ID', headerClassName: 'w-[150px]', render: (value) => <TruncatedText text={value?._raw?.id} maxLength={50} /> },
-      { key: 'subject', label: 'Subject', className: 'max-w-[240px] truncate', render: (value) => <TruncatedText text={value?._raw?.subject} maxLength={300} /> },
-      { key: 'orderTitle', label: 'Order', className: 'max-w-[240px] truncate', render: (value) => <TruncatedText text={value?.orderTitle} maxLength={300} /> },
-      { key: 'seller', label: 'Owner', headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.seller} /> },
-      { key: 'buyer', label: 'Client', headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.buyer} /> },
+      { key: 'id', label: t('Dashboard.disputes.columns.id'), headerClassName: 'w-[150px]', render: (value) => <TruncatedText text={value?._raw?.id} maxLength={50} /> },
+      { key: 'subject', label: t('Dashboard.disputes.columns.subject'), className: 'max-w-[240px] truncate', render: (value) => <TruncatedText text={value?._raw?.subject} maxLength={300} /> },
+      { key: 'orderTitle', label: t('Dashboard.disputes.columns.order'), className: 'max-w-[240px] truncate', render: (value) => <TruncatedText text={value?.orderTitle} maxLength={300} /> },
+      { key: 'seller', label: t('Dashboard.disputes.columns.owner'), headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.seller} /> },
+      { key: 'buyer', label: t('Dashboard.disputes.columns.client'), headerClassName: 'w-[260px]', render: row => <UserMini user={row._raw?.order?.buyer} /> },
       {
         key: 'status',
-        label: 'Status',
+        label: t('Dashboard.disputes.columns.status'),
         status: [
           ['open', 'text-yellow-700'],
           ['in_review', 'text-blue-700'],
@@ -165,10 +168,10 @@ export default function DisputesPage() {
         headerClassName: 'text-center',
         cellClassName: 'text-center',
       },
-      { key: 'raisedBy', label: 'Raised by' },
-      { key: 'created', label: 'Created' },
+      { key: 'raisedBy', label: t('Dashboard.disputes.columns.raisedBy') },
+      { key: 'created', label: t('Dashboard.disputes.columns.created') },
     ],
-    [],
+    [t],
   );
 
   const controllerRef = useRef();
@@ -289,17 +292,17 @@ export default function DisputesPage() {
   }
 
   async function setStatus(row, status) {
-    const toastId = toast.loading(`Updating status to "${status}"…`);
+    const toastId = toast.loading(t('Dashboard.disputes.toast.updatingStatus', { status }));
     setRowLoading(row.id, status);
     try {
       const res = await api.put(`/disputes/${row._raw.id}/status`, { status });
       if (res?.status >= 200 && res?.status < 300) {
-        toast.success(`Status updated to "${status}" successfully.`, { id: toastId });
+        toast.success(t('Dashboard.disputes.toast.statusUpdated', { status }), { id: toastId });
         patchRow(row.id, r => ({ ...r, status, _raw: { ...r._raw, status } }));
       }
     } catch (e) {
       toast.error(
-        e?.response?.data?.message || `Failed to update status to "${status}".`,
+        e?.response?.data?.message || t('Dashboard.disputes.toast.statusUpdateFailed', { status }),
         { id: toastId }
       );
     }
@@ -318,10 +321,10 @@ export default function DisputesPage() {
     const subtotal = Number(inv?.subtotal || 0);
     const sAmt = Number(sellerAmount || 0);
     const bRef = Number(buyerRefund || 0);
-    if (!inv) return setResError('No invoice found for this order.');
-    if (sAmt < 0 || bRef < 0) return setResError('Amounts must be ≥ 0.');
+    if (!inv) return setResError(t('Dashboard.disputes.modals.noInvoice'));
+    if (sAmt < 0 || bRef < 0) return setResError(t('Dashboard.disputes.modals.amountsMustBePositive'));
     if (Number((sAmt + bRef).toFixed(2)) !== Number(subtotal.toFixed(2))) {
-      return setResError(`Seller + Buyer refund must equal subtotal (${subtotal}).`);
+      return setResError(t('Dashboard.disputes.modals.amountsMustEqual', { subtotal }));
     }
     setResSubmitting(true);
     setResError('');
@@ -337,7 +340,7 @@ export default function DisputesPage() {
         closeAllModals();
       }
     } catch (e) {
-      setResError(e?.response?.data?.message || 'Failed to save resolution.');
+      setResError(e?.response?.data?.message || t('Dashboard.disputes.modals.failedToSave'));
     } finally {
       setResSubmitting(false);
     }
@@ -349,10 +352,10 @@ export default function DisputesPage() {
     const subtotal = Number(inv?.subtotal || 0);
     const sAmt = Number(sellerAmount || 0);
     const bRef = Number(buyerRefund || 0);
-    if (!inv || subtotal <= 0) return setResError('Cannot payout: missing invoice or zero subtotal.');
-    if (sAmt < 0 || bRef < 0) return setResError('Amounts must be ≥ 0.');
+    if (!inv || subtotal <= 0) return setResError(t('Dashboard.disputes.modals.cannotPayout'));
+    if (sAmt < 0 || bRef < 0) return setResError(t('Dashboard.disputes.modals.amountsMustBePositive'));
     if (Number((sAmt + bRef).toFixed(2)) !== Number(subtotal.toFixed(2))) {
-      return setResError(`Seller + Buyer refund must equal subtotal (${subtotal}).`);
+      return setResError(t('Dashboard.disputes.modals.amountsMustEqual', { subtotal }));
     }
 
     setResSubmitting(true);
@@ -369,9 +372,9 @@ export default function DisputesPage() {
         closeAllModals();
       }
 
-      toast.success('Dispute resolved and payout completed.');
+      toast.success(t('Dashboard.disputes.toast.resolvedPayout'));
     } catch (e) {
-      const msg = e?.response?.data?.message || 'Resolve & payout failed.';
+      const msg = e?.response?.data?.message || t('Dashboard.disputes.toast.resolvePayoutFailed');
       setResError(msg);
       toast.error(msg)
     } finally {
@@ -423,14 +426,14 @@ export default function DisputesPage() {
         } catch (e2) {
           if (!isErrorAbort(e2)) {
 
-            setActError(e2?.response?.data?.message || 'Unable to load activity.');
+            setActError(e2?.response?.data?.message || t('Dashboard.disputes.modals.failedToLoad'));
             setActivity(null);
           }
         }
       } else {
         if (controllerRef.current === controller) {
 
-          setActError(e?.response?.data?.message || 'Failed to load activity.');
+          setActError(e?.response?.data?.message || t('Dashboard.disputes.modals.failedToLoad'));
           setActivity(null);
         }
       }
@@ -448,13 +451,13 @@ export default function DisputesPage() {
     const canPropose = [DisputeStatus.OPEN, DisputeStatus.IN_REVIEW].includes(s);
 
     const options = [
-      { icon: <Eye className='h-4 w-4' />, label: 'View', onClick: () => openDetails(row), disabled: busy },
-      { icon: <Activity className='h-4 w-4' />, label: 'Activity', onClick: () => openActivity(row), disabled: busy },
-      { icon: <FilePlus className='h-4 w-4' />, label: 'Propose', onClick: () => openResolution(row), disabled: busy, hide: !canPropose },
-      { icon: <MdOutlineLockOpen className='h-4 w-4' />, label: 'Open Again', onClick: () => setStatus(row, DisputeStatus.OPEN), disabled: busy, hide: s === DisputeStatus.OPEN },
-      { icon: <Search className='h-4 w-4' />, label: 'Mark In Review', onClick: () => setStatus(row, DisputeStatus.IN_REVIEW), disabled: busy, hide: s === DisputeStatus.IN_REVIEW },
-      { icon: <CheckCircle className='h-4 w-4' />, label: busy ? 'Closing' : 'Close (order continues)', onClick: () => setStatus(row, DisputeStatus.CLOSED_NO_PAYOUT), disabled: busy, hide: !canPropose },
-      { icon: <XCircle className='h-4 w-4' />, label: busy ? 'Rejecting…' : 'Reject', onClick: () => setStatus(row, DisputeStatus.REJECTED), disabled: busy, danger: true, hide: !canPropose },
+      { icon: <Eye className='h-4 w-4' />, label: t('Dashboard.disputes.actions.view'), onClick: () => openDetails(row), disabled: busy },
+      { icon: <Activity className='h-4 w-4' />, label: t('Dashboard.disputes.actions.activity'), onClick: () => openActivity(row), disabled: busy },
+      { icon: <FilePlus className='h-4 w-4' />, label: t('Dashboard.disputes.actions.propose'), onClick: () => openResolution(row), disabled: busy, hide: !canPropose },
+      { icon: <MdOutlineLockOpen className='h-4 w-4' />, label: t('Dashboard.disputes.actions.openAgain'), onClick: () => setStatus(row, DisputeStatus.OPEN), disabled: busy, hide: s === DisputeStatus.OPEN },
+      { icon: <Search className='h-4 w-4' />, label: t('Dashboard.disputes.actions.markInReview'), onClick: () => setStatus(row, DisputeStatus.IN_REVIEW), disabled: busy, hide: s === DisputeStatus.IN_REVIEW },
+      { icon: <CheckCircle className='h-4 w-4' />, label: busy ? t('Dashboard.disputes.actions.closing') : t('Dashboard.disputes.actions.closeOrder'), onClick: () => setStatus(row, DisputeStatus.CLOSED_NO_PAYOUT), disabled: busy, hide: !canPropose },
+      { icon: <XCircle className='h-4 w-4' />, label: busy ? t('Dashboard.disputes.actions.rejecting') : t('Dashboard.disputes.actions.reject'), onClick: () => setStatus(row, DisputeStatus.REJECTED), disabled: busy, danger: true, hide: !canPropose },
     ];
 
     return <ActionsMenu options={options} align='right' />;
@@ -489,15 +492,15 @@ export default function DisputesPage() {
         <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
           <Tabs tabs={TABS} activeTab={activeTab} setActiveTab={handleTabChange} />
           <div className='flex flex-wrap items-center gap-3'>
-            <SearchBox placeholder='Search disputes…' onSearch={handleSearch} />
+            <SearchBox placeholder={t('Dashboard.disputes.searchPlaceholder')} onSearch={handleSearch} />
             <Select
               className='!w-fit'
               onChange={applySortPreset}
-              placeholder='Order by'
+              placeholder={t('Dashboard.disputes.orderBy')}
               value={sort}
               options={[
-                { id: 'newest', name: 'Newest' },
-                { id: 'oldest', name: 'Oldest' },
+                { id: 'newest', name: t('Dashboard.disputes.sortOptions.newest') },
+                { id: 'oldest', name: t('Dashboard.disputes.sortOptions.oldest') },
               ]}
             />
           </div>
@@ -516,30 +519,30 @@ export default function DisputesPage() {
 
       {/* Details Modal */}
       {detailsOpen && (
-        <Modal title="Dispute details" onClose={closeAllModals}>
+        <Modal title={t('Dashboard.disputes.modals.detailsTitle')} onClose={closeAllModals}>
           <div className="space-y-4">
             {/* Dispute Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Info label="Order" value={selected?._raw?.order?.title || selected?._raw?.orderId} />
-              <Info label="Raised by" value={selected?._raw?.raisedBy?.username || selected?._raw?.raisedById} />
-              <Info label="Subject" value={selected?._raw?.subject} />
+              <Info label={t('Dashboard.disputes.modals.order')} value={selected?._raw?.order?.title || selected?._raw?.orderId} />
+              <Info label={t('Dashboard.disputes.modals.raisedBy')} value={selected?._raw?.raisedBy?.username || selected?._raw?.raisedById} />
+              <Info label={t('Dashboard.disputes.modals.subject')} value={selected?._raw?.subject} />
               <Info
-                label="Type"
+                label={t('Dashboard.disputes.modals.type')}
                 value={
                   disputeType.find((type) => type.id === selected?._raw?.type)?.name ?? '—'
                 }
               />
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 font-medium">Status:</span>
+                <span className="text-sm text-gray-600 font-medium">{t('Dashboard.disputes.modals.status')}:</span>
                 <DisputeStatusPill status={selected?._raw?.status} />
               </div>
             </div>
-            <Info label="Reason" value={selected?._raw?.reason} />
+            <Info label={t('Dashboard.disputes.modals.reason')} value={selected?._raw?.reason} />
 
             {/* Invoice Section */}
             <div className="rounded-lg border border-gray-200 p-3">
-              <h4 className="font-medium mb-2">Invoice</h4>
+              <h4 className="font-medium mb-2">{t('Dashboard.disputes.modals.invoice')}</h4>
               {orderDetailLoading ? (
                 <div className="space-y-2">
                   <Shimmer className="h-4 w-32" />
@@ -549,20 +552,20 @@ export default function DisputesPage() {
               ) : inv ? (
                 <div className="text-sm space-y-1">
                   <div className="flex justify-between">
-                    <span>Subtotal</span>
+                    <span>{t('Dashboard.disputes.modals.subtotal')}</span>
                     <span>{subtotal.toFixed(2)} {currency}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Service fee</span>
+                    <span>{t('Dashboard.disputes.modals.serviceFee')}</span>
                     <span>{serviceFee.toFixed(2)} {currency}</span>
                   </div>
                   <div className="flex justify-between font-medium">
-                    <span>Total</span>
+                    <span>{t('Dashboard.disputes.modals.total')}</span>
                     <span>{total.toFixed(2)} {currency}</span>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">No invoice found.</p>
+                <p className="text-sm text-gray-500">{t('Dashboard.disputes.modals.noInvoice')}</p>
               )}
             </div>
           </div>
@@ -571,15 +574,15 @@ export default function DisputesPage() {
 
       {/* Resolution Modal */}
       {resolutionOpen && (
-        <Modal title='Propose / Resolve Dispute' onClose={closeAllModals}>
+        <Modal title={t('Dashboard.disputes.modals.proposeTitle')} onClose={closeAllModals}>
           <div className='space-y-4'>
             <div className='rounded-lg border border-gray-200 p-3'>
-              <h4 className='font-medium mb-2'>Order</h4>
+              <h4 className='font-medium mb-2'>{t('Dashboard.disputes.modals.order')}</h4>
               <div className='text-sm text-gray-700'>{selected?._raw?.order?.title || selected?._raw?.orderId}</div>
             </div>
 
             <div className='rounded-lg border border-gray-200 p-3'>
-              <h4 className='font-medium mb-2'>Invoice</h4>
+              <h4 className='font-medium mb-2'>{t('Dashboard.disputes.modals.invoice')}</h4>
               {!orderDetail ? (
                 <div className='space-y-2'>
                   <Shimmer className='h-4 w-32' />
@@ -589,31 +592,31 @@ export default function DisputesPage() {
               ) : inv ? (
                 <div className='text-sm'>
                   <div className='flex justify-between'>
-                    <span>Subtotal (escrow)</span>
+                    <span>{t('Dashboard.disputes.modals.subtotalEscrow')}</span>
                     <span className='font-medium'>
                       {subtotal.toFixed(2)} {currency}
                     </span>
                   </div>
                   <div className='flex justify-between'>
-                    <span>Service fee (platform)</span>
+                    <span>{t('Dashboard.disputes.modals.serviceFeePlatform')}</span>
                     <span>
                       {serviceFee.toFixed(2)} {currency}
                     </span>
                   </div>
                   <div className='flex justify-between'>
-                    <span>Total</span>
+                    <span>{t('Dashboard.disputes.modals.total')}</span>
                     <span>
                       {total.toFixed(2)} {currency}
                     </span>
                   </div>
                 </div>
               ) : (
-                <p className='text-sm text-gray-500'>No invoice found.</p>
+                <p className='text-sm text-gray-500'>{t('Dashboard.disputes.modals.noInvoice')}</p>
               )}
             </div>
 
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-              <Field label="Seller amount (payout)">
+              <Field label={t('Dashboard.disputes.modals.sellerAmount')}>
                 <input
                   type="number"
                   step="0.01"
@@ -628,7 +631,7 @@ export default function DisputesPage() {
                 />
               </Field>
 
-              <Field label="Buyer refund (credit)">
+              <Field label={t('Dashboard.disputes.modals.buyerRefund')}>
                 <input
                   type="number"
                   step="0.01"
@@ -646,16 +649,16 @@ export default function DisputesPage() {
             </div>
 
             <div className='rounded-lg border border-gray-200 p-3'>
-              <div className='text-sm text-gray-700 mb-2'>Close order as</div>
+              <div className='text-sm text-gray-700 mb-2'>{t('Dashboard.disputes.modals.closeOrderAs')}</div>
               <div className='flex items-center gap-4'>
-                <InputRadio name='closeAs' value='completed' label='Completed' checked={closeAs === 'completed'} onChange={setCloseAs} />
-                <InputRadio name='closeAs' value='cancelled' label='Cancelled' checked={closeAs === 'cancelled'} onChange={setCloseAs} />
+                <InputRadio name='closeAs' value='completed' label={t('Dashboard.disputes.modals.completed')} checked={closeAs === 'completed'} onChange={setCloseAs} />
+                <InputRadio name='closeAs' value='cancelled' label={t('Dashboard.disputes.modals.cancelled')} checked={closeAs === 'cancelled'} onChange={setCloseAs} />
               </div>
             </div>
             {resError ? <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{resError}</div> : null}
 
             <div className='flex items-center justify-end gap-2'>
-              <Button name={resSubmitting ? 'Processing…' : 'Resolve & Payout'} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'}`} loading={resSubmitting || !orderDetail} />
+              <Button name={resSubmitting ? t('Dashboard.disputes.modals.processing') : t('Dashboard.disputes.modals.resolvePayout')} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'}`} loading={resSubmitting || !orderDetail} />
             </div>
           </div>
         </Modal>
@@ -663,7 +666,7 @@ export default function DisputesPage() {
 
       {/* Activity & Thread Modal */}
       {activityOpen && (
-        <Modal className={'!max-w-[700px] w-full '} title='Dispute Activity' onClose={closeAllModals}>
+        <Modal className={'!max-w-[700px] w-full '} title={t('Dashboard.disputes.modals.activityTitle')} onClose={closeAllModals}>
           <div className='space-y-4'>
             {actLoading ? (
               <div className='space-y-3'>

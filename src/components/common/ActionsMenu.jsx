@@ -105,7 +105,7 @@ export default function ActionsMenu({ options = [], align = 'right', buttonClass
         createPortal(
           <div ref={menuRef} role='menu' style={{ position: 'absolute', top: pos.top, left: pos.left, minWidth: pos.width }} className='z-[9999] rounded-lg border border-slate-200 bg-white p-2 shadow-lg'>
             {visibleOptions.length === 0 ? (
-              <div className='px-3 py-2 text-sm text-slate-400'>No actions</div>
+              <div className='px-3 py-2 start text-sm text-slate-400'>No actions</div>
             ) : (
               visibleOptions.map((opt, i) => {
                 const className = `w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-50 text-left

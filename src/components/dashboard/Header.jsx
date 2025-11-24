@@ -3,16 +3,20 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { MotionConfig, AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from '@/i18n/navigation';
-import { menuItems } from './Sidebar';
+import { getMenuItems } from './Sidebar';
 import { Menu, X, Bell, Check } from 'lucide-react';
 import api from '@/lib/axios';
 import NotificationPopup from '../common/NotificationPopup';
+import { useTranslations } from 'next-intl';
 
 /* --------------------------------- Header --------------------------------- */
 
 export default function Header({ sidebarOpen, setSidebarOpen }) {
   const pathname = usePathname();
   const [computedMeta, setComputedMeta] = useState({ title: '', desc: '' });
+
+  const t = useTranslations();
+  const menuItems = getMenuItems(t);
 
   useEffect(() => {
     if (!pathname) return;
@@ -92,6 +96,7 @@ function HamburgerButton({ open, onToggle, className = '' }) {
 }
 
 function Notifications() {
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -219,12 +224,12 @@ function Notifications() {
             {/* Header */}
             <div className='flex items-center justify-between px-4 py-3 bg-slate-50/70 border-b border-slate-200'>
               <div className='flex items-center gap-2'>
-                <span className='text-sm font-semibold text-slate-800'>Admin Notifications</span>
-                {unreadCount > 0 && <span className='text-xs text-slate-500'>({unreadCount} new)</span>}
+                <span className='text-sm font-semibold text-slate-800'>{t('Dashboard.header.adminNotifications')}</span>
+                {unreadCount > 0 && <span className='text-xs text-slate-500'>({unreadCount} {t('Dashboard.header.new')})</span>}
               </div>
               <button onClick={markAllRead} disabled={markingAll || unreadCount === 0} className=' cursor-pointer inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-50'>
                 <Check className='h-3.5 w-3.5' />
-                Mark all read
+                {t('Dashboard.header.markAllRead')}
               </button>
             </div>
 
@@ -254,7 +259,7 @@ function Notifications() {
                       {unread && (
                         <div className='mt-2'>
                           <button onClick={() => markOneRead(item.id)} className='cursor-pointer text-xs text-emerald-700 hover:text-emerald-800'>
-                            Mark as read
+                            {t('Dashboard.header.markAsRead')}
                           </button>
                         </div>
                       )}
@@ -267,18 +272,18 @@ function Notifications() {
               {hasMore && (
                 <li className='px-4 py-2'>
                   <button disabled={loading} onClick={fetchMore} className='w-full rounded-lg border border-slate-200 bg-white py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50'>
-                    {loading ? 'Loading…' : 'Load more'}
+                    {loading ? t('Dashboard.header.loading') : t('Dashboard.header.loadMore')}
                   </button>
                 </li>
               )}
 
-              {!loading && items.length === 0 && <li className='px-4 py-10 text-center text-sm text-slate-500'>No notifications</li>}
+              {!loading && items.length === 0 && <li className='px-4 py-10 text-center text-sm text-slate-500'>{t('Dashboard.header.noNotifications')}</li>}
             </ul>
 
             {/* Footer */}
             <div className='border-t border-slate-200 bg-white/60 px-4 py-2'>
               <button onClick={close} className='w-full rounded-xl border border-slate-200 bg-white py-2 text-sm text-slate-700 hover:bg-slate-50'>
-                Close
+                {t('Dashboard.header.close')}
               </button>
             </div>
           </motion.div>

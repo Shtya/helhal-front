@@ -12,6 +12,7 @@ import Select from '@/components/atoms/Select';
 import { Wallet, CreditCard, DollarSign, Icon, ShieldCheck } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
+import { useTranslations } from 'next-intl';
 
 const accountingAPI = {
   // Billing Information
@@ -87,26 +88,27 @@ const accountingAPI = {
 };
 
 export default function Page() {
+  const t = useTranslations('MyBilling');
   const [activeTab, setActiveTab] = useState('billing-history');
 
   const tabs = [
     {
-      label: 'Billing History',
+      label: t('tabs.billingHistory'),
       value: 'billing-history',
       // icon: <History className='w-4 h-4' />,
     },
     {
-      label: 'Billing Information',
+      label: t('tabs.billingInformation'),
       value: 'billing-information',
       // icon: <CreditCard className='w-4 h-4' />,
     },
     {
-      label: 'Available Balances',
+      label: t('tabs.availableBalances'),
       value: 'available-balances',
       // icon: <Wallet className='w-4 h-4' />,
     },
     {
-      label: 'Payment Methods',
+      label: t('tabs.paymentMethods'),
       value: 'payment-methods',
       // icon: <CircleDollarSign className='w-4 h-4' />,
     },
@@ -133,17 +135,18 @@ export default function Page() {
 }
 
 const BillingHistory = () => {
+  const t = useTranslations('MyBilling.billingHistory');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, total: 0 });
 
   const columns = [
-    { key: 'created_at', label: 'Date' },
-    { key: 'description', label: 'Document' },
-    { key: 'type', label: 'Type' },
-    { key: 'orderId', label: 'Order' },
-    { key: 'currencyId', label: 'Currency' },
-    { key: 'amount', label: 'Total', type: 'price' },
+    { key: 'created_at', label: t('columns.date') },
+    { key: 'description', label: t('columns.document') },
+    { key: 'type', label: t('columns.type') },
+    { key: 'orderId', label: t('columns.order') },
+    { key: 'currencyId', label: t('columns.currency') },
+    { key: 'amount', label: t('columns.total'), type: 'price' },
   ];
 
   const fetchBillingHistory = async (page = 1, search = '', date = '') => {
@@ -179,19 +182,20 @@ const BillingHistory = () => {
   return (
     <div>
       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>Billing History</h1>
+        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
         <div className='flex max-sm:flex-col justify-end max-md:w-full max-md:justify-center items-center flex-1 gap-2'>
-          <InputDate className={'max-w-[250px] w-full'} placeholder='Search by date' onChange={handleDateChange} />
-          <InputSearch className={'!max-w-[250px] w-full'} iconLeft={'/icons/search.svg'} placeholder='Search by order number' onSearch={handleSearch} />
+          <InputDate className={'max-w-[250px] w-full'} placeholder={t('searchByDate')} onChange={handleDateChange} />
+          <InputSearch className={'!max-w-[250px] w-full'} iconLeft={'/icons/search.svg'} placeholder={t('searchByOrder')} onSearch={handleSearch} />
         </div>
       </div>
 
-      {loading ? <div className='text-center py-8'>Loading...</div> : <Table data={data} columns={columns} />}
+      {loading ? <div className='text-center py-8'>{t('loading')}</div> : <Table data={data} columns={columns} />}
     </div>
   );
 };
 
 const AvailableBalances = () => {
+  const t = useTranslations('MyBilling.availableBalances');
   const [balances, setBalances] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -212,37 +216,37 @@ const AvailableBalances = () => {
 
   const cardsData = [
     {
-      title: 'Earnings to date',
+      title: t('earningsToDate.title'),
       amount: balances?.earningsToDate || '0.00',
       currency: '﷼',
-      description: 'Available for withdraw or purchases.',
+      description: t('earningsToDate.description'),
       icon: Wallet,
       iconBg: 'bg-[#cfe8cc] text-[#108a00]',
     },
     {
-      title: 'Available Balance',
+      title: t('availableBalance.title'),
       amount: balances?.availableBalance || '0.00',
       currency: '﷼',
-      description: 'Use for purchases.',
+      description: t('availableBalance.description'),
       icon: CreditCard,
       iconBg: 'bg-[#cfe8cc] text-[#108a00]',
     },
     {
-      title: 'Credits',
+      title: t('credits.title'),
       amount: balances?.credits || '0.00',
       currency: '﷼',
-      description: 'Earn Upphoto Credits.',
+      description: t('credits.description'),
       icon: DollarSign,
       iconBg: 'bg-[#cfe8cc] text-[#108a00]',
     },
   ];
 
-  if (loading) return <div className='text-center py-8'>Loading balances...</div>;
+  if (loading) return <div className='text-center py-8'>{t('loading')}</div>;
 
   return (
     <div className='mb-12'>
       <div className='mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>Available balances</h1>
+        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
       </div>
 
       <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
@@ -269,13 +273,13 @@ const AvailableBalances = () => {
 
         <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
           <div className='flex justify-between items-start'>
-            <p className='text-3xl font-semibold'>Phone Verification</p>
+            <p className='text-3xl font-semibold'>{t('phoneVerification.title')}</p>
             <span className={`w-9 h-9 flex items-center justify-center rounded-full bg-[#cfe8cc] text-[#108a00]`}>
               <ShieldCheck className='w-5 h-5' />
             </span>
           </div>
-          <p className='mt-1 mb-4 text-lg text-gray-500'>Refer people you know and everyone benefits!</p>
-          <Button name='Verify Phone' color='green' />
+          <p className='mt-1 mb-4 text-lg text-gray-500'>{t('phoneVerification.description')}</p>
+          <Button name={t('phoneVerification.button')} color='green' />
         </div>
       </div>
     </div>
@@ -283,6 +287,7 @@ const AvailableBalances = () => {
 };
 
 const BillingInformation = () => {
+  const t = useTranslations('MyBilling.billingInformation');
   const [billingInfo, setBillingInfo] = useState({
     fullName: '',
     country: '',
@@ -322,7 +327,7 @@ const BillingInformation = () => {
       setBillingInfo(response);
     } catch (error) {
       console.error('Error fetching billing information:', error);
-      setMessage('Error loading billing information');
+      setMessage(t('errors.loading'));
     } finally {
       setLoading(false);
     }
@@ -337,10 +342,10 @@ const BillingInformation = () => {
     setMessage('');
     try {
       await accountingAPI.updateBillingInformation(billingInfo);
-      setMessage('Billing information updated successfully!');
+      setMessage(t('success'));
     } catch (error) {
       console.error('Error updating billing information:', error);
-      setMessage('Error updating billing information');
+      setMessage(t('errors.updating'));
     } finally {
       setSaving(false);
     }
@@ -354,50 +359,51 @@ const BillingInformation = () => {
   };
 
   if (loading) {
-    return <div className='text-center py-8'>Loading billing information...</div>;
+    return <div className='text-center py-8'>{t('loading')}</div>;
   }
 
   return (
     <div className='max-w-[800px] w-full mx-auto mb-12'>
       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>Billing Information</h1>
+        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
       </div>
 
       {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{message}</div>}
 
       <div className='max-w-[800px] w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
-        <Input cnInput={'!border-[#108A00]'} label='Full name' placeholder='John Doe' value={billingInfo.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
-        <Input cnInput={'!border-[#108A00]'} label='State' placeholder='Gadah' value={billingInfo.state} onChange={e => handleInputChange('state', e.target.value)} />
-        <Select cnSelect={'!border-[#108A00]'} label='Country' placeholder='Select Country' options={countryOptions} value={billingInfo.country} onChange={value => handleInputChange('country', value)} />
+        <Input cnInput={'!border-[#108A00]'} label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={billingInfo.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
+        <Input cnInput={'!border-[#108A00]'} label={t('state')} placeholder={t('statePlaceholder')} value={billingInfo.state} onChange={e => handleInputChange('state', e.target.value)} />
+        <Select cnSelect={'!border-[#108A00]'} label={t('country')} placeholder={t('selectCountry')} options={countryOptions} value={billingInfo.country} onChange={value => handleInputChange('country', value)} />
         <Select
           cnSelect={'!border-[#108A00]'}
-          label='Are you a citizen / resident of Saudi Arabia'
-          placeholder='Select'
+          label={t('saudiResident')}
+          placeholder={t('select')}
           options={[
-            { id: 'yes', name: 'Yes' },
-            { id: 'no', name: 'No' },
+            { id: 'yes', name: t('yes') },
+            { id: 'no', name: t('no') },
           ]}
           value={billingInfo.isSaudiResident}
           onChange={value => handleInputChange('isSaudiResident', value === 'yes')}
         />
       </div>
 
-      <h1 className='h2 mt-6'>Invoices</h1>
-      <p className='p mb-6'>You will find your invoices under the billing history tab</p>
+      <h1 className='h2 mt-6'>{t('invoices')}</h1>
+      <p className='p mb-6'>{t('invoicesDesc')}</p>
 
       <div className='flex items-center gap-3'>
         <AnimatedCheckbox checked={billingInfo.agreeToInvoiceEmails} onChange={checked => handleInputChange('agreeToInvoiceEmails', checked)} />
-        <span className='text-sm text-gray-700'>Inbox Messages</span>
+        <span className='text-sm text-gray-700'>{t('inboxMessages')}</span>
       </div>
 
       <div className='max-w-[250px] mt-6'>
-        <Button name={saving ? 'Saving...' : 'Save Changes'} color='green' onClick={handleSave} disabled={saving} />
+        <Button name={saving ? t('saving') : t('saveChanges')} color='green' onClick={handleSave} disabled={saving} />
       </div>
     </div>
   );
 };
 
 const PaymentMethods = () => {
+  const t = useTranslations('MyBilling.paymentMethods');
   const [bankAccounts, setBankAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -429,7 +435,7 @@ const PaymentMethods = () => {
       setBankAccounts(response);
     } catch (error) {
       console.error('Error fetching bank accounts:', error);
-      setMessage('Error loading bank accounts');
+      setMessage(t('errors.loading'));
     } finally {
       setLoading(false);
     }
@@ -444,7 +450,7 @@ const PaymentMethods = () => {
     setMessage('');
     try {
       await accountingAPI.createBankAccount(formData);
-      setMessage('Bank account added successfully!');
+      setMessage(t('success.added'));
       setFormData({
         fullName: '',
         iban: '',
@@ -457,7 +463,7 @@ const PaymentMethods = () => {
       fetchBankAccounts(); // Refresh the list
     } catch (error) {
       console.error('Error adding bank account:', error);
-      setMessage('Error adding bank account');
+      setMessage(t('errors.adding'));
     } finally {
       setSaving(false);
     }
@@ -471,14 +477,14 @@ const PaymentMethods = () => {
   };
 
   const handleDeleteAccount = async id => {
-    if (window.confirm('Are you sure you want to delete this bank account?')) {
+    if (window.confirm(t('deleteConfirm'))) {
       try {
         await accountingAPI.deleteBankAccount(id);
-        setMessage('Bank account deleted successfully!');
+        setMessage(t('success.deleted'));
         fetchBankAccounts(); // Refresh the list
       } catch (error) {
         console.error('Error deleting bank account:', error);
-        setMessage('Error deleting bank account');
+        setMessage(t('errors.deleting'));
       }
     }
   };
@@ -486,18 +492,18 @@ const PaymentMethods = () => {
   const handleSetDefault = async id => {
     try {
       await accountingAPI.setDefaultBankAccount(id);
-      setMessage('Default bank account updated successfully!');
+      setMessage(t('success.defaultUpdated'));
       fetchBankAccounts(); // Refresh the list
     } catch (error) {
       console.error('Error setting default bank account:', error);
-      setMessage('Error setting default bank account');
+      setMessage(t('errors.settingDefault'));
     }
   };
 
   return (
     <div className='max-w-[1400px] w-full mx-auto mb-12'>
       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>Bank Account Information</h1>
+        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
       </div>
 
       {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{message}</div>}
@@ -505,26 +511,26 @@ const PaymentMethods = () => {
       {/* Existing Bank Accounts */}
       {bankAccounts.length > 0 && (
         <div className='mb-8'>
-          <h2 className='text-xl font-semibold mb-4'>Your Bank Accounts</h2>
+          <h2 className='text-xl font-semibold mb-4'>{t('yourBankAccounts')}</h2>
           <div className='grid gap-4'>
             {bankAccounts.map(account => (
               <div key={account.id} className='border rounded-lg p-4 flex justify-between items-center'>
                 <div>
                   <p className='font-semibold'>{account.fullName}</p>
-                  <p className='text-gray-600'>IBAN: {account.iban}</p>
+                  <p className='text-gray-600'>{t('iban')} {account.iban}</p>
                   <p className='text-gray-600'>
                     {account.country} - {account.state}
                   </p>
-                  {account.isDefault && <span className='inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-1'>Default</span>}
+                  {account.isDefault && <span className='inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
                 </div>
                 <div className='flex gap-2'>
                   {!account.isDefault && (
                     <>
                       <button onClick={() => handleSetDefault(account.id)} className='text-blue-600 hover:text-blue-800 text-sm'>
-                        Set Default
+                        {t('setDefault')}
                       </button>
                       <button onClick={() => handleDeleteAccount(account.id)} className='text-red-600 hover:text-red-800 text-sm'>
-                        Delete
+                        {t('delete')}
                       </button>
                     </>
                   )}
@@ -537,15 +543,15 @@ const PaymentMethods = () => {
 
       {/* Add New Bank Account Form */}
       <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        <Input cnInput='!border-[#108A00]' label='Full name' placeholder='Bader Alkhamees' value={formData.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label='International Bank Account Number' placeholder='Enter IBAN' value={formData.iban} onChange={e => handleInputChange('iban', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label='Client Id' placeholder='Enter client ID' value={formData.clientId} onChange={e => handleInputChange('clientId', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label='Client secret' placeholder='Enter client secret' type='password' value={formData.clientSecret} onChange={e => handleInputChange('clientSecret', e.target.value)} />
-        <Select cnSelect='!border-[#108A00]' label='Country' placeholder='Select Country' options={countryOptions} value={formData.country} onChange={value => handleInputChange('country', value)} />
-        <Input cnInput='!border-[#108A00]' label='State' placeholder='Gadah' value={formData.state} onChange={e => handleInputChange('state', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label='Mobile number' placeholder='+966555521471' value={formData.mobileNumber} onChange={e => handleInputChange('mobileNumber', e.target.value)} />
+        <Input cnInput='!border-[#108A00]' label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={formData.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
+        <Input cnInput='!border-[#108A00]' label={t('ibanLabel')} placeholder={t('ibanPlaceholder')} value={formData.iban} onChange={e => handleInputChange('iban', e.target.value)} />
+        <Input cnInput='!border-[#108A00]' label={t('clientId')} placeholder={t('clientIdPlaceholder')} value={formData.clientId} onChange={e => handleInputChange('clientId', e.target.value)} />
+        <Input cnInput='!border-[#108A00]' label={t('clientSecret')} placeholder={t('clientSecretPlaceholder')} type='password' value={formData.clientSecret} onChange={e => handleInputChange('clientSecret', e.target.value)} />
+        <Select cnSelect='!border-[#108A00]' label={t('country')} placeholder={t('selectCountry')} options={countryOptions} value={formData.country} onChange={value => handleInputChange('country', value)} />
+        <Input cnInput='!border-[#108A00]' label={t('state')} placeholder={t('statePlaceholder')} value={formData.state} onChange={e => handleInputChange('state', e.target.value)} />
+        <Input cnInput='!border-[#108A00]' label={t('mobileNumber')} placeholder={t('mobileNumberPlaceholder')} value={formData.mobileNumber} onChange={e => handleInputChange('mobileNumber', e.target.value)} />
 
-        <Button className='lg:col-span-2 ml-auto mt-auto !h-[45px] !py-1 max-w-[250px]' name={saving ? 'Adding...' : 'Add Bank Account'} color='green' onClick={handleSave} disabled={saving} />
+        <Button className='lg:col-span-2 ml-auto mt-auto !h-[45px] !py-1 max-w-[250px]' name={saving ? t('adding') : t('addBankAccount')} color='green' onClick={handleSave} disabled={saving} />
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ export const Input = ({
   placeholder,
   type = "text",
   register,
-  disabled ,
+  disabled,
   error,
   cnInput,
   ...props
@@ -18,11 +18,11 @@ export const Input = ({
   return (
     <div className="w-full mb-5">
       <div className="relative ">
-         <input
+        <input
           type={inputType}
           placeholder=" "
           className={`
-            peer w-full rounded-xl border px-4 pt-5 pb-2  
+            peer w-full rounded-xl border px-4 pt-5 pb-2 text-end 
             bg-white/90 text-gray-900 text-[16px] shadow-inner transition-all
             focus:border-transparent focus:ring-2 focus:ring-emerald-500/70
             placeholder-transparent outline-none
@@ -38,7 +38,7 @@ export const Input = ({
         {label && (
           <label
             className={` pointer-events-none ${disabled && "!top-1 opacity-50 "}
-              absolute left-4 top-2 text-gray-500 text-sm transition-all
+              absolute start-4 top-2 text-gray-500 text-sm transition-all
               peer-placeholder-shown:top-4  peer-placeholder-shown:text-gray-400 
               peer-placeholder-shown:text-sm  peer-placeholder-shown:font-normal
               peer-focus:top-2  peer-focus:text-sm peer-focus:text-emerald-600
@@ -53,7 +53,7 @@ export const Input = ({
           <button
             type="button"
             onClick={() => setShowPassword((s) => !s)}
-            className="absolute  right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            className="absolute  end-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>

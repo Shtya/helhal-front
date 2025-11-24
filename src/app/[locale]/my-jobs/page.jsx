@@ -2,6 +2,7 @@
 'use client';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { deleteJob, getMyJobs, updateJob } from '@/services/jobService';
 
 import NoResults from '@/components/common/NoResults';
@@ -38,13 +39,14 @@ const initials = name =>
 // Page
 // -------------------------------------------------
 export default function MyJobsPage() {
+  const t = useTranslations('MyJobs.page');
   const tabs = [
-    { label: 'All', value: 'all' },
+    { label: t('tabs.all'), value: 'all' },
     // { label: 'Draft', value: 'draft' },
-    { label: 'Pending', value: 'pending' },
-    { label: 'Published', value: 'published' },
-    { label: 'Awarded', value: 'awarded' },
-    { label: 'Completed', value: 'completed' },
+    { label: t('tabs.pending'), value: 'pending' },
+    { label: t('tabs.published'), value: 'published' },
+    { label: t('tabs.awarded'), value: 'awarded' },
+    { label: t('tabs.completed'), value: 'completed' },
   ]
 
 
@@ -134,7 +136,7 @@ export default function MyJobsPage() {
         prev.map(j => (j.id === id ? { ...j, status: next } : j))
       );
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to update job status');
+      toast.error(err?.response?.data?.message || t('errors.failedToUpdateStatus'));
     }
     finally {
       setLoadingJobId(null);
@@ -188,7 +190,7 @@ export default function MyJobsPage() {
       setSelectedJobId(job?.id)
       setDrawerOpen(true);
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Unable to open job');
+      toast.error(e?.response?.data?.message || t('errors.unableToOpen'));
     }
   };
 
@@ -215,8 +217,8 @@ export default function MyJobsPage() {
   return (
     <div className='container !mb-12'>
       <div className='mt-8 mb-4 flex items-center justify-between'>
-        <h1 className='text-3xl font-bold max-md:text-xl'>My Jobs</h1>
-        <Button name='Create New Job' className='max-w-fit' href='share-job-description' />
+        <h1 className='text-3xl font-bold max-md:text-xl'>{t('title')}</h1>
+        <Button name={t('createNewJob')} className='max-w-fit' href='share-job-description' />
       </div>
 
       <Tabs
@@ -234,7 +236,7 @@ export default function MyJobsPage() {
           jobs.map(job => <JobCard onOpen={() => openDrawerForJob(job)} key={job.id} activeTab={activeTab} loadingJobId={loadingJobId} job={job} onPublishToggle={onPublishToggle} onDeleteRequest={confirmDelete} />)
         ) : (
           <div className='md:col-span-2 lg:col-span-3'>
-            <NoResults mainText='No jobs available at the moment' additionalText='Looks like no jobs are available right now. Check back later!' buttonText='Create a New Job' buttonLink='/share-job-description' />
+            <NoResults mainText={t('noJobs')} additionalText={t('noJobsDescription')} buttonText={t('createNewJobButton')} buttonLink='/share-job-description' />
           </div>
         )}
       </div>
@@ -249,10 +251,10 @@ export default function MyJobsPage() {
         ]} />
 
       {isConfirmDelete && (
-        <Modal onClose={() => setIsConfirmDelete(false)} title={'Are you sure you want to delete this job?'}>
+        <Modal onClose={() => setIsConfirmDelete(false)} title={t('deleteConfirm')}>
           <div className='mt-8 flex gap-4'>
-            <Button name='Cancel' onClick={cancelDelete} />
-            <Button name='Delete' color='red' onClick={() => handleDeleteJob(jobToDelete)} loading={isDeleteLoading} />
+            <Button name={t('cancel')} onClick={cancelDelete} />
+            <Button name={t('delete')} color='red' onClick={() => handleDeleteJob(jobToDelete)} loading={isDeleteLoading} />
           </div>
         </Modal>
       )}
@@ -270,7 +272,7 @@ export default function MyJobsPage() {
 
 
 function JobDrawer({ open, onClose, job, jobId }) {
-
+  const t = useTranslations('MyJobs.page');
   const [localJob, setLocalJob] = useState(job);
   const [jobLoading, setJobLoading] = useState(false);
 
@@ -302,7 +304,7 @@ function JobDrawer({ open, onClose, job, jobId }) {
         setLocalJob(j);
       } catch (err) {
         console.error(err);
-        toast.error(err?.response?.data?.message || 'Failed to load job');
+        toast.error(err?.response?.data?.message || t('errors.failedToLoadJob'));
         setLocalJob(null);
       } finally {
         if (mounted) setJobLoading(false);
@@ -315,7 +317,7 @@ function JobDrawer({ open, onClose, job, jobId }) {
   }, [jobId]);
 
   const budget = localJob?.budget ?? localJob?.estimatedBudget;
-  const priceType = localJob?.budgetType === 'hourly' ? 'Hourly' : 'Fixed-price';
+  const priceType = localJob?.budgetType === 'hourly' ? t('hourly') : t('fixedPrice');
 
   const created = (localJob?.created_at || '').split('T')[0];
   return (
@@ -334,7 +336,7 @@ function JobDrawer({ open, onClose, job, jobId }) {
                 {/* Header */}
                 <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
                   <div className='flex items-center flex-wrap gap-3'>
-                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || 'Job details'}</h3>
+                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || t('jobDetails')}</h3>
 
                   </div>
                   <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
@@ -347,7 +349,7 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   {/* Summary */}
                   {localJob?.description && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Summary</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('summary')}</h4>
 
                       <p className="text-sm text-slate-700 whitespace-pre-wrap">
                         {localJob?.description}
@@ -368,16 +370,16 @@ function JobDrawer({ open, onClose, job, jobId }) {
                     {/* Preferred Delivery */}
                     <div className="rounded-xl border border-slate-200 p-4">
                       <div className="text-slate-900 font-semibold">
-                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? 'day' : 'days'}
+                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? t('day') : t('days')}
                       </div>
-                      <div className="text-xs text-slate-500">Preferred delivery</div>
+                      <div className="text-xs text-slate-500">{t('preferredDelivery')}</div>
                     </div>
                   </section>
 
                   {/* Skills */}
                   {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Skills and Expertise</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('skillsAndExpertise')}</h4>
                       <div className='flex flex-wrap gap-2'>
                         {localJob?.skillsRequired.map((s, i) => (
                           <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
@@ -390,14 +392,14 @@ function JobDrawer({ open, onClose, job, jobId }) {
 
                   {/* Client */}
                   <section>
-                    <h4 className='text-sm font-semibold text-slate-900 mb-2'>About the client</h4>
+                    <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('aboutTheClient')}</h4>
                     <div className='mt-3 space-y-2 text-sm'>
                       <div className='flex items-center gap-2'>
 
                       </div>
                       <div className='flex items-center gap-2 text-slate-700'>
                         <CalendarDays className='h-4 w-4' />
-                        <span>Posted {created || '—'}</span>
+                        <span>{t('posted')} {created || '—'}</span>
                       </div>
                     </div>
                   </section>
@@ -405,10 +407,10 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   {/* Attachments */}
                   {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Attachments</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('attachments')}</h4>
                       <div className='rounded-xl border border-slate-200 p-3'>
                         <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                          <FolderOpen className='h-4 w-4' /> Files
+                          <FolderOpen className='h-4 w-4' /> {t('files')}
                         </div>
                         <AttachmentList attachments={localJob?.attachments} />
                       </div>
@@ -417,7 +419,7 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   {/* additionalInfo */}
                   {localJob?.additionalInfo && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('additionalDetails')}</h4>
                       <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
                     </section>
                   )}

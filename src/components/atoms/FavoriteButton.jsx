@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Loader2 } from 'lucide-react';
 import api from '@/lib/axios';
 import { useValues } from '@/context/GlobalContext';
+import { useTranslations } from 'next-intl';
 
 export default function FavoriteButton({ className = '', serviceId, syncWithCart = true, onAdded, onRemoved }) {
   const { cart, setCart } = useValues();
-
+  const t = useTranslations('Explore');
   const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -53,7 +54,7 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
         onRemoved?.(serviceId);
       }
 
-      setMsg(data.action === 'added' ? 'Added to cart' : 'Removed from cart');
+      setMsg(data.action === 'added' ? t('cart.addedToCart') : t('cart.removedFromCart'));
     } catch (err) {
       setActive(prev);
       setMsg(err?.response?.data?.message ?? 'Failed to update cart');
@@ -63,7 +64,7 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
     }
   };
 
-  const label = active ? 'Remove from cart' : 'Add to cart';
+  const label = active ? t('cart.removeFromCart') : t('cart.addToCart');
 
   return (
     <div>

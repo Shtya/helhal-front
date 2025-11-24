@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'react-hot-toast';
 import api from '@/lib/axios';
 import Button from '@/components/atoms/Button';
@@ -50,6 +51,7 @@ function PaymentSkeleton() {
 
 // ---- Page ----
 export default function PaymentPage() {
+  const t = useTranslations('Payment.page');
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams.get('orderId');
@@ -71,12 +73,12 @@ export default function PaymentPage() {
         setOrder(data);
       } catch (err) {
         console.error(err);
-        toast.error('Failed to load order');
+        toast.error(t('toast.failedToLoad'));
       } finally {
         setLoading(false);
       }
     })();
-  }, [orderId]);
+  }, [orderId, t]);
 
   const handleSuccess = async () => {
     if (!payable) return;
@@ -85,11 +87,11 @@ export default function PaymentPage() {
       setPaying(true);
       await api.post(`/orders/${orderId}/mark-paid`);
 
-      toast.success('Payment successful!');
+      toast.success(t('toast.paymentSuccessful'));
       router.push(`/payment/success?orderId=${orderId}`);
     } catch (err) {
       console.error(err);
-      toast.error('Failed to mark order paid');
+      toast.error(t('toast.failedToMarkPaid'));
     } finally {
       setPaying(false);
     }
@@ -102,11 +104,11 @@ export default function PaymentPage() {
       setCanceling(true);
       await api.post(`/orders/${orderId}/cancel`);
 
-      toast('Payment canceled', { icon: '⚠️' });
+      toast(t('toast.paymentCanceled'), { icon: '⚠️' });
       router.push('/my-jobs');
     } catch (err) {
       console.error(err);
-      toast.error('Failed to cancel order');
+      toast.error(t('toast.failedToCancel'));
     } finally {
       setCanceling(false);
     }
@@ -118,9 +120,9 @@ export default function PaymentPage() {
   return (
     <div className='container !py-12'>
       <h1 className='mb-2 text-center text-3xl font-extrabold tracking-tight'>
-        <span className='bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent'>Checkout Simulation</span>
+        <span className='bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent'>{t('title')}</span>
       </h1>
-      <p className='mb-8 text-center text-sm text-slate-500'>Review your order and complete payment securely.</p>
+      <p className='mb-8 text-center text-sm text-slate-500'>{t('subtitle')}</p>
 
       {loading ? (
         <PaymentSkeleton />
@@ -140,7 +142,7 @@ export default function PaymentPage() {
             <div className='flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 shadow-custom'>
               <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700'>{initials(order.buyer?.username)}</div>
               <div className='min-w-0'>
-                <div className='text-xs uppercase tracking-wide text-slate-500'>Buyer</div>
+                <div className='text-xs uppercase tracking-wide text-slate-500'>{t('buyer')}</div>
                 <div className='truncate font-medium text-slate-900'>{order.buyer?.username || '—'}</div>
               </div>
             </div>
@@ -148,7 +150,7 @@ export default function PaymentPage() {
             <div className='flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-3 shadow-custom'>
               <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700'>{initials(order.seller?.username)}</div>
               <div className='min-w-0'>
-                <div className='text-xs uppercase tracking-wide text-slate-500'>Seller</div>
+                <div className='text-xs uppercase tracking-wide text-slate-500'>{t('seller')}</div>
                 <div className='truncate font-medium text-slate-900'>{order.seller?.username || '—'}</div>
               </div>
             </div>
@@ -162,29 +164,29 @@ export default function PaymentPage() {
             <div className='mb-6 rounded-xl bg-slate-50 p-4'>
               <p className='mb-3 flex items-center gap-2 font-medium text-slate-800'>
                 <FileText className='h-4 w-4' />
-                Invoice #{invoice.invoiceNumber}
+                {t('invoice', { number: invoice.invoiceNumber })}
               </p>
 
               {/* Details */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-slate-700">
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
-                  <span>Subtotal</span>
+                  <span>{t('subtotal')}</span>
                   <span className="font-medium">{formatMoney(Number(invoice.subtotal), currency)}</span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
-                  <span>Service Fee</span>
+                  <span>{t('serviceFee')}</span>
                   <span className="font-medium">{formatMoney(Number(invoice.serviceFee), currency)}</span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
-                  <span>Platform %</span>
+                  <span>{t('platformPercent')}</span>
                   <span className="font-medium">{invoice.platformPercent}%</span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
-                  <span>Issued At</span>
+                  <span>{t('issuedAt')}</span>
                   <span className="font-medium">{new Date(invoice.issuedAt).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
-                  <span>Status</span>
+                  <span>{t('status')}</span>
                   <span
                     className={`font-medium capitalize ${invoice.paymentStatus === 'pending'
                       ? 'text-amber-600'
@@ -197,7 +199,7 @@ export default function PaymentPage() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom lg:col-span-3">
-                  <span className="font-semibold text-slate-900">Total</span>
+                  <span className="font-semibold text-slate-900">{t('total')}</span>
                   <span className="font-semibold text-slate-900">{formatMoney(Number(invoice.totalAmount), currency)}</span>
                 </div>
               </div>
@@ -211,16 +213,16 @@ export default function PaymentPage() {
               <DollarSign className='h-5 w-5' />
               <span className='text-2xl font-bold text-emerald-800'>{formatMoney(Number(invoice.totalAmount), currency)}</span>
             </div>
-            <p className='mt-2 text-xs text-slate-500'>Includes taxes and fees where applicable.</p>
+            <p className='mt-2 text-xs text-slate-500'>{t('includesTaxes')}</p>
           </div>
 
           {/* Actions */}
           <div className='flex items-center justify-end gap-4 '>
-            <Button name={paying ? 'Processing…' : 'Pay Now'} disabled={!payable} color='green' onClick={handleSuccess} loading={paying} className=' !w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Confirm payment'>
+            <Button name={paying ? t('processing') : t('payNow')} disabled={!payable} color='green' onClick={handleSuccess} loading={paying} className=' !w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Confirm payment'>
               {paying ? <Loader2 className='mr-2 inline h-4 w-4 animate-spin' /> : <CreditCard className='mr-2 inline h-4 w-4' />}
             </Button>
 
-            <Button name='Cancel' color='red' disabled={!cancellable} onClick={handleCancel} className='!w-fit !px-6 h-11 rounded-xl text-base' loading={canceling} aria-label='Cancel and go back'>
+            <Button name={t('cancel')} color='red' disabled={!cancellable} onClick={handleCancel} className='!w-fit !px-6 h-11 rounded-xl text-base' loading={canceling} aria-label='Cancel and go back'>
               <AlertCircle className='mr-2 inline h-4 w-4' />
             </Button>
           </div>
@@ -228,7 +230,7 @@ export default function PaymentPage() {
       ) : (
         <div className='rounded-2xl border border-slate-200 bg-slate-50 p-10 text-center'>
           <AlertCircle className='mx-auto mb-3 h-10 w-10 text-slate-500' />
-          <p className='text-slate-600'>No order found.</p>
+          <p className='text-slate-600'>{t('noOrderFound')}</p>
         </div>
       )}
     </div>

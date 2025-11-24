@@ -7,8 +7,10 @@ import { OrderStatus } from '@/constants/order';
 import { Package, DollarSign, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
 import OrderDeliveryTimer from './OrderDeliveryTimer';
 import { resolveUrl } from '@/utils/helper';
+import { useTranslations } from 'next-intl';
 
 export default function OrderDetailsModal({ open, onClose, orderId }) {
+  const t = useTranslations('MyOrders.modals.orderDetails');
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,7 +30,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
         setOrder(data);
       } catch (err) {
         console.error('Error fetching order details:', err);
-        setError(err?.response?.data?.message || 'Failed to load order details');
+        setError(err?.response?.data?.message || t('error'));
         setOrder(null);
       } finally {
         setLoading(false);
@@ -69,7 +71,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
 
 
   return (
-    <Modal title="Order Details" onClose={onClose} className="!max-w-4xl max-h-[90vh] overflow-y-auto">
+    <Modal title={t('title')} onClose={onClose} className="!max-w-4xl max-h-[90vh] overflow-y-auto">
       {loading ? (
         <div className="space-y-4 animate-pulse">
           <div className="h-6 w-1/2 bg-slate-200 rounded" />
@@ -92,7 +94,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                 </span>
                 {order.jobId && (
                   <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
-                    From Job
+                    {t('fromJob')}
                   </span>
                 )}
                 {/* {order.proposalId && (
@@ -103,7 +105,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
               </div>
             </div>
             <div className="sm:text-right">
-              <p className="text-sm text-slate-500">Order ID</p>
+              <p className="text-sm text-slate-500">{t('orderId')}</p>
               <p className="text-xs font-mono text-slate-700">{order.id}</p>
             </div>
           </div>
@@ -113,11 +115,11 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
             {/* Buyer/Seller */}
             <div className="space-y-3">
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-2">Buyer</p>
+                <p className="text-sm font-medium text-slate-700 mb-2">{t('buyer')}</p>
                 {order.buyer ? <UserMini user={order.buyer} href={`/profile/${order.buyer.id}`} /> : <p className="text-sm text-slate-500">—</p>}
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-2">Seller</p>
+                <p className="text-sm font-medium text-slate-700 mb-2">{t('seller')}</p>
                 {order.seller ? <UserMini user={order.seller} href={`/profile/${order.seller.id}`} /> : <p className="text-sm text-slate-500">—</p>}
               </div>
             </div>
@@ -127,21 +129,21 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-slate-500" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">Total Amount</p>
+                  <p className="text-sm font-medium text-slate-700">{t('totalAmount')}</p>
                   <p className="text-lg font-semibold text-slate-900">${Number(order.totalAmount).toFixed(2)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4 text-slate-500" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">Package Type</p>
+                  <p className="text-sm font-medium text-slate-700">{t('packageType')}</p>
                   <p className="text-sm text-slate-900 capitalize">{order.packageType}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4 text-slate-500" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">Quantity</p>
+                  <p className="text-sm font-medium text-slate-700">{t('quantity')}</p>
                   <p className="text-sm text-slate-900">{order.quantity}</p>
                 </div>
               </div>
@@ -154,30 +156,30 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           {/* Dates */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-200">
             <div>
-              <p className="text-sm font-medium text-slate-700 mb-1">Order Date</p>
+              <p className="text-sm font-medium text-slate-700 mb-1">{t('orderDate')}</p>
               <p className="text-sm text-slate-600">{formatDateTime(order.orderDate)}</p>
             </div>
             {order.dueDate && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">Due Date</p>
+                <p className="text-sm font-medium text-slate-700 mb-1">{t('dueDate')}</p>
                 <p className="text-sm text-slate-600">{formatDateTime(order.dueDate)}</p>
               </div>
             )}
             {order.deliveredAt && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">Delivered At</p>
+                <p className="text-sm font-medium text-slate-700 mb-1">{t('deliveredAt')}</p>
                 <p className="text-sm text-slate-600">{formatDateTime(order.deliveredAt)}</p>
               </div>
             )}
             {order.completedAt && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">Completed At</p>
+                <p className="text-sm font-medium text-slate-700 mb-1">{t('completedAt')}</p>
                 <p className="text-sm text-slate-600">{formatDateTime(order.completedAt)}</p>
               </div>
             )}
             {order.cancelledAt && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">Cancelled At</p>
+                <p className="text-sm font-medium text-slate-700 mb-1">{t('cancelledAt')}</p>
                 <p className="text-sm text-slate-600">{formatDateTime(order.cancelledAt)}</p>
               </div>
             )}
@@ -186,19 +188,19 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           {/* Service/Job Info */}
           {order.service && (
             <div className="pt-4 border-t border-slate-200">
-              <h4 className="text-lg font-semibold text-slate-900 mb-3">Service Information</h4>
+              <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('serviceInformation')}</h4>
               <div className="bg-slate-50 rounded-lg p-4 space-y-2">
-                <p className="text-sm font-medium text-slate-700">Service Title</p>
+                <p className="text-sm font-medium text-slate-700">{t('serviceTitle')}</p>
                 <p className="text-sm text-slate-900">{order.service.title}</p>
                 {order.service.brief && (
                   <>
-                    <p className="text-sm font-medium text-slate-700 mt-3">Description</p>
+                    <p className="text-sm font-medium text-slate-700 mt-3">{t('description')}</p>
                     <p className="text-sm text-slate-600">{order.service.brief}</p>
                   </>
                 )}
                 {order.service.packages && order.service.packages.length > 0 && (
                   <div className="mt-3">
-                    <p className="text-sm font-medium text-slate-700 mb-2">Selected Package</p>
+                    <p className="text-sm font-medium text-slate-700 mb-2">{t('selectedPackage')}</p>
                     {order.service.packages
                       .find(pkg => pkg.type === order.packageType) && (
                         <div className="bg-white rounded-lg p-3 border border-slate-200">
@@ -226,7 +228,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           {/* Requirements Answers */}
           {order.requirementsAnswers && order.requirementsAnswers.length > 0 && (
             <div className="pt-4 border-t border-slate-200">
-              <h4 className="text-lg font-semibold text-slate-900 mb-3">Requirements</h4>
+              <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('requirements')}</h4>
               <div className="space-y-3">
                 {order.requirementsAnswers.map((req, idx) => {
 
@@ -278,7 +280,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           {order.notes && (
             <div className="pt-4 border-t border-slate-200">
               <h4 className="text-lg font-semibold text-slate-900 mb-3">
-                Special instructions
+                {t('specialInstructions')}
               </h4>
               <p className="text-sm text-slate-700 whitespace-pre-line">
                 {order.notes}
@@ -291,12 +293,12 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           {/* Invoices */}
           {order.invoices && order.invoices.length > 0 && (
             <div className="pt-4 border-t border-slate-200">
-              <h4 className="text-lg font-semibold text-slate-900 mb-3">Invoice</h4>
+              <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('invoice')}</h4>
               <div className="bg-slate-50 rounded-lg p-4 space-y-2">
                 {order.invoices.map((invoice, idx) => (
                   <div key={idx} className="bg-white rounded-lg p-3 border border-slate-200">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm font-semibold text-slate-900">Invoice #{invoice.invoiceNumber}</p>
+                      <p className="text-sm font-semibold text-slate-900">{t('invoice')} #{invoice.invoiceNumber}</p>
                       <span className={`text-xs px-2 py-1 rounded-full ${invoice.paymentStatus === 'paid'
                         ? 'bg-green-100 text-green-700'
                         : 'bg-yellow-100 text-yellow-700'
@@ -306,20 +308,20 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
-                        <p className="text-slate-600">Subtotal</p>
+                        <p className="text-slate-600">{t('subtotal')}</p>
                         <p className="font-medium text-slate-900">${Number(invoice.subtotal).toFixed(2)}</p>
                       </div>
                       <div>
-                        <p className="text-slate-600">Service Fee</p>
+                        <p className="text-slate-600">{t('serviceFee')}</p>
                         <p className="font-medium text-slate-900">${Number(invoice.serviceFee).toFixed(2)}</p>
                       </div>
                       <div className="col-span-2 pt-2 border-t border-slate-200">
-                        <p className="text-slate-600">Total Amount</p>
+                        <p className="text-slate-600">{t('totalAmount')}</p>
                         <p className="text-lg font-semibold text-slate-900">${Number(invoice.totalAmount).toFixed(2)}</p>
                       </div>
                     </div>
                     {invoice.paymentMethod && (
-                      <p className="text-xs text-slate-500 mt-2">Payment Method: {invoice.paymentMethod}</p>
+                      <p className="text-xs text-slate-500 mt-2">{t('paymentMethod')} {invoice.paymentMethod}</p>
                     )}
                   </div>
                 ))}

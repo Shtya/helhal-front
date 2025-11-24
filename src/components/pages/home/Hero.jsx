@@ -12,7 +12,7 @@ function SearchBar({ className, large }) {
     <div className={`relative flex items-center w-full ${className || ''}`}>
       <Search className={`absolute start-3 text-gray-400 ${large ? 'w-6 h-6' : 'w-5 h-5'}`} />
       <input type='text' placeholder={t('searchPlaceholder')} className={`w-full ${large ? 'py-4 ps-12 pe-14' : 'py-2 ps-10 pe-12'} bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent text-gray-700 placeholder-gray-400`} />
-      <button type='submit' className={`absolute ${large ? 'end-4 p-1.5 rounded-sm' : 'end-2 p-1 rounded-md'} top-1/2 -translate-y-1/2 bg-accent text-white p-1 rounded-md hover:bg-accent-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 cursor-pointer`} aria-label={t('searchButtonAriaLabel')}>
+      <button type='submit' className={`absolute ${large ? 'end-4 p-1.5 rounded-sm' : 'end-2 p-1 rounded-md'} top-1/2 -translate-y-1/2 bg-accent text-white p-1 rounded-md hover:bg-accent-dark focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 cursor-pointer`} >
         <ArrowRight className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
       </button>
     </div>

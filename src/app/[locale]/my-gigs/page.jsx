@@ -12,8 +12,11 @@ import { Modal } from '@/components/common/Modal';
 import toast from 'react-hot-toast';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
+import { useTranslations } from 'next-intl';
+import { isErrorAbort } from '@/utils/helper';
 
 export default function Page() {
+  const t = useTranslations('MyGigs');
   const [activeTab, setActiveTab] = useState('All');
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -94,42 +97,42 @@ export default function Page() {
   const columns = [
     {
       key: 'gallery',
-      label: 'Gig',
+      label: t('columns.gig'),
       type: 'img',
       format: value => (value && value.length > 0 ? baseImg + value[0].url : '/placeholder-image.jpg'),
     },
     {
       key: 'title',
-      label: 'Service',
+      label: t('columns.service'),
     },
     {
       key: 'clicks',
-      label: 'Clicks',
+      label: t('columns.clicks'),
     },
     {
       key: 'ordersCount',
-      label: 'Orders Count',
+      label: t('columns.ordersCount'),
     },
     {
       key: 'packages',
-      label: 'Starting Price',
+      label: t('columns.startingPrice'),
       type: 'price',
       format: value => (value && value.length > 0 ? Math.min(...value.map(p => p.price)) : 'N/A'),
     },
     {
       key: 'status',
-      label: 'Status',
+      label: t('columns.status'),
       status: [
-        ['Active', 'text-green-500 bg-green-100 px-2 py-1 rounded'],
-        ['Pending', 'text-yellow-500 bg-yellow-100 px-2 py-1 rounded'],
-        ['Draft', 'text-gray-500 bg-gray-100 px-2 py-1 rounded'],
-        ['Denied', 'text-red-500 bg-red-100 px-2 py-1 rounded'],
-        ['Paused', 'text-blue-500 bg-blue-100 px-2 py-1 rounded'],
+        [t('status.active'), 'text-green-500 bg-green-100 px-2 py-1 rounded'],
+        [t('status.pending'), 'text-yellow-500 bg-yellow-100 px-2 py-1 rounded'],
+        [t('status.draft'), 'text-gray-500 bg-gray-100 px-2 py-1 rounded'],
+        [t('status.denied'), 'text-red-500 bg-red-100 px-2 py-1 rounded'],
+        [t('status.paused'), 'text-blue-500 bg-blue-100 px-2 py-1 rounded'],
       ],
     },
     {
       key: 'created_at',
-      label: 'Created Date',
+      label: t('columns.createdDate'),
       format: value => new Date(value).toLocaleDateString(),
     },
   ];
@@ -181,9 +184,9 @@ export default function Page() {
       await toast.promise(
         apiService.deleteService(deleteTarget.id),
         {
-          loading: `Deleting "${deleteTarget.title}"...`,
-          success: `"${deleteTarget.title}" deleted successfully`,
-          error: `Failed to delete "${deleteTarget.title}"`,
+          loading: t('toast.deleting', { title: deleteTarget.title }),
+          success: t('toast.deleted', { title: deleteTarget.title }),
+          error: t('toast.failed', { title: deleteTarget.title }),
         }
       );
       setServices(prev => prev.filter(s => s.id !== deleteTarget.id));
@@ -202,24 +205,24 @@ export default function Page() {
   };
 
   const tabs = [
-    { label: "All", value: "All" },
-    { label: "Active", value: "Active" },
-    { label: "Pending", value: "Pending" },
-    { label: "Draft", value: "Draft" },
-    { label: "Denied", value: "Denied" },
-    { label: "Paused", value: "Paused" },
+    { label: t('tabs.all'), value: "All" },
+    { label: t('tabs.active'), value: "Active" },
+    { label: t('tabs.pending'), value: "Pending" },
+    { label: t('tabs.draft'), value: "Draft" },
+    { label: t('tabs.denied'), value: "Denied" },
+    { label: t('tabs.paused'), value: "Paused" },
   ]
   return (
     <div className='container min-h-screen !py-12 '>
       {/* Header */}
       <div className='flex items-center justify-between gap-2 flex-wrap'>
-        <h1 className='text-3xl font-bold text-center mb-4'> My Gigs </h1>
+        <h1 className='text-3xl font-bold text-center mb-4'>{t('title')}</h1>
       </div>
 
       {/* Tabs and Create Button */}
       <div className=' bg-gray-50 border border-slate-200 rounded-lg p-4  flex items-center justify-between gap-3 flex-wrap !mb-4 mt-2 '>
         <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
-        <Button name={'Create a new Gig'} href={'/create-gig'} className='!w-fit' />
+        <Button name={t('createNewGig')} href={'/create-gig'} className='!w-fit' />
       </div>
 
       {/* Table */}
@@ -230,13 +233,11 @@ export default function Page() {
       </AnimatePresence>
 
       {deleteTarget && (
-        <Modal title='Delete Gig' onClose={() => setDeleteTarget(null)}>
-          <p className='text-gray-600 mb-6'>
-            Are you sure you want to delete this gig <span className='font-semibold text-black'>{deleteTarget.title}</span>? This action cannot be undone.
-          </p>
+        <Modal title={t('delete.title')} onClose={() => setDeleteTarget(null)}>
+          <p className='text-gray-600 mb-6' dangerouslySetInnerHTML={{ __html: t('delete.confirm', { title: deleteTarget.title }) }} />
           <div className='flex justify-end gap-3'>
-            <Button color='secondary' onClick={() => setDeleteTarget(null)} className='!w-fit' name={'Cancel'} />
-            <Button onClick={confirmDelete} disabled={deleting} name={deleting ? 'Deleting...' : 'Delete'} color='red' className='!w-fit' />
+            <Button color='secondary' onClick={() => setDeleteTarget(null)} className='!w-fit' name={t('delete.cancel')} />
+            <Button onClick={confirmDelete} disabled={deleting} name={deleting ? t('delete.deleting') : t('delete.delete')} color='red' className='!w-fit' />
           </div>
         </Modal>
       )}

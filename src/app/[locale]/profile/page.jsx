@@ -31,8 +31,9 @@ const letterFromName = s => (s && String(s).trim() ? String(s).trim()[0].toUpper
 
 /* -------------------------------- Profile Card ------------------------------ */
 function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCopyReferral, onError }) {
+  const t = useTranslations('Profile.page');
+  const tAuth = useTranslations('auth');
   const [usernameError, setUsernameError] = useState('');
-  const t = useTranslations('auth');
 
   const handleChangeUsername = (value) => {
     const trimmed = value.trim();
@@ -60,10 +61,10 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
         <div className='flex items-center justify-between'>
           <div className='flex flex-wrap items-center gap-2'>
             <Pill>{state?.type || '—'}</Pill>
-            {state.sellerLevel ? <Pill>Level {state.sellerLevel}</Pill> : null}
+            {state.sellerLevel ? <Pill>{t('level', { level: state.sellerLevel })}</Pill> : null}
             {meta.topRated ? (
               <Pill>
-                <Star className='mr-1 h-4 w-4' /> Top Rated
+                <Star className='mr-1 h-4 w-4' /> {t('topRated')}
               </Pill>
             ) : null}
           </div>
@@ -114,7 +115,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
             <div className='w-full max-w-xs space-y-2'>
               <Input
                 required
-                label="Username"
+                label={t('username')}
                 value={state.username}
                 onChange={e => {
                   const value = e.target.value.slice(0, 50);
@@ -123,13 +124,13 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                 }}
                 onBlur={e => handleChangeUsername(e.target.value)}
               />
-              {usernameError && <FormErrorMessage message={t(`errors.${usernameError}`)} />}
+              {usernameError && <FormErrorMessage message={tAuth(`errors.${usernameError}`)} />}
               {/* <Input label='Email' value={state.email} onChange={e => setState(s => ({ ...s, email: e.target.value }))} /> */}
               <PhoneInputWithCountry
                 value={{ countryCode: state.countryCode, phone: state.phone }}
                 onChange={handleChangePhone}
               />
-              {phoneError && <FormErrorMessage message={t(`errors.${phoneError}`)} />}
+              {phoneError && <FormErrorMessage message={tAuth(`errors.${phoneError}`)} />}
 
 
             </div>
@@ -175,24 +176,24 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
           <ul className='space-y-4 text-[#292D32] text-sm sm:text-base'>
             <li className='flex items-center justify-between gap-2'>
               <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
-                <MapPin className='h-4 w-4' /> From
+                <MapPin className='h-4 w-4' /> {t('from')}
               </span>
               <span className='font-semibold break-words max-lg:break-all'>{state?.country?.name || '—'}</span>
             </li>
             <li className='flex items-center justify-between gap-2'>
               <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
-                <CalendarDays className='h-4 w-4' /> Member Since
+                <CalendarDays className='h-4 w-4' /> {t('memberSince')}
               </span>
               <span className='font-semibold break-words max-lg:break-all'>{meta.memberSince || '—'}</span>
             </li>
             <li className='flex items-center justify-between gap-2'>
               <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
-                <Info className='h-4 w-4' /> Last Login
+                <Info className='h-4 w-4' /> {t('lastLogin')}
               </span>
               <span className='font-semibold break-words max-lg:break-all'>{meta.lastLogin || '—'}</span>
             </li>
             <li className='flex items-center justify-between gap-2'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>Referral Code</span>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>{t('referralCode')}</span>
               <span className='inline-flex items-center gap-2'>
                 <span className='font-semibold break-words max-lg:break-all'>{meta.referralCode || '—'}</span>
                 {meta.referralCode ? (
@@ -203,14 +204,14 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
               </span>
             </li>
             <li className='flex items-center justify-between gap-2'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>Referral Stats</span>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>{t('referralStats')}</span>
               <span className='font-semibold break-words max-lg:break-all'>
-                {meta.referralCount ?? 0} referrals · {meta.referralRewardsCount ?? 0} rewards
+                {meta.referralCount ?? 0} {t('referrals')} · {meta.referralRewardsCount ?? 0} {t('rewards')}
               </span>
             </li>
             {meta.referredBy ? (
               <li className='flex items-center justify-between gap-2'>
-                <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>Referred By</span>
+                <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>{t('referredBy')}</span>
                 <span className='font-semibold break-words max-lg:break-all'>@{meta.referredBy.username}</span>
               </li>
             ) : null}
@@ -223,6 +224,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
 
 /* ------------------------------- About editor ------------------------------- */
 function AboutCard({ loading, about, setAbout, onSaveAuthProfile }) {
+  const t = useTranslations('Profile.page');
   const [prefText, setPrefText] = useState(JSON.stringify(about.preferences || {}, null, 2));
   const [prefError, setPrefError] = useState('');
 
@@ -236,7 +238,7 @@ function AboutCard({ loading, about, setAbout, onSaveAuthProfile }) {
       setPrefError('');
       setAbout(a => ({ ...a, preferences: obj }));
     } catch {
-      setPrefError('Invalid JSON');
+      setPrefError(t('invalidJSON'));
     }
   }
 
@@ -258,16 +260,16 @@ function AboutCard({ loading, about, setAbout, onSaveAuthProfile }) {
           {/* Seller Settings */}
           <section className='space-y-3'>
             <h4 className='text-sm font-semibold flex items-center gap-2'>
-              <Settings2 className='h-4 w-4' /> Seller Settings
+              <Settings2 className='h-4 w-4' /> {t('sellerSettings')}
             </h4>
             <div className='grid gap-3 md:grid-cols-2'>
-              <Input label='Delivery Time (e.g., 3 days)' value={about.deliveryTime || ''} onChange={e => setAbout(a => ({ ...a, deliveryTime: e.target.value }))} />
-              <Input label='Response Time (hours)' type='number' value={about.responseTime ?? ''} onChange={e => setAbout(a => ({ ...a, responseTime: Number(e.target.value) || null }))} />
+              <Input label={t('deliveryTime')} value={about.deliveryTime || ''} onChange={e => setAbout(a => ({ ...a, deliveryTime: e.target.value }))} />
+              <Input label={t('responseTime')} type='number' value={about.responseTime ?? ''} onChange={e => setAbout(a => ({ ...a, responseTime: Number(e.target.value) || null }))} />
             </div>
             <div className='grid gap-3 md:grid-cols-3'>
-              <Input label='Age Group' value={about.ageGroup || ''} onChange={e => setAbout(a => ({ ...a, ageGroup: e.target.value }))} />
-              <Input label='Revisions' type='number' value={about.revisions ?? 0} onChange={e => setAbout(a => ({ ...a, revisions: Number(e.target.value) || 0 }))} />
-              <Input label='Seller Level (lvl1/lvl2/new/top)' value={about.sellerLevel || ''} onChange={e => setAbout(a => ({ ...a, sellerLevel: e.target.value }))} />
+              <Input label={t('ageGroup')} value={about.ageGroup || ''} onChange={e => setAbout(a => ({ ...a, ageGroup: e.target.value }))} />
+              <Input label={t('revisions')} type='number' value={about.revisions ?? 0} onChange={e => setAbout(a => ({ ...a, revisions: Number(e.target.value) || 0 }))} />
+              <Input label={t('sellerLevel')} value={about.sellerLevel || ''} onChange={e => setAbout(a => ({ ...a, sellerLevel: e.target.value }))} />
             </div>
           </section>
 
@@ -276,16 +278,16 @@ function AboutCard({ loading, about, setAbout, onSaveAuthProfile }) {
           {/* Financials */}
           <section className='space-y-3'>
             <h4 className='text-sm font-semibold flex items-center gap-2'>
-              <DollarSign className='h-4 w-4' /> Financials
+              <DollarSign className='h-4 w-4' /> {t('financials')}
             </h4>
             <div className='grid gap-3 md:grid-cols-3'>
-              <Input label='Balance' type='number' value={about.balance ?? 0} onChange={e => setAbout(a => ({ ...a, balance: Number(e.target.value) || 0 }))} />
-              <Input label='Total Spent' type='number' value={about.totalSpent ?? 0} onChange={e => setAbout(a => ({ ...a, totalSpent: Number(e.target.value) || 0 }))} />
-              <Input label='Total Earned' type='number' value={about.totalEarned ?? 0} onChange={e => setAbout(a => ({ ...a, totalEarned: Number(e.target.value) || 0 }))} />
+              <Input label={t('balance')} type='number' value={about.balance ?? 0} onChange={e => setAbout(a => ({ ...a, balance: Number(e.target.value) || 0 }))} />
+              <Input label={t('totalSpent')} type='number' value={about.totalSpent ?? 0} onChange={e => setAbout(a => ({ ...a, totalSpent: Number(e.target.value) || 0 }))} />
+              <Input label={t('totalEarned')} type='number' value={about.totalEarned ?? 0} onChange={e => setAbout(a => ({ ...a, totalEarned: Number(e.target.value) || 0 }))} />
             </div>
             <div className='grid gap-3 md:grid-cols-3'>
-              <Input label='Reputation Points' type='number' value={about.reputationPoints ?? 0} onChange={e => setAbout(a => ({ ...a, reputationPoints: Number(e.target.value) || 0 }))} />
-              <Input label='Top Rated (readonly from stats)' value={about.topRated ? 'Yes' : 'No'} readOnly />
+              <Input label={t('reputationPoints')} type='number' value={about.reputationPoints ?? 0} onChange={e => setAbout(a => ({ ...a, reputationPoints: Number(e.target.value) || 0 }))} />
+              <Input label={t('topRatedReadonly')} value={about.topRated ? t('yes') : t('no')} readOnly />
             </div>
             <p className='text-xs text-amber-600 mt-1 inline-flex items-center gap-1'>
               <AlertTriangle className='h-4 w-4' /> If your backend blocks editing of these fields, allow them in your update service.
@@ -296,7 +298,7 @@ function AboutCard({ loading, about, setAbout, onSaveAuthProfile }) {
 
           {/* Preferences JSON */}
           <section className='space-y-2'>
-            <h4 className='text-sm font-semibold'>Preferences (JSON)</h4>
+            <h4 className='text-sm font-semibold'>{t('preferences')}</h4>
             <Textarea rows={8} value={prefText} onChange={e => setPrefText(e.target.value)} onBlur={parsePrefs} />
             {prefError ? <div className='text-sm text-red-600'>{prefError}</div> : null}
           </section>
@@ -342,20 +344,21 @@ function PortfolioEditor({ about, setAbout }) {
 }
 
 function KPICard({ loading, stats }) {
+  const t = useTranslations('Profile.page');
   if (loading) return <BlockSkeleton />;
   if (!stats) return null;
   return (
     <>
       {/* <h3 className='mb-3 text-lg font-semibold'>Seller KPIs</h3> */}
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-        <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' />
-        <StatCard title='Repeat Buyers' value={Number(stats.repeatBuyers || 0)} hint='Unique customers' icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
+        <StatCard title={t('ordersCompleted')} value={Number(stats.ordersCompleted || 0)} hint={t('allTime')} icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' />
+        <StatCard title={t('repeatBuyers')} value={Number(stats.repeatBuyers || 0)} hint={t('uniqueCustomers')} icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
         {/* <StatCard title='Avg. Rating' value={stats.averageRating ? Number(stats.averageRating) : '—'}
           hint={stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} / 5` : 'Not yet calculated'} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' /> */}
         <StatCard
-          title="Response Time"
+          title={t('responseTime')}
           value={formatResponseTime(stats.responseTime)}
-          hint={stats.responseTime ? 'Average time' : 'Not yet calculated'}
+          hint={stats.responseTime ? t('responseTimeAverage') : t('responseTimeNotCalculated')}
           icon={Award}
           gradient="from-fuchsia-500 via-rose-500 to-orange-400"
         />
@@ -378,6 +381,7 @@ function Assets({
   onVideoChange, // (url) => void
   onImagesChange, // (urls[]) => void
 }) {
+  const t = useTranslations('Profile.page');
   const [videoUrl, setVideoUrl] = useState(initialVideoUrl || '');
   const [videoDeleting, setDeletingVideo] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
@@ -556,11 +560,11 @@ function Assets({
       <Card className='relative p-4 sm:p-5 '>
         <div className='flex  flex-col sm:flex-row sm:items-center justify-between gap-4'>
           <div>
-            <h2 className='text-2xl font-semibold text-black'>Intro video</h2>
-            <p className='mt-2 text-lg text-black/70 break-words'>Stand out with a short introduction video.</p>
+            <h2 className='text-2xl font-semibold text-black'>{t('introVideo')}</h2>
+            <p className='mt-2 text-lg text-black/70 break-words'>{t('introVideoSubtitle')}</p>
           </div>
 
-          <Button className='sm:!w-fit' loading={videoUploading || videoDeleting} name={videoUploading ? 'Uploading…' : videoUrl ? 'Replace Video' : 'Upload Video'} icon={<Plus size={18} />} onClick={handlePickVideo} disabled={videoUploading || videoDeleting} />
+          <Button className='sm:!w-fit' loading={videoUploading || videoDeleting} name={videoUploading ? t('uploading') : videoUrl ? t('replaceVideo') : t('uploadVideo')} icon={<Plus size={18} />} onClick={handlePickVideo} disabled={videoUploading || videoDeleting} />
         </div>
 
         {/* Video preview / skeleton */}
@@ -580,10 +584,10 @@ function Assets({
 
               <button type='button' onClick={handlePickVideo} className='group flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-slate-600 hover:bg-slate-100'>
                 <Video className='h-5 w-5' />
-                <span className='font-medium'>Upload intro video</span>
+                <span className='font-medium'>{t('uploadIntroVideo')}</span>
               </button>
               <div className='mt-3 text-xs text-slate-500'>
-                Max size: {MAX_VIDEO_SIZE_MB}MB.
+                {t('maxSize', { size: MAX_VIDEO_SIZE_MB })}
               </div>
             </div>
           )}
@@ -595,11 +599,11 @@ function Assets({
       <Card className=' p-4 sm:p-5 mt-8 '>
         <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
           <div>
-            <h3 className='text-xl font-semibold text-black'>Portfolio</h3>
-            <p className='text-sm text-slate-600'>Add up to 6 images.</p>
+            <h3 className='text-xl font-semibold text-black'>{t('portfolio')}</h3>
+            <p className='text-sm text-slate-600'>{t('addImagesSubtitle')}</p>
           </div>
 
-          <Button className='sm:!w-fit' name='Add Images' icon={<Plus size={18} />} onClick={handlePickImages} disabled={imgs.length >= 6} />
+          <Button className='sm:!w-fit' name={t('addImages')} icon={<Plus size={18} />} onClick={handlePickImages} disabled={imgs.length >= 6} />
         </div>
 
         <input ref={imgInputRef} type='file' accept='image/*' multiple className='hidden' onChange={handleImagesSelected} />
@@ -636,7 +640,7 @@ function Assets({
             <button type='button' onClick={handlePickImages} className='group grid aspect-[16/11] place-items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 hover:bg-slate-100'>
               <span className='flex flex-col items-center text-emerald-600'>
                 <Upload className='h-5 w-5' />
-                <span className='mt-1 text-sm font-medium'>Upload</span>
+                <span className='mt-1 text-sm font-medium'>{t('upload')}</span>
               </span>
             </button>
           )}
@@ -644,7 +648,7 @@ function Assets({
 
         {/* Counter / helper */}
         <div className='mt-3 text-xs text-slate-500'>
-          {imgs.length}/6 images {imgUploadingCount > 0 && `• Uploading ${imgUploadingCount}…`}
+          {imgs.length}/6 {t('images')} {imgUploadingCount > 0 && `• ${t('uploadingCount', { count: imgUploadingCount })}`}
         </div>
       </Card>
     </div>
@@ -670,6 +674,7 @@ function PortfolioFileBox({
   initialPortfolio = '',
   onChange, // (url: string) => void
 }) {
+  const t = useTranslations('Profile.page');
   const [fileUrl, setFileUrl] = useState(initialPortfolio?.url || '');
   const [filename, setFilename] = useState(initialPortfolio?.filename || '');
   const [uploading, setUploading] = useState(false);
@@ -742,11 +747,11 @@ function PortfolioFileBox({
     <Card className='p-4 sm:p-5 mt-8'>
       <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
         <div>
-          <h3 className='text-xl font-semibold text-black'>Portfolio file</h3>
-          <p className='text-sm text-slate-600'> PDF, TXT, DOC, DOCX, XLS, XLSX, PPT, PPTX (max ~25MB). One file at a time.</p>
+          <h3 className='text-xl font-semibold text-black'>{t('portfolioFile')}</h3>
+          <p className='text-sm text-slate-600'>{t('portfolioFileSubtitle')}</p>
         </div>
 
-        <Button className='sm:!w-fit' name={uploading ? 'Uploading…' : hasFile ? 'Replace file' : 'Upload file'}
+        <Button className='sm:!w-fit' name={uploading ? t('uploading') : hasFile ? t('replaceFile') : t('uploadFile')}
           icon={uploading ? <Loader2 className='h-4 w-4 animate-spin' /> : hasFile ? <UploadCloud className='h-4 w-4' /> : <UploadCloud className='h-4 w-4' />} onClick={pickFile} disabled={uploading || deleting} loading={uploading} />
 
         <input ref={inputRef} type='file' accept='.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt' className='hidden' onChange={handleSelected} />
@@ -763,13 +768,13 @@ function PortfolioFileBox({
               <span className='truncate text-ellipsis flex-1 min-w-0'>{filename}</span>
             </a>
 
-            <Button className='!w-fit' color='red' name={deleting ? 'Deleting…' : 'Delete'} icon={deleting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Trash2 className='h-4 w-4' />} onClick={handleDelete} loading={deleting || uploading} />
+            <Button className='!w-fit' color='red' name={deleting ? t('deleting') : t('delete')} icon={deleting ? <Loader2 className='h-4 w-4 animate-spin' /> : <Trash2 className='h-4 w-4' />} onClick={handleDelete} loading={deleting || uploading} />
 
             {/* overlay while deleting */}
             {deleting && <div className='absolute inset-0 grid place-items-center rounded-xl bg-black/10 pointer-events-none' />}
           </div>
         ) : (
-          <div onClick={pickFile} className='cursor-pointer rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-slate-500'>No file uploaded yet.</div>
+          <div onClick={pickFile} className='cursor-pointer rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-slate-500'>{t('noFileUploaded')}</div>
         )}
       </div>
     </Card>
@@ -779,6 +784,7 @@ function PortfolioFileBox({
 const defaultCountryCode = { code: 'SA', dial_code: '+966' };
 /* ------------------------------------ Page ---------------------------------- */
 export default function Overview() {
+  const t = useTranslations('Profile.page');
   const [dirty, setDirty] = useState(false);
   const baselineRef = useRef(null); // holds the "last saved" snapshot
   const [reverting, setReverting] = useState(false); // optional spinner on revert
@@ -1024,9 +1030,9 @@ export default function Overview() {
       const res = await toast.promise(
         api.put('/auth/profile', payload),
         {
-          loading: 'Saving profile...',
-          success: 'Profile updated successfully ✅',
-          error: 'Failed to update profile ❌',
+          loading: t('savingProfile'),
+          success: t('profileUpdated'),
+          error: t('profileUpdateFailed'),
         }
       );
 
@@ -1082,9 +1088,9 @@ export default function Overview() {
             onCopyReferral={async () => {
               if (meta.referralCode) {
                 await navigator.clipboard.writeText(meta.referralCode);
-                toast.success('Referral code copied to clipboard ✅');
+                toast.success(t('referralCodeCopied'));
               } else {
-                toast.error('No referral code found');
+                toast.error(t('noReferralCode'));
               }
             }}
           />
@@ -1154,14 +1160,14 @@ export default function Overview() {
               <div className='flex items-start gap-3'>
                 <AlertTriangle className='mt-[2px] h-5 w-5 text-amber-600' />
                 <div>
-                  <div className='font-semibold'>You have unsaved changes</div>
-                  <div className='text-sm text-slate-600'>Don’t lose your edits. Save now or discard them.</div>
+                  <div className='font-semibold'>{t('unsavedChanges')}</div>
+                  <div className='text-sm text-slate-600'>{t('unsavedChangesDesc')}</div>
                 </div>
               </div>
               <div className='flex items-center gap-2'>
                 <Button
                   color='secondary'
-                  name='Discard'
+                  name={t('discard')}
                   onClick={() => {
                     if (baselineRef.current) {
                       setReverting(true);
@@ -1180,7 +1186,7 @@ export default function Overview() {
                   }}
                   className='!w-auto !px-4'
                 />
-                <Button color='green' name={saving ? '' : 'Save changes'} loading={saving} onClick={saveAuthProfile} className='!w-auto !px-5' disabled={hasError} />
+                <Button color='green' name={saving ? '' : t('saveChanges')} loading={saving} onClick={saveAuthProfile} className='!w-auto !px-5' disabled={hasError} />
               </div>
             </div>
           </div>

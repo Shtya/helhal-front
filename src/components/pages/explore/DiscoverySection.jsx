@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import ServiceCard from '../services/ServiceCard';
 import Tabs from '@/components/common/Tabs';
 import { useValues } from '@/context/GlobalContext';
@@ -13,6 +14,7 @@ import ErrorState from '@/components/common/ErrorState';
 const TTL_MS = 2 * 60 * 1000; // 2 minutes
 
 export default function DiscoverySection() {
+  const t = useTranslations('Explore');
   const { categories = [], loadingCategory } = useValues();
 
   const [activeTab, setActiveTab] = useState('all'); // 'all' or category slug
@@ -54,7 +56,7 @@ export default function DiscoverySection() {
 
     } catch (e) {
       if (e?.name !== 'CanceledError' && e?.message !== 'canceled') {
-        setErr(e?.response?.data?.message || e?.message || 'Failed to load services');
+        setErr(e?.response?.data?.message || e?.message || t('discovery.errors.loadFailed'));
         setServices([]);
       }
     } finally {
@@ -70,28 +72,28 @@ export default function DiscoverySection() {
       // if fetchServices returned a cleanup (in case of overlapping), call it
       if (typeof cleanup === 'function') cleanup();
     };
-  }, [activeTab]);
+  }, [activeTab, t]);
 
   // build tabs: 'All' + first 4 categories
   const tabs = useMemo(() => {
-    const base = [{ label: 'All', value: 'all' }];
+    const base = [{ label: t('discovery.all'), value: 'all' }];
     const extra = (categories || [])
       .slice(0, 4)
-      .map(c => ({ label: c?.name || c?.slug || 'Category', value: c?.slug || String(c?.id || '').toLowerCase() }))
+      .map(c => ({ label: c?.name || c?.slug || t('discovery.category'), value: c?.slug || String(c?.id || '').toLowerCase() }))
       .filter(Boolean);
     return [...base, ...extra];
-  }, [categories]);
+  }, [categories, t]);
 
   const moreHref = activeTab === 'all' ? '/services' : `/services/category=${encodeURIComponent(activeTab)}`;
 
   return (
     <section className='mt-14'>
-      <p className='text-3xl max-md:text-xl font-[900]'>Find by category</p>
+      <p className='text-3xl max-md:text-xl font-[900]'>{t('discovery.title')}</p>
 
       {/* Tabs */}
       <div className='mt-4 flex items-center justify-between gap-2 flex-wrap'>
         <Tabs tabs={tabs} setActiveTab={setActiveTab} activeTab={activeTab} />
-        <Button name='Show more' href={moreHref} className='!w-fit' />
+        <Button name={t('discovery.showMore')} href={moreHref} className='!w-fit' />
       </div>
 
       {/* Grid */}
@@ -99,7 +101,7 @@ export default function DiscoverySection() {
         {loading || loadingCategory ? (
           Array.from({ length: 8 }).map((_, i) => <ServiceCard loading={true} key={`sk-${i}`} />)
         ) : err ? (
-          <ErrorState title="Failed to load services" message={err} onRetry={() => fetchServices(activeTab)} />
+          <ErrorState title={t('discovery.errors.loadFailed')} message={err} onRetry={() => fetchServices(activeTab)} />
         ) : services.length === 0 ? (
           <EmptyState onReset={() => setActiveTab('all')} />
         ) : (
@@ -116,9 +118,10 @@ export default function DiscoverySection() {
 
 
 function EmptyState({ onReset }) {
+  const t = useTranslations('Explore');
   return (
     <div className='col-span-full grid place-items-center rounded-2xl border border-slate-200 bg-white p-10 text-slate-600'>
-      <NoResults onClick={onReset} buttonText={"Reset filters"} mainText={"No services found."} additionalText={"Try another category or view all services."} />
+      <NoResults onClick={onReset} buttonText={t('discovery.empty.resetFilters')} mainText={t('discovery.empty.title')} additionalText={t('discovery.empty.description')} />
     </div>
   );
 }

@@ -3,12 +3,14 @@ import { Modal } from '@/components/common/Modal';
 import AttachmentList from '@/components/common/AttachmentList';
 import { formatDate } from '@/utils/date';
 import api from '@/lib/axios';
+import { useTranslations } from 'next-intl';
 
 export default function ChangeRequestReviewModel({
     open,
     onClose,
     selectedRow,
 }) {
+    const t = useTranslations('MyOrders.modals.changeRequest');
     const [loading, setLoading] = useState(true);
     const [request, setRequest] = useState(null);
 
@@ -37,13 +39,13 @@ export default function ChangeRequestReviewModel({
     const clientName = selectedRow?._raw?.buyer?.username;
 
     return (
-        <Modal title="Change Request" onClose={onClose}>
+        <Modal title={t('title')} onClose={onClose}>
             <div className="space-y-4">
                 <p className="text-sm text-slate-600">
-                    Order: <strong>{orderTitle}</strong>
+                    {t('order')}: <strong>{orderTitle}</strong>
                 </p>
                 <p className="text-sm text-slate-600">
-                    Requested by <strong>{clientName}</strong>
+                    {t('requestedBy')} <strong>{clientName}</strong>
                 </p>
 
                 {loading ? (
@@ -52,7 +54,7 @@ export default function ChangeRequestReviewModel({
                     <>
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                Message
+                                {t('message')}
                             </label>
                             <p className="text-sm text-slate-800 whitespace-pre-line bg-slate-50 p-3 rounded">
                                 {request.message}
@@ -62,18 +64,18 @@ export default function ChangeRequestReviewModel({
                         {request.files?.length > 0 && (
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                                    Files
+                                    {t('files')}
                                 </label>
                                 <AttachmentList attachments={request.files} variant="list" />
                             </div>
                         )}
 
                         <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
-                            This change request was submitted on <strong>{formatDate(request.created_at)}</strong>.
+                            {t('submittedOn')} <strong>{formatDate(request.created_at)}</strong>.
                         </div>
                     </>
                 ) : (
-                    <p className="text-sm text-red-600">No change request found.</p>
+                    <p className="text-sm text-red-600">{t('notFound')}</p>
                 )}
             </div>
         </Modal>

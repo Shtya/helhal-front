@@ -4,8 +4,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Img from '@/components/atoms/Img';
 import { X, Star, Pin, Search, Archive, LifeBuoy } from 'lucide-react';
 import { Shimmer } from './ChatApp';
+import { useTranslations } from 'next-intl';
 
-export function AllMessagesPanel({ showContactAdmin, adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t, searchResults, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
+export function AllMessagesPanel({ showContactAdmin, adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t: tProp, searchResults, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
+  const t = tProp || useTranslations('Chat');
 
   return (
     <div className='flex flex-col h-full'>
@@ -41,7 +43,7 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
             tabs={[
               { value: 'all', label: t('tabs.all') },
               { value: 'favorites', label: t('tabs.favorites') },
-              { value: 'archived', label: 'Archived' },
+              { value: 'archived', label: t('tabs.archived') },
             ]}
           />
 
@@ -108,7 +110,7 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
                 ))}
                 {items.length === 0 && (
                   <li className='text-sm text-slate-500 p-4 text-center' aria-live='polite'>
-                    {activeTab === 'favorites' ? t('noFavorites') : activeTab === 'archived' ? 'No archived conversations' : t('noConversations')}
+                    {activeTab === 'favorites' ? t('noFavorites') : activeTab === 'archived' ? t('noArchivedConversations') : t('noConversations')}
                   </li>
                 )}
               </ul>
@@ -128,7 +130,7 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
         </button>
 
         <span className="text-sm font-medium">
-          Page {userPagination.page} / {userPagination.pages}
+          {t('page', { current: userPagination.page, total: userPagination.pages })}
         </span>
 
         <button

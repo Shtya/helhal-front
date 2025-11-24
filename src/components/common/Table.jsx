@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import Pagination from '../atoms/Pagination';
 import { Eye, FilterX, RefreshCw, SearchX, X } from 'lucide-react';
 import PriceTag from '../atoms/priceTag';
@@ -10,7 +11,11 @@ import TabsPagination from './TabsPagination';
 /** Tiny skeleton block */
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
-function EmptyState({ title = 'No results found', subtitle = 'Try adjusting filters, clearing search, or changing the date range.', onResetFilters, onReload }) {
+function EmptyState({ title, subtitle, onResetFilters, onReload }) {
+  const t = useTranslations('Table.emptyState');
+  const defaultTitle = title || t('title');
+  const defaultSubtitle = subtitle || t('subtitle');
+
   return (
     <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className='flex flex-col items-center justify-center py-10' aria-live='polite'>
       <div className='relative'>
@@ -20,21 +25,21 @@ function EmptyState({ title = 'No results found', subtitle = 'Try adjusting filt
         </div>
       </div>
 
-      <h3 className='mt-4 text-base font-semibold text-slate-800'>{title}</h3>
-      <p className='mt-1 text-sm text-slate-500 text-center max-w-md'>{subtitle}</p>
+      <h3 className='mt-4 text-base font-semibold text-slate-800'>{defaultTitle}</h3>
+      <p className='mt-1 text-sm text-slate-500 text-center max-w-md'>{defaultSubtitle}</p>
 
       {(onResetFilters || onReload) && (
         <div className='mt-4 flex items-center gap-2'>
           {onResetFilters && (
             <button onClick={onResetFilters} className='inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50'>
               <FilterX className='h-4 w-4' />
-              Clear filters
+              {t('clearFilters')}
             </button>
           )}
           {onReload && (
             <button onClick={onReload} className='inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700'>
               <RefreshCw className='h-4 w-4' />
-              Reload
+              {t('reload')}
             </button>
           )}
         </div>
@@ -44,6 +49,7 @@ function EmptyState({ title = 'No results found', subtitle = 'Try adjusting filt
 }
 
 const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage = 5, totalCount = 0, onPageChange }) => {
+  const t = useTranslations('Table');
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const totalPages = Math.ceil(totalCount / rowsPerPage);
@@ -102,7 +108,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
                       <Skeleton className='h-4 w-16' />
                     </div>
                   ) : (
-                    'Action'
+                    t('action')
                   )}
                 </th>
               )}
@@ -187,7 +193,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
             {!loading && data.length === 0 && (
               <tr>
                 <td colSpan={columns.length + (actions ? 1 : 0)} className='px-4'>
-                  <EmptyState title='Nothing to show here' subtitle='No rows match your current filters. You can clear filters or try a different search.' />
+                  <EmptyState title={t('nothingToShow.title')} subtitle={t('nothingToShow.subtitle')} />
                 </td>
               </tr>
             )}
@@ -206,7 +212,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
               <Skeleton className='h-4 w-56' />
             ) : (
               <>
-                Showing {showingFrom}-{showingTo} of {totalCount}
+                {t('showing', { from: showingFrom, to: showingTo, total: totalCount })}
               </>
             )}
           </span>

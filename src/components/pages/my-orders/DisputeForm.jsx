@@ -13,10 +13,12 @@ import { Link } from "@/i18n/navigation";
 import { OrderStatus } from "@/constants/order";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useTranslations } from 'next-intl';
 
 
 
 export function DisputeModal({ selectedRow, open, onClose, patchOrderRow, setRowLoading }) {
+    const t = useTranslations('MyOrders.modals.dispute');
     const [submitting, setSubmitting] = useState(false);
     const router = useRouter()
     const [apiError, setApiError] = useState(null);
@@ -42,13 +44,13 @@ export function DisputeModal({ selectedRow, open, onClose, patchOrderRow, setRow
                     status: OrderStatus.DISPUTED,
                     _raw: { ...r._raw, status: OrderStatus.DISPUTED, hasOpenDispute: true, disputeStatus: 'open' },
                 }));
-                toast.success('Dispute opened successfully');
+                toast.success(t('success'));
 
                 onClose();
                 router.push(`my-disputes?dispute=${res.data.id}`)
             }
         } catch (e) {
-            setApiError(e?.response?.data?.message || 'Failed to open dispute');
+            setApiError(e?.response?.data?.message || t('error'));
         } finally {
             setSubmitting(false);
             setRowLoading(selectedRow?.id || '', null);
@@ -57,10 +59,10 @@ export function DisputeModal({ selectedRow, open, onClose, patchOrderRow, setRow
 
     if (!open) return;
     return (
-        <Modal title="Open a Dispute" onClose={() => { setApiError(''); onClose() }}>
+        <Modal title={t('title')} onClose={() => { setApiError(''); onClose() }}>
             <div className="space-y-4">
                 <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">
-                    Order: <span className="font-medium">
+                    {t('order')}: <span className="font-medium">
                         {selectedRow?._raw?.title || selectedRow?._raw?.service?.title || selectedRow?.id}
                     </span>
                 </div>
@@ -76,29 +78,30 @@ export function DisputeModal({ selectedRow, open, onClose, patchOrderRow, setRow
         </Modal>
     );
 }
-const disputeSchema = z.object({
+const getDisputeSchema = (t) => z.object({
     type: z
         .enum(['money', 'quality', 'requirements', 'other'])
         .optional()
         .refine(val => !!val, {
-            message: 'Please select a dispute type',
+            message: t('validation.typeRequired'),
         }),
     subject: z
         .string()
-        .min(3, 'Subject must be at least 3 characters')
-        .max(250, 'Subject must be no more than 250 characters'),
+        .min(3, t('validation.subjectMin'))
+        .max(250, t('validation.subjectMax')),
     message: z
         .string()
-        .min(8, 'Message must be at least 8 characters')
-        .max(2000, 'Message must be no more than 2000 characters'),
+        .min(8, t('validation.messageMin'))
+        .max(2000, t('validation.messageMax')),
 });
 
 
 
 
 function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, selectedRow }) {
+    const t = useTranslations('MyOrders.modals.dispute');
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
-        resolver: zodResolver(disputeSchema),
+        resolver: zodResolver(getDisputeSchema(t)),
         defaultValues,
     });
 
@@ -114,9 +117,8 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
             {/* Contextual header */}
             <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">
                 <p>
-                    You are about to open a <span className="font-semibold">dispute</span> against the{' '}
-                    <span className="font-semibold">{counterpartRole}</span>{' '}
-                    <Link href={`/profile/${counterpart.id}`} className="font-medium text-slate-900 hover:underline">@{counterpart?.username}</Link> for the order:
+                    {t('aboutToOpen')} <span className="font-semibold">{t('dispute')}</span> {t('against')} <span className="font-semibold">{counterpartRole}</span>{' '}
+                    <Link href={`/profile/${counterpart.id}`} className="font-medium text-slate-900 hover:underline">@{counterpart?.username}</Link> {t('forOrder')}
                 </p>
                 <p className="mt-1 font-medium text-slate-800">
                     {selectedRow?._raw?.title} — ${selectedRow?._raw?.totalAmount}
@@ -126,17 +128,17 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
             {/* Dispute Type */}
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                    What is this dispute about? *
+                    {t('whatAbout')} *
                 </label>
                 <Select
                     disabled={readOnly}
                     value={watch('type')}
                     onChange={opt => setValue('type', opt?.id)}
                     options={[
-                        { id: 'money', name: 'Money issues' },
-                        { id: 'quality', name: 'Work quality concerns' },
-                        { id: 'requirements', name: 'Requirements not met' },
-                        { id: 'other', name: 'Other issue' },
+                        { id: 'money', name: t('types.money') },
+                        { id: 'quality', name: t('types.quality') },
+                        { id: 'requirements', name: t('types.requirements') },
+                        { id: 'other', name: t('types.other') },
                     ]}
                     error={errors.type?.message}
                 />
@@ -145,11 +147,11 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
             {/* Subject */}
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Dispute Subject *
+                    {t('subject')} *
                 </label>
                 <Input
                     disabled={readOnly}
-                    placeholder="Enter a clear subject for your dispute"
+                    placeholder={t('subjectPlaceholder')}
                     {...register('subject')}
                     error={errors.subject?.message}
                 />
@@ -158,17 +160,17 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
             {/* Message */}
             <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Detailed Explanation *
+                    {t('detailedExplanation')} *
                 </label>
                 <Textarea
                     disabled={readOnly}
                     rows={5}
-                    placeholder="Explain clearly what went wrong, what was expected, and what resolution you are seeking…"
+                    placeholder={t('explanationPlaceholder')}
                     {...register('message')}
                     error={errors.message?.message}
                 />
                 <p className="mt-1 text-xs text-gray-500">
-                    Provide enough  details about the problem so we can understand your dispute.
+                    {t('explanationHint')}
                 </p>
             </div>
 
@@ -177,7 +179,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
                     <Button
                         type="submit"
                         color="green"
-                        name={submitting ? 'Submitting…' : 'Submit Dispute'}
+                        name={submitting ? t('submitting') : t('submit')}
                         className="!w-fit"
                         disabled={submitting}
                     />

@@ -2,11 +2,15 @@
 
 import { useEffect, useRef, useState, forwardRef, useMemo } from 'react';
 import { ChevronDown, Loader2, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import api from '@/lib/axios';
 import FormErrorMessage from './FormErrorMessage';
 
-const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId, value, onChange, allowCreate = true, placeholder = 'Select an option', loadingText = "Loading...", label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur, disabled }, ref) => {
+const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId, value, onChange, allowCreate = true, placeholder, loadingText, label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur, disabled }, ref) => {
+  const t = useTranslations('CategorySelect');
+  const defaultPlaceholder = placeholder || t('selectOption');
+  const defaultLoadingText = loadingText || t('loading');
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
 
@@ -65,7 +69,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
       fetchedKeysRef.current.add(scopeKey);
     } catch (e) {
       setItems([]);
-      toast.error(e?.response?.data?.message || 'Failed to load options');
+      toast.error(e?.response?.data?.message || t('errors.failedToLoad'));
     } finally {
       setLoading(false);
     }
@@ -122,7 +126,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
     const name = (query || '').trim();
     if (!name) return;
     if (items.some(i => (i.name || '').toLowerCase() === name.toLowerCase())) {
-      toast('Already exists');
+      toast(t('alreadyExists'));
       return;
     }
     setCreating(true);
@@ -137,9 +141,9 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
       setItems(prev => [created, ...prev]);
       onChange?.(created);
       setOpen(false);
-      toast.success(`Created “${created.name}”`);
+      toast.success(t('created', { name: created.name }));
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Failed to create');
+      toast.error(e?.response?.data?.message || t('errors.failedToCreate'));
     } finally {
       setCreating(false);
     }
@@ -186,7 +190,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
           aria-haspopup='listbox'
           aria-expanded={open}
           name={name}>
-          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{loading ? loadingText : selected?.name || placeholder}</span>
+          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{loading ? defaultLoadingText : selected?.name || defaultPlaceholder}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
         </button>
 
@@ -194,11 +198,11 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
           <div ref={menuRef} className='absolute mt-2 w-full rounded-md border border-gray-200 bg-white shadow-lg z-50'>
             {/* Search / Create */}
             <div className='p-2 border-b border-gray-200'>
-              <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder={`Search ${type}…`} className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500' />
+              <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder={t('search', { type })} className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500' />
               {canCreate && filtered?.length === 0 && (
                 <button onClick={createIfNotExists} disabled={creating || (type === 'subcategory' && !parentId)} className='mt-2 w-full flex items-center gap-2 px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50 disabled:opacity-60'>
                   {creating ? <Loader2 className='w-4 h-4 animate-spin' /> : <Plus className='w-4 h-4' />}
-                  Create “{query.trim()}”
+                  {t('create', { name: query.trim() })}
                 </button>
               )}
             </div>
@@ -212,7 +216,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
                   ))}
                 </div>
               ) : filtered?.length === 0 ? (
-                <div className='p-3 text-sm text-gray-500'>No {type}s found</div>
+                <div className='p-3 text-sm text-gray-500'>{t('noFound', { type })}</div>
               ) : (
                 <ul className='divide-y divide-gray-100'>
                   {filtered?.map(opt => (

@@ -3,6 +3,7 @@
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, ChevronLeft, Pencil, ArrowUp, ArrowDown, Search, Plus, Trash2, X, HelpCircle, ChevronRight } from 'lucide-react';
 import ProgressBar from '@/components/pages/gig/ProgressBar';
@@ -29,6 +30,7 @@ const normalizeFile = (file) => ({
 });
 
 export const useGigCreation = () => {
+  const t = useTranslations('CreateGig.toast');
   const [step, setStep] = useState(1);
   const searchParams = useSearchParams();
 
@@ -183,10 +185,10 @@ export const useGigCreation = () => {
       if (gigSlug) {
         const gigId = formData?.id;
         await apiService.updateService(gigId, serviceData);
-        toast.success('Service updated successfully');
+        toast.success(t('serviceUpdated'));
       } else {
         await apiService.createService(serviceData);
-        toast.success('Service created successfully');
+        toast.success(t('serviceCreated'));
       }
 
       if (typeof window !== 'undefined') {
@@ -196,8 +198,7 @@ export const useGigCreation = () => {
       router.push('/my-gigs');
     } catch (error) {
       const meg = error?.message;
-
-      toast.error(meg || 'Failed to create gig. Please try again.');
+      toast.error(meg || t('failedToCreate'));
     } finally {
       setLoadingServices(false);
     }
@@ -218,81 +219,102 @@ export const useGigCreation = () => {
 };
 
 // --- VALIDATION SCHEMAS ---
-const step1Schema = yup.object({
-  title: yup.string().trim().required('Gig title is required').max(100, "Gig title can't exceed 100 characters"),
-  brief: yup.string().trim().required('Gig brief is required').max(500, "Gig brief can't exceed 500 characters"),
-  category: yup.object().required('Category is required'),
+const getStep1Schema = (t) => yup.object({
+  title: yup.string().trim().required(t('validation.titleRequired')).max(100, t('validation.titleMax')),
+  brief: yup.string().trim().required(t('validation.briefRequired')).max(500, t('validation.briefMax')),
+  category: yup.object().required(t('validation.categoryRequired')),
   subcategory: yup.object().nullable().notRequired(),
   tags: yup.array()
     .of(
       yup.string()
         .trim()
-        .max(50, 'Tag must be 50 characters or fewer')
-        .matches(/^[A-Za-z0-9]+$/, 'Tags can only contain letters and numbers')
-        .required('Tag is required')
+        .max(50, t('validation.tagMax'))
+        .matches(/^[A-Za-z0-9]+$/, t('validation.tagPattern'))
+        .required(t('validation.tagRequired'))
     )
-    .min(1, 'At least one tag is required')
-    .max(5, 'Maximum 5 tags allowed'),
+    .min(1, t('validation.tagsMin'))
+    .max(5, t('validation.tagsMax')),
 });
 
-const step2Schema = yup.object({
+const getStep2Schema = (t) => yup.object({
   packages: yup
     .array()
     .of(
       yup.object({
         type: yup.string().oneOf(['basic', 'standard', 'premium']).required(),
-        title: yup.string().trim().required('Package title is required').max(60, 'Max 60 characters'),
-        description: yup.string().trim().required('Package description is required').max(220, 'Max 220 characters'),
-        deliveryTime: yup.number().typeError('Delivery time is required').required().min(1, 'Min 1 day').max(1200, 'Maximum delivery time is 1200 days'),
-        revisions: yup.number().typeError('Revisions is required').required().min(0, 'Cannot be negative').max(20, 'Be realistic'),
-        price: yup.number().typeError('Price is required').required().min(1, 'Price must be at least 1').max(100000, 'Price must not exceed 100,000'),
-        test: yup.boolean().required('Test field is required'),
-        features: yup.array().of(yup.string().trim().required('Feature is required').max(50, 'Feature must be 50 characters or fewer')).min(3, 'At least 3 features').max(5, 'At most 5 features'),
+        title: yup.string().trim().required(t('validation.packageTitleRequired')).max(60, t('validation.packageTitleMax')),
+        description: yup.string().trim().required(t('validation.packageDescriptionRequired')).max(220, t('validation.packageDescriptionMax')),
+        deliveryTime: yup.number().typeError(t('validation.deliveryTimeRequired')).required().min(1, t('validation.deliveryTimeMin')).max(1200, t('validation.deliveryTimeMax')),
+        revisions: yup.number().typeError(t('validation.revisionsRequired')).required().min(0, t('validation.revisionsMin')).max(20, t('validation.revisionsMax')),
+        price: yup.number().typeError(t('validation.priceRequired')).required().min(1, t('validation.priceMin')).max(100000, t('validation.priceMax')),
+        test: yup.boolean().required(t('validation.testRequired')),
+        features: yup.array().of(yup.string().trim().required(t('validation.featureRequired')).max(50, t('validation.featureMax'))).min(3, t('validation.featuresMin')).max(5, t('validation.featuresMax')),
       }),
     )
-    .min(1, 'At least one package is required'),
+    .min(1, t('validation.atLeastOnePackage')),
   // extraFastDelivery: yup.boolean(),
   // additionalRevision: yup.boolean(),
 });
 
-const step3Schema = yup.object({
-  faqs: yup.array()
-    .of(
-      yup.object({
-        question: yup.string().trim()
-          .required('Question is required')
-          .max(200, 'Question must be 200 characters or fewer'),
-        answer: yup.string().trim()
-          .required('Answer is required')
-          .max(1000, 'Answer must be 1000 characters or fewer'),
-      })
-    )
-    .max(12, 'You can add up to 12 questions only'),
-});
+const getStep3Schema = (t) =>
+  yup.object({
+    faqs: yup
+      .array()
+      .of(
+        yup.object({
+          question: yup
+            .string()
+            .trim()
+            .required(t('validation.faqQuestionRequired'))
+            .max(200, t('validation.faqQuestionMax')),
+          answer: yup
+            .string()
+            .trim()
+            .required(t('validation.faqAnswerRequired'))
+            .max(1000, t('validation.faqAnswerMax')),
+        })
+      )
+      .max(12, t('validation.faqsMax')),
+  });
 
 
-const step4Schema = yup.object({
-  questions: yup.array().of(
-    yup.object({
-      question: yup.string().trim().required('Question is required').max(200, 'Question must be 200 characters or fewer'),
-      requirementType: yup.string().oneOf(['text', 'multiple_choice', 'file']).required('Question type is required'),
-      isRequired: yup.boolean().default(false),
-      options: yup.array().when('requirementType', {
-        is: 'multiple_choice',
-        then: schema => schema
-          .of(
-            yup.string()
-              .trim()
-              .max(100, 'Option must be 100 characters or fewer')
-              .required('Option is required')
-          )
-          .min(1, 'At least one option is required for multiple choice')
-          .max(10, 'You can add up to 10 options only'),
-        otherwise: schema => schema.optional(),
-      }),
-    }),
-  ).max(12, 'You can add up to 12 questions only'),
-});
+
+const getStep4Schema = (t) =>
+  yup.object({
+    questions: yup
+      .array()
+      .of(
+        yup.object({
+          question: yup
+            .string()
+            .trim()
+            .required(t('validation.questionRequired'))
+            .max(200, t('validation.questionMax')),
+          requirementType: yup
+            .string()
+            .oneOf(['text', 'multiple_choice', 'file'])
+            .required(t('validation.requirementTypeRequired')),
+          isRequired: yup.boolean().default(false),
+          options: yup.array().when('requirementType', {
+            is: 'multiple_choice',
+            then: (schema) =>
+              schema
+                .of(
+                  yup
+                    .string()
+                    .trim()
+                    .max(100, t('validation.optionMax'))
+                    .required(t('validation.optionRequired'))
+                )
+                .min(1, t('validation.optionMin'))
+                .max(10, t('validation.optionMaxCount')),
+            otherwise: (schema) => schema.optional(),
+          }),
+        })
+      )
+      .max(12, t('validation.questionsMax')),
+  });
+
 
 
 const MAX_IMAGE_SIZE_MB = 5;   // example
@@ -321,11 +343,11 @@ const fileSchema = yup.object({
 });
 
 // Main schema
-const step5Schema = yup.object({
+const getStep5Schema = (t) => yup.object({
   images: yup.array()
     .of(fileSchema.test(
       'image-validation',
-      'Each file must be a valid image (JPEG, PNG, WEBP, etc.) and under 5MB in size.',
+      t('validation.imageInvalid'),
       file => {
         if (!file) return true;
 
@@ -336,13 +358,13 @@ const step5Schema = yup.object({
         return true;
       }
     ))
-    .min(1, 'You must upload at least 1 image')
-    .max(3, 'You can upload up to 3 images'),
+    .min(1, t('validation.imagesMin'))
+    .max(3, t('validation.imagesMax')),
 
   video: yup.array()
     .of(fileSchema.test(
       'video-validation',
-      'The video must be in a supported format (MP4, MOV, AVI, etc.) and under 50MB.',
+      t('validation.videoInvalid'),
       file => {
         if (!file) return true;
 
@@ -353,12 +375,12 @@ const step5Schema = yup.object({
         return true;
       }
     ))
-    .max(1, 'You can upload only 1 video'),
+    .max(1, t('validation.videoMax')),
 
   documents: yup.array()
     .of(fileSchema.test(
       'document-validation',
-      'Documents must be PDF, Word, PowerPoint, Excel, or TXT format and under 25MB.',
+      t('validation.documentInvalid'),
       file => {
         if (!file) return true;
 
@@ -366,10 +388,10 @@ const step5Schema = yup.object({
         if (file?.mimeType) return ALLOWED_PORTFOLIO_TYPES.includes(file.mimeType);
         if (file?.size) return file?.size <= MAX_PORTFOLIO_SIZE_MB * 1024 * 1024;
 
-        return truee;
+        return true;
       }
     ))
-    .max(2, 'You can upload up to 2 documents'),
+    .max(2, t('validation.documentsMax')),
 });
 
 export default function GigCreationWizard() {
@@ -401,21 +423,22 @@ export default function GigCreationWizard() {
     }
   };
 
+  const t = useTranslations('CreateGig');
   const gigSlug = searchParams.get('slug');
   const isEditMode = Boolean(gigSlug);
 
   // Base steps
   const steps = [
     {
-      label: 'Overview',
-      title: isEditMode ? 'Edit Your Gig' : 'Create Your Gig',   // ← updated
-      description: "Let's start by choosing a category for your service"
+      label: t('steps.overview'),
+      title: isEditMode ? t('stepTitles.editGig') : t('stepTitles.createGig'),
+      description: t('stepDescriptions.overview')
     },
-    { label: 'Pricing', title: 'Packages & Pricing', description: 'Set up your service packages and pricing options' },
-    { label: 'Description & FAQ', title: 'Frequently Asked Questions.', description: 'Provide the answer frequently asked questions.' },
-    { label: 'Requirements', title: 'Buyer Requirements', description: 'Specify what information you need from buyers to get started' },
-    { label: 'Gallery', title: 'Gallery & Media', description: 'Showcase your previous work to attract new buyers.' },
-    { label: 'Publish', title: 'Publish', description: 'Finalize and publish your project.' },
+    { label: t('steps.pricing'), title: t('stepTitles.packagesPricing'), description: t('stepDescriptions.pricing') },
+    { label: t('steps.descriptionFaq'), title: t('stepTitles.faq'), description: t('stepDescriptions.faq') },
+    { label: t('steps.requirements'), title: t('stepTitles.buyerRequirements'), description: t('stepDescriptions.requirements') },
+    { label: t('steps.gallery'), title: t('stepTitles.galleryMedia'), description: t('stepDescriptions.gallery') },
+    { label: t('steps.publish'), title: t('stepTitles.publishTitle'), description: t('stepDescriptions.publish') },
   ];
 
 
@@ -463,6 +486,7 @@ const Field = ({ title, desc, required, error, hint, className = '', children })
 
 // ---------- Step 1 (refreshed UI) ----------
 function Step1({ formData, setFormData, nextStep }) {
+  const t = useTranslations('CreateGig.step1');
   const {
     register,
     handleSubmit,
@@ -474,7 +498,7 @@ function Step1({ formData, setFormData, nextStep }) {
     reset,
     control,
   } = useForm({
-    resolver: yupResolver(step1Schema),
+    resolver: yupResolver(getStep1Schema(t)),
     defaultValues: {
       title: formData.title || '',
       brief: formData.brief || '',
@@ -539,35 +563,35 @@ function Step1({ formData, setFormData, nextStep }) {
       {/* Header */}
       <div className='mb-8 flex items-start justify-between gap-6'>
         <div>
-          <h2 className='text-2xl font-semibold text-slate-900'>Basic Details</h2>
-          <p className='mt-1 text-sm text-slate-500'>Set a compelling foundation for your gig.</p>
+          <h2 className='text-2xl font-semibold text-slate-900'>{t('title')}</h2>
+          <p className='mt-1 text-sm text-slate-500'>{t('subtitle')}</p>
         </div>
       </div>
 
       <div className='mx-auto max-w-5xl space-y-8'>
         {/* Gig Title */}
-        <Field title='Gig title' desc='Clear, searchable, and specific. Include your main keyword.' required error={errors?.title?.message} hint={`${titleVal.length}/80`}>
+        <Field title={t('gigTitle')} desc={t('gigTitleDesc')} required error={errors?.title?.message} hint={`${titleVal.length}/80`}>
           <Textarea placeholder='e.g., I will design a responsive landing page in Next.js' {...register('title')} rows={2} className='resize-none' maxLength={80} />
         </Field>
 
         {/* Gig Brief */}
-        <Field className='pt-8 border-t border-slate-200' title='Gig brief' desc='Short value proposition. What problem do you solve and how?' required error={errors?.brief?.message} hint={`${briefVal.length}/300`}>
+        <Field className='pt-8 border-t border-slate-200' title={t('gigBrief')} desc={t('gigBriefDesc')} required error={errors?.brief?.message} hint={`${briefVal.length}/300`}>
           <Textarea placeholder='Briefly describe the outcome, approach, and what sets you apart.' {...register('brief')} rows={4} className='resize-y' maxLength={300} />
         </Field>
 
         {/* Category / Subcategory */}
-        <Field className='pt-8 border-t border-slate-200' title='Category' desc='Pick the most accurate category and subcategory.' required error={errors?.category?.message || errors?.subcategory?.message}>
+        <Field className='pt-8 border-t border-slate-200' title={t('category')} desc={t('categoryDesc')} required >
           <div className='grid gap-4 md:grid-cols-2'>
             <div className='mb-4'>
               <Controller name='categoryId' control={control} render={({ field }) => (
-                <CategorySelect type='category' label='Category' value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder='Select a category' />
+                <CategorySelect type='category' label={t('category')} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder='Select a category' />
               )} />
             </div>
 
             <div className='mb-4'>
               <Controller name='subcategoryId' control={control} render={({ field }) =>
               (
-                <CategorySelect type='subcategory' parentId={watch('category')?.id} label='SubCategory' value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? 'Select a subcategory' : 'Select a category first'} />
+                <CategorySelect type='subcategory' parentId={watch('category')?.id} label={t('subcategory')} value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? 'Select a subcategory' : 'Select a category first'} />
               )} />
             </div>
 
@@ -577,11 +601,11 @@ function Step1({ formData, setFormData, nextStep }) {
         </Field>
 
         {/* Tags */}
-        <Field className='pt-8 border-t border-slate-200' title='Search tags' desc='Use up to 5 tags that buyers would actually search.' error={errors?.tags?.message} hint='Letters and numbers only.'>
+        <Field className='pt-8 border-t border-slate-200' title={t('searchTags')} desc={t('searchTagsDesc')} hint={t('tagsHint')}>
           <div>
             <InputList onChange={handleInputListChange} onRemoveItemHandler={handleRemoveInputList} label='Enter tags' value={formData.tags} setValue={setValue} getValues={getValues} fieldName='tags' placeholder='Add a tag and press Enter' errors={errors} validationMessage={errors?.tags?.message} maxItems={5} />
             <div className='mt-2 flex items-center justify-between text-xs text-slate-500'>
-              <span>Max 5 tags.</span>
+              <span>{t('maxTags')}</span>
               <span>{(formData.tags || []).length}/5</span>
             </div>
           </div>
@@ -590,15 +614,15 @@ function Step1({ formData, setFormData, nextStep }) {
 
       {/* Footer */}
       <div className='mt-10 flex justify-end'>
-        <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8' />
+        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8' />
       </div>
     </form>
   );
 }
 
-const LABELS = ['Basic', 'Standard', 'Premium'];
 const TYPES = ['basic', 'standard', 'premium'];
 function Step2({ formData, setFormData, nextStep, prevStep }) {
+  const t = useTranslations('CreateGig.step2');
   const {
     register,
     handleSubmit,
@@ -610,10 +634,12 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
     getValues,
     reset,
   } = useForm({
-    resolver: yupResolver(step2Schema),
+    resolver: yupResolver(getStep2Schema(t)),
     mode: 'onChange',
     defaultValues: normalizeDefaults(formData),
   });
+
+  const LABELS = [t('packageTypes.basic'), t('packageTypes.standard'), t('packageTypes.premium')];
 
   // Field arrays for features per package
   const fa0 = useFieldArray({ control, name: 'packages.0.features' });
@@ -639,13 +665,13 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
       <div className='rounded-xl overflow-hidden border border-slate-200'>
         {/* Sticky header */}
         <div className='sticky top-0 z-[1] grid grid-cols-1 border-b border-slate-200 bg-white/80 backdrop-blur sm:grid-cols-4'>
-          <div className='px-4 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500'>Field</div>
+          <div className='px-4 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500'>{t('field')}</div>
           {LABELS.map((label, idx) => (
             <div key={label} className='border-l border-l-slate-200 px-4 py-4'>
               <div className='flex items-center justify-between'>
                 <span className='text-base font-semibold text-slate-900'>{label}</span>
                 {/* Show per-column summary error indicator */}
-                {pkgErrors?.[idx] && <span className='rounded-md bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700'>Check errors</span>}
+                {pkgErrors?.[idx] && <span className='rounded-md bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700'>{t('checkErrors')}</span>}
               </div>
             </div>
           ))}
@@ -654,47 +680,47 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
         {/* Rows */}
         <div className='grid grid-cols-1 sm:grid-cols-4'>
           {/* Title */}
-          <FieldLabel>Title</FieldLabel>
+          <FieldLabel>{t('title')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`title-${i}`}>
-              <Input placeholder='e.g., Basic Logo' {...register(`packages.${i}.title`)} error={pkgErrors?.[i]?.title?.message} />
+              <Input placeholder={t('placeholders.title')} {...register(`packages.${i}.title`)} error={pkgErrors?.[i]?.title?.message} />
             </Cell>
           ))}
 
           {/* Description */}
-          <FieldLabel>Description</FieldLabel>
+          <FieldLabel>{t('description')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`desc-${i}`}>
-              <Textarea rows={3} placeholder='Short description (what’s included?)' {...register(`packages.${i}.description`)} error={pkgErrors?.[i]?.description?.message} />
+              <Textarea rows={3} placeholder={t('placeholders.description')} {...register(`packages.${i}.description`)} error={pkgErrors?.[i]?.description?.message} />
             </Cell>
           ))}
 
           {/* Delivery Time */}
-          <FieldLabel>Delivery Time (days)</FieldLabel>
+          <FieldLabel>{t('deliveryTime')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`delivery-${i}`}>
-              <Input type='number' min={1} step={1} placeholder='3' {...register(`packages.${i}.deliveryTime`, { valueAsNumber: true })} error={pkgErrors?.[i]?.deliveryTime?.message} />
+              <Input type='number' min={1} step={1} placeholder={t('placeholders.deliveryTime')} {...register(`packages.${i}.deliveryTime`, { valueAsNumber: true })} error={pkgErrors?.[i]?.deliveryTime?.message} />
             </Cell>
           ))}
 
           {/* Revisions */}
-          <FieldLabel>Revisions</FieldLabel>
+          <FieldLabel>{t('revisions')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`revisions-${i}`}>
-              <Input type='number' min={0} step={1} placeholder='1' {...register(`packages.${i}.revisions`, { valueAsNumber: true })} error={pkgErrors?.[i]?.revisions?.message} />
+              <Input type='number' min={0} step={1} placeholder={t('placeholders.revisions')} {...register(`packages.${i}.revisions`, { valueAsNumber: true })} error={pkgErrors?.[i]?.revisions?.message} />
             </Cell>
           ))}
 
           {/* Price */}
-          <FieldLabel>Price ($)</FieldLabel>
+          <FieldLabel>{t('price')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`price-${i}`}>
-              <Input type='number' min={0} step={1} placeholder='50' {...register(`packages.${i}.price`, { valueAsNumber: true })} error={pkgErrors?.[i]?.price?.message} />
+              <Input type='number' min={0} step={1} placeholder={t('placeholders.price')} {...register(`packages.${i}.price`, { valueAsNumber: true })} error={pkgErrors?.[i]?.price?.message} />
             </Cell>
           ))}
 
           {/* Test (boolean) */}
-          <FieldLabel>Test (flag)</FieldLabel>
+          <FieldLabel>{t('test')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`test-${i}`} className='flex items-center'>
               <AnimatedCheckbox
@@ -709,7 +735,7 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
           ))}
 
           {/* Features editor */}
-          <FieldLabel>Features (3–5)</FieldLabel>
+          <FieldLabel>{t('features')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`features-${i}`}>
               <FeaturesEditor idx={i} fieldArray={fieldArrays[i]} register={register} errors={pkgErrors?.[i]?.features} />
@@ -739,8 +765,8 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
 
       {/* Footer actions */}
       <div className='flex justify-end gap-2 pt-4'>
-        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button type='button' onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8' />
+        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
+        <Button type='button' onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8' />
       </div>
     </form>
   );
@@ -770,6 +796,7 @@ function ColRight({ children }) {
 
 /* ---------------------------- Features Editor ----------------------------- */
 function FeaturesEditor({ idx, fieldArray, register, errors }) {
+  const t = useTranslations('CreateGig.step2');
   const { fields, append, remove } = fieldArray;
 
   const canAdd = fields.length < 5;
@@ -780,7 +807,7 @@ function FeaturesEditor({ idx, fieldArray, register, errors }) {
       <div className='space-y-2'>
         {fields.map((f, i) => (
           <div key={f.id} className=' relative flex items-start gap-2'>
-            <Input placeholder={`Feature ${i + 1}`} {...register(`packages.${idx}.features.${i}`)} error={errors?.[i]?.message} className='flex-1  ' onAction={() => remove(i)} actionIcon={'/icons/minus.svg'} />
+            <Input placeholder={t('placeholders.feature', { number: i + 1 })} {...register(`packages.${idx}.features.${i}`)} error={errors?.[i]?.message} className='flex-1  ' onAction={() => remove(i)} actionIcon={'/icons/minus.svg'} />
             {/* <Button className=" absolute top-1/2 rtl:left-2 ltr:right-2 -translate-y-1/2 !w-fit !px-2 " color='outline'  disabled={!canRemove} onClick={() => remove(i)} icon={<Minus className='h-4 !w-4' />}  aria-label='Remove feature'   /> */}
           </div>
         ))}
@@ -788,7 +815,7 @@ function FeaturesEditor({ idx, fieldArray, register, errors }) {
 
       <div className='mt-2 flex-col flex gap-2 '>
         {typeof errors?.message === 'string' && <span className='ml-2 text-xs text-rose-600'>{errors?.message}</span>}
-        <Button type='button' color='outline' disabled={!canAdd} onClick={() => append('')} icon={<Plus className='h-4 w-4' />} name='Add feature' className='!w-fit' />
+        <Button type='button' color='outline' disabled={!canAdd} onClick={() => append('')} icon={<Plus className='h-4 w-4' />} name={t('addFeature')} className='!w-fit' />
       </div>
     </div>
   );
@@ -862,6 +889,7 @@ const PRESET_FAQS = [
 ];
 
 function Step3({ formData, setFormData, nextStep, prevStep }) {
+  const t = useTranslations('CreateGig.step3');
   const {
     handleSubmit,
     formState: { errors },
@@ -869,7 +897,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
     watch,
     trigger,
   } = useForm({
-    resolver: yupResolver(step3Schema),
+    resolver: yupResolver(getStep3Schema(t)),
     defaultValues: {
       faqs: formData.faqs || [],
     },
@@ -975,21 +1003,21 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
       <section className='rounded-xl border border-slate-200 bg-white/60 backdrop-blur-sm shadow-sm'>
         <div className='flex flex-col gap-3 border-b border-slate-200 px-4 py-3 md:flex-row md:items-center md:justify-between'>
           <div className='flex items-center gap-2'>
-            <h3 className='text-base font-semibold text-slate-900'>FAQs</h3>
+            <h3 className='text-base font-semibold text-slate-900'>{t('faqs')}</h3>
             <span className='ml-2 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-600'>
               {faqs.length}/{MAX_FAQS}
             </span>
           </div>
           <div className='relative'>
             <Search className='pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder='Search FAQs…' className='w-56 rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30' />
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder={t('searchPlaceholder')} className='w-56 rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30' />
           </div>
         </div>
 
         {/* FAQ list */}
         <ul className='divide-y divide-slate-200'>
           {filteredFaqs.length === 0 ? (
-            <li className='p-4 text-sm text-slate-500'>No FAQs yet. Add one below or pick from presets.</li>
+            <li className='p-4 text-sm text-slate-500'>{t('noFaqs')}</li>
           ) : (
             filteredFaqs.map((faq, idx) => {
               const realIndex = faqs.findIndex(f => f.question === faq.question && f.answer === faq.answer);
@@ -1042,10 +1070,10 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
 
         {/* Add new + presets */}
         <div className='border-t border-slate-200 p-4'>
-          <div className='mb-3 text-sm font-medium text-slate-700'>Add New FAQ</div>
+          <div className='mb-3 text-sm font-medium text-slate-700'>{t('addNewFaq')}</div>
           <div className='grid gap-3 md:grid-cols-2'>
-            <input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} placeholder='Question' className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
-            <textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} placeholder='Answer' rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
+            <input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} placeholder={t('question')} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
+            <textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} placeholder={t('answer')} rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
           </div>
           <FormErrorMessage message={firstFaqError} />
 
@@ -1058,15 +1086,15 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
               ))}
             </div>
 
-            <Button name={'Add FAQ'} disabled={!newFaq.question.trim() || !newFaq.answer.trim() || faqs.length >= MAX_FAQS} icon={<Plus className='h-4 w-4' />} onClick={addFaq} className='!w-fit !px-4' />
+            <Button name={t('addFaq')} disabled={!newFaq.question.trim() || !newFaq.answer.trim() || faqs.length >= MAX_FAQS} icon={<Plus className='h-4 w-4' />} onClick={addFaq} className='!w-fit !px-4' />
           </div>
         </div>
       </section>
 
       {/* Navigation Buttons */}
       <div className='flex justify-end gap-2 pt-2'>
-        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button name={'Continue'} onClick={handleSubmit(onSubmit)} className='!w-fit !px-4' />
+        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
+        <Button name={t('continue')} onClick={handleSubmit(onSubmit)} className='!w-fit !px-4' />
       </div>
     </form>
   );
@@ -1074,6 +1102,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
 
 const MAX_QUES = 12;
 function Step4({ formData, setFormData, nextStep, prevStep }) {
+  const t = useTranslations('CreateGig.step4');
   const {
     register,
     handleSubmit,
@@ -1082,7 +1111,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
     watch,
     trigger,
   } = useForm({
-    resolver: yupResolver(step4Schema),
+    resolver: yupResolver(getStep4Schema(t)),
     defaultValues: {
       questions: formData?.questions || [],
     },
@@ -1166,12 +1195,12 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
       <div className='rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm'>
         <div className='flex items-center justify-between px-5 py-4 border-b border-slate-100'>
           <div className='flex items-center gap-2'>
-            <h3 className='text-base font-semibold text-slate-900'>Questions</h3>
+            <h3 className='text-base font-semibold text-slate-900'>{t('questions')}</h3>
             <span className='ml-2 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-600'>
               {questions.length}/{MAX_QUES}
             </span>
           </div>
-          <div className='text-xs text-slate-500'>Drag-free • Minimal • Clean</div>
+          <div className='text-xs text-slate-500'>{t('dragFree')}</div>
         </div>
 
         <div className='p-5 space-y-4'>
@@ -1180,8 +1209,8 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
               <div className='mx-auto mb-2 h-10 w-10 rounded-full bg-white shadow-sm grid place-items-center'>
                 <HelpCircle className='w-5 h-5 text-slate-500' />
               </div>
-              <p className='text-slate-700 font-medium'>No questions yet</p>
-              <p className='text-sm text-slate-500'>Start by adding a question below — text, multiple choice, or file upload.</p>
+              <p className='text-slate-700 font-medium'>{t('noQuestions')}</p>
+              <p className='text-sm text-slate-500'>{t('noQuestionsDesc')}</p>
             </div>
           )}
 
@@ -1193,12 +1222,12 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
 
                   <div className='mt-2 flex flex-wrap items-center gap-2 text-xs'>
                     <span className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700'>{q.requirementType?.replace('_', ' ') || 'text'}</span>
-                    <span className={q.isRequired ? 'inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-rose-700' : 'inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600'}>{q.isRequired ? 'Required' : 'Optional'}</span>
+                    <span className={q.isRequired ? 'inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-rose-700' : 'inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600'}>{q.isRequired ? t('required') : t('optional')}</span>
                   </div>
 
                   {q.requirementType === 'multiple_choice' && Array.isArray(q.options) && q.options.length > 0 && (
                     <div className='mt-3'>
-                      <p className='text-xs font-medium text-slate-600 mb-1'>Options</p>
+                      <p className='text-xs font-medium text-slate-600 mb-1'>{t('options')}</p>
                       <div className='flex flex-wrap gap-2'>
                         {q.options.map((opt, i) => (
                           <span key={i} className='inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[12px] text-slate-700'>
@@ -1225,27 +1254,27 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
       {/* Add new question */}
       <div className='rounded-2xl border border-emerald-200 bg-white shadow-[0_1px_0_0_rgba(16,138,0,0.08)]'>
         <div className='px-5 py-4 border-b border-emerald-100 flex items-center justify-between'>
-          <h4 className='font-semibold text-emerald-900'>Add New Question</h4>
-          <div className='text-xs text-emerald-700/70'>Text • Multiple Choice • File</div>
+          <h4 className='font-semibold text-emerald-900'>{t('addNewQuestion')}</h4>
+          <div className='text-xs text-emerald-700/70'>{t('textMultipleFile')}</div>
         </div>
 
         <div className='p-5'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             <div className='md:col-span-2'>
-              <Input label='Question' placeholder='write a question' value={newQuestion.question} onChange={e => setNewQuestion({ ...newQuestion, question: e.target.value })} error={errors?.newQuestion?.question?.message} />
+              <Input label={t('questionLabel')} placeholder={t('questionPlaceholder')} value={newQuestion.question} onChange={e => setNewQuestion({ ...newQuestion, question: e.target.value })} error={errors?.newQuestion?.question?.message} />
             </div>
 
             <div>
               <Select
                 options={[
-                  { id: 'text', name: 'Text Input' },
-                  { id: 'multiple_choice', name: 'Multiple Choice' },
-                  { id: 'file', name: 'File Upload' },
+                  { id: 'text', name: t('textInput') },
+                  { id: 'multiple_choice', name: t('multipleChoice') },
+                  { id: 'file', name: t('fileUpload') },
                 ]}
                 value={newQuestion.requirementType}
                 onChange={opt => setNewQuestion({ ...newQuestion, requirementType: opt.id })}
-                label='Type'
-                placeholder='Select type'
+                label={t('type')}
+                placeholder={t('selectType')}
                 className='w-full'
               />
             </div>
@@ -1253,16 +1282,16 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
 
           <div className='mt-4 flex items-center gap-3'>
             <AnimatedCheckbox checked={newQuestion.isRequired} onChange={v => setNewQuestion({ ...newQuestion, isRequired: v })} />
-            <label className='text-sm text-slate-700'>Required</label>
+            <label className='text-sm text-slate-700'>{t('required')}</label>
           </div>
 
           {newQuestion.requirementType === 'multiple_choice' && (
             <div className='mt-5 rounded-xl border border-slate-200 bg-slate-50/50 p-4'>
-              <label className='block text-sm font-medium text-slate-700 mb-2'>Options</label>
+              <label className='block text-sm font-medium text-slate-700 mb-2'>{t('optionsLabel')}</label>
 
               <div className='flex items-center gap-2'>
                 <Input
-                  placeholder='Type an option and press Add'
+                  placeholder={t('optionsPlaceholder')}
                   onKeyDown={e => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -1299,20 +1328,20 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
                 ))}
               </div>
 
-              {newQuestion.requirementType === 'multiple_choice' && newQuestion.options.length === 0 && <p className='mt-2 text-[13px] text-rose-600'> At least one option is required for multiple choice</p>}
+              {newQuestion.requirementType === 'multiple_choice' && newQuestion.options.length === 0 && <p className='mt-2 text-[13px] text-rose-600'>{t('atLeastOneOption')}</p>}
             </div>
           )}
 
           <div className='mt-6 flex justify-end'>
-            <Button type='button' name='Add Question' color='green' disabled={!newQuestion.question || (newQuestion.requirementType === 'multiple_choice' && newQuestion.options.length < 1)} onClick={addQuestion} className='!w-fit !px-6 rounded-xl shadow-[0_6px_20px_-6px_rgba(16,138,0,0.45)] data-[disabled=true]:opacity-60' />
+            <Button type='button' name={t('addQuestion')} color='green' disabled={!newQuestion.question || (newQuestion.requirementType === 'multiple_choice' && newQuestion.options.length < 1)} onClick={addQuestion} className='!w-fit !px-6 rounded-xl shadow-[0_6px_20px_-6px_rgba(16,138,0,0.45)] data-[disabled=true]:opacity-60' />
           </div>
         </div>
       </div>
 
       {/* Navigation */}
       <div className='flex justify-end gap-2 pt-4'>
-        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8 py-2 rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 shadow-[0_8px_24px_-8px_rgba(16,138,0,0.55)]' />
+        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
+        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8 py-2 rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 shadow-[0_8px_24px_-8px_rgba(16,138,0,0.55)]' />
       </div>
     </form>
   );
@@ -1346,6 +1375,7 @@ const getFirstFileError = (errors, type) => {
 
 
 function Step5({ formData, setFormData, nextStep, prevStep }) {
+  const t = useTranslations('CreateGig.step5');
   const {
     register,
     handleSubmit,
@@ -1355,7 +1385,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     trigger,
     reset,
   } = useForm({
-    resolver: yupResolver(step5Schema),
+    resolver: yupResolver(getStep5Schema(t)),
     defaultValues: {
       images: formData?.images || [],
       video: formData?.video || [],
@@ -1407,7 +1437,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       <div>
 
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Images (up to 3)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('images')} desc={t('imagesDesc')}>
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.images?.map((e, i) => (
               <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
@@ -1425,7 +1455,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-              <div className=''><span className='text-[#108A00] font-[500]'>Browse</span> Images</div>
+              <div className=''><span className='text-[#108A00] font-[500]'>{t('browseImages')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} />
             </div>
           </div>
@@ -1435,7 +1465,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
 
       <div>
 
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Video (One Only)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('video')} desc={t('videoDesc')}>
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.video?.map((e, i) => (
               <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
@@ -1453,7 +1483,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-              <div className=''><span className='text-[#108A00] font-[500]'>Browse</span> video</div>
+              <div className=''><span className='text-[#108A00] font-[500]'>{t('browseVideo')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} />
             </div>
           </div>
@@ -1462,7 +1492,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
       </div>
 
       <div>
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={'Document (up to 2)'} desc={'Get noticed by the right buyers with visual examples of your services.'}>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('document')} desc={t('documentDesc')}>
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.documents?.map((e, i) => (
               <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
@@ -1480,7 +1510,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-              <div className=''><span className='text-[#108A00] font-[500]'>Browse</span> documents</div>
+              <div className=''><span className='text-[#108A00] font-[500]'>{t('browseDocuments')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} />
             </div>
           </div>
@@ -1489,17 +1519,19 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
       </div>
 
       <div className='flex justify-end gap-2 pt-6'>
-        <Button type='button' name='Back' color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button onClick={handleSubmit(onSubmit)} name='Continue' color='green' className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors' />
+        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
+        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors' />
       </div>
     </form>
   );
 }
 
 function Step6({ formData, handleSubmit, prevStep, loading }) {
+  const t = useTranslations('CreateGig.step6');
   const searchParams = useSearchParams();
   const gigSlug = searchParams.get('slug'); // check if gigSlug exists
-
+  const locale = useLocale()
+  const isArabic = locale === 'ar';
   const isUpdate = Boolean(gigSlug); // true if updating
 
   return (
@@ -1508,25 +1540,26 @@ function Step6({ formData, handleSubmit, prevStep, loading }) {
         <div className='w-[200px] h-fit bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
           <img src='/icons/congratlation.png' alt='' className='w-[300px]' />
         </div>
-        <h1 className='text-3xl font-bold text-gray-900 mb-2'>Congratulations!</h1>
-        <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{isUpdate ? "You're almost done updating your Gig." : 'You’re almost done with your first Gig.'}</p>
+        <h1 className='text-3xl font-bold text-gray-900 mb-2'>{t('congratulations')}</h1>
+        <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{isUpdate ? t('almostDoneUpdate') : t('almostDoneCreate')}</p>
         {!isUpdate && (
           <>
-            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>Before you start selling on UpPhoto, there is one last thing we need you to do: The security of your account is important to us. Therefore, we require all our sellers to verify their phone number before we can publish their first Gig.</p>
-            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>Your phone number remains private and is not used for marketing purposes. See more in our Privacy Policy.</p>
+            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{t('phoneVerification')}</p>
+            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{t('phonePrivacy')}</p>
           </>
         )}
       </div>
 
       <div className='flex flex-col xs:flex-row justify-center gap-4 pt-4'>
-        <Button type='button' icon={<ChevronLeft />} name='Back to Edit' color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
-        <Button type='button' name={isUpdate ? 'Update Gig' : 'Publish Gig'} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
+        <Button type='button' icon={isArabic ? <ChevronRight className='ltr:scale-x-[-1]' /> : <ChevronLeft className='ltr:scale-x-[-1]' />} name={t('backToEdit')} color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
+        <Button type='button' name={isUpdate ? t('updateGig') : t('publishGig')} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
       </div>
     </div>
   );
 }
 
 function SkeletonLoading() {
+  const t = useTranslations('CreateGig.loading');
   return (
     <div className='flex flex-col items-center justify-center py-20 space-y-8 relative animate-pulse'>
       <div className='absolute w-full h-full inset-0 bg-gray-100 rounded-lg z-[-1]'></div>
@@ -1538,8 +1571,8 @@ function SkeletonLoading() {
 
       {/* Loading text with smooth fading animation */}
       <div className='text-center space-y-4'>
-        <p className='text-xl font-semibold text-green-800'>Loading your gig creator</p>
-        <p className='text-sm text-green-600 animate-pulse'>Getting everything ready for you...</p>
+        <p className='text-xl font-semibold text-green-800'>{t('loadingGigCreator')}</p>
+        <p className='text-sm text-green-600 animate-pulse'>{t('gettingReady')}</p>
       </div>
 
       {/* Progress dots with a pulsating effect and subtle delay */}

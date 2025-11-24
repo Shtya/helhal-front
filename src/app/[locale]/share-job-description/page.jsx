@@ -25,93 +25,95 @@ import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 const MIN_SKILL_LENGTH = 2;
 const MAX_SKILL_LENGTH = 50;
 const MAX_SKILLS = 15;
-const jobValidationSchema = yup.object({
-  title: yup
-    .string()
-    .trim()
-    .required('Title is required')
-    .min(5, 'Title must be at least 5 characters')
-    .max(100, 'Title must be at most 100 characters'),
 
-  description: yup
-    .string()
-    .trim()
-    .required('Description is required')
-    .min(12, 'Description must be at least 12 characters')
-    .max(15000, 'Description must be at most 15,000 characters'),
+function createJobValidationSchema(t) {
+  return yup.object({
+    title: yup
+      .string()
+      .trim()
+      .required(t('validation.titleRequired'))
+      .min(5, t('validation.titleMin'))
+      .max(100, t('validation.titleMax')),
 
-  categoryId: yup
-    .string()
-    .required('Category is required'),
+    description: yup
+      .string()
+      .trim()
+      .required(t('validation.descriptionRequired'))
+      .min(12, t('validation.descriptionMin'))
+      .max(15000, t('validation.descriptionMax')),
 
-  subcategoryId: yup
-    .string().optional().nullable(),
+    categoryId: yup
+      .string()
+      .required(t('validation.categoryRequired')),
 
-  skillsRequired: yup
-    .array()
-    .of(
-      yup
-        .string()
-        .min(MIN_SKILL_LENGTH, `Each skill  must be at least ${MIN_SKILL_LENGTH} characters`)
-        .max(MAX_SKILL_LENGTH, `Each skill must be at most ${MAX_SKILL_LENGTH} characters`)
-    )
-    .min(1, 'At least one skill is required')
-    .max(MAX_SKILLS, `You can add up to ${MAX_SKILLS} skills`)
-    .required('Skills are required'),
+    subcategoryId: yup
+      .string().optional().nullable(),
+
+    skillsRequired: yup
+      .array()
+      .of(
+        yup
+          .string()
+          .min(MIN_SKILL_LENGTH, t('validation.skillMin', { min: MIN_SKILL_LENGTH }))
+          .max(MAX_SKILL_LENGTH, t('validation.skillMax', { max: MAX_SKILL_LENGTH }))
+      )
+      .min(1, t('validation.skillsMin'))
+      .max(MAX_SKILLS, t('validation.skillsMax', { max: MAX_SKILLS }))
+      .required(t('validation.skillsRequired')),
 
 
-  attachments: yup
-    .array()
-    .of(
-      yup.object({
-        id: yup.string().required(),
-        filename: yup.string().required(),
-        mimeType: yup.string().required(),
-        size: yup.number().required(),
-        type: yup.string().required(),
-        url: yup.string().required(),
-      })
-    ).max(10, 'You can upload up to 10 attachments'),
+    attachments: yup
+      .array()
+      .of(
+        yup.object({
+          id: yup.string().required(),
+          filename: yup.string().required(),
+          mimeType: yup.string().required(),
+          size: yup.number().required(),
+          type: yup.string().required(),
+          url: yup.string().required(),
+        })
+      ).max(10, t('validation.attachmentsMax')),
 
-  additionalInfo: yup
-    .string()
-    .trim()
-    .nullable()
-    .max(5000, 'Additional info must be at most 5,000 characters'),
+    additionalInfo: yup
+      .string()
+      .trim()
+      .nullable()
+      .max(5000, t('validation.additionalInfoMax')),
 
-  budget: yup
-    .number()
-    .min(1, 'Budget must be at least 1')
+    budget: yup
+      .number()
+      .min(1, t('validation.budgetMin'))
+      .max(100000, t('validation.budgetMax'))
+      .typeError(t('validation.budgetRequired')),
 
-    .max(100000, 'Budget must not exceed 100,000')
-    .typeError('Budget is required'),
+    budgetType: yup
+      .string()
+      .oneOf(['fixed', 'hourly'], t('validation.budgetTypeInvalid'))
+      .required(t('validation.budgetTypeRequired')),
 
-  budgetType: yup
-    .string()
-    .oneOf(['fixed', 'hourly'], 'Budget type must be fixed or hourly')
-    .required('Budget type is required'),
+    preferredDeliveryDays: yup
+      .number()
+      .min(1, t('validation.deliveryMin'))
+      .max(1200, t('validation.deliveryMax'))
+      .typeError(t('validation.deliveryRequired')),
 
-  preferredDeliveryDays: yup
-    .number()
-    .min(1, 'Minimum 1 day')
-    .max(1200, 'Maximum delivery time is 1200 days')
-    .typeError('Preferred Delivery Days is required'),
-
-  // status: yup
-  //   .string()
-  //   .oneOf(['draft', 'published']),
-});
+    // status: yup
+    //   .string()
+    //   .oneOf(['draft', 'published']),
+  });
+}
 
 
 export default function CreateJobPage() {
-  const t = useTranslations('createProject');
+  const t = useTranslations('CreateJob');
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const steps = [
-    { key: 'step1', label: 'Project Details' },
-    { key: 'step2', label: 'Budget & Delivery' },
-    { key: 'step3', label: 'Review & Submit' },
+    { key: 'step1', label: t('steps.step1') },
+    { key: 'step2', label: t('steps.step2') },
+    { key: 'step3', label: t('steps.step3') },
   ];
 
 
@@ -131,7 +133,7 @@ export default function CreateJobPage() {
     getValues,
     reset,
   } = useForm({
-    resolver: yupResolver(jobValidationSchema),
+    resolver: yupResolver(createJobValidationSchema(t)),
     defaultValues: {
       title: '',
       description: '',
@@ -285,7 +287,7 @@ export default function CreateJobPage() {
       const result = await toast.promise(
         req(),
         {
-          loading: action === 'create' ? 'Creating your job…' : 'Updating your job',
+          loading: action === 'create' ? t('toast.creating') : t('toast.updating'),
           success: res => {
             // Decide message based on actual backend status
             const status = String(res?.status || '').toLowerCase();
@@ -298,26 +300,26 @@ export default function CreateJobPage() {
             if (!existingJobId) {
               // CREATE
               if (status === 'published') {
-                return 'Your job is live 🎉 Sellers can apply now.';
+                return t('toast.jobLive');
               }
               if (status === 'draft') {
-                return 'Submitted for review ✅ An admin will approve it soon.';
+                return t('toast.submittedForReview');
               }
-              return 'Job created ✅';
+              return t('toast.jobCreated');
             } else {
               // UPDATE
               if (status === 'published') {
-                return 'Job published ✅ It’s now visible to sellers.';
+                return t('toast.jobPublished');
               }
               if (status === 'draft') {
-                return 'Draft updated 💾';
+                return t('toast.draftUpdated');
               }
-              return 'Job updated ✅';
+              return t('toast.jobUpdated');
             }
           },
           error: err => {
-            const msg = err?.response?.data?.message || err?.message || 'Something went wrong';
-            return `Failed: ${msg}`;
+            const msg = err?.response?.data?.message || err?.message || t('toast.somethingWentWrong');
+            return t('toast.failed', { message: msg });
           },
         },
         { success: { duration: 4000 }, error: { duration: 5000 } },
@@ -353,8 +355,8 @@ export default function CreateJobPage() {
   };
 
   const budgetTypeOptions = [
-    { id: 'fixed', name: 'Fixed Price' },
-    { id: 'hourly', name: 'Hourly Rate' },
+    { id: 'fixed', name: t('form.budgetTypeFixed') },
+    { id: 'hourly', name: t('form.budgetTypeHourly') },
   ];
 
   return (
@@ -363,7 +365,7 @@ export default function CreateJobPage() {
 
 
       <div className='mt-6 mb-8 max-lg:hidden' data-aos='fade-down'>
-        <StepBreadcrumbs items={steps} activeIndex={currentStep} onItemClick={handleToStep} onReset={handleReset} resetLabel={t('crumb.reset')} />
+        <StepBreadcrumbs items={steps} activeIndex={currentStep} onItemClick={handleToStep} onReset={handleReset} resetLabel={t('reset')} />
       </div>
 
       <div className='grid grid-cols-1 duration-300 lg:grid-cols-[450_1fr] xl:grid-cols-[590px_1fr] xl:gap-6 gap-6 mb-18 mt-12'>
@@ -381,7 +383,7 @@ export default function CreateJobPage() {
   );
 }
 
-function StepBreadcrumbs({ items = [], activeIndex = 1, onItemClick, onReset, resetLabel = 'Reset', className = '', accentClass = 'text-emerald-600' }) {
+function StepBreadcrumbs({ items = [], activeIndex = 1, onItemClick, onReset, resetLabel, className = '', accentClass = 'text-emerald-600' }) {
   const [revealedCount, setRevealedCount] = useState(Math.max(1, activeIndex + 1));
 
   useEffect(() => {
@@ -432,18 +434,19 @@ function StepBreadcrumbs({ items = [], activeIndex = 1, onItemClick, onReset, re
 }
 
 function HeroCard({ currentStep, className = '' }) {
+  const t = useTranslations('CreateJob.hero');
   const stepContent = [
     {
-      title: 'Let the matching begin..',
-      subtitle: 'This is where you fill us in on the big picture.',
+      title: t('step1Title'),
+      subtitle: t('step1Subtitle'),
     },
     {
-      title: "Now let's talk budget and timing",
-      subtitle: 'This is where you provide us with the full picture.',
+      title: t('step2Title'),
+      subtitle: t('step2Subtitle'),
     },
     {
-      title: 'Ready to review your job?',
-      subtitle: 'This is where you start making final decisions.',
+      title: t('step3Title'),
+      subtitle: t('step3Subtitle'),
     },
   ];
 
@@ -460,6 +463,7 @@ function HeroCard({ currentStep, className = '' }) {
 }
 
 function ProjectForm({ register, getValues, control, errors, setValue, trigger, handleFileSelection, watch, setCurrentStep, formValues }) {
+  const t = useTranslations('CreateJob.form');
 
   const handleNext = async () => {
     const isValid = await trigger(['title', 'description', 'categoryId', 'skillsRequired', 'attachments']);
@@ -476,14 +480,14 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
     <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
       <BecomeFreelancer />
 
-      <h2 className='h2 mt-6 mb-2'>Give your project job a title</h2>
+      <h2 className='h2 mt-6 mb-2'>{t('titleLabel')}</h2>
 
       <div className='mb-4'>
-        <Input {...register('title')} cnLabel='!text-[15px]' label={'Keep it short and simple - this will help us match you to the right category.'} placeholder={'Enter project title'} error={errors.title?.message} />
+        <Input {...register('title')} cnLabel='!text-[15px]' label={t('titleHint')} placeholder={t('titlePlaceholder')} error={errors.title?.message} />
       </div>
 
       <div className='mb-4'>
-        <Textarea cnInput='text-[14px]' {...register('description')} cnLabel={'!text-[15px]'} label='Project Description' placeholder='Describe your project in detail' rows={5} error={errors.description?.message} />
+        <Textarea cnInput='text-[14px]' {...register('description')} cnLabel={'!text-[15px]'} label={t('descriptionLabel')} placeholder={t('descriptionPlaceholder')} rows={5} error={errors.description?.message} />
       </div>
 
       <div className='mb-4'>
@@ -493,7 +497,7 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
           render={({ field }) => (
             <CategorySelect
               type='category'
-              label='Category'
+              label={t('categoryLabel')}
               value={formValues?.category}
               onChange={opt => {
                 field.onChange(opt.id);
@@ -502,7 +506,7 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
                 setValue('subcategory', null);
               }}
               error={errors?.categoryId?.message}
-              placeholder='Select a category'
+              placeholder={t('categoryPlaceholder')}
             />
           )}
         />
@@ -516,25 +520,25 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
             <CategorySelect
               type='subcategory'
               parentId={watch('categoryId')}
-              label='SubCategory'
+              label={t('subcategoryLabel')}
               value={formValues?.subcategory}
               onChange={opt => {
                 field.onChange(opt.id);
                 setValue('subcategory', opt);
               }}
               error={errors?.subcategoryId?.message}
-              placeholder={watch('categoryId') ? 'Select a subcategory' : 'Select a category first'}
+              placeholder={watch('categoryId') ? t('subcategoryPlaceholder') : t('subcategoryPlaceholderFirst')}
             />
           )}
         />
       </div>
 
       <div className='mb-4'>
-        <InputList label='Skills Required *' value={formValues.skillsRequired || []} getValues={getValues} setValue={setValue} fieldName='skillsRequired' placeholder='Add a skill (e.g., WordPress)' errors={errors} validationMessage='Please provide at least one skill.' maxTags={MAX_SKILLS} />
+        <InputList label={t('skillsLabel')} value={formValues.skillsRequired || []} getValues={getValues} setValue={setValue} fieldName='skillsRequired' placeholder={t('skillsPlaceholder')} errors={errors} validationMessage={t('skillsValidation')} maxTags={MAX_SKILLS} />
       </div>
 
       <div className='mb-4'>
-        <Textarea cnInput='text-[14px]' {...register('additionalInfo')} cnLabel={'!text-[15px]'} label='Additional Information (Optional)' placeholder='Any additional details or requirements' rows={4} error={errors.additionalInfo?.message} />
+        <Textarea cnInput='text-[14px]' {...register('additionalInfo')} cnLabel={'!text-[15px]'} label={t('additionalInfoLabel')} placeholder={t('additionalInfoPlaceholder')} rows={4} error={errors.additionalInfo?.message} />
 
       </div>
 
@@ -544,13 +548,14 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
       <div className='flex items-center justify-between gap-4 mt-6'>
         {/* <Button className='!max-w-fit' name={'Back'} onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))} color='secondary' /> */}
         <div></div>
-        <Button className='!max-w-fit' name={'Next'} onClick={handleNext} color='green' />
+        <Button className='!max-w-fit' name={t('next')} onClick={handleNext} color='green' />
       </div>
     </div>
   );
 }
 
 function BudgetAndDelivery({ register, control, errors, trigger, budgetTypeOptions, setCurrentStep }) {
+  const t = useTranslations('CreateJob.form');
   const handleNext = async () => {
     const isValid = await trigger(['budget', 'preferredDeliveryDays', 'budgetType']);
     if (isValid) {
@@ -566,30 +571,32 @@ function BudgetAndDelivery({ register, control, errors, trigger, budgetTypeOptio
       <div className='space-y-3 mb-8 mt-6 '>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
-            <Input {...register('budget')} cnLabel={'!text-[15px]'} placeholder={'Enter budget'} label={'Budget'} type='number' error={errors.budget?.message} />
-            <p className='text-sm text-gray-600'>Enter your budget amount</p>
+            <Input {...register('budget')} cnLabel={'!text-[15px]'} placeholder={t('budgetPlaceholder')} label={t('budgetLabel')} type='number' error={errors.budget?.message} />
+            <p className='text-sm text-gray-600'>{t('budgetHint')}</p>
           </div>
 
           <div>
-            <Controller name='budgetType' control={control} render={({ field }) => <Select {...field} cnLabel={'!text-[15px]'} label='Budget Type' options={budgetTypeOptions} error={errors.budgetType?.message} onChange={value => field.onChange(value.id)} />} />
+            <Controller name='budgetType' control={control} render={({ field }) => <Select {...field} cnLabel={'!text-[15px]'} label={t('budgetTypeLabel')} options={budgetTypeOptions} error={errors.budgetType?.message} onChange={value => field.onChange(value.id)} />} />
           </div>
         </div>
       </div>
 
       <div className='space-y-3 mb-6'>
-        <Input {...register('preferredDeliveryDays')} cnLabel={'!text-[15px]'} label='Preferred Delivery (Days)' placeholder='Enter number of days' type='number' error={errors.preferredDeliveryDays?.message} />
-        <p className='text-sm text-gray-600'>Estimated delivery time in days</p>
+        <Input {...register('preferredDeliveryDays')} cnLabel={'!text-[15px]'} label={t('preferredDeliveryLabel')} placeholder={t('preferredDeliveryPlaceholder')} type='number' error={errors.preferredDeliveryDays?.message} />
+        <p className='text-sm text-gray-600'>{t('preferredDeliveryHint')}</p>
       </div>
 
       <div className='flex items-center justify-between gap-4 mt-6'>
-        <Button className='!max-w-fit' name={'Back'} onClick={() => setCurrentStep(0)} color='secondary' />
-        <Button className='!max-w-fit' name={'Next'} onClick={handleNext} color='green' />
+        <Button className='!max-w-fit' name={t('back')} onClick={() => setCurrentStep(0)} color='secondary' />
+        <Button className='!max-w-fit' name={t('next')} onClick={handleNext} color='green' />
       </div>
     </div>
   );
 }
 
 function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onEditJob, onBack, onSubmit, isSubmitting, errors }) {
+  const t = useTranslations('CreateJob.review');
+  const tForm = useTranslations('CreateJob.form');
   const hasFiles = useMemo(() => (data.attachments || []).length > 0, [data.attachments]);
 
   return (
@@ -599,31 +606,31 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
       <section className='pb-8  pt-5'>
         <div className='flex items-start justify-between gap-4  '>
           <div>
-            <h2 className='text-[22px] md:text-[24px] font-semibold text-black'>Project Details</h2>
-            <p className='text-gray-700 mt-2'>Review your project information</p>
+            <h2 className='text-[22px] md:text-[24px] font-semibold text-black'>{t('projectDetailsTitle')}</h2>
+            <p className='text-gray-700 mt-2'>{t('projectDetailsSubtitle')}</p>
           </div>
-          <button type='button' onClick={onEditProject} className='p-2 rounded-md hover:bg-gray-100 transition' aria-label='Edit project section' title='Edit'>
+          <button type='button' onClick={onEditProject} className='p-2 rounded-md hover:bg-gray-100 transition' aria-label='Edit project section' title={t('edit')}>
             <Pencil className='w-4 h-4 text-gray-700' />
           </button>
         </div>
 
         <div className='mt-6 space-y-5'>
-          <Item label='Title' value={data.title || '—'} />
-          <Item label='Description' value={data.description || '—'} className cnValue='whitespace-pre-wrap' />
-          <Item label='Category' value={data.category.name || '—'} />
-          {data.subcategoryId && <Item label='Subcategory' value={data.subcategory.name || '—'} />}
+          <Item label={t('title')} value={data.title || '—'} />
+          <Item label={t('description')} value={data.description || '—'} className cnValue='whitespace-pre-wrap' />
+          <Item label={t('category')} value={data.category.name || '—'} />
+          {data.subcategoryId && <Item label={t('subcategory')} value={data.subcategory.name || '—'} />}
 
-          <ItemSkills label='Skills Required' value={data.skillsRequired} />
+          <ItemSkills label={t('skillsRequired')} value={data.skillsRequired} />
 
-          {data.additionalInfo && <Item label='Additional Information' value={data.additionalInfo} cnValue='whitespace-pre-wrap' />}
+          {data.additionalInfo && <Item label={t('additionalInformation')} value={data.additionalInfo} cnValue='whitespace-pre-wrap' />}
 
           <div>
             <div className='flex items-center gap-2'>
               <Paperclip className='w-4 h-4 text-gray-700' />
-              <div className='text-[15px] font-semibold text-black'>Attachments</div>
+              <div className='text-[15px] font-semibold text-black'>{t('attachments')}</div>
             </div>
 
-            {hasFiles ? <AttachmentList attachments={data.attachments} /> : <div className='mt-2 text-sm text-gray-500'>No files attached</div>}
+            {hasFiles ? <AttachmentList attachments={data.attachments} /> : <div className='mt-2 text-sm text-gray-500'>{t('noFilesAttached')}</div>}
           </div>
         </div>
       </section>
@@ -633,17 +640,17 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
       <section className='pt-6'>
         <div className='flex items-start justify-between gap-4'>
           <div>
-            <h3 className='text-[22px] md:text-[24px] font-semibold text-black'>Budget & Delivery</h3>
-            <p className='text-gray-700 mt-2'>Budget and delivery details</p>
+            <h3 className='text-[22px] md:text-[24px] font-semibold text-black'>{t('budgetDeliveryTitle')}</h3>
+            <p className='text-gray-700 mt-2'>{t('budgetDeliverySubtitle')}</p>
           </div>
-          <button type='button' onClick={onEditJob} className='p-2 rounded-md hover:bg-gray-100 transition' aria-label='Edit job section' title='Edit'>
+          <button type='button' onClick={onEditJob} className='p-2 rounded-md hover:bg-gray-100 transition' aria-label='Edit job section' title={t('edit')}>
             <Pencil className='w-4 h-4 text-gray-700' />
           </button>
         </div>
 
         <div className='mt-6 grid grid-cols-1 sm:grid-cols-2 gap-8'>
-          <Item label='Budget' value={`$${data.budget} (${data.budgetType})`} />
-          <Item label='Delivery Days' value={data.preferredDeliveryDays || 'Not specified'} />
+          <Item label={t('budget')} value={`$${data.budget} (${data.budgetType})`} />
+          <Item label={t('deliveryDays')} value={data.preferredDeliveryDays || t('notSpecified')} />
         </div>
       </section>
 
@@ -652,13 +659,13 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
       <div className="mt-8 flex items-center gap-2 justify-between flex-1">
         <Button
           className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
-          name="Back"
+          name={tForm('back')}
           onClick={onBack}
           color="secondary"
         />
         <Button
           className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
-          name={'Publish Job'}
+          name={tForm('publishJob')}
           onClick={onSubmit}
           color="green"
           loading={isSubmitting}

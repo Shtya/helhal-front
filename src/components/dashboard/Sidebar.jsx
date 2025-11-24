@@ -5,24 +5,21 @@ import { LayoutGroup, motion } from 'framer-motion';
 import { useMemo } from 'react';
 import { LayoutDashboard, Users, FolderTree, ShoppingBag, TrendingUp, Package, Wallet, FileText, HelpCircle, Newspaper, BookOpen, Scale, Settings, MessageSquare, BarChart3, Bell } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
-export const menuItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, title: 'Dashboard', desc: 'KPIs, trends, and quick actions for your workspace.' },
-  { name: 'Users', href: '/dashboard/users', icon: Users, title: 'Users', desc: 'Manage user accounts, roles, status, and permissions.' },
-  { name: 'Categories', href: '/dashboard/categories', icon: FolderTree, title: 'Categories', desc: 'Create and organize categories for your content and services.' },
-  { name: 'Services', href: '/dashboard/services', icon: ShoppingBag, title: 'Services', desc: 'Add, edit, and publish services with pricing and packages.' },
-  { name: 'Jobs', href: '/dashboard/jobs', icon: ShoppingBag, title: 'Jobs', desc: 'Add, edit, and publish Job.' },
-  { name: 'Orders', href: '/dashboard/orders', icon: Package, title: 'Orders', desc: 'Track, fulfill, and update order statuses and notes.' },
-  { name: 'Invoices', href: '/dashboard/invoices', icon: FileText, title: 'Invoices', desc: 'Generate, download, and manage invoices and billing.' },
-  { name: 'Disputes', href: '/dashboard/disputes', icon: Wallet, title: 'Disputes', desc: 'Request payouts, view balances, and payment history.' },
-  { name: 'Finance', href: '/dashboard/finance', icon: Wallet, title: 'Finance', desc: 'Request payouts, view balances, and payment history.' },
-  // { name: 'Level Up', href: '/dashboard/levelup', icon: TrendingUp, title: 'Level Up', desc: 'Growth tools, gamification, and performance boosts.' },
-  // { name: 'Blogs', href: '/dashboard/blogs', icon: Newspaper, title: 'Blogs', desc: 'Write, schedule, and manage blog posts and drafts.' },
-  // { name: 'Guides', href: '/dashboard/guides', icon: BookOpen, title: 'Guides', desc: 'Step-by-step tutorials and documentation for your product.' },
-  { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare, title: 'Chat', desc: 'Conversations, support inbox, and real-time messages.' },
-  { name: 'notifications', href: '/dashboard/notifications', icon: Bell, title: 'Notifications', desc: 'All notifications, messages, and support alerts in one place.' },
-  // { name: 'Reports', href: '/dashboard/reports', icon: BarChart3, title: 'Reports', desc: 'Visual analytics and downloadable summaries.' },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings, title: 'Settings', desc: 'Account, preferences, integrations, and system options.' },
+export const getMenuItems = (t) => [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, title: t('Dashboard.sidebar.menuItems.dashboard'), desc: t('Dashboard.sidebar.descriptions.dashboard') },
+  { name: 'Users', href: '/dashboard/users', icon: Users, title: t('Dashboard.sidebar.menuItems.users'), desc: t('Dashboard.sidebar.descriptions.users') },
+  { name: 'Categories', href: '/dashboard/categories', icon: FolderTree, title: t('Dashboard.sidebar.menuItems.categories'), desc: t('Dashboard.sidebar.descriptions.categories') },
+  { name: 'Services', href: '/dashboard/services', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.services'), desc: t('Dashboard.sidebar.descriptions.services') },
+  { name: 'Jobs', href: '/dashboard/jobs', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.jobs'), desc: t('Dashboard.sidebar.descriptions.jobs') },
+  { name: 'Orders', href: '/dashboard/orders', icon: Package, title: t('Dashboard.sidebar.menuItems.orders'), desc: t('Dashboard.sidebar.descriptions.orders') },
+  { name: 'Invoices', href: '/dashboard/invoices', icon: FileText, title: t('Dashboard.sidebar.menuItems.invoices'), desc: t('Dashboard.sidebar.descriptions.invoices') },
+  { name: 'Disputes', href: '/dashboard/disputes', icon: Wallet, title: t('Dashboard.sidebar.menuItems.disputes'), desc: t('Dashboard.sidebar.descriptions.disputes') },
+  { name: 'Finance', href: '/dashboard/finance', icon: Wallet, title: t('Dashboard.sidebar.menuItems.finance'), desc: t('Dashboard.sidebar.descriptions.finance') },
+  { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare, title: t('Dashboard.sidebar.menuItems.chat'), desc: t('Dashboard.sidebar.descriptions.chat') },
+  { name: 'notifications', href: '/dashboard/notifications', icon: Bell, title: t('Dashboard.sidebar.menuItems.notifications'), desc: t('Dashboard.sidebar.descriptions.notifications') },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings, title: t('Dashboard.sidebar.menuItems.settings'), desc: t('Dashboard.sidebar.descriptions.settings') },
 ];
 
 const listVariants = {
@@ -39,13 +36,15 @@ const itemVariants = {
 };
 
 export default function Sidebar({ open, isMobile = false, setOpen }) {
+  const t = useTranslations();
   const pathname = usePathname();
+  const menuItems = getMenuItems(t);
 
   const activeHref = useMemo(() => {
     if (!pathname) return menuItems[0].href;
     const match = [...menuItems].sort((a, b) => b.href.length - a.href.length).find(i => pathname.startsWith(i.href));
     return match?.href ?? menuItems[0].href;
-  }, [pathname]);
+  }, [pathname, menuItems]);
 
   const closeOnMobile = () => isMobile && setOpen?.(false);
 
@@ -61,12 +60,12 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
             </motion.div>
           </Link>
           <div className={`leading-tight whitespace-nowrap ${!open && '!hidden '}`}>
-            <div className={`text-slate-900 font-semibold transition-[opacity,transform,width] `}>Admin Dashboard</div>
-            <div className={`text-xs text-slate-500 transition-[opacity,transform,width]`}>Control Center</div>
+            <div className={`text-slate-900 font-semibold transition-[opacity,transform,width] `}>{t('Dashboard.sidebar.adminDashboard')}</div>
+            <div className={`text-xs text-slate-500 transition-[opacity,transform,width]`}>{t('Dashboard.sidebar.controlCenter')}</div>
           </div>
         </div>
         {isMobile && (
-          <button onClick={closeOnMobile} className='lg:hidden rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100' aria-label='Close'>
+          <button onClick={closeOnMobile} className='lg:hidden rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100' aria-label={t('Dashboard.sidebar.close')}>
             ✕
           </button>
         )}

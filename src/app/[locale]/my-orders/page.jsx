@@ -7,6 +7,7 @@
 
 import { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
@@ -34,15 +35,7 @@ export const tabAnimation = {
 };
 
 
-const TABS = [
-  { label: 'All', value: 'all' },
-  { label: 'Active', value: 'active' }, // Pending + Accepted
-  { label: 'Delivered', value: 'delivered' },
-  { label: 'Change Requested', value: 'change_requested' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Disputed', value: 'disputed' },
-  { label: 'Canceled', value: 'canceled' },
-];
+// TABS will be created inside component with translations
 
 
 const fmtMoney = v => {
@@ -53,6 +46,7 @@ const fmtDate = d => (d ? new Date(d).toLocaleDateString(undefined, { day: '2-di
 
 
 export default function Page() {
+  const t = useTranslations('MyOrders.page');
   const [activeTab, setActiveTab] = useState('all');
 
   const [search, setSearch] = useState('');
@@ -69,6 +63,16 @@ export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderIdFromParams = searchParams.get('orderId');
+
+  const TABS = [
+    { label: t('tabs.all'), value: 'all' },
+    { label: t('tabs.active'), value: 'active' },
+    { label: t('tabs.delivered'), value: 'delivered' },
+    { label: t('tabs.changeRequested'), value: 'change_requested' },
+    { label: t('tabs.completed'), value: 'completed' },
+    { label: t('tabs.disputed'), value: 'disputed' },
+    { label: t('tabs.canceled'), value: 'canceled' },
+  ];
 
 
   function onPageChange(page) {
@@ -89,17 +93,17 @@ export default function Page() {
 
   const columns = useMemo(
     () => [
-      { key: 'gig', label: 'Service img', type: 'img' },
+      { key: 'gig', label: t('columns.serviceImg'), type: 'img' },
       {
         key: 'service',
-        label: 'Service / Job',
+        label: t('columns.serviceJob'),
         className: '',
         render: row => {
           const order = row._raw;
           const fromJob = !!order.jobId;
           const title = order?.title || 'Untitled';
           const slug = order?.service?.slug;
-          const badge = fromJob ? 'Job' : 'Service';
+          const badge = fromJob ? t('badges.job') : t('badges.service');
           const href = fromJob ? `/my-jobs?job=${order.jobId}` : `/services/category/${slug}`;
 
           return (
@@ -121,15 +125,15 @@ export default function Page() {
 
       {
         key: isBuyer ? 'seller' : 'buyer',
-        label: isBuyer ? 'Freelancer' : 'Client'
+        label: isBuyer ? t('columns.freelancer') : t('columns.client')
       },
 
       // { key: 'orderNumber', label: 'Order number' },
-      { key: 'orderDate', label: 'Order date' },
-      { key: 'total', label: 'Total', type: 'price' },
+      { key: 'orderDate', label: t('columns.orderDate') },
+      { key: 'total', label: t('columns.total'), type: 'price' },
       {
         key: 'status',
-        label: 'Status',
+        label: t('columns.status'),
         status: [
           [OrderStatus.ACCEPTED, 'text-green-600'],
           [OrderStatus.PENDING, 'text-yellow-600'],
@@ -142,7 +146,7 @@ export default function Page() {
         ],
       },
     ],
-    [isBuyer],
+    [isBuyer, t],
   );
 
   // Build query for a BIG page (client-side pagination in <Table />)
@@ -205,14 +209,14 @@ export default function Page() {
     } catch (e) {
       if (!isErrorAbort(e)) {
         console.error(e);
-        setErr(e?.response?.data?.message || 'Failed to load orders.');
+        setErr(e?.response?.data?.message || t('errors.failedToLoad'));
       }
       setOrders([]);
     } finally {
       if (controllerRef.current === controller)
         setLoading(false);
     }
-  }, [buildQuery]);
+  }, [buildQuery, t]);
 
   useEffect(() => {
     fetchOrders();
@@ -295,14 +299,14 @@ export default function Page() {
 
 
   const handleCancel = async (row) => {
-    const confirmed = window.confirm('Are you sure you want to cancel this order?');
+    const confirmed = window.confirm(t('cancelConfirm'));
 
     if (!confirmed) return;
     try {
       setRowLoading(row.id, 'cancel');
       await api.post(`/orders/${row.id}/cancel`);
 
-      toast('Payment canceled', { icon: '⚠️' });
+      toast(t('paymentCanceled'), { icon: '⚠️' });
       patchOrderRow(row.id, r => ({
         ...r,
         status: OrderStatus.CANCELLED, // <—
@@ -310,7 +314,7 @@ export default function Page() {
       }));
     } catch (err) {
       console.error(err);
-      toast.error('Failed to cancel order');
+      toast.error(t('errors.failedToCancel'));
     } finally {
       setRowLoading(row);
     }
@@ -333,13 +337,13 @@ export default function Page() {
     const options = [
       {
         icon: <Eye className="h-4 w-4" />,
-        label: 'View Details',
+        label: t('actions.viewDetails'),
         onClick: () => handleOpenModal(row, 'details'),
         disabled: isBusy,
       },
       {
         icon: <MessageCircle className="h-4 w-4" />,
-        label: 'Chat',
+        label: t('actions.chat'),
         href: isBuyer
           ? `/chat?userId=${row?._raw?.sellerId}`
           : `/chat?userId=${row?._raw?.buyerId}`,
@@ -347,21 +351,21 @@ export default function Page() {
       },
       {
         icon: <FileText className="h-4 w-4" />,
-        label: "Review Submission",
+        label: t('actions.reviewSubmission'),
         onClick: () => handleOpenModal(row, "submission"),
         disabled: isBusy,
         hide: !canSeeReview,
       },
       {
         icon: <MessageSquare className="h-4 w-4" />,
-        label: "View Change Request",
+        label: t('actions.viewChangeRequest'),
         onClick: () => handleOpenModal(row, "changes-requested"),
         disabled: isBusy,
         hide: !isChangesRequested,
       },
       {
         icon: <Package className="h-4 w-4" />,
-        label: loadingAction === 'deliver' ? 'Delivering…' : 'Deliver',
+        label: loadingAction === 'deliver' ? t('actions.delivering') : t('actions.deliver'),
         // onClick: () => deliverOrder(row),
         onClick: () => handleOpenModal(row, "deliver"),
         disabled: isBusy || loadingAction === 'deliver',
@@ -369,7 +373,7 @@ export default function Page() {
       },
       {
         icon: <CheckCircle className="h-4 w-4" />,
-        label: loadingAction === 'receive' ? 'Submitting…' : 'Receive',
+        label: loadingAction === 'receive' ? t('actions.submitting') : t('actions.receive'),
         // onClick: () => completeOrder(row),
         onClick: () => handleOpenModal(row, 'receive'),
         disabled: isBusy || loadingAction === 'receive',
@@ -377,7 +381,7 @@ export default function Page() {
       },
       {
         icon: <AlertTriangle className="h-4 w-4" />,
-        label: loadingAction === 'dispute' ? 'Opening…' : 'Open Dispute',
+        label: loadingAction === 'dispute' ? t('actions.opening') : t('actions.openDispute'),
         onClick: () => handleOpenModal(row, 'dispute'),
         disabled: isBusy || loadingAction === 'dispute',
         hide: !canDispute,
@@ -385,20 +389,20 @@ export default function Page() {
       },
       {
         icon: <FileWarning className="h-4 w-4" />,
-        label: 'View Dispute',
+        label: t('actions.viewDispute'),
         href: `/my-disputes?dispute=${row?._raw?.disputeId}`,
         hide: !hasOpenDispute || !row?._raw?.disputeId,
       },
       {
         icon: <CreditCard className="h-4 w-4" />,
-        label: 'Pay',
+        label: t('actions.pay'),
         href: `/payment?orderId=${row.id}`,
         disabled: isBusy,
         hide: !(isBuyer && s === OrderStatus.PENDING),
       },
       {
         icon: <XCircle className="h-4 w-4" />,
-        label: loadingAction === 'cancel' ? 'Cancelling…' : 'Cancel Order',
+        label: loadingAction === 'cancel' ? t('actions.cancelling') : t('actions.cancelOrder'),
         onClick: () => handleCancel(row),
         disabled: isBusy || loadingAction === 'cancel',
         hide: !(isBuyer && [OrderStatus.PENDING, OrderStatus.ACCEPTED].includes(s)),
@@ -412,8 +416,8 @@ export default function Page() {
   return (
     <div className='container'>
       <div className='mt-8 mb-4 flex items-center justify-between gap-2 flex-wrap'>
-        <h1 className='text-3xl font-bold text-center mb-4 '>Manage Orders</h1>
-        <InputSearch iconLeft={'/icons/search.svg'} placeholder='Search by order number or status' onSearch={onSearch} />
+        <h1 className='text-3xl font-bold text-center mb-4 '>{t('title')}</h1>
+        <InputSearch iconLeft={'/icons/search.svg'} placeholder={t('searchPlaceholder')} onSearch={onSearch} />
       </div>
 
       <Tabs className='mb-8' setActiveTab={onChangeTab} activeTab={activeTab} tabs={TABS} />

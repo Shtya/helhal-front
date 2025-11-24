@@ -3,9 +3,11 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Check, Eraser } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 
 export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChange, selectedValues }) {
+  const t = useTranslations('Services.filters.sellerDetails');
   const BRAND = '#007a55';
   const rootRef = useRef(null);
 
@@ -38,16 +40,16 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
   const levelOptions = useMemo(() => {
     const raw = filterOptions.sellerLevels || {};
     const prettyMap = {
-      lvl1: 'Level 1',
-      lvl2: 'Level 2',
-      lvl3: 'Level 3',
-      top: 'Top Seller',
-      new: 'New Seller',
+      lvl1: t('levels.lvl1'),
+      lvl2: t('levels.lvl2'),
+      lvl3: t('levels.lvl3'),
+      top: t('levels.top'),
+      new: t('levels.new'),
     };
     return makeOptionsFromObject(raw, {
       mapLabel: k => prettyMap[k] || k,
     });
-  }, [filterOptions]);
+  }, [filterOptions, t]);
 
   const speaksOptions = useMemo(() => {
     // المفاتيح هي أسماء لغات جاهزة أصلاً
@@ -219,7 +221,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
     <>
       {open && <div className='fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn' onClick={() => setOpen(false)} />}
 
-      <div ref={rootRef} className={`relative inline-block text-left ${open && 'z-[110]'}`}>
+      <div ref={rootRef} className={`relative inline-block  ${open && 'z-[110]'}`}>
         {/* Trigger */}
         <button
           type='button'
@@ -231,19 +233,19 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
             borderColor: open ? `${BRAND}90` : '#cbd5e1',
             boxShadow: open ? `0 0 0 3px ${BRAND}66 inset` : undefined,
           }}>
-          <span className='truncate'>{totalSelected > 0 ? `${totalSelected} filter${totalSelected > 1 ? 's' : ''} applied` : 'Filters'}</span>
+          <span className='truncate'>{totalSelected > 0 ? `${totalSelected} ${totalSelected > 1 ? t('filters') : t('filter')} ${t('applied')}` : t('title')}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
         </button>
 
         {/* Panel */}
         <div
-          className={`absolute left-0 mt-2 w-[350px] rounded-xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
+          className={`absolute start-0 mt-2 w-[350px] rounded-xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
           ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
           style={{ border: `1px solid ${BRAND}60` }}>
           <div className='py-4 max-h-[70vh] overflow-auto'>
             {/* Seller level */}
             {levelOptions.length > 0 && (
-              <Section title='Seller level' subtitle={`${levelOptions.reduce((a, b) => a + b.count, 0)} total`}>
+              <Section title={t('sellerLevel')} subtitle={`${levelOptions.reduce((a, b) => a + b.count, 0)} ${t('total')}`}>
                 {levelOptions.map(o => (
                   <OptionRow key={o.id} label={o.label} count={o.count} disabled={o.count === 0} active={selected.level.has(o.id)} onClick={() => toggleItem('level', o.id)} />
                 ))}
@@ -252,7 +254,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
 
             {/* Speaks */}
             {speaksOptions.length > 0 && (
-              <Section title='Seller Speaks' subtitle={`${speaksOptions.length} languages`}>
+              <Section title={t('sellerSpeaks')} subtitle={`${speaksOptions.length} ${t('languages')}`}>
                 {speaksOptions.map(o => (
                   <OptionRow key={o.id} label={o.label} count={o.count} disabled={o.count === 0} active={selected.speaks.has(o.id)} onClick={() => toggleItem('speaks', o.id)} />
                 ))}
@@ -261,7 +263,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
 
             {/* Countries */}
             {countryOptions.length > 0 && (
-              <Section title='Seller Countries' subtitle={`${countryOptions.length} countries`}>
+              <Section title={t('sellerCountries')} subtitle={`${countryOptions.length} ${t('countries')}`}>
                 {countryOptions.map(o => (
                   <OptionRow key={o.id} label={o.label} count={o.count} disabled={o.count === 0} active={selected.countries.has(o.id)} onClick={() => toggleItem('countries', o.id)} />
                 ))}
@@ -270,11 +272,11 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
 
             {/* Extras (boolean filters) */}
             {(filterOptions.fastDelivery !== undefined || filterOptions.additionalRevision !== undefined) && (
-              <Section title='Extras' one>
+              <Section title={t('extras')} one>
                 {/* fastDelivery */}
                 <BoolRow
                   key='fastDelivery'
-                  label='Fast delivery'
+                  label={t('fastDelivery')}
                   count={filterOptions.fastDelivery ?? 0}
                   active={!!selected.fastDelivery}
                   onClick={() => toggleExtra('fastDelivery')}
@@ -282,7 +284,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
                 {/* additionalRevision */}
                 <BoolRow
                   key='additionalRevision'
-                  label='Additional revision'
+                  label={t('additionalRevision')}
                   count={filterOptions.additionalRevision ?? 0}
                   active={!!selected.additionalRevision}
                   onClick={() => toggleExtra('additionalRevision')}

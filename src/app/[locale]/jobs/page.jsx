@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useTranslations } from 'next-intl';
 import api from '@/lib/axios';
 import InputSearch from '@/components/atoms/InputSearch';
 import Select from '@/components/atoms/Select';
@@ -14,7 +15,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, CalendarDays, CheckCircle2, FolderOpen, X, CircleX } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdvancedJobsDropdown from '@/components/Filters/AdvancedJobsDropdown';
-import FavoriteButton from '@/components/atoms/FavoriteButton';
 import UserAvatar from '@/components/common/UserAvatar';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useAuth } from '@/context/AuthContext';
@@ -94,23 +94,23 @@ const fadeStagger = {
 };
 const fadeItem = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } };
 
-function timeAgo(iso) {
+function timeAgo(iso, t) {
   if (!iso) return '';
   const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return 'Just now';
+  if (s < 60) return t('page.justNow');
   const m = Math.floor(s / 60);
-  if (m < 60) return `${m} minute${m === 1 ? '' : 's'} ago`;
+  if (m < 60) return `${m} ${m === 1 ? t('page.minute') : t('page.minutes')} ${t('page.ago')}`;
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h} hour${h === 1 ? '' : 's'} ago`;
+  if (h < 24) return `${h} ${h === 1 ? t('page.hour') : t('page.hours')} ${t('page.ago')}`;
   const d = Math.floor(h / 24);
-  return `${d} day${d === 1 ? '' : 's'} ago`;
+  return `${d} ${d === 1 ? t('page.day') : t('page.days')} ${t('page.ago')}`;
 }
 
-function formatBudget(job) {
+function formatBudget(job, t) {
   if (!job?.budget) return '—';
   const val = Number(job.budget);
   const money = Number.isFinite(val) ? `$${val.toLocaleString()}` : `$${job.budget}`;
-  return `${job.budgetType === 'hourly' ? 'Hourly' : 'Fixed-price'} • Est. Budget: ${money}`;
+  return `${job.budgetType === 'hourly' ? t('page.hourly') : t('page.fixedPrice')} • ${t('page.estBudget')}: ${money}`;
 }
 
 // -------------------------------------------------
@@ -129,6 +129,7 @@ const defaultFilters = {
   category: '',
 }
 export default function SellerJobsPage() {
+  const t = useTranslations('Jobs');
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { role } = useAuth();
@@ -160,7 +161,7 @@ export default function SellerJobsPage() {
       setSelectedJobId(job?.id)
       setDrawerOpen(true);
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Unable to open job');
+      toast.error(e?.response?.data?.message || t('page.errors.unableToOpen'));
     }
   };
 
@@ -293,7 +294,7 @@ export default function SellerJobsPage() {
       } catch (e) {
         if (!isErrorAbort(e)) {
           console.error(e);
-          toast.error('Failed to load jobs');
+          toast.error(t('page.errors.failedToLoad'));
         }
       } finally {
         // Only clear loading if THIS request is still the active one
@@ -314,13 +315,13 @@ export default function SellerJobsPage() {
         <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
           <CategorySelect
             type='category'
-            loadingText="Loading categories..."
+            loadingText={t('page.selectCategory')}
             cnPlaceholder='!text-gray-900'
             value={filters?.category}
             onChange={opt => {
               setFilter('category', opt?.id ?? '');
             }}
-            placeholder='Select a category'
+            placeholder={t('page.selectCategory')}
           />
 
 
@@ -331,9 +332,9 @@ export default function SellerJobsPage() {
             }
             }
             options={[
-              { id: '', name: 'Any Budget Type' },
-              { id: 'fixed', name: 'Fixed' },
-              { id: 'hourly', name: 'Hourly' },
+              { id: '', name: t('page.anyBudgetType') },
+              { id: 'fixed', name: t('page.fixed') },
+              { id: 'hourly', name: t('page.hourly') },
             ]}
             className='!text-xs min-w-0 truncate'
             variant='minimal'
@@ -370,7 +371,7 @@ export default function SellerJobsPage() {
             />
           </div>
 
-          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={v => setQ(v)} placeholder='Search by title, description, or skills' className='!max-w-full' showAction={false} />
+          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={v => setQ(v)} placeholder={t('page.searchPlaceholder')} className='!max-w-full' showAction={false} />
         </div>
       </motion.section>
 
@@ -386,7 +387,7 @@ export default function SellerJobsPage() {
           ))
         ) : (
           <div className='md:col-span-2 lg:col-span-3'>
-            <NoResults mainText='No jobs right now' additionalText='Try widening your filters or check back later.' buttonText="Reset Filters" onClick={resetFilters} />
+            <NoResults mainText={t('page.noJobs')} additionalText={t('page.noJobsDescription')} buttonText={t('page.resetFilters')} onClick={resetFilters} />
           </div>
         )}
       </motion.div>
@@ -415,9 +416,9 @@ export default function SellerJobsPage() {
             portfolio: values.portfolioUrls ?? undefined,
           };
           await toast.promise(submitProposal(selectedJob.id, payload), {
-            loading: 'Submitting…',
-            success: 'Proposal submitted',
-            error: e => e?.response?.data?.message || 'Failed to submit',
+            loading: t('page.submitting'),
+            success: t('page.proposalSubmitted'),
+            error: e => e?.response?.data?.message || t('page.errors.failedToSubmit'),
           });
         }}
       />
@@ -429,16 +430,17 @@ export default function SellerJobsPage() {
 // Hero
 // -------------------------------------------------
 function HeroHeader() {
+  const t = useTranslations('Jobs');
   return (
     <motion.header initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={spring} className='card relative mb-6 overflow-hidden'>
       <div className='pointer-events-none absolute inset-0 -z-10 opacity-80 [background:radial-gradient(1000px_300px_at_20%_-10%,#ecfeff,transparent),radial-gradient(1000px_300px_at_80%_120%,#eef2ff,transparent)]' />
       <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
         <div>
-          <h1 className='text-4xl font-extrabold tracking-tight text-slate-900'>Find Work</h1>
-          <p className='mt-1 text-slate-600'>Hand-picked jobs. Smooth proposals. Land the gig.</p>
+          <h1 className='text-4xl font-extrabold tracking-tight text-slate-900'>{t('page.findWork')}</h1>
+          <p className='mt-1 text-slate-600'>{t('page.findWorkSubtitle')}</p>
         </div>
         <motion.a whileHover={{ x: 2 }} whileTap={{ scale: 0.98 }} href='/jobs/proposals' className='inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm'>
-          My Proposals <ArrowUpRight className='h-4 w-4' />
+          {t('page.myProposals')} <ArrowUpRight className='h-4 w-4' />
         </motion.a>
       </div>
     </motion.header>
@@ -449,11 +451,12 @@ function HeroHeader() {
 // Cards (Upwork-like layout)
 // -------------------------------------------------
 function JobCard({ job, onOpen, index }) {
+  const t = useTranslations('Jobs');
   const { user } = useAuth();
 
-  const posted = timeAgo?.(job?.created_at) || '';
+  const posted = timeAgo?.(job?.created_at, t) || '';
   const createdDate = (job?.created_at || '').split('T')[0];
-  const budgetLine = formatBudget?.(job) || `${job?.pricing || ''}`;
+  const budgetLine = formatBudget?.(job, t) || `${job?.pricing || ''}`;
   const buyer = job?.buyer || {};
   const country = buyer?.country || '—';
 
@@ -466,14 +469,14 @@ function JobCard({ job, onOpen, index }) {
     <motion.article className='group  border-b border-b-slate-200 p-5 sm:p-6 hover:bg-gray-100 bg-gray-50/50 transition-all duration-200 cursor-pointer' onClick={onOpen} role='button' tabIndex={0} onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onOpen()} transition={spring}>
       {/* Top bar (posted + actions) */}
       <div className='mb-1 flex items-center justify-between'>
-        <div className='text-xs text-slate-500'>Posted {posted || createdDate}</div>
+        <div className='text-xs text-slate-500'>{t('page.posted')} {posted || createdDate}</div>
         <div className='relative flex items-center gap-2 opacity-70 group-hover:opacity-100'
           onClick={e => e.stopPropagation()}
           onKeyDown={e => e.stopPropagation()} >
           {/* relation badge */}
           {isRelatedToUser && (
             <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
-              Related to you
+              {t('page.relatedToYou')}
             </span>
           )}
           {/* <FavoriteButton className=' !top-0 !right-0 !relative' /> */}
@@ -484,7 +487,7 @@ function JobCard({ job, onOpen, index }) {
 
       <h2 className='text-lg sm:text-xl font-semibold text-slate-900 leading-snug'>{job.title}</h2>
 
-      <div className='mt-1 text-sm text-slate-600'>{budgetLine || 'Fixed-price · Intermediate'}</div>
+      <div className='mt-1 text-sm text-slate-600'>{budgetLine || `${t('page.fixedPrice')} · Intermediate`}</div>
 
       {/* Description */}
       {job.description ? <p className='mt-2 text-slate-700 text-[15px] md:text-base line-clamp-6   md:line-clamp-2'>{job.description}</p> : null}
@@ -503,7 +506,7 @@ function JobCard({ job, onOpen, index }) {
       <div className='mt-5 flex items-center justify-end'>
         <div className='flex items-center gap-2'>
           <span className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800'>
-            View & Apply <ArrowUpRight className='h-4 w-4' />
+            {t('page.viewAndApply')} <ArrowUpRight className='h-4 w-4' />
           </span>
         </div>
       </div>
@@ -532,53 +535,56 @@ function JobCardSkeleton() {
 // Drawer (Details + Apply)
 // -------------------------------------------------
 
-const applySchema = yup.object({
-  coverLetter: yup
-    .string()
-    .trim()
-    .min(20, 'Min 20 characters')
-    .max(3000, 'Max 3000 characters')
-    .required('Required'),
+function createApplySchema(t) {
+  return yup.object({
+    coverLetter: yup
+      .string()
+      .trim()
+      .min(20, t('page.validation.min20Chars'))
+      .max(3000, t('page.validation.max3000Chars'))
+      .required(t('page.validation.required')),
 
-  bidAmount: yup
-    .number()
-    .typeError('Enter a number')
-    .positive('Must be positive')
-    .required('Required')
-    .max(100000, 'Bid amount must not exceed 100,000'),
+    bidAmount: yup
+      .number()
+      .typeError(t('page.validation.enterNumber'))
+      .positive(t('page.validation.mustBePositive'))
+      .required(t('page.validation.required'))
+      .max(100000, t('page.validation.bidAmountMax')),
 
-  deliveryDays: yup
-    .number()
-    .typeError('Enter a number')
-    .positive('Must be positive')
-    .integer('Must be an integer')
-    .required('Required')
-    .max(1200, 'Maximum delivery time is 1200 days'),
+    deliveryDays: yup
+      .number()
+      .typeError(t('page.validation.enterNumber'))
+      .positive(t('page.validation.mustBePositive'))
+      .integer(t('page.validation.mustBeInteger'))
+      .required(t('page.validation.required'))
+      .max(1200, t('page.validation.deliveryMax')),
 
-  portfolioUrls: yup
-    .array()
-    .transform((value) => {
-      if (!value) return [];
-      return value
-        .split('\n')          // split by line
-        .map((url) => url.trim())
-        .filter((url) => url.length > 0);
-    })
-    .test('is-array', 'Invalid portfolio URLs', (value) => Array.isArray(value))
-    .test('max-links', 'You can add up to 10 portfolio links', (value) => value.length <= 10)
-    .test('valid-urls', 'Each link must be a valid URL', (value) =>
-      value.every((url) => yup.string().url().isValidSync(url))
-    )
-    .test('max-length', 'Each link must not exceed 500 characters', (value) =>
-      value.every((url) => url.length <= 500)
-    )
-    .optional(),
-});
+    portfolioUrls: yup
+      .array()
+      .transform((value) => {
+        if (!value) return [];
+        return value
+          .split('\n')          // split by line
+          .map((url) => url.trim())
+          .filter((url) => url.length > 0);
+      })
+      .test('is-array', t('page.validation.invalidPortfolioUrls'), (value) => Array.isArray(value))
+      .test('max-links', t('page.validation.max10Links'), (value) => value.length <= 10)
+      .test('valid-urls', t('page.validation.validUrls'), (value) =>
+        value.every((url) => yup.string().url().isValidSync(url))
+      )
+      .test('max-length', t('page.validation.maxLength'), (value) =>
+        value.every((url) => url.length <= 500)
+      )
+      .optional(),
+  });
+}
 
 
 
 
 export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
+  const t = useTranslations('Jobs');
   const { role, user } = useAuth();
 
   const [localJob, setLocalJob] = useState(job);
@@ -613,7 +619,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
         setLocalJob(j);
       } catch (err) {
         console.error(err);
-        toast.error(err?.response?.data?.message || 'Failed to load job');
+        toast.error(err?.response?.data?.message || t('page.errors.failedToLoadJob'));
         setLocalJob(null);
       } finally {
         if (mounted) setJobLoading(false);
@@ -630,7 +636,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm({ resolver: yupResolver(applySchema) });
+  } = useForm({ resolver: yupResolver(createApplySchema(t)) });
 
   useEffect(() => {
     if (!open) reset();
@@ -653,7 +659,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
   const buyer = localJob?.buyer || {};
   const country = buyer?.country || '—';
   const budget = localJob?.budget ?? localJob?.estimatedBudget;
-  const priceType = localJob?.budgetType === 'hourly' ? 'Hourly' : 'Fixed-price';
+  const priceType = localJob?.budgetType === 'hourly' ? t('page.hourly') : t('page.fixedPrice');
   const buyerName = localJob?.buyer?.username || '—';
 
 
@@ -677,11 +683,11 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                 {/* Header */}
                 <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
                   <div className='flex items-center flex-wrap gap-3'>
-                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || 'Job details'}</h3>
+                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || t('page.jobDetails')}</h3>
                     {/* show relation badge in drawer header */}
                     {user && (localJob?.buyer?.id === user?.id || localJob?.seller?.id === user?.id) && (
                       <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
-                        You posted this
+                        {t('page.youPostedThis')}
                       </span>
                     )}
                   </div>
@@ -695,7 +701,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   {/* Summary */}
                   {localJob?.description && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Summary</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.summary')}</h4>
 
                       <p className="text-sm text-slate-700 whitespace-pre-wrap">
                         {localJob?.description}
@@ -716,16 +722,16 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                     {/* Preferred Delivery */}
                     <div className="rounded-xl border border-slate-200 p-4">
                       <div className="text-slate-900 font-semibold">
-                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? 'day' : 'days'}
+                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? t('page.day') : t('page.days')}
                       </div>
-                      <div className="text-xs text-slate-500">Preferred delivery</div>
+                      <div className="text-xs text-slate-500">{t('page.preferredDelivery')}</div>
                     </div>
                   </section>
 
                   {/* Skills */}
                   {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Skills and Expertise</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.skillsAndExpertise')}</h4>
                       <div className='flex flex-wrap gap-2'>
                         {localJob?.skillsRequired.map((s, i) => (
                           <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
@@ -746,11 +752,11 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                         {localJob?.buyer?.paymentVerified ?
                           <CheckCircle2 className='h-4 w-4 text-emerald-600' />
                           : <CircleX className='h-4 w-4 text-red-600' />}
-                        <span>Payment method verified</span>
+                        <span>{t('page.paymentMethodVerified')}</span>
                       </div>
                       <div className='flex items-center gap-2 text-slate-700'>
                         <CalendarDays className='h-4 w-4' />
-                        <span>Posted {created || '—'}</span>
+                        <span>{t('page.posted')} {created || '—'}</span>
                       </div>
                     </div>
                   </section>
@@ -758,10 +764,10 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   {/* Attachments */}
                   {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Attachments</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.attachments')}</h4>
                       <div className='rounded-xl border border-slate-200 p-3'>
                         <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                          <FolderOpen className='h-4 w-4' /> Files
+                          <FolderOpen className='h-4 w-4' /> {t('page.files')}
                         </div>
                         <AttachmentList attachments={localJob?.attachments} />
                       </div>
@@ -770,7 +776,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   {/* additionalInfo */}
                   {localJob?.additionalInfo && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>Additional Details</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.additionalDetails')}</h4>
                       <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
                     </section>
                   )}
@@ -778,19 +784,19 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   {/* APPLY FORM */}
                   <section id='apply'>
                     <div className='flex items-center justify-between mb-2'>
-                      <h4 className='text-sm font-semibold text-slate-900'>Apply</h4>
+                      <h4 className='text-sm font-semibold text-slate-900'>{t('page.apply')}</h4>
                     </div>
 
                     <form className='space-y-4' onSubmit={handleSubmit(submit)}>
                       {/* Bid + Delivery */}
                       <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                         <div>
-                          <label className='block text-sm font-medium text-slate-700'>Bid amount (SAR)</label>
+                          <label className='block text-sm font-medium text-slate-700'>{t('page.bidAmount')}</label>
                           <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
                           {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
                         </div>
                         <div>
-                          <label className='block text-sm font-medium text-slate-700'>Delivery (days)</label>
+                          <label className='block text-sm font-medium text-slate-700'>{t('page.delivery')}</label>
                           <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
                           {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
                         </div>
@@ -798,15 +804,15 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
                       {/* Cover letter */}
                       <div>
-                        <label className='block text-sm font-medium text-slate-700'>Cover letter</label>
-                        <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='Explain your approach, similar work, and timeline…' {...register('coverLetter')} />
+                        <label className='block text-sm font-medium text-slate-700'>{t('page.coverLetter')}</label>
+                        <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.coverLetterPlaceholder')} {...register('coverLetter')} />
                         {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
                       </div>
 
                       {/* Portfolio links */}
                       <div>
-                        <label className='block text-sm font-medium text-slate-700'>Portfolio links (one per line)</label>
-                        <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={'https://…\nhttps://…'} {...register('portfolioUrls')} />
+                        <label className='block text-sm font-medium text-slate-700'>{t('page.portfolioLinks')}</label>
+                        <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.portfolioLinksPlaceholder')} {...register('portfolioUrls')} />
                         {errors.portfolioUrls && (
                           <p className="mt-1 text-xs text-rose-600">{errors.portfolioUrls.message}</p>
                         )}
@@ -814,10 +820,10 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
                       <div className='flex items-center justify-end gap-2'>
                         <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
-                          Cancel
+                          {t('page.cancel')}
                         </button>
                         <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
-                          {isSubmitting ? 'Submitting…' : 'Apply now'}
+                          {isSubmitting ? t('page.submitting') : t('page.applyNow')}
                         </button>
                       </div>
                     </form>

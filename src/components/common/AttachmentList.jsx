@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Paperclip } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Modal } from './Modal';
 import { baseImg } from '@/lib/axios';
 import Img from '../atoms/Img';
@@ -20,6 +21,7 @@ const isImageFile = file => {
 
 //variant 'lits' | 'grid'
 const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', variant = 'grid' }) => {
+  const t = useTranslations('AttachmentList');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -96,11 +98,11 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                   <button
                     onClick={() => handleAttachmentClick(f)}
                     className="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-800"
-                    title="Preview"
-                    aria-label="Preview"
+                    title={t('preview')}
+                    aria-label={t('preview')}
                   >
                     <Paperclip className="w-4 h-4 text-emerald-600" />
-                    <span className="hidden sm:inline">Preview</span>
+                    <span className="hidden sm:inline">{t('preview')}</span>
                   </button>
                 </div>
               </li>
@@ -141,14 +143,14 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                   </div>
                 </div>
 
-                <div className="ml-auto text-xs text-slate-400">Preview</div>
+                <div className="ml-auto text-xs text-slate-400">{t('preview')}</div>
               </div>
             ))}
         </div>
       )}
 
       {isModalOpen && selectedFile && (
-        <Modal title={'Preview File'} onClose={handleCloseModal}>
+        <Modal title={t('previewFile')} onClose={handleCloseModal}>
           {isImageFile(selectedFile) ? (
             <div>
               {/* {isImageLoading ? <div className="animate-pulse bg-gray-200 rounded-md w-full" style={{ height: '464px' }} /> */}
@@ -165,10 +167,10 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
             </div>
           ) : (
             <div className="text-center pt-4">
-              <p className="text-gray-600 mb-4">This file cannot be previewed directly.</p>
+              <p className="text-gray-600 mb-4">{t('cannotPreview')}</p>
               <div className="flex items-center justify-center gap-3">
                 <button onClick={() => handleOpenInNewTab(selectedFile)} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                  Open in New Tab
+                  {t('openInNewTab')}
                 </button>
                 <a
                   href={selectedFile?.url.startsWith('http') ? selectedFile?.url : baseImg + (selectedFile?.url || selectedFile?.path || '')}
@@ -177,7 +179,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                   download={selectedFile?.name || selectedFile?.filename}
                   className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                 >
-                  Download
+                  {t('download')}
                 </a>
               </div>
             </div>

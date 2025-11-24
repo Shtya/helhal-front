@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation';
 
 // ========================= PAGE =========================
 export default function ExplorePage() {
+
   return (
     <main className='relative'>
       <Hero />
@@ -194,7 +195,6 @@ function SearchBar({ className = '', large = false }) {
               ? 'left-2 py-1.5 px-3'
               : 'right-2 py-1.5 px-3',
         ].join(' ')}
-        aria-label={t('searchButtonAriaLabel')}
       >
         <ArrowRight className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />
       </button>
@@ -204,12 +204,12 @@ function SearchBar({ className = '', large = false }) {
 
 
 function Hero() {
-  const t = useTranslations('home');
+  const t = useTranslations('Home');
   const locale = useLocale();
 
   return (
     <section className='relative h-[68vh] md:h-[76vh] w-full overflow-hidden'>
-      <Image src='/images/hero-background.jpg' alt='Helhal Hero Background' fill priority className='object-cover object-center' />
+      <Image src='/images/hero-background.jpg' alt={t('hero.alt')} fill priority className='object-cover object-center' />
 
       {/* Green gradient overlay */}
       <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-emerald-900/35 to-black/60' />
@@ -218,22 +218,22 @@ function Hero() {
         <div className='container !px-4 sm:!px-6 lg:!px-8'>
           <div className='max-w-3xl text-white space-y-6'>
             <span className='inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 border border-white/20 rounded-full px-3 py-1 backdrop-blur'>
-              <Zap className='w-4 h-4' /> {t('heroBadge', { default: 'Hire top freelancers fast' })}
+              <Zap className='w-4 h-4' /> {t('hero.badge')}
             </span>
 
-            <h1 className='text-4xl md:text-6xl font-extrabold leading-[1.1] drop-shadow'>{t('heroTitle')}</h1>
+            <h1 className='text-4xl md:text-6xl font-extrabold leading-[1.1] drop-shadow'>{t('hero.title')}</h1>
 
-            <p className='text-emerald-50/95 text-lg md:text-xl'>{t('heroSubtitle')}</p>
+            <p className='text-emerald-50/95 text-lg md:text-xl'>{t('hero.subtitle')}</p>
 
             <SearchBar large className='mt-2' />
 
             <div className='flex flex-wrap items-center gap-4 pt-4 text-emerald-50/90'>
-              <Badge icon={<ShieldCheck className='w-4 h-4' />} label={t('trust.safepay', { default: 'Secure Escrow' })} />
-              <Badge icon={<Stars className='w-4 h-4' />} label={t('trust.rated', { default: '4.9★ average' })} />
-              <Badge icon={<Users className='w-4 h-4' />} label={t('trust.talent', { default: 'Curated talent' })} />
+              <Badge icon={<ShieldCheck className='w-4 h-4' />} label={t('hero.trust.safepay')} />
+              <Badge icon={<Stars className='w-4 h-4' />} label={t('hero.trust.rated')} />
+              <Badge icon={<Users className='w-4 h-4' />} label={t('hero.trust.talent')} />
             </div>
 
-            <p className='text-sm md:text-base text-emerald-50/80'>{t('heroTagline')}</p>
+            <p className='text-sm md:text-base text-emerald-50/80'>{t('hero.tagline')}</p>
           </div>
         </div>
       </div>
@@ -253,6 +253,7 @@ function Badge({ icon, label }) {
 }
 
 export function CategorySwiper() {
+  const t = useTranslations('Home');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -267,7 +268,7 @@ export function CategorySwiper() {
         setItems(data);
       } catch (err) {
 
-        setError('Failed to load categories');
+        setError(t('categories.error.loadFailed'));
 
       } finally {
         setLoading(false);
@@ -275,7 +276,7 @@ export function CategorySwiper() {
     };
 
     fetchCategories();
-  }, []);
+  }, [t]);
 
   if (error) {
     return (
@@ -283,7 +284,7 @@ export function CategorySwiper() {
         <div className="container !px-4 sm:!px-6 lg:!px-8">
           <div className="mt-8">
             <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-              Unable to load popular categories. Please try again later.
+              {t('categories.error.loadFailedMessage')}
             </div>
           </div>
         </div>
@@ -339,7 +340,7 @@ export function CategorySwiper() {
                       'shadow-sm hover:shadow-emerald-200/60 hover:shadow-lg',
                       'hover:-translate-y-0.5',
                     ].join(' ')}
-                    aria-label={`Browse ${category.name}`}
+                    aria-label={t('categories.browse', { name: category.name })}
                   >
                     <span className="absolute inset-0 rounded-xl bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative w-12 h-12 mb-3">
@@ -360,7 +361,7 @@ export function CategorySwiper() {
 
 
 export function PopularServicesSwiper() {
-  const t = useTranslations('home');
+  const t = useTranslations('Home');
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -376,22 +377,22 @@ export function PopularServicesSwiper() {
 
         setItems(data);
       } catch (err) {
-        setError('Failed to load popular services');
+        setError(t('popularServices.error.loadFailed'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchPopular();
-  }, []);
+  }, [t]);
 
   if (!loading && items.length === 0) return null;
   return (
     <section className="container !px-4 sm:!px-6 lg:!px-8 !py-12">
       <div className="flex items-end justify-between mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{t('popularServicesTitle')}</h2>
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{t('popularServices.title')}</h2>
         <Link href="/services" className="text-emerald-700 hover:text-emerald-800 text-sm font-semibold underline underline-offset-4">
-          {t('seeAll', { default: 'See all' })}
+          {t('popularServices.seeAll')}
         </Link>
       </div>
 
@@ -442,7 +443,7 @@ export function PopularServicesSwiper() {
                 ].join(' ')}
                 aria-label={service.title}
               >
-                <span className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">From ${minPrice}</span>
+                <span className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">{t('popularServices.from', { price: minPrice })}</span>
                 <div className="relative w-14 h-14 mb-4">
                   <Image
                     src={service.iconUrl ? resolveUrl(service.iconUrl) : '/icons/service.png'}
@@ -454,7 +455,7 @@ export function PopularServicesSwiper() {
                   />
                 </div>
                 <span className="text-sm font-semibold text-gray-900 group-hover:text-emerald-700">{service.title}</span>
-                <span className="mt-2 text-xs text-emerald-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity">Book now →</span>
+                <span className="mt-2 text-xs text-emerald-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity">{t('popularServices.bookNow')}</span>
               </Link>
             </SwiperSlide>)
           })}
@@ -470,7 +471,7 @@ export function PopularServicesSwiper() {
 }
 
 export function WhyChoose() {
-  const t = useTranslations('home');
+  const t = useTranslations('Home');
 
 
   return (
@@ -494,13 +495,13 @@ export function WhyChoose() {
 }
 
 export function ClientsExperiences() {
-  const t = useTranslations('home');
+  const t = useTranslations('Home');
   const locale = useLocale();
   const experiences = CLIENT_EXPERIENCES[locale === 'ar' ? 'ar' : 'en'];
 
   return (
     <section className='container !px-4 sm:!px-6 lg:!px-8 !pt-12 !pb-8'>
-      <h2 className='text-3xl md:text-4xl font-extrabold mb-6'>{t('clientsExperiencesTitle')}</h2>
+      <h2 className='text-3xl md:text-4xl font-extrabold mb-6'>{t('clientsExperiences.title')}</h2>
 
       <Swiper
         modules={[Navigation]}
@@ -608,7 +609,7 @@ export function VideoSlider() {
 }
 
 export function CTAStrip() {
-  const t = useTranslations('home');
+  const t = useTranslations('Home');
   const { role } = useAuth();
 
 
@@ -619,14 +620,14 @@ export function CTAStrip() {
   if (role === 'admin') return null;
 
   let primaryHref = '/auth?tab=login';
-  let primaryLabel = t('cta.loginToPost', { default: 'Login to Post an Order' });
+  let primaryLabel = t('cta.loginToPost');
 
   if (isBuyer) {
     primaryHref = '/share-job-description';
-    primaryLabel = t('cta.postOrder', { default: 'Post an Order' });
+    primaryLabel = t('cta.postOrder');
   } else if (isSeller) {
     primaryHref = '/create-gig';
-    primaryLabel = t('cta.createService', { default: 'Create a Service' });
+    primaryLabel = t('cta.createService');
   }
 
   return (
@@ -637,13 +638,13 @@ export function CTAStrip() {
           <div>
             <h3 className="text-2xl md:text-3xl font-extrabold">
               {isSeller
-                ? t('cta.sellerTitle', { default: 'Ready to publish your service?' })
-                : t('cta.title', { default: 'Ready to post your order?' })}
+                ? t('cta.sellerTitle')
+                : t('cta.title')}
             </h3>
             <p className="text-emerald-50/90 mt-1">
               {isSeller
-                ? t('cta.sellerSubtitle', { default: 'Showcase your skills and start receiving orders.' })
-                : t('cta.subtitle', { default: 'Describe your project and get proposals within minutes.' })}
+                ? t('cta.sellerSubtitle')
+                : t('cta.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -657,7 +658,7 @@ export function CTAStrip() {
               href="/services/all"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition"
             >
-              {t('cta.browse', { default: 'Browse Services' })}
+              {t('cta.browse')}
             </Link>
           </div>
         </div>

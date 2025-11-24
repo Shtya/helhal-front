@@ -1,9 +1,10 @@
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { useTranslations } from 'next-intl';
 
 
 export default function Client({ name, subtitle, id }) {
-
+    const t = useTranslations('Client');
     const router = useRouter()
     const Initials = useMemo(
         () =>
@@ -21,7 +22,7 @@ export default function Client({ name, subtitle, id }) {
     }
     return (
         <div>
-            <h4 className='text-sm font-semibold text-slate-900 mb-2'>About the client</h4>
+            <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('aboutTheClient')}</h4>
             <div className='mt-1 flex items-center gap-3'>
                 <div className='grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-700 ring-1 ring-slate-200'>
                     <span className='text-sm font-semibold'>{Initials}</span>

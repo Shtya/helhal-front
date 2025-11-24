@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'react-hot-toast';
 import { Check, XCircle, MessageSquare, Clock, DollarSign, Filter, Search, Mail, FileText, ShieldCheck, Briefcase } from 'lucide-react';
 import TabsPagination from '@/components/common/TabsPagination';
@@ -170,6 +171,7 @@ function MetaChip({ icon, text, title }) {
 }
 
 function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
+  const t = useTranslations('MyJobs.proposals');
   const seller = proposal.seller;
 
   const portfolioUrls = useMemo(() => {
@@ -214,7 +216,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
                 <MetaChip
                   icon={<ShieldCheck className="h-3.5 w-3.5" />}
                   text={seller.sellerLevel}
-                  title="Seller level"
+                  title={t('sellerLevel')}
                 />
               )}
             </div>
@@ -230,7 +232,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
               </Link>
               {seller.country && <span>• {seller.country}</span>}
               {seller.memberSince && (
-                <span>• Member since {new Date(seller.memberSince).toLocaleDateString()}</span>
+                <span>• {t('memberSince')} {new Date(seller.memberSince).toLocaleDateString()}</span>
               )}
             </div>
 
@@ -250,15 +252,15 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
           </div>
         </div>
 
-        <div className=''>
+        <div className='flex gap-1 items-center'>
           <div className='inline-flex items-end gap-1'>
             <DollarSign className='mb-0.5 h-5 w-5 text-emerald-600' />
             <p className='text-2xl font-bold text-emerald-700'>{formatMoney(proposal.bidAmount)}</p>
-            <span className='text-sm text-slate-500'>/{proposal.bidType || 'bid'}</span>
+            <span className='text-sm text-slate-500'>/{proposal.bidType === 'hourly' ? t('bidType.hourly') : proposal.bidType === 'fixed' ? t('bidType.fixed') : t('bidType.bid')}</span>
           </div>
           <p className='mt-1 inline-flex items-center gap-1 text-sm text-slate-600'>
             <Clock className='h-4 w-4' />
-            {proposal.estimatedTimeDays} days delivery
+            {t('daysDelivery', { days: proposal.estimatedTimeDays })}
           </p>
         </div>
       </div>
@@ -269,7 +271,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
           <div className="mt-4">
             <div className='mb-1 flex items-center gap-1 text-sm font-semibold text-slate-900'>
               <Briefcase className='h-4 w-4' />
-              Portfolio
+              {t('portfolio')}
             </div>
             <div className="flex flex-wrap gap-2">
               {portfolioUrls.map(({ fullUrl, hostname }, i) => (
@@ -289,14 +291,14 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
 
         <div className='mb-1 flex items-center gap-1 text-sm font-semibold text-slate-900'>
           <FileText className='h-4 w-4' />
-          Cover Letter
+          {t('coverLetter')}
         </div>
         <p className='leading-relaxed text-slate-700'>{proposal.coverLetter}</p>
       </div>
 
       {!!proposal.attachments?.length && (
         <div className='mb-5'>
-          <h4 className='mb-1 text-sm font-semibold text-slate-900'>Attachments</h4>
+          <h4 className='mb-1 text-sm font-semibold text-slate-900'>{t('attachments')}</h4>
           <AttachmentList className='lg:grid-cols-3 xl:grid-cols-4' attachments={proposal.attachments} />
         </div>
       )}
@@ -308,21 +310,21 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
         <span
           className={`px-3 py-1 text-xs font-medium rounded-full self-center sm:self-auto ${statusPill(proposal.status)}`}
         >
-          {proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
+          {proposal.status === 'submitted' ? t('status.submitted') : proposal.status === 'accepted' ? t('status.accepted') : proposal.status === 'rejected' ? t('status.rejected') : proposal.status.charAt(0).toUpperCase() + proposal.status.slice(1)}
         </span>
         {/* Actions */}
         <div className="flex flex-wrap justify-center sm:justify-end gap-2">
           {proposal.status === 'submitted' && (
             <>
               <Button
-                name="Accept Proposal"
+                name={t('acceptProposal')}
                 icon={<Check className="h-4 w-4" />}
                 color="green"
                 onClick={() => onAcceptClick(proposal.id)}
                 className="!px-4 !py-2 !w-fit text-sm"
               />
               <Button
-                name="Reject"
+                name={t('reject')}
                 icon={<XCircle className="h-4 w-4" />}
                 color="red"
                 onClick={() => onRejectClick(proposal.id)}
@@ -331,7 +333,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
             </>
           )}
           <Button
-            name="Message"
+            name={t('message')}
             icon={<MessageSquare className="h-4 w-4" />}
             href={`/chat?userId=${proposal.seller.id}`}
             color="secondary"
@@ -356,6 +358,7 @@ const SORT_CONFIG = {
 };
 
 export default function JobProposalsPage() {
+  const t = useTranslations('MyJobs.proposals');
   const params = useParams();
   const router = useRouter();
   const jobId = params?.id;
@@ -394,7 +397,7 @@ export default function JobProposalsPage() {
       } catch (error) {
         if (!isErrorAbort(error)) {
           console.error('Error loading proposals:', error);
-          toast.error('Failed to load proposals');
+          toast.error(t('errors.failedToLoad'));
         }
       } finally {
         if (controllerRef.current === controller)
@@ -416,11 +419,11 @@ export default function JobProposalsPage() {
     try {
       setActionLoading(true);
       await updateProposalStatus(proposalId, 'rejected');
-      toast.success('Proposal rejected');
+      toast.success(t('success.proposalRejected'));
       await loadProposals(pagination.page || 1);
     } catch (e) {
       console.error(e);
-      toast.error('Failed to update proposal status');
+      toast.error(t('errors.failedToUpdate'));
     } finally {
       setActionLoading(false);
     }
@@ -436,7 +439,7 @@ export default function JobProposalsPage() {
     try {
       setActionLoading(true);
       const result = await updateProposalStatus(pendingAcceptId, 'accepted');
-      toast.success('Proposal accepted');
+      toast.success(t('success.proposalAccepted'));
       setConfirmOpen(false);
       setPendingAcceptId(null);
 
@@ -448,7 +451,7 @@ export default function JobProposalsPage() {
       }
     } catch (e) {
       console.error(e);
-      toast.error('Failed to update proposal status');
+      toast.error(t('errors.failedToUpdate'));
     } finally {
       setActionLoading(false);
     }
@@ -461,16 +464,16 @@ export default function JobProposalsPage() {
       <div className='mb-6'>
         <div className='flex flex-col justify-between gap-4 md:flex-row md:items-end'>
           <div>
-            <h1 className='mb-1 text-3xl font-bold text-slate-900'>{job?.title || 'Job Proposals'}</h1>
+            <h1 className='mb-1 text-3xl font-bold text-slate-900'>{job?.title || t('title')}</h1>
             <p className='text-slate-600'>
-              {proposals.length} {proposals.length === 1 ? 'proposal' : 'proposals'} received
+              {proposals.length} {proposals.length === 1 ? t('proposal') : t('proposals')} {t('received')}
             </p>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
-            {job?.budget && <MetaChip icon={<DollarSign className='h-3.5 w-3.5' />} text={`${formatMoney(job.budget)} • ${job.budgetType || 'budget'}`} title='Job budget' />}
-            {job?.preferredDeliveryDays != null && <MetaChip icon={<Clock className='h-3.5 w-3.5' />} text={`${job.preferredDeliveryDays} days preferred`} title='Preferred delivery time' />}
+            {job?.budget && <MetaChip icon={<DollarSign className='h-3.5 w-3.5' />} text={`${formatMoney(job.budget)} • ${job.budgetType || 'budget'}`} title={t('jobBudget')} />}
+            {job?.preferredDeliveryDays != null && <MetaChip icon={<Clock className='h-3.5 w-3.5' />} text={t('daysPreferred', { days: job.preferredDeliveryDays })} title={t('preferredDeliveryTime')} />}
             <Link href='/my-jobs' className='text-sm text-emerald-700 underline underline-offset-2'>
-              View my jobs
+              {t('viewMyJobs')}
             </Link>
           </div>
         </div>
@@ -479,22 +482,22 @@ export default function JobProposalsPage() {
       {/* Toolbar */}
       <div className='mb-6 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between'>
         <div className='flex flex-1 items-center gap-2'>
-          <InputSearch iconLeft={'/icons/search.svg'} value={query} onChange={v => setQuery(v)} placeholder='Search by freelancer, email, or cover letter…' className='w-full md:max-w-md' showAction={false} />
+          <InputSearch iconLeft={'/icons/search.svg'} value={query} onChange={v => setQuery(v)} placeholder={t('searchPlaceholder')} className='w-full md:max-w-md' showAction={false} />
         </div>
 
         <div className='flex flex-wrap items-center gap-2'>
           <Select
             value={statusFilter}
-            selectkey='Status'
+            selectkey={t('selectKeys.status')}
             onChange={opt => {
               setStatusFilter(opt?.id ?? 'all');
               resetPage();
             }}
             options={[
-              { id: 'all', name: 'All' },
-              { id: 'submitted', name: 'Submitted' },
-              { id: 'accepted', name: 'Accepted' },
-              { id: 'rejected', name: 'Rejected' },
+              { id: 'all', name: t('status.all') },
+              { id: 'submitted', name: t('status.submitted') },
+              { id: 'accepted', name: t('status.accepted') },
+              { id: 'rejected', name: t('status.rejected') },
             ]}
             className="flex-1 !text-xs min-w-fit"
             variant="minimal"
@@ -503,17 +506,17 @@ export default function JobProposalsPage() {
 
           <Select
             value={sortKey}
-            selectkey="Sort"
+            selectkey={t('selectKeys.sort')}
             onChange={opt => {
               setSortKey(opt?.id ?? 'recent');
               resetPage();
             }}
             options={[
-              { id: 'recent', name: 'Recent' },
-              { id: 'amountAsc', name: 'Amount ↑' },
-              { id: 'amountDesc', name: 'Amount ↓' },
-              { id: 'timeAsc', name: 'Delivery time ↑' },
-              { id: 'timeDesc', name: 'Delivery time ↓' },
+              { id: 'recent', name: t('sort.recent') },
+              { id: 'amountAsc', name: t('sort.amountAsc') },
+              { id: 'amountDesc', name: t('sort.amountDesc') },
+              { id: 'timeAsc', name: t('sort.timeAsc') },
+              { id: 'timeDesc', name: t('sort.timeDesc') },
             ]}
             className="flex-1 !text-xs min-w-fit "
             variant="minimal"
@@ -526,7 +529,7 @@ export default function JobProposalsPage() {
       {loading ? (
         <SkeletonLoader />
       ) : proposals.length === 0 ? (
-        <NoResults mainText='No matching proposals' additionalText='Try changing filters or search terms. You can also edit your job to attract more freelancers.' buttonText='Show your jobs' buttonLink={`/my-jobs`} />
+        <NoResults mainText={t('noMatching')} additionalText={t('noMatchingDescription')} buttonText={t('showYourJobs')} buttonLink={`/my-jobs`} />
       ) : (
         <div className='space-y-6'>
           {proposals.map(proposal => (
@@ -545,13 +548,11 @@ export default function JobProposalsPage() {
 
       {/* Accept Confirmation Modal */}
       {confirmOpen && (
-        <Modal title='Accept this proposal?' onClose={() => setConfirmOpen(false)}>
-          <p className='text-slate-700'>
-            This will mark the proposal as <strong>Accepted</strong> and notify the freelancer.
-          </p>
+        <Modal title={t('acceptConfirmTitle')} onClose={() => setConfirmOpen(false)}>
+          <p className='text-slate-700' dangerouslySetInnerHTML={{ __html: t('acceptConfirmMessage') }} />
           <div className='mt-6 flex justify-end gap-2'>
-            <Button name='Cancel' color='secondary' onClick={() => setConfirmOpen(false)} className='!px-4 !py-2 text-sm !text-slate-700' disabled={actionLoading} />
-            <Button name='Confirm Accept' color='green' onClick={confirmAccept} loading={actionLoading} className='!px-4 !py-2 text-sm' icon={<Check className='h-4 w-4' />} />
+            <Button name={t('cancel')} color='secondary' onClick={() => setConfirmOpen(false)} className='!px-4 !py-2 text-sm !text-slate-700' disabled={actionLoading} />
+            <Button name={t('confirmAccept')} color='green' onClick={confirmAccept} loading={actionLoading} className='!px-4 !py-2 text-sm' icon={<Check className='h-4 w-4' />} />
           </div>
         </Modal>
       )}

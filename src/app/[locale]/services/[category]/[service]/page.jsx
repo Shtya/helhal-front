@@ -660,10 +660,10 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
                 <motion.img key={`lb-${safeImages[active]?.url}`} src={safeImages[active]?.url?.startsWith('http') ? safeImages[active]?.url : baseImg + safeImages[active]?.url} alt={`Image ${active + 1}`} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className='max-h-[90vh] w-full mx-auto max-w-[92vw] rounded-xl object-contain shadow-2xl' />
                 {safeImages.length > 1 && (
                   <>
-                    <button onClick={prev} className='absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white' aria-label='Previous image'>
+                    <button onClick={prev} className='absolute start-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white' aria-label='Previous image'>
                       <ChevronLeft className='h-5 w-5' />
                     </button>
-                    <button onClick={next} className='absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white' aria-label='Next image'>
+                    <button onClick={next} className='absolute end-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white' aria-label='Next image'>
                       <ChevronRight className='h-5 w-5' />
                     </button>
                   </>

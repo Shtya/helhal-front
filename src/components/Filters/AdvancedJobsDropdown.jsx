@@ -3,6 +3,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Check, Eraser } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 
@@ -15,6 +16,7 @@ export default function AdvancedJobsDropdown({
   onApply, // (next) => void
   className = '',
 }) {
+  const t = useTranslations('AdvancedJobsDropdown');
   const BRAND = '#108A00';
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -102,7 +104,7 @@ export default function AdvancedJobsDropdown({
             borderColor: open ? BRAND : '#cbd5e1',
             boxShadow: open ? `0 0 0 3px ${BRAND}66 inset` : undefined,
           }}>
-          <span className='truncate'>{totalSelected > 0 ? `${totalSelected} filter${totalSelected > 1 ? 's' : ''} applied` : 'Advanced'}</span>
+          <span className='truncate'>{totalSelected > 0 ? `${totalSelected} ${totalSelected > 1 ? t('filters') : t('filter')} ${t('applied')}` : t('advanced')}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
         </button>
       </div>
@@ -114,16 +116,16 @@ export default function AdvancedJobsDropdown({
           ${open ? 'scale-100 opacity-100 z-[110]' : 'scale-95 opacity-0 pointer-events-none'}`}>
         <div className='py-4 max-h-[70vh] w-full  overflow-y-auto overflow-x-auto'>
           {/* Sort by */}
-          <Section title='Sort by'>
-            <OptionRow label='Newest' active={selected.sortBy === 'newest'} onClick={() => setSelected(s => ({ ...s, sortBy: 'newest' }))} />
-            <OptionRow label='Budget ↑' active={selected.sortBy === 'budgetAsc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetAsc' }))} />
-            <OptionRow label='Budget ↓' active={selected.sortBy === 'budgetDesc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetDesc' }))} />
+          <Section title={t('sortBy')}>
+            <OptionRow label={t('newest')} active={selected.sortBy === 'newest'} onClick={() => setSelected(s => ({ ...s, sortBy: 'newest' }))} />
+            <OptionRow label={t('budgetAsc')} active={selected.sortBy === 'budgetAsc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetAsc' }))} />
+            <OptionRow label={t('budgetDesc')} active={selected.sortBy === 'budgetDesc'} onClick={() => setSelected(s => ({ ...s, sortBy: 'budgetDesc' }))} />
           </Section>
 
           {/* Quick toggles */}
-          <Section title='Quick toggles' subtitle='Client-side filters'>
-            <OptionRow label='≤ 7 days' active={!!selected.max7days} onClick={() => setSelected(s => ({ ...s, max7days: !s.max7days }))} />
-            <OptionRow label='With attachments' active={!!selected.withAttachments} onClick={() => setSelected(s => ({ ...s, withAttachments: !s.withAttachments }))} />
+          <Section title={t('quickToggles')} subtitle={t('clientSideFilters')}>
+            <OptionRow label={t('max7Days')} active={!!selected.max7days} onClick={() => setSelected(s => ({ ...s, max7days: !s.max7days }))} />
+            <OptionRow label={t('withAttachments')} active={!!selected.withAttachments} onClick={() => setSelected(s => ({ ...s, withAttachments: !s.withAttachments }))} />
           </Section>
 
           {/* Footer */}

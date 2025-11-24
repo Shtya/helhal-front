@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy } from 'lucide-react';
 import api, { baseImg } from '@/lib/axios';
 import { showNotification } from '@/utils/notifications';
+import { useTranslations } from 'next-intl';
 
 
 /** Get file icon based on type */
@@ -25,6 +26,7 @@ export const getFileIcon = mimeType => {
 };
 
 export function AttachFilesButton({ hiddenFiles, className, onChange }) {
+  const t = useTranslations('Chat.toast');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -64,10 +66,10 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
       });
       const newFiles = res.data.assets || res.data || [];
       setAttachments(prev => [...newFiles, ...prev]); // newest first
-      showNotification('Files uploaded successfully', 'success');
+      showNotification(t('filesUploadedSuccessfully'), 'success');
     } catch (err) {
       console.error(err);
-      showNotification('Failed to upload files. Please try again.', 'error');
+      showNotification(t('failedToUploadFiles'), 'error');
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -90,15 +92,16 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
       await api.delete(`/assets/${fileId}`);
       setAttachments(prev => prev.filter(f => f.id !== fileId));
       setSelectedFiles(prev => prev.filter(f => f.id !== fileId));
-      showNotification('File deleted successfully', 'success');
+      showNotification(t('fileDeletedSuccessfully'), 'success');
     } catch (err) {
       console.error(err);
-      showNotification('Failed to delete file. Please try again.', 'error');
+      showNotification(t('failedToDeleteFile'), 'error');
     }
   };
 
+  const tChat = useTranslations('Chat');
   const Trigger = (
-    <button type='button' onClick={toggleModal} aria-label='Attach files' className={[' border-slate-200 text-slate-700 ', ' text-[13px] font-medium transition-colors', 'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60', className || ''].join(' ')}>
+    <button type='button' onClick={toggleModal} aria-label={tChat('attachFiles')} className={[' border-slate-200 text-slate-700 ', ' text-[13px] font-medium transition-colors', 'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60', className || ''].join(' ')}>
       <span className='grid h-8 w-8 place-items-center rounded-full bg-slate-100'>
         <Paperclip size={14} />
       </span>
@@ -111,11 +114,11 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
       <div className='w-full max-w-[720px] sm:rounded-xl sm:my-6 bg-white shadow-xl'>
         {/* header */}
         <div className='flex items-center justify-between px-4 py-3 border-b'>
-          <h3 className='text-sm font-semibold'>Your files</h3>
+          <h3 className='text-sm font-semibold'>{tChat('yourFiles')}</h3>
           <label className='relative inline-flex items-center gap-2 text-[13px] font-medium cursor-pointer'>
             <input type='file' className='sr-only' multiple onChange={handleFileChange} disabled={uploading || loading} />
             <span className='grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-slate-50 transition'>{uploading || loading ? <FaSpinner className='animate-spin h-4 w-4' /> : <FiUpload className='h-4 w-4' />}</span>
-            <span>Upload</span>
+            <span>{tChat('upload')}</span>
           </label>
         </div>
 
@@ -142,17 +145,17 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
               );
             })}
             {/* Empty state */}
-            {!loading && !attachments.length && <div className='col-span-full text-center text-sm text-slate-500 py-6'>No files yet. Use “Upload”.</div>}
+            {!loading && !attachments.length && <div className='col-span-full text-center text-sm text-slate-500 py-6'>{tChat('noFilesYet')}</div>}
           </div>
         </div>
 
         {/* footer */}
         <div className='flex items-center justify-between gap-2 px-4 py-3 border-t'>
           <button type='button' onClick={toggleModal} className='text-[13px] px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50'>
-            Close
+            {tChat('close')}
           </button>
           <button onClick={handleOkClick} disabled={!selectedCount} className={['text-[13px] px-3 py-1.5 rounded-md transition', selectedCount ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-slate-200 text-slate-500 cursor-not-allowed'].join(' ')}>
-            Use {selectedCount || 0} file{selectedCount === 1 ? '' : 's'}
+            {tChat('useFiles', { count: selectedCount || 0 })}
           </button>
         </div>
       </div>

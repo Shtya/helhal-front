@@ -8,6 +8,7 @@ import Img from '@/components/atoms/Img';
 import PriceTag from '@/components/atoms/priceTag';
 import { Clock, CheckCircle2, Zap, Star, CircleArrowOutUpRight } from 'lucide-react';
 import { memo, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
 export const Stars = ({ value = 0, size = 12, stroke = 'stroke-white', dim = 'stroke-slate-400' }) => {
   const full = Math.floor(Math.min(Math.max(value, 0), 5));
@@ -45,6 +46,7 @@ export default memo(function AmazingServiceCard({
   index = 0,
   loading = false, // <-- NEW
 }) {
+  const t = useTranslations('Explore');
   const cover = service?.cover || service?.gallery?.[0]?.url || service?.category?.image || '/icons/file.png';
 
   const sellerAvatar = service?.seller?.avatar || service?.seller?.profileImage || '/icons/file.png';
@@ -195,7 +197,7 @@ export default memo(function AmazingServiceCard({
         </div>
       </div>
 
-      <Button icon={<CircleArrowOutUpRight className='-mb-1' size={18} />} className='absolute bottom-[10px] !w-[calc(100%-20px)] mx-[10px]' name='See More' href={to} />
+      <Button icon={<CircleArrowOutUpRight className='-mb-1' size={18} />} className='absolute bottom-[10px] !w-[calc(100%-20px)] mx-[10px]' name={t('discovery.showMore')} href={to} />
     </motion.article>
   );
 });

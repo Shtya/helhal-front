@@ -9,23 +9,24 @@ import { OrderStatus } from '@/constants/order';
 import { Modal } from '@/components/common/Modal';
 import api from '@/lib/axios';
 import toast from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
-const schema = z.object({
+const getSchema = (t) => z.object({
     message: z
         .string()
-        .min(10, 'Message must be at least 10 characters')
-        .max(2000, 'Message must be at most 2000 characters'),
+        .min(10, t('validation.messageMin'))
+        .max(2000, t('validation.messageMax')),
     files: z
         .any()
         .refine(
             (files) => !files || files.length <= 10,
-            'You can upload up to 10 files'
+            t('validation.filesMax')
         )
         .refine(
             (files) =>
                 !files ||
                 Array.from(files).every((f) => !f.size || f.size <= 25 * 1024 * 1024),
-            'Each file must be less than 25MB'
+            t('validation.fileSizeMax')
         )
         .optional(),
 });
@@ -37,6 +38,7 @@ export default function DeliverModel({
     patchOrderRow,
     setRowLoading,
 }) {
+    const t = useTranslations('MyOrders.modals.deliver');
     const [submitting, setSubmitting] = useState(false);
 
     const {
@@ -46,7 +48,7 @@ export default function DeliverModel({
         watch,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(getSchema(t)),
         defaultValues: {
             message: '',
             files: [],
@@ -81,12 +83,12 @@ export default function DeliverModel({
                         deliveredAt: new Date().toISOString(),
                     },
                 }));
-                toast.success('Work delivered successfully');
+                toast.success(t('success'));
 
                 onClose();
             }
         } catch (e) {
-            const msg = e?.response?.data?.message || 'Failed to deliver order';
+            const msg = e?.response?.data?.message || t('error');
             toast.error(msg)
         } finally {
             setRowLoading(row.id, null);
@@ -108,22 +110,22 @@ export default function DeliverModel({
 
 
     return (
-        <Modal title="Deliver Work" onClose={onClose}>
+        <Modal title={t('title')} onClose={onClose}>
             <div className="space-y-4">
                 <p className="text-sm text-slate-600">
-                    Order: <strong>{orderTitle}</strong>
+                    {t('order')}: <strong>{orderTitle}</strong>
                 </p>
                 <p className="text-sm text-slate-600">
-                    You’ll receive payment once <strong>{clientName}</strong> accepts the delivery.
+                    {t('receivePayment')} <strong>{clientName}</strong> {t('acceptsDelivery')}
                 </p>
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Message to Client *
+                        {t('messageToClient')} *
                     </label>
                     <Textarea
                         rows={4}
-                        placeholder="Describe what you’re delivering…"
+                        placeholder={t('messagePlaceholder')}
                         {...register('message')}
                         error={errors.message?.message}
                     />
@@ -138,13 +140,13 @@ export default function DeliverModel({
                 />
                 {/* Freelancer note */}
                 <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
-                    Once you deliver your work, <strong>{clientName}</strong> will have up to <strong>14 days</strong> to review and respond.
-                    If no action is taken within that period, a payment of <strong>${amount}</strong> will be automatically released to you from the client.
+                    {t('note')} <strong>{clientName}</strong> {t('willHave')} <strong>14</strong> {t('daysToReview')}
+                    {t('noAction')} <strong>${amount}</strong> {t('willBeReleased')}
                 </div>
                 <Button
                     type="button"
                     color="green"
-                    name={submitting ? 'Delivering…' : 'Deliver Work'}
+                    name={submitting ? t('delivering') : t('deliverWork')}
                     disabled={submitting}
                     onClick={handleSubmit(onSubmit)}
                     className="!w-fit"

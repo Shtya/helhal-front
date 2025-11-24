@@ -17,8 +17,10 @@ import CategorySelect from '@/components/atoms/CategorySelect';
 import toast from 'react-hot-toast';
 import { isErrorAbort, resolveUrl } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
+import { useTranslations } from 'next-intl';
 
 export default function AdminCategoriesDashboard() {
+  const t = useTranslations('Dashboard.categories');
   const [activeTab, setActiveTab] = useState('all');
 
 
@@ -50,9 +52,9 @@ export default function AdminCategoriesDashboard() {
   };
 
   const tabs = [
-    { value: 'all', label: 'All' },
-    { value: 'category', label: 'Main Categories' },
-    { value: 'subcategory', label: 'Subcategories' },
+    { value: 'all', label: t('tabs.all') },
+    { value: 'category', label: t('tabs.category') },
+    { value: 'subcategory', label: t('tabs.subcategory') },
   ];
 
   const controllerRef = useRef();
@@ -87,7 +89,7 @@ export default function AdminCategoriesDashboard() {
     } catch (e) {
       if (!isErrorAbort(e)) {
         console.error('Error fetching categories:', e);
-        setApiError(e?.response?.data?.message || 'Failed to fetch categories.');
+        setApiError(e?.response?.data?.message || t('error'));
       }
     } finally {
       // Only clear loading if THIS request is still the active one
@@ -136,7 +138,7 @@ export default function AdminCategoriesDashboard() {
       setCurrent(row);
       setModalOpen(true);
     } catch (e) {
-      setApiError(e?.response?.data?.message || 'Failed to load category.');
+      setApiError(e?.response?.data?.message || t('error'));
     }
   };
 
@@ -160,7 +162,7 @@ export default function AdminCategoriesDashboard() {
       setModalOpen(false);
       await fetchCategories();
     } catch (e) {
-      setApiError(e?.response?.data?.message || 'Could not save category.');
+      setApiError(e?.response?.data?.message || t('error'));
     } finally {
       setSubmitting(false);
     }
@@ -178,17 +180,17 @@ export default function AdminCategoriesDashboard() {
   }
 
   const onDelete = async id => {
-    if (!confirm('Delete this category? This cannot be undone.')) return;
+    if (!confirm(t('deleteConfirm'))) return;
 
-    const toastId = toast.loading('Deleting category…');
+    const toastId = toast.loading(t('deleting'));
 
     try {
       await api.delete(`/categories/${id}`);
       await fetchCategories();
 
-      toast.success('Category deleted successfully.', { id: toastId });
+      toast.success(t('deleted'), { id: toastId });
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Error deleting category (maybe it has related services).', {
+      toast.error(e?.response?.data?.message || t('deleteError'), {
         id: toastId,
       });
       console.error('Delete error:', e);
@@ -215,19 +217,19 @@ export default function AdminCategoriesDashboard() {
 
     return (
       <div className='flex items-center gap-2'>
-        <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
+        <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title={t('actions.view')}>
           <Eye size={16} />
         </button>
-        <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title='Edit'>
+        <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title={t('actions.edit')}>
           <Edit size={16} />
         </button>
-        <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title='Delete'>
+        <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>
           <Trash2 size={16} />
         </button>
         <button
           onClick={() => openPopularModel(isTop ? 'edit-top' : 'mark-top', row)}
           className={`p-2 rounded-full ${isTop ? 'text-yellow-600 hover:bg-yellow-50' : 'text-slate-500 hover:bg-slate-100'}`}
-          title={isTop ? 'Unmark as Top' : 'Mark as Top'}
+          title={isTop ? t('actions.unmarkTop') : t('actions.markTop')}
         >
           <Star size={16} fill={isTop ? 'currentColor' : 'none'} />
         </button>
@@ -244,21 +246,21 @@ export default function AdminCategoriesDashboard() {
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
             <div className='flex flex-wrap items-center gap-3'>
               {/* Make Input accept ReactNode OR pass URL here */}
-              <SearchBox placeholder='Search categories…' onSearch={handleSearch} />
+              <SearchBox placeholder={t('searchPlaceholder')} onSearch={handleSearch} />
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}
                 value={sort}
-                placeholder='Order by'
+                placeholder={t('orderBy')}
                 options={[
-                  { id: 'newest', name: 'Newest' },
-                  { id: 'oldest', name: 'Oldest' },
-                  { id: 'az', name: 'A–Z' },
-                  { id: 'za', name: 'Z–A' },
-                  { id: 'top', name: 'Top Categories' }
+                  { id: 'newest', name: t('sortOptions.newest') },
+                  { id: 'oldest', name: t('sortOptions.oldest') },
+                  { id: 'az', name: t('sortOptions.az') },
+                  { id: 'za', name: t('sortOptions.za') },
+                  { id: 'top', name: t('sortOptions.top') }
                 ]}
               />
-              <Button name='Add Category' onClick={openCreate} className='!w-fit' leftIcon={<Plus size={16} />} />
+              <Button name={t('addCategory')} onClick={openCreate} className='!w-fit' leftIcon={<Plus size={16} />} />
             </div>
           </div>
         </GlassCard>
@@ -271,7 +273,7 @@ export default function AdminCategoriesDashboard() {
 
         <Modal
           open={modalOpen && (mode === 'view' || mode === 'edit' || mode === 'create')}
-          title={mode === 'view' ? 'Category Details' : mode === 'edit' ? `Edit Category (${current?.name})` : 'Create Category'}
+          title={mode === 'view' ? t('modal.viewTitle') : mode === 'edit' ? t('modal.editTitle', { name: current?.name }) : t('modal.createTitle')}
           onClose={() => setModalOpen(false)}
           size='md'
           hideFooter
@@ -288,7 +290,7 @@ export default function AdminCategoriesDashboard() {
 
         <Modal
           open={modalOpen && (mode === 'edit-top' || mode === 'mark-top')}
-          title={mode === 'edit-top' ? 'Edit Top Icon' : 'Mark as Top'}
+          title={mode === 'edit-top' ? t('modal.editTopTitle') : t('modal.markTopTitle')}
           onClose={() => setModalOpen(false)}
           size='md'
           hideFooter
@@ -306,37 +308,38 @@ export default function AdminCategoriesDashboard() {
   );
 }
 
-const schema = z.object({
+const getSchema = (t) => z.object({
   name: z
     .string()
-    .min(1, 'Name is required')
-    .max(70, 'Name must be at most 70 characters'),
+    .min(1, t('validation.nameRequired'))
+    .max(70, t('validation.nameMax')),
 
   slug: z
     .string()
-    .min(1, 'Slug is required')
-    .max(70, 'Slug must be at most 70 characters')
-    .regex(/^[a-zA-Z0-9-_]+$/, 'Slug can only contain letters, numbers, hyphens, and underscores'),
+    .min(1, t('validation.slugRequired'))
+    .max(70, t('validation.slugMax'))
+    .regex(/^[a-zA-Z0-9-_]+$/, t('validation.slugInvalid')),
 
   description: z
     .string()
-    .max(300, 'Description must be at most 300 characters')
+    .max(300, t('validation.descriptionMax'))
     .optional(),
 
   type: z.enum(['category', 'subcategory']),
   parentId: z.string().optional(),
 
   image: z
-    .url('Invalid URL')
+    .url(t('validation.imageInvalid'))
     .or(z.literal(''))
     .optional(),
 }).refine(data => data.type === 'category' || !!data.parentId, {
-  message: 'Parent category is required for subcategories',
+  message: t('validation.parentRequired'),
   path: ['parentId'],
 });;
 
 
 function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = false, apiError = null }) {
+  const t = useTranslations('Dashboard.categories');
   const readOnly = mode === 'view';
 
   const {
@@ -346,7 +349,7 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
     setValue,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(getSchema(t)),
     defaultValues: {
       name: value?.name ?? '',
       slug: value?.slug ?? '',
@@ -384,14 +387,14 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
       )}
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.type')}</label>
         <Select
           disabled={readOnly}
           value={watch('type')}
           onChange={opt => setValue('type', opt?.id ?? 'category')}
           options={[
-            { id: 'category', name: 'Main Category' },
-            { id: 'subcategory', name: 'Subcategory' },
+            { id: 'category', name: t('modal.mainCategory') },
+            { id: 'subcategory', name: t('modal.subcategory') },
           ]}
           error={errors.type?.message}
         />
@@ -399,7 +402,7 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
 
       {type === 'subcategory' && (
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Parent Category *</label>
+          <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.parentCategory')}</label>
           <CategorySelect
             value={watch('parentId')}
             excludes={[value?.id]}
@@ -412,27 +415,27 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
 
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Name *</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.name')}</label>
         <Input
           disabled={readOnly}
-          placeholder="Enter category name"
+          placeholder={t('modal.namePlaceholder')}
           {...register('name')}
           error={errors.name?.message}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Slug *</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.slug')}</label>
         <Input
           disabled={readOnly}
-          placeholder="category-slug"
+          placeholder={t('modal.slugPlaceholder')}
           {...register('slug')}
           error={errors.slug?.message}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.description')}</label>
         <Textarea
           disabled={readOnly}
           rows={3}
@@ -453,16 +456,16 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
 
       {readOnly ? (
         <div className="flex justify-end">
-          <Button color="white" name="Close" onClick={onCancel} className="!w-fit" />
+          <Button color="white" name={t('modal.close')} onClick={onCancel} className="!w-fit" />
         </div>
       ) : (
         <div className="flex justify-end gap-3">
-          <Button color="secondary" name="Cancel" onClick={onCancel} className="!w-fit" />
+          <Button color="secondary" name={t('modal.cancel')} onClick={onCancel} className="!w-fit" />
           <Button
             type="button"
             color="green"
             onClick={handleSubmit(submit)}
-            name={submitting ? 'Saving…' : mode === 'edit' ? 'Update Category' : 'Create Category'}
+            name={submitting ? t('modal.saving') : mode === 'edit' ? t('modal.updateCategory') : t('modal.createCategory')}
             disabled={submitting}
             className="!w-fit"
           />
@@ -483,6 +486,7 @@ function slugify(v) {
 
 
 function TopCategoryForm({ category, onCancel, onSaved }) {
+  const t = useTranslations('Dashboard.categories');
   const [file, setFile] = useState(null);
   const [iconUrl, setIconUrl] = useState(category?.topIconUrl || '');
   const [saving, setSaving] = useState(false);
@@ -513,10 +517,10 @@ function TopCategoryForm({ category, onCancel, onSaved }) {
       });
 
       const url = res?.data?.topIconUrl;
-      toast.success('Top category icon updated');
+      toast.success(t('toast.iconUpdated'));
       onSaved?.(url);
     } catch (e) {
-      const msg = e?.response?.data?.message || 'Failed to update icon';
+      const msg = e?.response?.data?.message || t('toast.iconUpdateFailed');
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -527,10 +531,10 @@ function TopCategoryForm({ category, onCancel, onSaved }) {
     try {
       setRemoving(true);
       await api.delete(`/categories/${categoryId}/untop`);
-      toast.success('Category removed from top');
+      toast.success(t('toast.removedFromTop'));
       onSaved?.(null);
     } catch (e) {
-      const msg = e?.response?.data?.message || 'Failed to remove top status';
+      const msg = e?.response?.data?.message || t('toast.removeTopFailed');
       toast.error(msg);
     } finally {
       setRemoving(false);
@@ -548,7 +552,7 @@ function TopCategoryForm({ category, onCancel, onSaved }) {
             onChange={e => handleFileChange(e.target.files?.[0])}
           />
           <span className='inline-flex items-center'>
-            <ImageIcon size={16} className='mr-2' /> Choose Icon
+            <ImageIcon size={16} className='mr-2' /> {t('modal.chooseIcon')}
           </span>
         </label>
 
@@ -565,20 +569,20 @@ function TopCategoryForm({ category, onCancel, onSaved }) {
         )}
       </div>
 
-      <p className='text-xs text-slate-500'>Choose a file then click Save to update the top icon.</p>
+      <p className='text-xs text-slate-500'>{t('modal.chooseFileHint')}</p>
 
       <div className='flex justify-end gap-3 border-t pt-4'>
-        <Button name='Cancel' type='button' color='secondary' onClick={onCancel} className='!w-fit'>
-          Cancel
+        <Button name={t('modal.cancel')} type='button' color='secondary' onClick={onCancel} className='!w-fit'>
+          {t('modal.cancel')}
         </Button>
 
-        <Button name={saving ? 'Saving…' : 'Save Icon'} type='button' color='green' onClick={saveIcon} disabled={saving || !file} className='!w-fit'>
-          {saving ? 'Saving…' : 'Save Icon'}
+        <Button name={saving ? t('modal.saving') : t('modal.saveIcon')} type='button' color='green' onClick={saveIcon} disabled={saving || !file} className='!w-fit'>
+          {saving ? t('modal.saving') : t('modal.saveIcon')}
         </Button>
 
         {top && (
-          <Button name={removing ? 'Removing…' : 'Unmark Top'} type='button' color='red' onClick={removeTop} disabled={removing} className='!w-fit'>
-            {removing ? 'Removing…' : 'Unmark Top'}
+          <Button name={removing ? t('modal.removing') : t('modal.unmarkTop')} type='button' color='red' onClick={removeTop} disabled={removing} className='!w-fit'>
+            {removing ? t('modal.removing') : t('modal.unmarkTop')}
           </Button>
         )}
       </div>
