@@ -17,8 +17,10 @@ const PUBLIC_ROUTES = [
   '/explore',
   '/services',
   '/become-seller',
-  'invite',
-  'jobs',
+  '/invite',
+  '/jobs',
+  '/terms',
+  '/messagesprivacy-policy',
   'profile/:id',
   '/'
 ];
@@ -27,8 +29,8 @@ const PUBLIC_ROUTES = [
 const BUYER_ROUTES = [
   '/share-job-description',
   '/my-jobs',
-  'my-disputes',
-  'my-orders'
+  '/my-disputes',
+  '/my-orders'
 ];
 
 // Only sellers
@@ -36,8 +38,8 @@ const SELLER_ROUTES = [
   '/create-gig',
   '/my-gigs',
   '/jobs/proposals',
-  'my-disputes',
-  'my-orders'
+  '/my-disputes',
+  '/my-orders'
 ];
 
 // Only admins

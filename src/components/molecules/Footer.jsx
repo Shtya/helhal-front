@@ -189,7 +189,7 @@ export function Footer() {
     {
       titleKey: 'navigation_sections.company.title',
       links: [
-        { key: 'navigation_sections.company.contact', href: '/contact' },
+        // { key: 'navigation_sections.company.contact', href: '/contact' },
         { key: 'navigation_sections.company.privacyPolicy', href: '/privacy-policy' },
         { key: 'navigation_sections.company.termsOfService', href: '/terms' },
         { key: 'navigation_sections.company.inviteFriend', href: '/invite' },
