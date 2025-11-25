@@ -2528,6 +2528,43 @@
     "seconds": "seconds"
   },
   "Dashboard": {
+    "overview": {
+      "title": "Analytics",
+      "subtitle": "Green, clean, and fast: your operation at a glance.",
+      "7d": "7D",
+      "30d": "30D",
+      "90d": "90D",
+      "export": "Export CSV",
+      "refresh": "Refresh",
+      "error": "Failed to load stats",
+      "users": "Users",
+      "jobs": "Jobs",
+      "services": "Services",
+      "orders": "Orders",
+      "jobsPosted": "Jobs posted",
+      "servicesPosted": "Services posted",
+      "userStatuses": "User statuses",
+      "jobStatuses": "Job statuses",
+      "serviceStatuses": "Service statuses",
+      "disputeStatuses": "Dispute statuses",
+      "table": {
+        "headers": {
+          "ref": "Ref",
+          "customer": "Customer",
+          "status": "Status",
+          "amount": "Amount",
+          "date": "Date"
+        },
+        "orders": {
+          "title": "Recent Orders",
+          "empty": "No recent orders"
+        },
+        "withdrawals": {
+          "title": "Recent Withdrawals",
+          "empty": "No withdrawal requests"
+        }
+      }
+    },
     "sidebar": {
       "adminDashboard": "Admin Dashboard",
       "controlCenter": "Control Center",
@@ -3119,6 +3156,20 @@
       "validation": {
         "invalidPhone": "Invalid Phone"
       }
+    },
+    "table": {
+      "perPage": "per page",
+      "actionsHeader": "Actions",
+      "emptyTitle": "Nothing to show here",
+      "emptySubtitle": "No rows match your current filters. You can clear filters or try a different search.",
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "showing": "Showing {from} to {to} of {total} results",
+      "previous": "Previous",
+      "next": "Next",
+      "jumpBack": "Jump back {count} pages",
+      "jumpForward": "Jump forward {count} pages"
     }
   }
 }

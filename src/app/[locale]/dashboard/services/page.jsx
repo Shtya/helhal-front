@@ -15,8 +15,10 @@ import toast from 'react-hot-toast';
 import { Link } from '@/i18n/navigation';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import { resolveUrl } from '@/utils/helper';
+import { useTranslations } from 'next-intl';
 
 export default function AdminServicesDashboard() {
+  const t = useTranslations('Dashboard.services');
   const [activeTab, setActiveTab] = useState('all');
 
 
@@ -42,13 +44,13 @@ export default function AdminServicesDashboard() {
   const [current, setCurrent] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const tabs = [
-    { value: 'all', label: 'All Services' },
-    { value: 'Active', label: 'Active' },
-    { value: 'Draft', label: 'Drafts' },
-    { value: 'Pending', label: 'Pending' },
-    { value: 'Paused', label: 'Paused' },
-  ];
+  const tabs = useMemo(() => [
+    { value: 'all', label: t('tabs.all') },
+    { value: 'Active', label: t('tabs.active') },
+    { value: 'Draft', label: t('tabs.draft') },
+    { value: 'Pending', label: t('tabs.pending') },
+    { value: 'Paused', label: t('tabs.paused') },
+  ], [t]);
 
   const controllerRef = useRef();
   const fetchServices = useCallback(async () => {
@@ -81,13 +83,13 @@ export default function AdminServicesDashboard() {
       if (!isErrorAbort(e)) {
 
         console.error('Error fetching services:', e);
-        setApiError(e?.response?.data?.message || 'Failed to fetch services.');
+        setApiError(e?.response?.data?.message || t('toast.statusError'));
       }
     } finally {
       if (controllerRef.current === controller)
         setLoading(false);
     }
-  }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
+  }, [activeTab, debouncedSearch, filters.page, filters.limit, filters.sortBy, filters.sortOrder, t]);
 
   useEffect(() => {
     fetchServices();
@@ -123,22 +125,22 @@ export default function AdminServicesDashboard() {
       setModalOpen(false);
       await fetchServices();
     } catch (e) {
-      setApiError(e?.response?.data?.message || 'Could not save service.');
+      setApiError(e?.response?.data?.message || t('toast.statusError'));
     } finally {
       setSubmitting(false);
     }
   };
 
   const updateStatus = async (id, status) => {
-    const toastId = toast.loading('Updating service status...');
+    const toastId = toast.loading(t('toast.updatingStatus'));
 
     try {
       await api.put(`/services/${id}/status`, { status: status.id });
       await fetchServices();
 
-      toast.success('Service status updated successfully!', { id: toastId });
+      toast.success(t('toast.statusUpdated'), { id: toastId });
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Error updating service status.', { id: toastId });
+      toast.error(e?.response?.data?.message || t('toast.statusError'), { id: toastId });
     }
   };
 
@@ -154,10 +156,10 @@ export default function AdminServicesDashboard() {
   }
 
   // Columns
-  const columns = [
+  const columns = useMemo(() => [
     {
       key: 'gallery',
-      label: 'Image',
+      label: t('columns.image'),
       render: v =>
         v.gallery && v.gallery.length > 0 ? (
           <Img src={v.gallery[0].url} alt='Service' className='w-10 h-10 rounded-md object-cover' />
@@ -169,7 +171,7 @@ export default function AdminServicesDashboard() {
     },
     {
       key: 'title',
-      label: 'Title',
+      label: t('columns.title'),
       render: v => (
         <span
           className="max-w-[200px] truncate block"
@@ -181,7 +183,7 @@ export default function AdminServicesDashboard() {
     },
     {
       key: 'slug',
-      label: 'Slug',
+      label: t('columns.slug'),
       render: v => (
         <span
           className="max-w-[200px] truncate block"
@@ -193,7 +195,7 @@ export default function AdminServicesDashboard() {
     },
     {
       key: 'status',
-      label: 'Status',
+      label: t('columns.status'),
       render: v => {
         const statusColors = {
           Active: 'success',
@@ -207,32 +209,32 @@ export default function AdminServicesDashboard() {
     },
     {
       key: 'seller',
-      label: 'Seller',
-      render: v => v.seller?.username || 'N/A',
+      label: t('columns.seller'),
+      render: v => v.seller?.username || '—',
     },
     {
       key: 'performance',
-      label: 'Performance',
+      label: t('columns.performance'),
       render: v => (
         <div className='flex gap-2'>
-          <span className='text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full' title='Clicks'>
-            {v.clicks || 0} clicks
+          <span className='text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full' title={t('columns.clicks')}>
+            {v.clicks || 0} {t('columns.clicks')}
           </span>
-          <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full' title='Orders'>
-            {v.ordersCount || 0} orders
+          <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full' title={t('columns.orders')}>
+            {v.ordersCount || 0} {t('columns.orders')}
           </span>
         </div>
       ),
     },
-    { key: 'created_at', label: 'Created', type: 'date' },
-  ];
+    { key: 'created_at', label: t('columns.created'), type: 'date' },
+  ], [t]);
 
 
   const Actions = ({ row }) => {
     const isPopular = row.popular;
 
     return (<div className='flex items-center gap-2'>
-      <Link href={`/services/category/${row.slug}`} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title='View'>
+      <Link href={`/services/category/${row.slug}`} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title={t('actions.view')}>
         <Eye size={16} />
       </Link>
       <Select
@@ -243,10 +245,10 @@ export default function AdminServicesDashboard() {
         }
         }
         options={[
-          { id: 'Pending', name: 'Pending' },
-          { id: 'Active', name: 'Activate' },
-          { id: 'Paused', name: 'Pause' },
-          { id: 'Draft', name: 'Set to Draft' },
+          { id: 'Pending', name: t('actions.pending') },
+          { id: 'Active', name: t('actions.activate') },
+          { id: 'Paused', name: t('actions.pause') },
+          { id: 'Draft', name: t('actions.setDraft') },
         ]}
         className='!w-32 !text-xs'
         variant='minimal'
@@ -257,7 +259,7 @@ export default function AdminServicesDashboard() {
           ? 'text-yellow-600 hover:bg-yellow-50'
           : 'text-slate-500 hover:bg-slate-100'
           }`}
-        title={isPopular ? 'Unmark as Popular' : 'Mark as Popular'}
+        title={isPopular ? t('actions.unmarkPopular') : t('actions.markPopular')}
       >
         <Star size={16} fill={isPopular ? 'currentColor' : 'none'} />
       </button>
@@ -271,7 +273,7 @@ export default function AdminServicesDashboard() {
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
             <div className='flex  items-center gap-3'>
-              <SearchBox placeholder='Search services…' onSearch={(val) => {
+              <SearchBox placeholder={t('searchPlaceholder')} onSearch={(val) => {
                 setDebouncedSearch(val)
                 setFilters(p => ({ ...p, page: 1 }))
               }} />
@@ -279,15 +281,15 @@ export default function AdminServicesDashboard() {
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}
-                placeholder='Order by'
+                placeholder={t('orderBy')}
                 value={filters.valueSort}
                 options={[
-                  { id: 'newest', name: 'Newest' },
-                  { id: 'oldest', name: 'Oldest' },
-                  { id: 'az', name: 'A–Z' },
-                  { id: 'za', name: 'Z–A' },
-                  { id: 'mostOrdered', name: 'Most Ordered' },
-                  { id: 'popular', name: 'Most Popular' },
+                  { id: 'newest', name: t('sortOptions.newest') },
+                  { id: 'oldest', name: t('sortOptions.oldest') },
+                  { id: 'az', name: t('sortOptions.az') },
+                  { id: 'za', name: t('sortOptions.za') },
+                  { id: 'mostOrdered', name: t('sortOptions.mostOrdered') },
+                  { id: 'popular', name: t('sortOptions.popular') },
                 ]}
               />
             </div>
@@ -300,13 +302,13 @@ export default function AdminServicesDashboard() {
           <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
-        <Modal open={modalOpen && (mode === 'view' || mode === 'edit' || mode === 'create')} title={mode === 'view' ? 'Service Details' : mode === 'edit' ? 'Edit Service' : 'Create Service'} onClose={() => setModalOpen(false)} size='lg' hideFooter>
+        <Modal open={modalOpen && (mode === 'view' || mode === 'edit' || mode === 'create')} title={mode === 'view' ? t('modal.viewTitle') : mode === 'edit' ? t('modal.editTitle') : t('modal.createTitle')} onClose={() => setModalOpen(false)} size='lg' hideFooter>
           <ServiceForm mode={mode} value={current} onSubmit={onSubmit} onCancel={() => setModalOpen(false)} submitting={submitting} apiError={apiError} />
         </Modal>
 
         <Modal
           open={modalOpen && (mode === "edit-popular" || mode === "mark-popular")}
-          title={mode === "edit-popular" ? "Edit Popular Icon" : "Mark as Popular"}
+          title={mode === "edit-popular" ? t('modal.editPopularTitle') : t('modal.markPopularTitle')}
           onClose={() => setModalOpen(false)}
           size="md"
           hideFooter
@@ -327,6 +329,7 @@ export default function AdminServicesDashboard() {
 
 
 function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = false, apiError = null }) {
+  const t = useTranslations('Dashboard.services');
   const [form, setForm] = useState({
     id: value?.id,
     title: value?.title || '',
@@ -514,59 +517,59 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Title *</label>
-          <Input disabled={readOnly} value={form.title} onChange={e => handleTitleChange(e.target.value)} placeholder='Service title' required />
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.title')}</label>
+          <Input disabled={readOnly} value={form.title} onChange={e => handleTitleChange(e.target.value)} placeholder={t('modal.titlePlaceholder')} required />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Slug *</label>
-          <Input disabled={readOnly} value={form.slug} onChange={e => setField('slug', e.target.value)} placeholder='service-slug' required />
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.slug')}</label>
+          <Input disabled={readOnly} value={form.slug} onChange={e => setField('slug', e.target.value)} placeholder={t('modal.slugPlaceholder')} required />
         </div>
       </div>
 
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Brief Description</label>
-        <Input disabled={readOnly} value={form.brief} onChange={e => setField('brief', e.target.value)} placeholder='Short description' />
+        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.briefDescription')}</label>
+        <Input disabled={readOnly} value={form.brief} onChange={e => setField('brief', e.target.value)} placeholder={t('modal.briefPlaceholder')} />
       </div>
 
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Full Description</label>
+        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.fullDescription')}</label>
         <Textarea disabled={readOnly} value={form.description} onChange={e => setField('description', e.target.value)} rows={4} />
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Category *</label>
-          <Select disabled={readOnly} value={form.categoryId} onChange={e => setField('categoryId', e.target.value)} options={categories.map(c => ({ id: c.id, name: c.name }))} placeholder='Select category' required />
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.category')}</label>
+          <Select disabled={readOnly} value={form.categoryId} onChange={e => setField('categoryId', e.target.value)} options={categories.map(c => ({ id: c.id, name: c.name }))} placeholder={t('modal.selectCategory')} required />
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Subcategory</label>
-          <Select disabled={readOnly || !form.categoryId} value={form.subcategoryId} onChange={e => setField('subcategoryId', e.target.value)} options={subcategories.map(c => ({ id: c.id, name: c.name }))} placeholder={form.categoryId ? 'Select subcategory' : 'Select category first'} />
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.subcategory')}</label>
+          <Select disabled={readOnly || !form.categoryId} value={form.subcategoryId} onChange={e => setField('subcategoryId', e.target.value)} options={subcategories.map(c => ({ id: c.id, name: c.name }))} placeholder={form.categoryId ? t('modal.selectSubcategory') : t('modal.selectCategoryFirst')} />
         </div>
       </div>
 
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Status</label>
+        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.status')}</label>
         <Select
           disabled={readOnly}
           value={form.status}
           onChange={e => setField('status', e.target.value)}
           options={[
-            { id: 'Draft', name: 'Draft' },
-            { id: 'Active', name: 'Active' },
-            { id: 'Pending', name: 'Pending' },
-            { id: 'Paused', name: 'Paused' },
+            { id: 'Draft', name: t('tabs.draft') },
+            { id: 'Active', name: t('tabs.active') },
+            { id: 'Pending', name: t('tabs.pending') },
+            { id: 'Paused', name: t('tabs.paused') },
           ]}
         />
       </div>
 
       <div className='border-t pt-4'>
         <div className='flex justify-between items-center mb-4'>
-          <h3 className='text-lg font-medium text-slate-800'>Packages</h3>
+          <h3 className='text-lg font-medium text-slate-800'>{t('modal.packages')}</h3>
           {!readOnly && (
             <Button type='button' size='sm' onClick={addPackage} className='!w-fit'>
-              <Plus size={16} className='mr-1' /> Add Package
+              <Plus size={16} className='mr-1' /> {t('modal.addPackage')}
             </Button>
           )}
         </div>
@@ -574,39 +577,39 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
         {form.packages.map((pkg, index) => (
           <div key={index} className='border rounded-lg p-4 mb-4 bg-slate-50'>
             <div className='flex justify-between items-center mb-3'>
-              <h4 className='font-medium'>Package {index + 1}</h4>
+              <h4 className='font-medium'>{t('modal.package', { index: index + 1 })}</h4>
               {!readOnly && form.packages.length > 1 && (
                 <Button type='button' size='sm' color='danger' onClick={() => removePackage(index)} className='!w-fit'>
-                  Remove
+                  {t('modal.remove')}
                 </Button>
               )}
             </div>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
               <div>
-                <label className='block text-sm font-medium text-slate-700 mb-1'>Package Type</label>
-                <Input disabled={readOnly} value={pkg.type} onChange={e => updatePackage(index, 'type', e.target.value)} placeholder='Basic, Standard, Premium' />
+                <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.packageType')}</label>
+                <Input disabled={readOnly} value={pkg.type} onChange={e => updatePackage(index, 'type', e.target.value)} placeholder={t('modal.packageTypePlaceholder')} />
               </div>
               <div>
-                <label className='block text-sm font-medium text-slate-700 mb-1'>Title</label>
-                <Input disabled={readOnly} value={pkg.title} onChange={e => updatePackage(index, 'title', e.target.value)} placeholder='Package title' />
+                <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.packageTitle')}</label>
+                <Input disabled={readOnly} value={pkg.title} onChange={e => updatePackage(index, 'title', e.target.value)} placeholder={t('modal.packageTitlePlaceholder')} />
               </div>
               <div>
-                <label className='block text-sm font-medium text-slate-700 mb-1'>Price ($)</label>
-                <Input disabled={readOnly} type='number' value={pkg.price} onChange={e => updatePackage(index, 'price', parseFloat(e.target.value) || 0)} placeholder='0.00' />
+                <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.price')}</label>
+                <Input disabled={readOnly} type='number' value={pkg.price} onChange={e => updatePackage(index, 'price', parseFloat(e.target.value) || 0)} placeholder={t('modal.pricePlaceholder')} />
               </div>
               <div>
-                <label className='block text-sm font-medium text-slate-700 mb-1'>Delivery Time (days)</label>
-                <Input disabled={readOnly} type='number' value={pkg.deliveryTime} onChange={e => updatePackage(index, 'deliveryTime', parseInt(e.target.value) || 1)} placeholder='3' />
+                <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.deliveryTime')}</label>
+                <Input disabled={readOnly} type='number' value={pkg.deliveryTime} onChange={e => updatePackage(index, 'deliveryTime', parseInt(e.target.value) || 1)} placeholder={t('modal.deliveryTimePlaceholder')} />
               </div>
               <div>
-                <label className='block text-sm font-medium text-slate-700 mb-1'>Revisions</label>
-                <Input disabled={readOnly} type='number' value={pkg.revisions} onChange={e => updatePackage(index, 'revisions', parseInt(e.target.value) || 1)} placeholder='1' />
+                <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.revisions')}</label>
+                <Input disabled={readOnly} type='number' value={pkg.revisions} onChange={e => updatePackage(index, 'revisions', parseInt(e.target.value) || 1)} placeholder={t('modal.revisionsPlaceholder')} />
               </div>
             </div>
 
             <div className='mt-3'>
-              <label className='block text-sm font-medium text-slate-700 mb-1'>Description</label>
+              <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.packageDescription')}</label>
               <Textarea disabled={readOnly} value={pkg.description} onChange={e => updatePackage(index, 'description', e.target.value)} rows={2} />
             </div>
           </div>
@@ -615,7 +618,7 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
 
       <div className='border-t pt-4'>
         <div className='flex justify-between items-center mb-4'>
-          <h3 className='text-lg font-medium text-slate-800'>Gallery Images</h3>
+          <h3 className='text-lg font-medium text-slate-800'>{t('modal.galleryImages')}</h3>
           {!readOnly && <ImagePicker onSelect={addGalleryImage} multiple={true} />}
         </div>
 
@@ -634,33 +637,33 @@ function ServiceForm({ mode, value, onChange, onSubmit, onCancel, submitting = f
       </div>
 
       <div className='border-t pt-4'>
-        <h3 className='text-lg font-medium text-slate-800 mb-4'>Additional Options</h3>
+        <h3 className='text-lg font-medium text-slate-800 mb-4'>{t('modal.additionalOptions')}</h3>
         <div className='flex items-center gap-4'>
           <label className='flex items-center gap-2'>
             <input type='checkbox' disabled={readOnly} checked={form.fastDelivery} onChange={e => setField('fastDelivery', e.target.checked)} className='rounded border-slate-300 text-indigo-600 focus:ring-indigo-500' />
-            <span className='text-sm font-medium text-slate-700'>Fast Delivery Available</span>
+            <span className='text-sm font-medium text-slate-700'>{t('modal.fastDelivery')}</span>
           </label>
 
           <label className='flex items-center gap-2'>
             <input type='checkbox' disabled={readOnly} checked={form.additionalRevision} onChange={e => setField('additionalRevision', e.target.checked)} className='rounded border-slate-300 text-indigo-600 focus:ring-indigo-500' />
-            <span className='text-sm font-medium text-slate-700'>Additional Revision Available</span>
+            <span className='text-sm font-medium text-slate-700'>{t('modal.additionalRevision')}</span>
           </label>
         </div>
       </div>
 
       {readOnly ? (
         <div className='flex justify-end'>
-          <Button color='white' name='Close' onClick={onCancel} className='!w-fit'>
-            Close
+          <Button color='white' name={t('modal.close')} onClick={onCancel} className='!w-fit'>
+            {t('modal.close')}
           </Button>
         </div>
       ) : (
         <div className='flex justify-end gap-3 border-t pt-4'>
-          <Button type='button' color='secondary' name='Cancel' onClick={onCancel} className='!w-fit'>
-            Cancel
+          <Button type='button' color='secondary' name={t('modal.cancel')} onClick={onCancel} className='!w-fit'>
+            {t('modal.cancel')}
           </Button>
-          <Button type='submit' color='default' name={submitting ? 'Saving…' : mode === 'edit' ? 'Update Service' : 'Create Service'} disabled={!canSubmit || submitting} className='!w-fit'>
-            {submitting ? 'Saving…' : mode === 'edit' ? 'Update Service' : 'Create Service'}
+          <Button type='submit' color='default' name={submitting ? t('modal.saving') : mode === 'edit' ? t('modal.updateService') : t('modal.createService')} disabled={!canSubmit || submitting} className='!w-fit'>
+            {submitting ? t('modal.saving') : mode === 'edit' ? t('modal.updateService') : t('modal.createService')}
           </Button>
         </div>
       )}
@@ -679,6 +682,7 @@ function slugify(v) {
 
 
 function PopularForm({ service, onCancel, onSaved }) {
+  const t = useTranslations('Dashboard.services');
   const [file, setFile] = useState(null);
   const [iconUrl, setIconUrl] = useState(service?.iconUrl || "");
   const [saving, setSaving] = useState(false);
@@ -717,11 +721,11 @@ function PopularForm({ service, onCancel, onSaved }) {
       });
 
       const url = res?.data?.iconUrl;
-      toast.success("Popular icon updated");
+      toast.success(t('toast.iconUpdated'));
 
       onSaved?.(url);
     } catch (e) {
-      const msg = e?.response?.data?.message || "Failed to update icon"
+      const msg = e?.response?.data?.message || t('toast.iconUpdateFailed')
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -733,10 +737,10 @@ function PopularForm({ service, onCancel, onSaved }) {
     try {
       setUnpopularing(true);
       await api.delete(`/services/${serviceId}/unpopular`);
-      toast.success("Service removed from popular");
+      toast.success(t('toast.removedFromPopular'));
       onSaved?.(null); // clear icon
     } catch (e) {
-      const msg = e?.response?.data?.message || "Failed to remove popular status"
+      const msg = e?.response?.data?.message || t('toast.removeFailed')
       toast.error(msg);
     } finally {
       setUnpopularing(false);
@@ -756,7 +760,7 @@ function PopularForm({ service, onCancel, onSaved }) {
           />
 
           <span className="inline-flex items-center">
-            <ImageIcon size={16} className="mr-2" /> Choose Icon
+            <ImageIcon size={16} className="mr-2" /> {t('modal.chooseIcon')}
           </span>
         </label>
 
@@ -774,7 +778,7 @@ function PopularForm({ service, onCancel, onSaved }) {
       </div>
 
       <p className="text-xs text-slate-500">
-        Choose a file then click Save to update the popular icon.
+        {t('modal.chooseFileHint')}
       </p>
 
       {/* Footer Actions */}
@@ -782,22 +786,22 @@ function PopularForm({ service, onCancel, onSaved }) {
         <Button
           type="button"
           color="secondary"
-          name="Cancel"
+          name={t('modal.cancel')}
           onClick={onCancel}
           className="!w-fit"
         >
-          Cancel
+          {t('modal.cancel')}
         </Button>
 
         <Button
           type="button"
           color="green"
           onClick={saveIcon}
-          name={saving ? "Saving…" : "Save Icon"}
+          name={saving ? t('modal.saving') : t('modal.saveIcon')}
           disabled={saving || !file}
           className="!w-fit"
         >
-          {saving ? "Saving…" : "Save Icon"}
+          {saving ? t('modal.saving') : t('modal.saveIcon')}
         </Button>
 
         {popular && (
@@ -805,11 +809,11 @@ function PopularForm({ service, onCancel, onSaved }) {
             type="button"
             color="red"
             onClick={removePopular}
-            name={unpopularing ? "Removing…" : "Unmark Popular"}
+            name={unpopularing ? t('modal.removing') : t('modal.unmarkPopular')}
             disabled={unpopularing}
             className="!w-fit"
           >
-            {unpopularing ? "Removing…" : "Unmark Popular"}
+            {unpopularing ? t('modal.removing') : t('modal.unmarkPopular')}
           </Button>
         )}
       </div>

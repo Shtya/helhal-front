@@ -2,76 +2,56 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Users, FolderTree, ShoppingBag, Briefcase, Rocket, Wallet, Receipt, HelpCircle, Newspaper, BookOpen, ShieldCheck, MessageSquare, BarChart3, Settings, ArrowUpRight, ArrowDownRight, RefreshCw, Calendar, Download, Folder, ArrowDownCircle } from 'lucide-react';
+import { Users, ShoppingBag, Wallet, BarChart3, ArrowUpRight, ArrowDownRight, RefreshCw, Calendar, Download } from 'lucide-react';
 import api from '@/lib/axios';
+import { BarChart } from '@/components/dashboard/charts/BarChart';
+import { DoughnutChart } from '@/components/dashboard/charts/DoughnutChart';
+import { useTranslations } from 'next-intl';
 
 export default function StatisticsPage() {
-  const today = new Date();
-  const [range, setRange] = useState({
-    from: new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30),
-    to: today,
-    preset: '30d',
-  });
+  const t = useTranslations('Dashboard.overview'); // 👈 namespace
+  const [preset, setPreset] = useState('30');
 
   const [loading, setLoading] = useState(true);
   const [recentLoading, setRecentLoading] = useState(false);
   const [error, setError] = useState(null);
 
-
   // Overview KPIs
   const [overview, setOverview] = useState({
-    users: { total: 0, change: 0, trend: [] },
-    categories: { total: 0, change: 0, trend: [] },
-    services: { total: 0, change: 0, trend: [] },
-    jobs: { total: 0, change: 0, trend: [] },
-    orders: { total: 0, change: 0, trend: [] },
-    revenue: { total: 0, change: 0, trend: [] },
-    withdraws: { total: 0, change: 0, trend: [] },
+    jobs: [],
+    services: [],
   });
 
-  // Entities grid (pages)
-  const [entities, setEntities] = useState([
-    { key: 'users', label: 'Users', href: '/dashboard/users', icon: Users, total: 0, change: 0, trend: [] },
-    { key: 'categories', label: 'Categories', href: '/dashboard/categories', icon: FolderTree, total: 0, change: 0, trend: [] },
-    { key: 'services', label: 'Services', href: '/dashboard/services', icon: ShoppingBag, total: 0, change: 0, trend: [] },
-    { key: 'jobs', label: 'Job', href: '/dashboard/jobs', icon: Briefcase, total: 0, change: 0, trend: [] },
-    { key: 'levelup', label: 'Level Up', href: '/dashboard/level-up', icon: Rocket, total: 0, change: 0, trend: [] },
-    { key: 'orders', label: 'Orders', href: '/dashboard/orders', icon: ShoppingBag, total: 0, change: 0, trend: [] },
-    { key: 'withdraw', label: 'Withdraw', href: '/dashboard/withdraws', icon: Wallet, total: 0, change: 0, trend: [] },
-    { key: 'invoices', label: 'Invoices', href: '/dashboard/invoices', icon: Receipt, total: 0, change: 0, trend: [] },
-    { key: 'faqs', label: 'FAQs', href: '/dashboard/faqs', icon: HelpCircle, total: 0, change: 0, trend: [] },
-    { key: 'blogs', label: 'Blogs', href: '/dashboard/blogs', icon: Newspaper, total: 0, change: 0, trend: [] },
-    { key: 'guides', label: 'Guides', href: '/dashboard/guides', icon: BookOpen, total: 0, change: 0, trend: [] },
-    { key: 'terms', label: 'Terms & Policies', href: '/dashboard/terms', icon: ShieldCheck, total: 0, change: 0, trend: [] },
-    { key: 'chat', label: 'Chat', href: '/dashboard/chat', icon: MessageSquare, total: 0, change: 0, trend: [] },
-    { key: 'reports', label: 'Reports', href: '/dashboard/reports', icon: BarChart3, total: 0, change: 0, trend: [] },
-    { key: 'settings', label: 'Settings', href: '/dashboard/settings', icon: Settings, total: 0, change: 0, trend: [] },
-  ]);
+  const [countsSummary, setCountsSummary] = useState({
+    jobs: [],
+    services: [],
+    users: [],
+    orders: [],
+  });
 
-  const [recent, setRecent] = useState({ orders: [], withdraws: [], reports: [] });
+  const [statusSummary, setStatusSummary] = useState({
+    jobs: [],
+    services: [],
+    disputes: [],
+    users: [],
+  });
 
-  const params = useMemo(
-    () => ({
-      from: range.from.toISOString().split('T')[0], // "YYYY-MM-DD"
-      to: range.to.toISOString().split('T')[0],
-    }),
-    [range]
-  );
 
+  const [recent, setRecent] = useState({ orders: [], withdraws: [] });
 
   async function fetchAll() {
     setLoading(true);
     setError(null);
     try {
-      const [{ data: ov }, { data: ent }] = await Promise.all([
-        api.get('/admin/stats/overview', { params }).catch(() => ({ data: mockOverview() })),
-        api.get('/admin/stats/entities', { params }).catch(() => ({ data: mockEntities() })),
-        // api.get('/admin/stats/recent', { params }).catch(() => ({ data: mockRecent() }))
+      const [{ data: ov }, { data: counts }] = await Promise.all([
+        api.get('/dashboard/overview', { params: { days: preset } }),
+        api.get('/dashboard/counts-summary', { params: { days: preset } }),
       ]);
 
       setOverview(ov);
-      setEntities(prev => prev.map(item => ({ ...item, ...(ent[item.key] || {}) })));
-      // setRecent(rec);
+      setCountsSummary(counts);
+
+
     } catch (e) {
 
       setError('Failed to load stats');
@@ -82,12 +62,16 @@ export default function StatisticsPage() {
 
   useEffect(() => {
     fetchAll();
-  }, [params]);
+  }, [preset]);
 
   async function fetchRecent() {
     setRecentLoading(true);
     try {
-      const { data: rec } = await api.get('/admin/stats/recent').catch(() => ({ data: mockRecent() }));
+      const [{ data: rec }, { data: statuses }] = await Promise.all([
+        api.get('/dashboard/recent'),
+        api.get('/dashboard/status-summary', { params: { days: preset } }),
+      ])
+      setStatusSummary(statuses);
       setRecent(rec);
     } catch (e) {
       setError('Failed to load recent stats');
@@ -105,31 +89,36 @@ export default function StatisticsPage() {
     fetchAll()
     fetchRecent()
   }
-  function setPreset(preset) {
-    const now = new Date();
-    let from = new Date(now);
-    if (preset === '7d') from.setDate(now.getDate() - 7);
-    else if (preset === '30d') from.setDate(now.getDate() - 30);
-    else if (preset === '90d') from.setDate(now.getDate() - 90);
-    else if (preset === 'ytd') from = new Date(now.getFullYear(), 0, 1);
-    setRange({ from, to: now, preset });
-  }
 
-  function exportCSV() {
-    const rows = [['Metric', 'Total', 'Change%']];
+  const [jobData, jobLabels] = useMemo(
+    () => [overview.jobs.map(item => item.count), overview.jobs.map(item => `${formatLabel(item.seg_start)} - ${formatLabel(item.seg_end)}`)],
+    [overview.jobs]
+  );
 
-    // Append each entity row
-    entities.forEach(ent => {
-      rows.push([ent.label, ent.total, ent.change]);
-    });
-    const blob = new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'dashboard_stats.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  const [serviceData, serviceLabels] = useMemo(
+    () => [overview.services.map(item => item.count), overview.services.map(item => `${formatLabel(item.seg_start)} - ${formatLabel(item.seg_end)}`)],
+    [overview.services]
+  );
+
+
+  const doughnutData = useMemo(() => {
+    function format(entity) {
+      return {
+        labels: statusSummary[entity].map(s => s.status),
+        data: statusSummary[entity].map(s => s.status_count)
+      };
+    }
+
+    return {
+      users: format("users"),
+      jobs: format("jobs"),
+      services: format("services"),
+      disputes: format("disputes"),
+    };
+  }, [statusSummary]);
+
+
+
 
 
   return (
@@ -137,18 +126,17 @@ export default function StatisticsPage() {
       {/* Page header */}
       <div className='  flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <div>
-          <h1 className='text-2xl font-semibold tracking-tight text-slate-900'>Analytics</h1>
-          <p className='text-slate-600'>Green, clean, and fast: your operation at a glance.</p>
+          <h1 className='text-2xl font-semibold tracking-tight text-slate-900'> {t('title')}</h1>
+          <p className="text-slate-600">{t('subtitle')}</p>
         </div>
         <div className='flex items-center gap-2'>
           <div className='hidden sm:flex items-center gap-1 rounded-xl border border-emerald-200 bg-white px-2 py-1'>
             <Calendar className='h-4 w-4 text-emerald-600' />
-            <QuickPreset label='7D' active={range.preset === '7d'} onClick={() => setPreset('7d')} />
-            <QuickPreset label='30D' active={range.preset === '30d'} onClick={() => setPreset('30d')} />
-            <QuickPreset label='90D' active={range.preset === '90d'} onClick={() => setPreset('90d')} />
-            <QuickPreset label='YTD' active={range.preset === 'ytd'} onClick={() => setPreset('ytd')} />
+            <QuickPreset label='7D' active={preset === '7'} onClick={() => setPreset('7')} />
+            <QuickPreset label='30D' active={preset === '30'} onClick={() => setPreset('30')} />
+            <QuickPreset label='90D' active={preset === '90'} onClick={() => setPreset('90')} />
           </div>
-          <button onClick={exportCSV} className='inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50'>
+          <button onClick={() => exportCSV({ recent, statusSummary, countsSummary, overview })} className='inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50'>
             <Download className='h-4 w-4' /> Export CSV
           </button>
           <button onClick={() => Refreash()} title='Refresh' className='inline-grid place-items-center rounded-xl border border-emerald-200 bg-white h-10 w-10 text-emerald-700 hover:bg-emerald-50'>
@@ -158,48 +146,276 @@ export default function StatisticsPage() {
       </div>
 
       {/* Error */}
-      {error && <div className='mt-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 px-4 py-3'>{error}</div>}
+      {error && <div className='mt-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 px-4 py-3'>{t('error')}</div>}
 
       {/* KPI row */}
-      <section className='mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
+      <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
           : [
-            { label: 'Users', value: overview.users.total, change: overview.users.change, trend: overview.users.trend, icon: Users },
-            { label: 'Services', value: overview.services.total, change: overview.services.change, trend: overview.services.trend, icon: ShoppingBag },
-            { label: 'Orders', value: overview.orders.total, change: overview.orders.change, trend: overview.orders.trend, icon: ShoppingBag },
-            { label: 'Revenue', value: overview.revenue.total, change: overview.revenue.change, trend: overview.revenue.trend, icon: Wallet, prefix: '$' },
+            { label: t('users'), value: countsSummary.users?.total_count || 0, lastDaysCount: countsSummary.users?.last_days_count || 0, icon: Users },
+            { label: t('jobs'), value: countsSummary.jobs?.total_count || 0, lastDaysCount: countsSummary.jobs?.last_days_count || 0, icon: Wallet },
+            { label: t('services'), value: countsSummary.services?.total_count || 0, lastDaysCount: countsSummary.services?.last_days_count || 0, icon: ShoppingBag },
+            { label: t('orders'), value: countsSummary.orders?.total_count || 0, lastDaysCount: countsSummary.orders?.last_days_count || 0, icon: ShoppingBag },
           ].map(k => <StatCard key={k.label} {...k} />)}
       </section>
 
-      {/* Secondary insights */}
-      <section className='mt-6 '>
-        <div className='rounded-2xl border border-emerald-200 bg-white p-4 '>
-          <SectionHeader title='Performance by Module' subtitle='Totals & momentum across key areas.' />
-          <div className='mt-3 grid gap-3 sm:grid-cols-3 xl:grid-cols-4'>
-            {entities.map(e => (
-              <ModuleRow key={e.key} entity={e} loading={loading} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+
+        <ChartCard title={t('jobsPosted')} loading={loading}
+          empty={!jobData.length}>
+          <BarChart
+            labels={jobLabels}
+            label={t('jobs')}
+            title={t('jobsPosted')}
+            data={jobData}
+          />
+        </ChartCard>
+
+        <ChartCard title={t('servicesPosted')} loading={loading}
+          empty={!serviceData.length}>
+          <BarChart
+            labels={serviceLabels}
+            label={t('services')}
+            data={serviceData}
+          />
+        </ChartCard>
+
+      </div>
+
+      <div className="grid xs:grid-cols-2 xl:grid-cols-4 gap-6 mt-6">
+
+        <ChartCard title={t('userStatuses')} loading={recentLoading}
+          empty={!doughnutData.users.data.length}>
+          <DoughnutChart
+            labels={doughnutData.users.labels}
+            data={doughnutData.users.data}
+            colors={['#0099c6', '#dd4477', '#66aa00', '#b82e2e', '#316395']}
+          />
+        </ChartCard>
+
+        <ChartCard title={t('jobStatuses')}
+          loading={recentLoading}
+          empty={!doughnutData.jobs.data.length}>
+          <DoughnutChart
+            labels={doughnutData.jobs.labels}
+            data={doughnutData.jobs.data}
+            colors={['#ff9900', '#109618', '#990099', '#3b5998']}
+          />
+        </ChartCard>
+
+        <ChartCard title={t('serviceStatuses')}
+          loading={recentLoading}
+          empty={!doughnutData.services.data.length}>
+          <DoughnutChart
+            labels={doughnutData.services.labels}
+            data={doughnutData.services.data}
+            colors={['#109618', '#3366cc', '#dc3912']}
+          />
+        </ChartCard>
+
+        <ChartCard title={t('disputeStatuses')}
+          loading={recentLoading}
+          empty={!doughnutData.users.data.length}>
+          <DoughnutChart
+            labels={doughnutData.disputes.labels}
+            data={doughnutData.disputes.data}
+            colors={['#dc3912', '#ff9900', '#109618', '#3366cc', '#990099']}
+          />
+        </ChartCard>
+
+      </div>
+
 
       {/* Recent activity */}
       <section className='mt-6 max-xl:space-y-6 xl:grid gap-6 xl:grid-cols-2'>
         <div className=''>
-          <SectionHeader title='Recent Orders' />
-          <RecentTable rows={recent.orders} loading={recentLoading} empty='No recent orders' />
+          <SectionHeader title={t('table.orders.title')} />
+          <RecentTable rows={recent.orders} loading={recentLoading} empty={t('table.orders.empty')} />
         </div>
         <div className='space-y-6'>
-          <SectionHeader title='Recent Withdrawals' />
-          <RecentTable rows={recent.withdraws} loading={recentLoading} empty='No withdrawal requests' />
+          <SectionHeader title={t('table.withdrawals.title')} />
+          <RecentTable rows={recent.withdraws} loading={recentLoading} empty={t('table.withdrawals.empty')} />
         </div>
       </section>
     </div>
   );
 }
 
+function RecentTable({ rows, loading, empty }) {
+  const t = useTranslations('Dashboard.overview');
+  if (loading) {
+    return (
+      <div className='rounded-2xl border border-emerald-200 bg-white p-4'>
+        <div className='space-y-2'>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className='h-12 w-full rounded-lg bg-emerald-50 animate-pulse' />
+          ))}
+        </div>
+      </div>
+    );
+  }
+  if (!rows || rows.length === 0) {
+    return <div className='rounded-2xl border border-emerald-200 bg-white p-6 text-slate-500'>{empty}</div>;
+  }
+  return (
+    <div className='overflow-hidden rounded-2xl border border-emerald-200 bg-white overflow-x-auto'>
+      <table className='min-w-full'>
+        <thead className='bg-emerald-50/60'>
+          <tr className='text-justify text-sm text-slate-600'>
+            <th className='px-4 py-3'>{t('table.headers.ref')}</th>
+            <th className='px-4 py-3'>{t('table.headers.customer')}</th>
+            <th className='px-4 py-3'>{t('table.headers.status')}</th>
+            <th className='px-4 py-3'>{t('table.headers.amount')}</th>
+            <th className='px-4 py-3'>{t('table.headers.date')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, idx) => (
+            <tr key={idx} className='border-t border-emerald-100 text-sm hover:bg-emerald-50/40'>
+              <td className='px-4 py-3 text-nowrap font-medium text-slate-800'>{r.ref || r.id || '-'}</td>
+              <td className='px-4 py-3 text-nowrap text-slate-700'>{r.buyer.username || r.user.username || '-'}</td>
+              <td className='px-4 py-3 text-nowrap'>
+                <span className={`inline-flex text-nowrap items-center rounded-lg px-2 py-1 text-xs font-medium ${statusTone(r.status)}`}>{r.status || '-'}</span>
+              </td>
+              <td className='px-4 py-3 text-nowrap text-slate-800'>{typeof (r.amount || r.totalAmount) === 'number' ? `$${formatNumber(r.amount || r.totalAmount)}` : (r.amount || r.totalAmount) || '-'}</td>
+              <td className='px-4 py-3 text-nowrap text-slate-600'>{formatDate(r.created_at)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+
+function exportCSV({ countsSummary, overview, statusSummary, recent }) {
+  const lines = [];
+
+  // ===================
+  // HEADER
+  // ===================
+  lines.push(`Dashboard Export - ${new Date().toLocaleString()}`);
+  lines.push("");
+
+  // ===================
+  // KPI COUNTS
+  // ===================
+  lines.push("=== KPIs ===");
+  lines.push("Metric,Total Count,Last Period Count");
+  lines.push(`Users,${countsSummary.users?.total_count || 0},${countsSummary.users?.last_days_count || 0}`);
+  lines.push(`Jobs,${countsSummary.jobs?.total_count || 0},${countsSummary.jobs?.last_days_count || 0}`);
+  lines.push(`Services,${countsSummary.services?.total_count || 0},${countsSummary.services?.last_days_count || 0}`);
+  lines.push(`Orders,${countsSummary.orders?.total_count || 0},${countsSummary.orders?.last_days_count || 0}`);
+  lines.push("");
+
+  // ===================
+  // JOBS OVERVIEW SEGMENTS
+  // ===================
+  lines.push("=== Jobs Timeline ===");
+  lines.push("Date Segment,Count");
+  overview.jobs.forEach(item => {
+    lines.push(`${formatLabel(item.seg_start)} - ${formatLabel(item.seg_end)},${item.count}`);
+  });
+  lines.push("");
+
+  // ===================
+  // SERVICES OVERVIEW SEGMENTS
+  // ===================
+  lines.push("=== Services Timeline ===");
+  lines.push("Date Segment,Count");
+  overview.services.forEach(item => {
+    lines.push(`${formatLabel(item.seg_start)} - ${formatLabel(item.seg_end)},${item.count}`);
+  });
+  lines.push("");
+
+  // ===================
+  // STATUSES SECTION
+  // ===================
+  lines.push("=== Entity Statuses ===");
+  lines.push("");
+
+  function printStatus(label, arr) {
+    lines.push(`${label} Status,Count`);
+    arr.forEach(s => {
+      lines.push(`${s.status},${s.status_count}`);
+    });
+    lines.push("");
+  }
+
+  printStatus("User", statusSummary.users);
+  printStatus("Job", statusSummary.jobs);
+  printStatus("Service", statusSummary.services);
+  printStatus("Dispute", statusSummary.disputes);
+
+  // ===================
+  // RECENT ORDERS
+  // ===================
+  lines.push("=== Recent Orders ===");
+  if (!recent.orders.length) {
+    lines.push("No orders");
+  } else {
+    lines.push("Order ID,User,status,Amount,Created At");
+    recent.orders.forEach(o => {
+      lines.push(`${o.id},${o.buyer.username},${o.status},${o.totalAmount},${o.created_at}`);
+    });
+  }
+  lines.push("");
+
+  // ===================
+  // RECENT WITHDRAWALS
+  // ===================
+  lines.push("=== Recent Withdrawals ===");
+  if (!recent.withdrawals.length) {
+    lines.push("No withdrawals");
+  } else {
+    lines.push("Withdraw ID,User,status,Amount,Created At");
+    recent.withdrawals.forEach(w => {
+      lines.push(`${w.id},${o.user.username},${w.status},${w.amount},${w.created_at}`);
+    });
+  }
+  lines.push("");
+
+  // ===================
+  // BUILD AND DOWNLOAD CSV
+  // ===================
+  const csvContent = lines.join("\n");
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `dashboard_${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 /* ----------------------------- UI Components ----------------------------- */
+function formatLabel(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+
+function ChartCard({ title, loading, empty, children }) {
+
+  return (
+    <div className='rounded-2xl border border-emerald-200 bg-white p-4'>
+      <h3 className='text-sm font-semibold text-slate-700 mb-4'>{title}</h3>
+
+      {loading
+        ? <ChartSkeleton />
+        : empty
+          ? <EmptyChart />
+          : children
+      }
+    </div>
+  );
+}
+
+
 
 function QuickPreset({ label, active, onClick }) {
   return (
@@ -220,116 +436,37 @@ function SectionHeader({ title, subtitle }) {
   );
 }
 
-function StatCard({ label, value, change, trend, icon: Icon, prefix }) {
-  const positive = change >= 0;
+function StatCard({ label, value, lastDaysCount, icon: Icon, prefix }) {
+  const positive = lastDaysCount >= 0;
+
+  const percentChange = value
+    ? Math.round((lastDaysCount / value) * 100)
+    : 0; // avoid division by zero
+
   return (
-    <div className='group rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm hover:shadow-md transition'>
-      <div className='flex items-start justify-between gap-3'>
-        <div>
-          <p className='text-sm text-slate-500'>{label}</p>
-          <div className='mt-1 flex items-baseline gap-2'>
-            <h3 className='text-2xl font-semibold text-slate-900'>
-              {prefix}
-              {formatNumber(value)}
-            </h3>
-            <span className={`inline-flex items-center gap-1 text-xs ${positive ? 'text-emerald-600' : 'text-rose-600'}`}>
-              {positive ? <ArrowUpRight className='h-3.5 w-3.5' /> : <ArrowDownRight className='h-3.5 w-3.5' />}
-              {Math.abs(change)}%
-            </span>
+    <div className='group rounded-2xl border border-emerald-200 bg-white p-6 shadow-sm hover:shadow-lg transition-all'>
+      <div className='flex flex-col items-start justify-between gap-4'>
+        <div className='flex gap-3 justify-between w-full'>
+          <p className='text-lg font-medium text-slate-700'>{label}</p>
+          <div className='h-12 w-12 rounded-xl bg-emerald-50 border border-emerald-200 grid place-items-center text-emerald-700'>
+            <Icon className='h-6 w-6' />
           </div>
         </div>
-        <div className='h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-200 grid place-items-center text-emerald-700'>
-          <Icon className='h-5 w-5' />
+        <div className='flex gap-3 justify-between w-full'>
+          <h3 className='text-3xl font-bold text-slate-900'>
+            {prefix}
+            {formatNumber(value)}
+          </h3>
+          <span className={`inline-flex items-center gap-1 text-sm ${positive ? 'text-emerald-600' : 'text-rose-600'}`}>
+            {positive ? <ArrowUpRight className='h-4 w-4' /> : <ArrowDownRight className='h-4 w-4' />}
+            {Math.abs(percentChange)}%
+          </span>
         </div>
-      </div>
-      <div className='mt-4'>
-        <SparkArea data={trend} />
       </div>
     </div>
   );
 }
 
-function ModuleRow({ entity, loading }) {
-  const Icon = entity.icon || BarChart3;
-  if (loading) return <div className='h-20 rounded-xl border border-emerald-100 bg-white animate-pulse' />;
-  const positive = (entity.change ?? 0) >= 0;
-  return (
-    <Link href={entity.href} className='block rounded-xl border border-emerald-100 bg-white p-4 hover:border-emerald-300 hover:shadow-sm transition'>
-      <div className='flex items-start justify-between flex-col sm:flex-row gap-3'>
-        <div className='min-w-0 max-sm:w-full flex max-sm:justify-between flex-row sm:flex-col'>
-          <div className='flex flex-col flex-none items-center gap-2'>
-            <div className='h-9 w-9 flex-none rounded-lg bg-emerald-50 border border-emerald-200 grid place-items-center text-emerald-700'>
-              <Icon className='h-5 w-5' />
-            </div>
-            <p title={entity.label} className='text-xs font-medium text-slate-800 truncate'>
-              {entity.label}
-            </p>
-          </div>
-          <div>
-            <div className='mt-2 flex items-center gap-3'>
-              <span className='text-lg font-semibold text-slate-900'>{formatNumber(entity.total)}</span>
-              <span className={`inline-flex items-center gap-1 text-xs ${positive ? 'text-emerald-600' : 'text-rose-600'}`}>
-                {positive ? <ArrowUpRight className='h-3.5 w-3.5' /> : <ArrowDownRight className='h-3.5 w-3.5' />}
-                {Math.abs(entity.change ?? 0)}%
-              </span>
-            </div>
-            <div className='mt-2'>
-              <MiniBar value={progressFromTrend(entity.trend)} />
-            </div>
-          </div>
-        </div>
-        <div className='w-full'>
-          <SparkArea width={140} height={48} data={entity.trend || []} />
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function RecentTable({ rows, loading, empty }) {
-  if (loading) {
-    return (
-      <div className='rounded-2xl border border-emerald-200 bg-white p-4'>
-        <div className='space-y-2'>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className='h-12 w-full rounded-lg bg-emerald-50 animate-pulse' />
-          ))}
-        </div>
-      </div>
-    );
-  }
-  if (!rows || rows.length === 0) {
-    return <div className='rounded-2xl border border-emerald-200 bg-white p-6 text-slate-500'>{empty}</div>;
-  }
-  return (
-    <div className='overflow-hidden rounded-2xl border border-emerald-200 bg-white overflow-x-auto'>
-      <table className='min-w-full'>
-        <thead className='bg-emerald-50/60'>
-          <tr className='text-left text-sm text-slate-600'>
-            <th className='px-4 py-3'>Ref</th>
-            <th className='px-4 py-3'>Customer</th>
-            <th className='px-4 py-3'>Status</th>
-            <th className='px-4 py-3'>Amount</th>
-            <th className='px-4 py-3'>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r, idx) => (
-            <tr key={idx} className='border-t border-emerald-100 text-sm hover:bg-emerald-50/40'>
-              <td className='px-4 py-3 text-nowrap font-medium text-slate-800'>{r.ref || r.id || '-'}</td>
-              <td className='px-4 py-3 text-nowrap text-slate-700'>{r.customer || r.user || '-'}</td>
-              <td className='px-4 py-3 text-nowrap'>
-                <span className={`inline-flex text-nowrap items-center rounded-lg px-2 py-1 text-xs font-medium ${statusTone(r.status)}`}>{r.status || '-'}</span>
-              </td>
-              <td className='px-4 py-3 text-nowrap text-slate-800'>{typeof r.amount === 'number' ? `$${formatNumber(r.amount)}` : r.amount || '-'}</td>
-              <td className='px-4 py-3 text-nowrap text-slate-600'>{formatDate(r.date)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
 
 /* ------------------------------ Visuals ------------------------------ */
 
@@ -372,12 +509,30 @@ function MiniBar({ value = 0 }) {
 function SkeletonCard() {
   return (
     <div className='rounded-2xl border border-emerald-200 bg-white p-4'>
-      <div className='h-6 w-28 bg-emerald-50 rounded animate-pulse' />
-      <div className='mt-3 h-8 w-36 bg-emerald-50 rounded animate-pulse' />
-      <div className='mt-4 h-12 w-full bg-emerald-50 rounded animate-pulse' />
+      <div className='h-5 w-28 bg-emerald-50 rounded animate-pulse' />
+      <div className='mt-3 h-7 w-36 bg-emerald-50 rounded animate-pulse' />
+      <div className='mt-4 h-10 w-full bg-emerald-50 rounded animate-pulse' />
     </div>
   );
 }
+
+function ChartSkeleton() {
+  return (
+    <div className="rounded-2xl bg-white p-4 h-[400px] animate-pulse">
+      <div className="h-[340px] bg-emerald-50 rounded" />
+    </div>
+  );
+}
+
+
+function EmptyChart({ message = "No data available" }) {
+  return (
+    <div className="h-[400px] flex items-center justify-center rounded-2xl border bg-white border-slate-200 text-slate-500">
+      {message}
+    </div>
+  );
+}
+
 
 /* ------------------------------ Utilities ------------------------------- */
 
@@ -410,59 +565,4 @@ function randSeries(n = 12, base = 50) {
     out.push(Math.max(0, v));
   }
   return out;
-}
-
-function mockOverview() {
-  return {
-    users: { total: 12840, change: 6.2, trend: randSeries() },
-    categories: { total: 42, change: 2.1, trend: randSeries(10, 20) },
-    services: { total: 980, change: 4.8, trend: randSeries(12, 60) },
-    jobs: { total: 154, change: 3.1, trend: randSeries(12, 15) },
-    orders: { total: 2371, change: 5.7, trend: randSeries(12, 70) },
-    revenue: { total: 184320, change: 7.9, trend: randSeries(12, 100) },
-    withdraws: { total: 312, change: -1.4, trend: randSeries(12, 30) },
-  };
-}
-
-function mockEntities() {
-  const o = mockOverview();
-  return {
-    users: o.users,
-    categories: o.categories,
-    services: o.services,
-    jobs: o.jobs,
-    levelup: { total: 87, change: 9.2, trend: randSeries(12, 10) },
-    orders: o.orders,
-    withdraw: o.withdraws,
-    invoices: { total: 1432, change: 4.1, trend: randSeries(12, 50) },
-    faqs: { total: 128, change: 1.3, trend: randSeries(12, 5) },
-    blogs: { total: 64, change: 2.9, trend: randSeries(12, 8) },
-    guides: { total: 37, change: 0.5, trend: randSeries(12, 6) },
-    terms: { total: 12, change: 0, trend: randSeries(12, 2) },
-    chat: { total: 4890, change: 12.4, trend: randSeries(12, 80) },
-    reports: { total: 73, change: -3.2, trend: randSeries(12, 12) },
-    settings: { total: 1, change: 0, trend: randSeries(12, 1) },
-  };
-}
-
-function mockRecent() {
-  const now = Date.now();
-  const mk = (idx, status, amount) => ({ id: 'INV-' + (7000 + idx), ref: 'INV-' + (7000 + idx), customer: ['Omar', 'Lina', 'Yousef', 'Hana', 'Mona'][idx % 5], status, amount, date: new Date(now - idx * 86400000).toISOString() });
-  return {
-    orders: [mk(1, 'paid', 320), mk(2, 'pending', 145), mk(3, 'paid', 690), mk(4, 'failed', 120), mk(5, 'paid', 240), mk(6, 'paid', 510)],
-    withdraws: [mk(1, 'processing', 1200), mk(2, 'approved', 900), mk(3, 'rejected', 480)],
-    reports: [
-      { id: 'RPT-101', ref: 'RPT-101', user: 'Admin', status: 'open', amount: '-', date: new Date(now - 3600e3).toISOString() },
-      { id: 'RPT-102', ref: 'RPT-102', user: 'Support', status: 'resolved', amount: '-', date: new Date(now - 7200e3).toISOString() },
-    ],
-  };
-}
-
-function progressFromTrend(trend = []) {
-  if (!trend || !trend.length) return 45;
-  const first = trend[0];
-  const last = trend[trend.length - 1];
-  const delta = last - first;
-  const pct = 50 + Math.max(-40, Math.min(40, delta));
-  return pct; // mocked mapping
 }

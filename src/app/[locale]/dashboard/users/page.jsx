@@ -31,6 +31,7 @@ const SellerLevel = {
 
 
 export default function AdminUsersDashboard() {
+  const t = useTranslations('Dashboard.users');
   const [activeTab, setActiveTab] = useState('all');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,10 +51,10 @@ export default function AdminUsersDashboard() {
   };
 
   const tabs = [
-    { value: 'all', label: 'All Users' },
-    { value: 'buyer', label: 'Buyers' },
-    { value: 'seller', label: 'Sellers' },
-    { value: 'admin', label: 'Admins' },
+    { value: 'all', label: t('tabs.all') },
+    { value: 'buyer', label: t('tabs.buyer') },
+    { value: 'seller', label: t('tabs.seller') },
+    { value: 'admin', label: t('tabs.admin') },
   ];
   const controllerRef = useRef();
   const fetchUsers = useCallback(async () => {
@@ -118,16 +119,16 @@ export default function AdminUsersDashboard() {
   }
 
   const handleStatusChange = async (userId, newStatus) => {
-    const toastId = toast.loading(`Changing status to ${newStatus}...`);
+    const toastId = toast.loading(t('toast.changingStatus', { status: newStatus }));
 
     try {
       await api.put('/auth/status', { status: newStatus, userId });
-      toast.success(`Status changed to ${newStatus} successfully`, {
+      toast.success(t('toast.statusChanged', { status: newStatus }), {
         id: toastId,
       });
       fetchUsers();
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to change status', {
+      toast.error(err?.response?.data?.message || t('toast.statusError'), {
         id: toastId,
       });
       console.error('Error changing status:', err);
@@ -135,16 +136,16 @@ export default function AdminUsersDashboard() {
   };
 
   const handleDeleteUser = async userId => {
-    if (window.confirm('Delete this user?')) {
+    if (window.confirm(t('toast.deleteConfirm'))) {
       let toastId;
       try {
-        toastId = toast.loading('Deleting user...');
+        toastId = toast.loading(t('toast.deleting'));
         await api.delete(`/auth/user/${userId}`);
-        toast.success('User deleted', { id: toastId });
+        toast.success(t('toast.deleted'), { id: toastId });
         fetchUsers();
       } catch (e) {
         console.error(e);
-        toast.error('Failed to delete user', { id: toastId });
+        toast.error(t('toast.deleteError'), { id: toastId });
       }
     }
   };
@@ -173,17 +174,17 @@ export default function AdminUsersDashboard() {
     setSavingUser(true);
     let toastId;
     try {
-      toastId = toast.loading('Saving changes...');
+      toastId = toast.loading(t('toast.saving'));
 
       await api.put(`/auth/profile/${editingUser.id}`, finalUpdatedata);
 
-      toast.success('User updated successfully', { id: toastId });
+      toast.success(t('toast.saved'), { id: toastId });
       fetchUsers(); // Refresh the list
       setEditMode(false);
       setShowUserModal(false);
       setEditingUser(null);
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to update user', { id: toastId });
+      toast.error(err?.response?.data?.message || t('toast.saveError'), { id: toastId });
       console.error(err);
     } finally {
       setSavingUser(false);
@@ -201,7 +202,6 @@ export default function AdminUsersDashboard() {
   const onRemoveCertification = idx => setEditingUser(a => ({ ...a, certifications: a.certifications.filter((_, i) => i !== idx) }));
 
   const [usernameError, setUsernameError] = useState('');
-  const t = useTranslations('auth');
 
   const handleChangeUsername = (value) => {
     const trimmed = value.trim();
@@ -223,25 +223,25 @@ export default function AdminUsersDashboard() {
   const updateUserLevel = async (id, level) => {
     let toastId;
     try {
-      toastId = toast.loading(`Changing level to ${level}...`);
+      toastId = toast.loading(t('toast.changingLevel', { level }));
       await api.put(`/auth/users/${id}/level`, { sellerLevel: level });
-      toast.success(`Level set to ${level}`, { id: toastId });
+      toast.success(t('toast.levelSet', { level }), { id: toastId });
       await fetchUsers(); // refresh list
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Error updating user level.', { id: toastId });
+      toast.error(e?.response?.data?.message || t('toast.levelError'), { id: toastId });
     }
   };
 
 
   // Columns
   const userColumns = [
-    { key: 'profileImage', label: 'Avatar', type: 'img' },
-    { key: 'username', label: 'Username' },
-    { key: 'email', label: 'Email' },
-    { key: 'role', label: 'Role' },
+    { key: 'profileImage', label: t('columns.avatar'), type: 'img' },
+    { key: 'username', label: t('columns.username') },
+    { key: 'email', label: t('columns.email') },
+    { key: 'role', label: t('columns.role') },
     {
       key: 'status',
-      label: 'Status',
+      label: t('columns.status'),
       status: [
         ['active', 'inline-flex items-center gap-1 text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full text-xs'],
         ['suspended', 'inline-flex items-center gap-1 text-red-700 bg-red-100 px-2 py-1 rounded-full text-xs'],
@@ -249,8 +249,8 @@ export default function AdminUsersDashboard() {
         ['deleted', 'inline-flex items-center gap-1 text-slate-600 bg-slate-100 px-2 py-1 rounded-full text-xs'],
       ],
     },
-    { key: 'memberSince', label: 'Joined', type: 'date' },
-    { key: 'lastLogin', label: 'Last Login', type: 'date' },
+    { key: 'memberSince', label: t('columns.joined'), type: 'date' },
+    { key: 'lastLogin', label: t('columns.lastLogin'), type: 'date' },
   ];
 
 
@@ -261,7 +261,7 @@ export default function AdminUsersDashboard() {
         <button
           onClick={() => viewUserDetails(user)}
           className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-full"
-          title="View Details"
+          title={t('actions.viewDetails')}
         >
           <Eye size={16} />
         </button>
@@ -274,10 +274,10 @@ export default function AdminUsersDashboard() {
             }
           }}
           options={[
-            { id: SellerLevel.NEW, name: 'New' },
-            { id: SellerLevel.LVL1, name: 'Level 1' },
-            { id: SellerLevel.LVL2, name: 'Level 2' },
-            { id: SellerLevel.TOP, name: 'Top Seller' },
+            { id: SellerLevel.NEW, name: t('actions.levels.new') },
+            { id: SellerLevel.LVL1, name: t('actions.levels.lvl1') },
+            { id: SellerLevel.LVL2, name: t('actions.levels.lvl2') },
+            { id: SellerLevel.TOP, name: t('actions.levels.top') },
           ]}
           className="!w-40 !text-xs"
           variant="minimal"
@@ -285,7 +285,7 @@ export default function AdminUsersDashboard() {
         <button
           onClick={() => handleEditClick(user)}
           className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
-          title="Edit User"
+          title={t('actions.editUser')}
         >
           <Edit size={16} />
         </button>
@@ -297,7 +297,7 @@ export default function AdminUsersDashboard() {
                 onClick={() => handleStatusChange(user.id, 'active')}
                 className="flex items-center w-full px-4 py-2 text-sm text-emerald-700 hover:bg-emerald-50"
               >
-                Activate
+                {t('actions.activate')}
               </button>
             )}
             {user.status !== 'suspended' && (
@@ -305,14 +305,14 @@ export default function AdminUsersDashboard() {
                 onClick={() => handleStatusChange(user.id, 'suspended')}
                 className="flex items-center w-full px-4 py-2 text-sm text-amber-700 hover:bg-amber-50"
               >
-                Suspend
+                {t('actions.suspend')}
               </button>
             )}
             {user.status !== 'deleted' && (<button
               onClick={() => handleDeleteUser(user.id)}
               className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
             >
-              Delete
+              {t('actions.delete')}
             </button>)}
           </ActionMenuPortal>
         </div>
@@ -333,17 +333,17 @@ export default function AdminUsersDashboard() {
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} className=' ' />
             <div className='flex flex-wrap items-center gap-3'>
-              <SearchBox placeholder='Search users…' onSearch={handleSearch} />
+              <SearchBox placeholder={t('searchPlaceholder')} onSearch={handleSearch} />
               <Select
                 className='!w-fit'
                 value={filters.sortBy}
                 onChange={e => applySortPreset(e)}
-                placeholder='order by'
+                placeholder={t('orderBy')}
                 options={[
-                  { id: 'newest', name: 'Newest' },
-                  { id: 'oldest', name: 'Oldest' },
-                  { id: 'az', name: 'A–Z' },
-                  { id: 'za', name: 'Z–A' },
+                  { id: 'newest', name: t('sortOptions.newest') },
+                  { id: 'oldest', name: t('sortOptions.oldest') },
+                  { id: 'az', name: t('sortOptions.az') },
+                  { id: 'za', name: t('sortOptions.za') },
                 ]}
               />
 
@@ -351,12 +351,12 @@ export default function AdminUsersDashboard() {
                 className='!w-fit'
                 value={filters?.status}
                 onChange={e => applyStatusPreset(e)}
-                placeholder='filter by'
+                placeholder={t('filterBy')}
                 options={[
-                  { id: 'all', name: 'All' },
-                  { id: 'active', name: 'Active' },
-                  { id: 'suspended', name: 'Suspended' },
-                  { id: 'deleted', name: 'Deleted' },
+                  { id: 'all', name: t('filterOptions.all') },
+                  { id: 'active', name: t('filterOptions.active') },
+                  { id: 'suspended', name: t('filterOptions.suspended') },
+                  { id: 'deleted', name: t('filterOptions.deleted') },
                 ]}
               />
             </div>
@@ -376,11 +376,11 @@ export default function AdminUsersDashboard() {
             onPageChange={(
               p, // NEW: updates server-side page
             ) => setFilters(prev => ({ ...prev, page: p }))}
-          />f
+          />
         </div>
 
         {/* Modal */}
-        <Modal open={showUserModal && (selectedUser || editingUser)} title={editMode ? `Edit User ${editingUser?.username}` : 'User Details'} onClose={() => {
+        <Modal open={showUserModal && (selectedUser || editingUser)} title={editMode ? t('modal.editTitle', { username: editingUser?.username || '' }) : t('modal.title')} onClose={() => {
           setShowUserModal(false);
           setEditMode(false);
           setEditingUser(null);
@@ -437,14 +437,14 @@ export default function AdminUsersDashboard() {
                   className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'
                   disabled={savingUser}
                 >
-                  Cancel
+                  {t('modal.cancel')}
                 </button>
                 <button
                   onClick={() => handleSaveUser(editingUser)}
                   disabled={savingUser || phoneError || usernameError}
                   className='px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50'
                 >
-                  {savingUser ? 'Saving...' : 'Save Changes'}
+                  {savingUser ? t('modal.saving') : t('modal.saveChanges')}
                 </button>
               </div>
             </>
@@ -461,32 +461,32 @@ export default function AdminUsersDashboard() {
                   </div>
                 </div>
                 <div>
-                  <h4 className='font-semibold mb-3 text-slate-900'>User Information</h4>
+                  <h4 className='font-semibold mb-3 text-slate-900'>{t('modal.userInformation')}</h4>
                   <div className='space-y-2 text-sm text-slate-700'>
                     <p>
-                      <span className='font-medium'>Member Since:</span> {new Date(selectedUser?.memberSince).toLocaleDateString()}
+                      <span className='font-medium'>{t('modal.memberSince')}</span> {new Date(selectedUser?.memberSince).toLocaleDateString()}
                     </p>
                     <p>
-                      <span className='font-medium'>Last Login:</span> {selectedUser?.lastLogin ? new Date(selectedUser?.lastLogin).toLocaleString() : 'Never'}
+                      <span className='font-medium'>{t('modal.lastLogin')}</span> {selectedUser?.lastLogin ? new Date(selectedUser?.lastLogin).toLocaleString() : t('modal.never')}
                     </p>
                     <p>
-                      <span className='font-medium'>Description:</span> {selectedUser?.description || 'No description'}
+                      <span className='font-medium'>{t('modal.description')}</span> {selectedUser?.description || t('modal.noDescription')}
                     </p>
                     <p>
-                      <span className='font-medium'>Skills:</span> {selectedUser?.skills?.join(', ') || 'No skills listed'}
+                      <span className='font-medium'>{t('modal.skills')}</span> {selectedUser?.skills?.join(', ') || t('modal.noSkills')}
                     </p>
                     <p>
-                      <span className='font-medium'>Languages:</span> {selectedUser?.languages?.join(', ') || 'No languages listed'}
+                      <span className='font-medium'>{t('modal.languages')}</span> {selectedUser?.languages?.join(', ') || t('modal.noLanguages')}
                     </p>
                     <p>
-                      <span className='font-medium'>Referral Code:</span> {selectedUser?.referralCode || 'No Referral Code'}
+                      <span className='font-medium'>{t('modal.referralCode')}</span> {selectedUser?.referralCode || t('modal.noReferralCode')}
                     </p>
                   </div>
                 </div>
               </div>
               <div className='mt-6 flex justify-end gap-3'>
                 <button onClick={() => setShowUserModal(false)} className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'>
-                  Close
+                  {t('modal.close')}
                 </button>
               </div>
             </>
@@ -502,7 +502,8 @@ export default function AdminUsersDashboard() {
 
 
 function UserBasicInfoForm({ username: initialUsername, phone: initialPhone, countryCode: initialCountryCode, onChange }) {
-  const t = useTranslations()
+  const tAuth = useTranslations('auth');
+  const tUsers = useTranslations('Dashboard.users');
   const [username, setUsername] = useState(initialUsername || '');
   const [phoneValue, setPhoneValue] = useState(initialPhone || '');
   const [country, setCountry] = useState(initialCountryCode || { code: 'SA', dial_code: '+966' });
@@ -538,14 +539,14 @@ function UserBasicInfoForm({ username: initialUsername, phone: initialPhone, cou
           onChange({ username })
         }}
       />
-      {usernameError && <FormErrorMessage message={t(`errors.${usernameError}`)} />}
+      {usernameError && <FormErrorMessage message={tAuth(`errors.${usernameError}`)} />}
       <Divider />
 
       <PhoneInputWithCountry
         value={{ phone: phoneValue, countryCode: country }}
         onChange={handlePhoneChange}
       />
-      {phoneError && <FormErrorMessage message={'Invalid Phone'} />}
+      {phoneError && <FormErrorMessage message={tUsers('validation.invalidPhone')} />}
       <Divider />
     </div>
   );

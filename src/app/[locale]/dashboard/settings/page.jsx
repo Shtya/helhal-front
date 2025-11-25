@@ -11,20 +11,21 @@ import { Switcher } from '@/components/atoms/Switcher';
 import z from 'zod';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { resolveUrl } from '@/utils/helper';
+import { useTranslations } from 'next-intl';
 
-const SettingsSchema = z.object({
+const getSettingsSchema = (t) => z.object({
   contactEmail: z
-    .email("Invalid email format"),
+    .email(t('validation.emailInvalid')),
 
   platformPercent: z
     .coerce
     .number()
-    .min(0, "Platform fee must be at least 0%")
-    .max(100, "Platform fee cannot exceed 100%"),
+    .min(0, t('validation.platformFeeMin'))
+    .max(100, t('validation.platformFeeMax')),
 
   siteLogo: process.env.NODE_ENV === "development"
-    ? z.string().min(1, "Logo path is required") // allow any string in dev
-    : z.url("Must be a valid image URL"),
+    ? z.string().min(1, t('validation.logoRequired'))
+    : z.url(t('validation.logoInvalid')),
 });
 
 const MODULE = 'settings';
@@ -150,6 +151,7 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
 
 /* ------------------------------- Page -------------------------------- */
 export default function AdminSettingsDashboard() {
+  const t = useTranslations('Dashboard.settings');
   const { getOne, update } = useCrud();
 
   const [settings, setSettings] = useState({
@@ -184,7 +186,7 @@ export default function AdminSettingsDashboard() {
       setSettings(prev => ({ ...prev, ...(res?.data || {}) }));
     } catch (e) {
       console.error('Error fetching settings:', e);
-      setApiError(e?.response?.data?.message || 'Failed to fetch settings.');
+      setApiError(e?.response?.data?.message || t('toast.saveFailed'));
     } finally {
       setLoading(false);
     }
@@ -206,11 +208,11 @@ export default function AdminSettingsDashboard() {
       };
 
       // Validate with Zod
-      const validated = SettingsSchema.parse(payload);
+      const validated = getSettingsSchema(t).parse(payload);
       setFormErrors(null)
 
       await update(payload);
-      setSuccessMessage('Settings saved successfully!');
+      setSuccessMessage(t('toast.saved'));
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (e) {
       if (e instanceof z.ZodError) {
@@ -223,7 +225,7 @@ export default function AdminSettingsDashboard() {
         setFormErrors(errors);
       } else {
         console.error("Error saving settings:", e);
-        setApiError((e)?.response?.data?.message || "Failed to save settings.");
+        setApiError((e)?.response?.data?.message || t('toast.saveFailed'));
       }
     } finally {
       setSaving(false);
@@ -239,11 +241,11 @@ export default function AdminSettingsDashboard() {
       setSuccessMessage(null);
       const res = await update(next);
       setSettings(prev => ({ ...prev, ...(res?.data || next) }));
-      setSuccessMessage(autoPublishEnabled ? 'Jobs will be published immediately.' : 'Jobs now require admin approval before publishing.');
+      setSuccessMessage(autoPublishEnabled ? t('toast.autoPublishEnabled') : t('toast.autoPublishDisabled'));
       setTimeout(() => setSuccessMessage(null), 2500);
     } catch (e) {
       console.error('Error updating job approval setting:', e);
-      setApiError(e?.response?.data?.message || 'Failed to update job approval setting.');
+      setApiError(e?.response?.data?.message || t('toast.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -288,10 +290,10 @@ export default function AdminSettingsDashboard() {
         <GlassCard gradient='from-indigo-500 via-fuchsia-500 to-rose-500' className='mb-6'>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-2xl font-bold'>Platform Settings</h1>
-              <p>Manage global configuration</p>
+              <h1 className='text-2xl font-bold'>{t('title')}</h1>
+              <p>{t('subtitle')}</p>
             </div>
-            <Button icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin' /> : <Save size={16} className='mr-2' />} name={saving ? 'Saving...' : 'Save Settings'} onClick={handleSave} disabled={saving} className='!w-fit' />
+            <Button icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin' /> : <Save size={16} className='mr-2' />} name={saving ? t('saving') : t('saveSettings')} onClick={handleSave} disabled={saving} className='!w-fit' />
           </div>
         </GlassCard>
 
@@ -312,31 +314,31 @@ export default function AdminSettingsDashboard() {
           <GlassCard className='p-6'>
             <div className='mb-4 flex items-center'>
               <Globe size={20} className='mr-2 text-blue-600' />
-              <h2 className='text-lg font-semibold'>General Settings</h2>
+              <h2 className='text-lg font-semibold'>{t('sections.general')}</h2>
             </div>
 
             <div className='grid grid-cols-1 gap-4'>
               <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>Site Name</label>
-                <Input value={settings.siteName} onChange={e => updateField('siteName', e.target.value)} placeholder='Your Platform Name' />
+                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.siteName')}</label>
+                <Input value={settings.siteName} onChange={e => updateField('siteName', e.target.value)} placeholder={t('fields.siteNamePlaceholder')} />
               </div>
 
               <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>Logo</label>
+                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.logo')}</label>
                 <LogoUploader value={settings.siteLogo} onUploaded={url => updateField('siteLogo', url)} onChangeUrl={url => updateField('siteLogo', url)} />
                 {formErrors?.siteLogo && <FormErrorMessage message={formErrors?.siteLogo} />}
               </div>
 
               <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <div>
-                  <label className='mb-1 block text-sm font-medium text-slate-700'>Contact Email</label>
-                  <Input error={formErrors?.contactEmail} value={settings.contactEmail} onChange={e => updateField('contactEmail', e.target.value)} placeholder='support@example.com' iconLeft={<Mail size={16} />} />
+                  <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.contactEmail')}</label>
+                  <Input error={formErrors?.contactEmail} value={settings.contactEmail} onChange={e => updateField('contactEmail', e.target.value)} placeholder={t('fields.contactEmailPlaceholder')} iconLeft={<Mail size={16} />} />
 
                 </div>
 
                 <div>
-                  <label className='mb-1 block text-sm font-medium text-slate-700'>Support Phone</label>
-                  <Input value={settings.supportPhone} onChange={e => updateField('supportPhone', e.target.value)} placeholder='+1234567890' iconLeft={<Phone size={16} />} />
+                  <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.supportPhone')}</label>
+                  <Input value={settings.supportPhone} onChange={e => updateField('supportPhone', e.target.value)} placeholder={t('fields.supportPhonePlaceholder')} iconLeft={<Phone size={16} />} />
                 </div>
               </div>
             </div>
@@ -346,28 +348,28 @@ export default function AdminSettingsDashboard() {
           <GlassCard className='p-6'>
             <div className='mb-4 flex items-center'>
               <DollarSign size={20} className='mr-2 text-green-600' />
-              <h2 className='text-lg font-semibold'>Financial Settings</h2>
+              <h2 className='text-lg font-semibold'>{t('sections.financial')}</h2>
             </div>
 
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
               <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>Platform Fee (%)</label>
+                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.platformFee')}</label>
                 <Input type='number' error={formErrors?.platformPercent} value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
               </div>
 
               <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>Default Currency (ID)</label>
+                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.defaultCurrency')}</label>
                 <Input type='number' value={settings.defaultCurrency} onChange={e => updateField('defaultCurrency', parseInt(numberOnly(e.target.value), 10) || 1)} min='1' />
               </div>
             </div>
 
             <div className='mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3'>
-              <label className='mb-1 block text-sm font-medium text-slate-700'>Platform Wallet Owner (User ID)</label>
-              <Input value={settings.platformAccountUserId || ''} onChange={e => updateField('platformAccountUserId', e.target.value)} placeholder='e.g. 707a2de6-b83a-4f2b-b492-cca4cca0ef7f' iconLeft={<Wallet size={16} />} />
+              <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.platformWalletOwner')}</label>
+              <Input value={settings.platformAccountUserId || ''} onChange={e => updateField('platformAccountUserId', e.target.value)} placeholder={t('fields.platformWalletPlaceholder')} iconLeft={<Wallet size={16} />} />
               <div className='mt-2 flex items-start gap-2 text-xs text-slate-600'>
                 <Info className='mt-0.5 h-4 w-4 text-slate-500' />
                 <p>
-                  Funds from paid invoices are deposited here (escrow). Ensure this maps to a valid <strong>User</strong> with a <strong>Wallet</strong>.
+                  {t('fields.platformWalletHint')}
                 </p>
               </div>
             </div>
@@ -397,12 +399,12 @@ export default function AdminSettingsDashboard() {
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center">
               <Info size={20} className="mr-2 text-teal-600" />
-              <h2 className="text-lg font-semibold">FAQs</h2>
+              <h2 className="text-lg font-semibold">{t('fields.faqs')}</h2>
             </div>
 
             <FaqsEditor
-              label="FAQs"
-              hint="Add questions and answers to display across the site."
+              label={t('fields.faqs')}
+              hint={t('fields.faqsHint')}
               value={settings.faqs}
               onChange={(v) => updateField("faqs", v)}
               icon={<Info size={16} className="text-slate-500" />}

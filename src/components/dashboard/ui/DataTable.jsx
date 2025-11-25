@@ -6,6 +6,7 @@ import Img from '@/components/atoms/Img';
 import { Eye, MoreHorizontal } from 'lucide-react';
 import PriceTag from '@/components/atoms/priceTag';
 import { buildPageTokens } from '@/utils/pagination';
+import { useTranslations, useLocale } from 'next-intl';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
@@ -28,6 +29,8 @@ export default function DataTable({
   jumpBy = 5
 }) {
 
+  const t = useTranslations('Dashboard.table');
+  const locale = useLocale();
   const displayRows = loading ? Array.from({ length: limit }).map((_, i) => ({ __skeleton: i })) : data;
 
   const totalPages = Math.max(1, Math.ceil(totalCount / limit));
@@ -47,10 +50,10 @@ export default function DataTable({
             value={limit}
             onChange={(e) => onLimitChange(e.target.value)}
           >
-            <option value="5">5 per page</option>
-            <option value="10">10 per page</option>
-            <option value="25">25 per page</option>
-            <option value="50">50 per page</option>
+            <option value="5">5 {t('perPage')}</option>
+            <option value="10">10 {t('perPage')}</option>
+            <option value="25">25 {t('perPage')}</option>
+            <option value="50">50 {t('perPage')}</option>
           </select>
         </div>
       </div>
@@ -70,7 +73,7 @@ export default function DataTable({
               ))}
               {actions && (
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {loading ? <Skeleton className='h-4 w-16' /> : "Actions"}
+                  {loading ? <Skeleton className='h-4 w-16' /> : t('actionsHeader')}
                 </th>
               )}
             </tr>
@@ -79,7 +82,7 @@ export default function DataTable({
             {!loading && data.length === 0 && (
               <tr>
                 <td colSpan={columns.length + (actions ? 1 : 0)} className='px-4'>
-                  <TableEmptyState title='Nothing to show here' subtitle='No rows match your current filters. You can clear filters or try a different search.' />
+                  <TableEmptyState title={t('emptyTitle')} subtitle={t('emptySubtitle')} />
                 </td>
               </tr>
             )}
@@ -131,7 +134,7 @@ export default function DataTable({
                         ) : column.type === 'price' ? (
                           <PriceTag price={row[column.key]} />
                         ) : column.type === 'date' ? (
-                          row[column.key] ? new Date(row[column.key]).toLocaleDateString() : '—'
+                          row[column.key] ? new Date(row[column.key]).toLocaleDateString(locale) : '—'
                         ) : (
                           row[column.key] ?? '—'
                         )}
@@ -150,7 +153,7 @@ export default function DataTable({
                               onClick={() => onView(row)}
                               className="text-blue-600 hover:text-blue-900 mr-3"
                             >
-                              View
+                              {t('view')}
                             </button>
                           )}
                           {onEdit && (
@@ -158,7 +161,7 @@ export default function DataTable({
                               onClick={() => onEdit(row)}
                               className="text-indigo-600 hover:text-indigo-900 mr-3"
                             >
-                              Edit
+                              {t('edit')}
                             </button>
                           )}
                           {onDelete && (
@@ -166,7 +169,7 @@ export default function DataTable({
                               onClick={() => onDelete(row)}
                               className="text-red-600 hover:text-red-900"
                             >
-                              Delete
+                              {t('delete')}
                             </button>
                           )}
                         </>
@@ -187,11 +190,7 @@ export default function DataTable({
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing <span className="font-medium">{showingFrom}</span> to{' '}
-                <span className="font-medium">
-                  {showingTo}
-                </span>{' '}
-                of <span className="font-medium">{totalCount}</span> results
+                {t('showing', { from: showingFrom, to: showingTo, total: totalCount })}
               </p>
             </div>
             <div>
@@ -201,7 +200,7 @@ export default function DataTable({
                   disabled={page === 1}
                   className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                 >
-                  Previous
+                  {t('previous')}
                 </button>
                 {tokens.map((p) => {
 
@@ -211,7 +210,9 @@ export default function DataTable({
                       <button
                         key={p}
                         onClick={() => onPageChange(jumpTarget)}
-                        title={`Jump ${p === 'left-ellipsis' ? `back ${jumpBy}` : `forward ${jumpBy}`} pages`}
+                        title={p === 'left-ellipsis'
+                          ? t('jumpBack', { count: jumpBy })
+                          : t('jumpForward', { count: jumpBy })}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === p
                           ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                           : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
@@ -239,7 +240,7 @@ export default function DataTable({
                   disabled={page === totalPages}
                   className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                 >
-                  Next
+                  {t('next')}
                 </button>
               </nav>
             </div>

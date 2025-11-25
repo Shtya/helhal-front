@@ -14,7 +14,6 @@ const getTransactionTypes = (t) => [
   { id: 'withdrawal', label: t('Dashboard.finance.tabs.withdrawal') },
 ];
 
-
 const formatMoney = (n, currency = 'SAR') => {
   const value = typeof n === 'string' ? Number(n) : n;
 

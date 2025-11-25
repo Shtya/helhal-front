@@ -1575,11 +1575,11 @@
       "back": "رجوع",
       "continue": "متابعة",
       "validation": {
-  "faqQuestionRequired": "السؤال مطلوب",
-  "faqQuestionMax": "يجب ألا يتجاوز السؤال 200 حرف",
-  "faqAnswerRequired": "الإجابة مطلوبة",
-  "faqAnswerMax": "يجب ألا تتجاوز الإجابة 1000 حرف",
-  "faqsMax": "يمكنك إضافة ما يصل إلى 12 سؤالًا فقط"
+        "faqQuestionRequired": "السؤال مطلوب",
+        "faqQuestionMax": "يجب ألا يتجاوز السؤال 200 حرف",
+        "faqAnswerRequired": "الإجابة مطلوبة",
+        "faqAnswerMax": "يجب ألا تتجاوز الإجابة 1000 حرف",
+        "faqsMax": "يمكنك إضافة ما يصل إلى 12 سؤالًا فقط"
       }
     },
     "step4": {
@@ -1605,15 +1605,15 @@
       "addQuestion": "إضافة سؤال",
       "back": "رجوع",
       "continue": "متابعة",
-      "validation" : {
+      "validation": {
         "questionRequired": "السؤال مطلوب",
-  "questionMax": "يجب ألا يتجاوز السؤال 200 حرف",
-  "requirementTypeRequired": "نوع السؤال مطلوب",
-  "optionRequired": "الخيار مطلوب",
-  "optionMax": "يجب ألا يتجاوز الخيار 100 حرف",
-  "optionMin": "مطلوب خيار واحد على الأقل للأسئلة متعددة الاختيارات",
-  "optionMaxCount": "يمكنك إضافة ما يصل إلى 10 خيارات فقط",
-  "questionsMax": "يمكنك إضافة ما يصل إلى 12 سؤالًا فقط"
+        "questionMax": "يجب ألا يتجاوز السؤال 200 حرف",
+        "requirementTypeRequired": "نوع السؤال مطلوب",
+        "optionRequired": "الخيار مطلوب",
+        "optionMax": "يجب ألا يتجاوز الخيار 100 حرف",
+        "optionMin": "مطلوب خيار واحد على الأقل للأسئلة متعددة الاختيارات",
+        "optionMaxCount": "يمكنك إضافة ما يصل إلى 10 خيارات فقط",
+        "questionsMax": "يمكنك إضافة ما يصل إلى 12 سؤالًا فقط"
       }
     },
     "step5": {
@@ -2125,6 +2125,43 @@
     "seconds": "ثواني"
   },
   "Dashboard": {
+    "overview": {
+      "title": "التحليلات",
+      "subtitle": "أخضر، نظيف وسريع: عملياتك في لمحة.",
+      "7d": "٧ أيام",
+      "30d": "٣٠ يوم",
+      "90d": "٩٠ يوم",
+      "export": "تصدير CSV",
+      "refresh": "تحديث",
+      "error": "فشل تحميل الإحصائيات",
+      "users": "المستخدمون",
+      "jobs": "الوظائف",
+      "services": "الخدمات",
+      "orders": "الطلبات",
+      "jobsPosted": "الوظائف المنشورة",
+      "servicesPosted": "الخدمات المنشورة",
+      "userStatuses": "حالات المستخدمين",
+      "jobStatuses": "حالات الوظائف",
+      "serviceStatuses": "حالات الخدمات",
+      "disputeStatuses": "حالات النزاعات",
+      "table": {
+        "headers": {
+          "ref": "المرجع",
+          "customer": "العميل",
+          "status": "الحالة",
+          "amount": "المبلغ",
+          "date": "التاريخ"
+        },
+        "orders": {
+          "title": "الطلبات الأخيرة",
+          "empty": "لا توجد طلبات حديثة"
+        },
+        "withdrawals": {
+          "title": "عمليات السحب الأخيرة",
+          "empty": "لا توجد طلبات سحب"
+        }
+      }
+    },
     "sidebar": {
       "adminDashboard": "لوحة تحكم المسؤول",
       "controlCenter": "مركز التحكم",
@@ -2716,6 +2753,20 @@
       "validation": {
         "invalidPhone": "رقم هاتف غير صالح"
       }
+    },
+    "table": {
+      "perPage": "لكل صفحة",
+      "actionsHeader": "الإجراءات",
+      "emptyTitle": "لا يوجد شيء لعرضه هنا",
+      "emptySubtitle": "لا توجد صفوف تطابق عوامل التصفية الحالية. يمكنك مسح عوامل التصفية أو تجربة بحث مختلف.",
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "showing": "إظهار من {from} إلى {to} من أصل {total} نتيجة",
+      "previous": "السابق",
+      "next": "التالي",
+      "jumpBack": "الرجوع {count} صفحات",
+      "jumpForward": "التقدم {count} صفحات"
     }
   }
 }
