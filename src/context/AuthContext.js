@@ -44,7 +44,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       setUser(user);
-      return {accessToken, refreshToken, user}
+      return { accessToken, refreshToken, user }
     } catch (err) {
       throw err;
     }
@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
     });
-        
+
     setUser(null);
   };
 
