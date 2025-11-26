@@ -215,9 +215,16 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                         {replyTo && (
                             <div className='flex items-center justify-between gap-2 max-w-full'>
                                 <div className="truncate max-w-[70%] cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition"
-                                    onClick={() => handleJumpToMessage?.(replyTo?.id)}
-                                    dangerouslySetInnerHTML={{ __html: t('replyingTo', { username: replyTo?.sender?.username || t('user'), message: replyTo?.message?.slice(0, 120) + (replyTo?.message?.length > 120 ? '…' : '') }) }}
-                                />
+                                    onClick={() => handleJumpToMessage?.(replyTo?.id)} >
+                                    {t.rich('replyingTo', {
+                                        username: parent?.sender?.username || t('user'),
+                                        message: replyTo?.message?.slice(0, 120) + (replyTo?.message?.length > 120 ? '…' : ''),
+                                        strong: (chunk) => <strong>{chunk}</strong>,
+                                    })}
+
+                                </div>
+
+
                                 <button className='ml-2 underline' onClick={() => setReplyTo(null)}>
                                     {t('cancel')}
                                 </button>
@@ -259,6 +266,7 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
     // Parent preview chip (if replying to someone)
     const parent = node.parentId ? messageById.get(node.parentId) : null;
     const parentSnippet = parent?.message ? String(parent.message).slice(0, 120) : null;
+
 
     return (
         <div className={`relative `} data-message-id={node.id}>
@@ -306,7 +314,14 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
                                 title={t('goToParent')}
                             >
                                 <Reply className='h-3.5 w-3.5 text-gray-500' />
-                                <span className='truncate text-gray-600' dangerouslySetInnerHTML={{ __html: t('inReplyTo', { username: parent?.sender?.username || t('user'), message: parentSnippet + (parent?.message?.length > 120 ? '…' : '') }) }} />
+                                <span className="truncate text-gray-600">
+                                    {t.rich('inReplyTo', {
+                                        username: parent?.sender?.username || t('user'),
+                                        message: parentSnippet + (parent?.message?.length > 120 ? '…' : ''),
+                                        strong: (chunk) => <strong>{chunk}</strong>,
+                                    })}
+                                </span>
+
                             </div>
                         )}
 

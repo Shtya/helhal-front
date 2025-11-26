@@ -1,4 +1,9 @@
 {
+  "phoneInput": {
+    "countryCodeLabel": "رمز الدولة",
+    "chooseCountry": "اختر الدولة",
+    "phoneLabel": "رقم الهاتف"
+  },
   "toast": {
     "failedToUploadFiles": "فشل في رفع الملفات. يرجى المحاولة مرة أخرى.",
     "fileDeletedSuccessfully": "تم حذف الملف بنجاح.",
@@ -1290,14 +1295,14 @@
       "subtitle": "ابدأ المحادثة بإرسال الرسالة الأولى."
     },
     "newerMessages": "رسائل أحدث",
-    "replyingTo": "الرد على <b>{username}</b>: \"{message}\"",
+    "replyingTo": "الرد على <strong>{username}</strong>: \"{message}\"",
     "cancel": "إلغاء",
     "writeMessage": "اكتب رسالة…",
     "send": "إرسال",
     "reply": "↩ رد",
     "replyToMessage": "الرد على هذه الرسالة",
     "goToParent": "الانتقال إلى الرسالة الأصلية",
-    "inReplyTo": "رداً على <b>{username}</b>: \"{message}\"",
+    "inReplyTo": "رداً على <strong>{username}</strong>: \"{message}\"",
     "system": "النظام",
     "user": "المستخدم",
     "me": "أنا",
@@ -1967,7 +1972,7 @@
     "page": {
       "hero": {
         "title": "احصل على رصيد لإحالة الأصدقاء إلى UpPhoto",
-        "subtitle": "اكسب حتى 500 دولار أمريكي كرصيد — حتى 100 دولار أمريكي من كل إحالة."
+        "subtitle": "اكسب حتى <strong>500</strong> دولار أمريكي كرصيد — حتى <strong>100</strong> دولار أمريكي من كل إحالة."
       },
       "inviteFriends": "دعوة الأصدقاء عبر البريد الإلكتروني",
       "addEmailsPlaceholder": "أضف عناوين البريد الإلكتروني (افصل بفواصل أو مسافات أو أسطر جديدة)",
@@ -2515,25 +2520,16 @@
       }
     },
     "orders": {
-      "title": "الطلبات",
       "tabs": {
         "all": "جميع الطلبات",
         "pending": "قيد الانتظار",
         "accepted": "مقبول",
         "delivered": "تم التسليم",
         "completed": "مكتمل",
-        "cancelled": "ملغى"
-      },
-      "searchPlaceholder": "البحث في الطلبات…",
-      "orderBy": "ترتيب حسب",
-      "sortOptions": {
-        "newest": "الأحدث",
-        "oldest": "الأقدم",
-        "priceHigh": "السعر: من الأعلى إلى الأدنى",
-        "priceLow": "السعر: من الأدنى إلى الأعلى"
+        "cancelled": "ملغي"
       },
       "columns": {
-        "orderTitle": "عنوان الطلب",
+        "title": "عنوان الطلب",
         "status": "الحالة",
         "amount": "المبلغ",
         "buyer": "المشتري",
@@ -2541,19 +2537,50 @@
         "package": "الحزمة",
         "orderDate": "تاريخ الطلب"
       },
-      "actions": {
-        "view": "عرض",
-        "setPending": "تعيين قيد الانتظار",
+      "statusLabels": {
+        "pending": "تعيين قيد الانتظار",
         "accept": "قبول",
-        "markDelivered": "وضع علامة تم التسليم",
+        "delivered": "وضع علامة على التسليم",
         "complete": "إكمال",
         "cancel": "إلغاء",
-        "disputed": "نزاع"
+        "disputed": "متنازع عليه"
       },
-      "toast": {
+      "searchPlaceholder": "ابحث في الطلبات…",
+      "sortPlaceholder": "رتب حسب",
+      "sortOptions": {
+        "newest": "الأحدث",
+        "oldest": "الأقدم",
+        "priceHigh": "السعر: من الأعلى إلى الأقل",
+        "priceLow": "السعر: من الأقل إلى الأعلى"
+      },
+      "actions": {
+        "view": "عرض"
+      },
+      "messages": {
         "updatingStatus": "جاري تحديث حالة الطلب إلى {status}...",
-        "statusUpdated": "تم تحديث حالة الطلب إلى {status}",
-        "statusError": "خطأ في تحديث حالة الطلب."
+        "statusUpdated": "تم تحديث حالة الطلب إلى {status}"
+      },
+      "errors": {
+        "fetchFailed": "فشل جلب الطلبات.",
+        "loadFailed": "فشل تحميل الطلب.",
+        "statusUpdateFailed": "حدث خطأ في تحديث حالة الطلب."
+      },
+      "view": {
+        "orderTitle": "عنوان الطلب",
+        "status": "الحالة",
+        "buyer": "المشتري",
+        "seller": "البائع",
+        "totalAmount": "المبلغ الإجمالي",
+        "packageType": "نوع الحزمة",
+        "orderDate": "تاريخ الطلب",
+        "deliveredAt": "تم التسليم في",
+        "completedAt": "اكتمل في",
+        "cancelledAt": "تم الإلغاء في",
+        "invoice": "الفاتورة",
+        "invoiceNumber": "الفاتورة",
+        "invoiceStatus": "الحالة",
+        "invoiceTotal": "الإجمالي",
+        "close": "إغلاق"
       }
     },
     "services": {
@@ -2578,7 +2605,7 @@
       "columns": {
         "image": "الصورة",
         "title": "العنوان",
-        "slug": "الرابط",
+        "slug": "المُعرِّف",
         "status": "الحالة",
         "seller": "البائع",
         "performance": "الأداء",
@@ -2776,6 +2803,7 @@
       },
       "modal": {
         "title": "تفاصيل المستخدم",
+        "username": "اسم المستخدم",
         "editTitle": "تحرير المستخدم {username}",
         "userInformation": "معلومات المستخدم",
         "memberSince": "عضو منذ:",

@@ -194,7 +194,7 @@ export default function DisputesPage() {
 
       const { data } = await api.get(`/disputes?${qs.toString()}`, { signal: controller.signal });
       const list = (data?.disputes ?? data) || [];
-      setFilters(p => ({ ...p, page: data?.pagination?.page, limit: data?.pagination?.limit, total: data?.pagination?.total }))
+      setFilters(p => ({ ...p, total: data?.pagination?.total }))
       setRows(
         list.map(d => ({
           _raw: d,
@@ -432,13 +432,12 @@ export default function DisputesPage() {
         }
       } else {
         if (controllerRef.current === controller) {
-
           setActError(e?.response?.data?.message || t('Dashboard.disputes.modals.failedToLoad'));
           setActivity(null);
         }
       }
     } finally {
-      if (controllerRef.current === controller)
+      if (activityControllerRef.current === controller)
         setActLoading(false);
     }
   }
@@ -679,7 +678,6 @@ export default function DisputesPage() {
             ) : activity ? (
               <>
                 <DisputeChat detail={activity} selectedId={activity?.dispute?.id} setDetail={setActivity} />
-
               </>
             ) : null}
           </div>

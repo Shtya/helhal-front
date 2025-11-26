@@ -79,11 +79,6 @@ export default function AdminUsersDashboard() {
       // SERVER PAGINATION: use API payload fields
       setUsers(res?.data?.records || []);
       setTotalUsers(res?.data?.total_records ?? 0);
-      setFilters(prev => ({
-        ...prev,
-        page: res?.data?.current_page ?? prev.page,
-        limit: res?.data?.per_page ?? prev.limit,
-      }));
     } catch (e) {
       if (!isErrorAbort(e)) {
         console.error(e);
@@ -532,7 +527,7 @@ function UserBasicInfoForm({ username: initialUsername, phone: initialPhone, cou
     <div className="flex flex-col gap-4">
       <Input
         required
-        label="Username"
+        label={tUsers('modal.username')}
         value={username}
         onChange={e => handleUsernameChange(e.target.value)}
         onBlur={e => {

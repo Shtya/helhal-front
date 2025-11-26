@@ -1,18 +1,15 @@
 'use client';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Search, MoreVertical, Eye, Edit, RefreshCw, Clock, CheckCircle, XCircle, Truck, Package } from 'lucide-react';
+import { useTranslations } from 'next-intl'; // Add this
+import { Eye, Edit, RefreshCw, Clock, CheckCircle, XCircle, Truck, Package } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
-import { MetricBadge, Modal, GlassCard } from '@/components/dashboard/Ui';
+import { MetricBadge, GlassCard } from '@/components/dashboard/Ui';
 import Select from '@/components/atoms/Select';
-import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
-import Img from '@/components/atoms/Img';
 import UserMini from '@/components/dashboard/UserMini';
 import toast from 'react-hot-toast';
-import { useDebounce } from '@/hooks/useDebounce';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
@@ -28,11 +25,9 @@ const OrderStatus = {
   DISPUTED: 'Disputed',
 }
 
-
 export default function AdminOrdersDashboard() {
+  const t = useTranslations('Dashboard.orders'); // Add this
   const [activeTab, setActiveTab] = useState('all');
-
-
 
   const [filters, setFilters] = useState({
     page: 1,
@@ -64,13 +59,14 @@ export default function AdminOrdersDashboard() {
   const [mode, setMode] = useState('view');
 
   const tabs = [
-    { value: 'all', label: 'All Orders' },
-    { value: 'Pending', label: 'Pending' },
-    { value: 'Accepted', label: 'Accepted' },
-    { value: 'Delivered', label: 'Delivered' },
-    { value: 'Completed', label: 'Completed' },
-    { value: 'Cancelled', label: 'Cancelled' },
+    { value: 'all', label: t('tabs.all') },
+    { value: 'Pending', label: t('tabs.pending') },
+    { value: 'Accepted', label: t('tabs.accepted') },
+    { value: 'Delivered', label: t('tabs.delivered') },
+    { value: 'Completed', label: t('tabs.completed') },
+    { value: 'Cancelled', label: t('tabs.cancelled') },
   ];
+
   const controllerRef = useRef();
   const fetchOrders = useCallback(async () => {
     if (controllerRef.current) controllerRef.current.abort();
@@ -98,13 +94,13 @@ export default function AdminOrdersDashboard() {
     } catch (e) {
       if (!isErrorAbort(e)) {
         console.error('Error fetching orders:', e);
-        setApiError(e?.response?.data?.message || 'Failed to fetch orders.');
+        setApiError(e?.response?.data?.message || t('errors.fetchFailed'));
       }
     } finally {
       if (controllerRef.current === controller)
         setLoading(false);
     }
-  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder]);
+  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder, t]);
 
   useEffect(() => {
     fetchOrders();
@@ -131,35 +127,33 @@ export default function AdminOrdersDashboard() {
       setCurrent(order);
       setModalOpen(true);
     } catch (e) {
-      setApiError(e?.response?.data?.message || 'Failed to load order.');
+      setApiError(e?.response?.data?.message || t('errors.loadFailed'));
     }
   };
 
-
   const updateOrderStatus = async (id, status) => {
-    const toastId = toast.loading(`Updating order status to ${status}...`);
+    const toastId = toast.loading(t('messages.updatingStatus', { status }));
 
     try {
       await api.put(`/orders/${id}/status`, { status });
-      toast.success(`Order status updated to ${status}`, {
+      toast.success(t('messages.statusUpdated', { status }), {
         id: toastId,
       });
       await fetchOrders();
     } catch (e) {
-      toast.error(e?.response?.data?.message || 'Error updating order status.', {
+      toast.error(e?.response?.data?.message || t('errors.statusUpdateFailed'), {
         id: toastId,
       });
       console.error('Error updating order status:', e);
     }
   };
 
-
   // Columns
   const columns = [
-    { key: 'title', label: 'Order Title', render: (value) => <TruncatedText text={value?.title} maxLength={300} /> },
+    { key: 'title', label: t('columns.title'), render: (value) => <TruncatedText text={value?.title} maxLength={300} /> },
     {
       key: 'status',
-      label: 'Status',
+      label: t('columns.status'),
       render: v => {
         const statusColors = {
           'Pending': 'warning',
@@ -184,25 +178,25 @@ export default function AdminOrdersDashboard() {
     },
     {
       key: 'totalAmount',
-      label: 'Amount',
+      label: t('columns.amount'),
       render: v => `$${v.totalAmount}`
     },
     {
       key: 'buyer',
-      label: 'Buyer',
+      label: t('columns.buyer'),
       render: v => v.buyer?.username || 'N/A'
     },
     {
       key: 'seller',
-      label: 'Seller',
+      label: t('columns.seller'),
       render: v => v.seller?.username || 'N/A'
     },
     {
       key: 'packageType',
-      label: 'Package',
+      label: t('columns.package'),
       render: v => <MetricBadge tone="neutral">{v.packageType}</MetricBadge>
     },
-    { key: 'orderDate', label: 'Order Date', type: 'date' },
+    { key: 'orderDate', label: t('columns.orderDate'), type: 'date' },
   ];
 
   const Actions = ({ row }) => {
@@ -215,12 +209,12 @@ export default function AdminOrdersDashboard() {
     };
 
     const statusLabels = {
-      [OrderStatus.PENDING]: 'Set Pending',
-      [OrderStatus.ACCEPTED]: 'Accept',
-      [OrderStatus.DELIVERED]: 'Mark Delivered',
-      [OrderStatus.COMPLETED]: 'Complete',
-      [OrderStatus.CANCELLED]: 'Cancel',
-      [OrderStatus.DISPUTED]: 'Disputed',
+      [OrderStatus.PENDING]: t('statusLabels.pending'),
+      [OrderStatus.ACCEPTED]: t('statusLabels.accept'),
+      [OrderStatus.DELIVERED]: t('statusLabels.delivered'),
+      [OrderStatus.COMPLETED]: t('statusLabels.complete'),
+      [OrderStatus.CANCELLED]: t('statusLabels.cancel'),
+      [OrderStatus.DISPUTED]: t('statusLabels.disputed'),
     };
 
     const allowed = validTransitions[currentStatus] || [];
@@ -228,7 +222,7 @@ export default function AdminOrdersDashboard() {
     const options = [
       {
         id: currentStatus,
-        name: `${statusLabels[currentStatus]}`,
+        name: statusLabels[currentStatus],
         disabled: true,
       },
       ...allowed.map(id => ({
@@ -242,7 +236,7 @@ export default function AdminOrdersDashboard() {
         <button
           onClick={() => openView(row)}
           className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
-          title="View"
+          title={t('actions.view')}
         >
           <Eye size={16} />
         </button>
@@ -261,7 +255,6 @@ export default function AdminOrdersDashboard() {
     );
   };
 
-
   return (
     <div>
       <div className='p-6'>
@@ -269,17 +262,17 @@ export default function AdminOrdersDashboard() {
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
             <div className='flex flex-wrap items-center gap-3'>
-              <SearchBox placeholder='Search orders…' onSearch={handleSearch} />
+              <SearchBox placeholder={t('searchPlaceholder')} onSearch={handleSearch} />
               <Select
                 className='!w-fit'
                 onChange={applySortPreset}
-                placeholder='Order by'
+                placeholder={t('sortPlaceholder')}
                 value={sort}
                 options={[
-                  { id: 'newest', name: 'Newest' },
-                  { id: 'oldest', name: 'Oldest' },
-                  { id: 'price_high', name: 'Price: High to Low' },
-                  { id: 'price_low', name: 'Price: Low to High' },
+                  { id: 'newest', name: t('sortOptions.newest') },
+                  { id: 'oldest', name: t('sortOptions.oldest') },
+                  { id: 'price_high', name: t('sortOptions.priceHigh') },
+                  { id: 'price_low', name: t('sortOptions.priceLow') },
                 ]}
               />
             </div>
@@ -311,20 +304,19 @@ export default function AdminOrdersDashboard() {
   );
 }
 
-function OrderView({ value, onClose }) {
+function OrderView({ value, onClose, t }) {
   if (!value) return null;
-
 
   return (
     <div className='space-y-6'>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Order Title</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.orderTitle')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>{value.title}</div>
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Status</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.status')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>
             <MetricBadge tone={
               value.status === 'Completed' ? 'success' :
@@ -339,14 +331,14 @@ function OrderView({ value, onClose }) {
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Buyer</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.buyer')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>
             <UserMini user={value.buyer} href={`profile/${value.buyer.id}`} />
           </div>
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Seller</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.seller')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>
             <UserMini user={value.seller} href={`profile/${value.seller.id}`} />
           </div>
@@ -355,55 +347,55 @@ function OrderView({ value, onClose }) {
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Total Amount</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.totalAmount')}</label>
           <div className='p-2 bg-slate-50 rounded-md font-semibold'>${typeof value.totalAmount == "string" ? value?.totalAmount : value.totalAmount}</div>
         </div>
 
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Package Type</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.packageType')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>{value.packageType}</div>
         </div>
       </div>
 
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>Order Date</label>
+        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.orderDate')}</label>
         <div className='p-2 bg-slate-50 rounded-md'>{new Date(value.orderDate).toLocaleDateString()}</div>
       </div>
 
       {value.deliveredAt && (
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Delivered At</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.deliveredAt')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>{new Date(value.deliveredAt).toLocaleDateString()}</div>
         </div>
       )}
 
       {value.completedAt && (
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Completed At</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.completedAt')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>{new Date(value.completedAt).toLocaleDateString()}</div>
         </div>
       )}
 
       {value.cancelledAt && (
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Cancelled At</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.cancelledAt')}</label>
           <div className='p-2 bg-slate-50 rounded-md'>{new Date(value.cancelledAt).toLocaleDateString()}</div>
         </div>
       )}
 
       {value.invoices && value.invoices.length > 0 && (
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>Invoice</label>
+          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('view.invoice')}</label>
           <div className='p-3 bg-slate-50 rounded-md'>
-            <div className='font-semibold'>Invoice #{value.invoices[0].invoiceNumber}</div>
-            <div>Status: {value.invoices[0].paymentStatus}</div>
-            <div>Total: ${value.invoices[0].totalAmount}</div>
+            <div className='font-semibold'>{t('view.invoiceNumber')} #{value.invoices[0].invoiceNumber}</div>
+            <div>{t('view.invoiceStatus')}: {value.invoices[0].paymentStatus}</div>
+            <div>{t('view.invoiceTotal')}: ${value.invoices[0].totalAmount}</div>
           </div>
         </div>
       )}
 
       <div className='flex justify-end'>
-        <Button color='white' name='Close' onClick={onClose} className='!w-fit'>Close</Button>
+        <Button color='white' name={t('view.close')} onClick={onClose} className='!w-fit' />
       </div>
     </div>
   );

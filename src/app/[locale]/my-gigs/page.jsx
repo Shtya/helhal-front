@@ -227,7 +227,12 @@ export default function Page() {
 
       {deleteTarget && (
         <Modal title={t('delete.title')} onClose={() => setDeleteTarget(null)}>
-          <p className='text-gray-600 mb-6' dangerouslySetInnerHTML={{ __html: t('delete.confirm', { title: deleteTarget.title }) }} />
+          <p className='text-gray-600 mb-6' >
+            {t.rich('delete.confirm', {
+              title: deleteTarget.title,
+              strong: (chunk) => <strong>{chunk}</strong>
+            })}
+          </p>
           <div className='flex justify-end gap-3'>
             <Button color='secondary' onClick={() => setDeleteTarget(null)} className='!w-fit' name={t('delete.cancel')} />
             <Button onClick={confirmDelete} disabled={deleting} name={deleting ? t('delete.deleting') : t('delete.delete')} color='red' className='!w-fit' />

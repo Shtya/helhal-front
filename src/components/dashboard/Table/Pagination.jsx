@@ -54,7 +54,7 @@ export default function Pagination({ page, totalPages, setPage, className = '', 
       <nav ref={navRef} className='flex items-center gap-1 rounded-2xl border border-slate-200 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm px-2 py-1' aria-label='Pagination' role='navigation' tabIndex={0}>
         {/* Prev */}
         <motion.button variants={btnVariants} animate='in' whileHover='hover' whileTap='tap' type='button' onClick={() => goTo(page - 1)} disabled={page === 1} aria-label='Previous page' className='h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50'>
-          <ChevronLeft className='h-4 w-4' />
+          <ChevronLeft className='h-4 w-4 rtl:rotate-180' />
         </motion.button>
 
         {/* Pages */}
@@ -78,7 +78,7 @@ export default function Pagination({ page, totalPages, setPage, className = '', 
 
         {/* Next */}
         <motion.button variants={btnVariants} animate='in' whileHover='hover' whileTap='tap' type='button' onClick={() => goTo(page + 1)} disabled={page === totalPages} aria-label='Next page' className='h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50'>
-          <ChevronRight className='h-4 w-4' />
+          <ChevronRight className='h-4 w-4 rtl:rotate-180' />
         </motion.button>
       </nav>
     </div>

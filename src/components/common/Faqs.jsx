@@ -66,7 +66,7 @@ import { ChevronDown, Trash2 } from 'lucide-react';
 
 const PRIMARY = '#007a55';
 
-export default function FAQSection({ className = '', faqs = [], showTitle = true, removeFaq }) {
+export default function FAQSection({ loading, className = '', faqs = [], showTitle = true, removeFaq }) {
   const [openIndex, setOpenIndex] = useState(0);
 
   const toggleFAQ = index => setOpenIndex(openIndex === index ? null : index);
@@ -82,7 +82,15 @@ export default function FAQSection({ className = '', faqs = [], showTitle = true
 
       {/* List */}
       <div className='space-y-3'>
-        {faqs.map((faq, idx) => {
+        {loading ? (
+          // Skeletons while loading
+          Array.from({ length: 4 }).map((_, idx) => (
+            <div key={idx} className="animate-pulse rounded-2xl border border-gray-200 p-4">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          ))
+        ) : (faqs.map((faq, idx) => {
           const isOpen = openIndex === idx;
 
           return (
@@ -153,7 +161,7 @@ export default function FAQSection({ className = '', faqs = [], showTitle = true
               </AnimatePresence>
             </motion.div>
           );
-        })}
+        }))}
 
         {/* Optional: empty state (does not change logic) */}
         {faqs.length === 0 && (

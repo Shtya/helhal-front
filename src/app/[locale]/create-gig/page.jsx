@@ -1550,7 +1550,7 @@ function Step6({ formData, handleSubmit, prevStep, loading }) {
       </div>
 
       <div className='flex flex-col xs:flex-row justify-center gap-4 pt-4'>
-        <Button type='button' icon={isArabic ? <ChevronRight className='ltr:scale-x-[-1]' /> : <ChevronLeft className='ltr:scale-x-[-1]' />} name={t('backToEdit')} color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
+        <Button type='button' icon={isArabic ? <ChevronRight className='ltr:scale-x-[-1]' /> : <ChevronLeft className='' />} name={t('backToEdit')} color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
         <Button type='button' name={isUpdate ? t('updateGig') : t('publishGig')} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
       </div>
     </div>

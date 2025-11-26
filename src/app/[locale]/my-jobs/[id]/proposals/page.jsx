@@ -549,7 +549,11 @@ export default function JobProposalsPage() {
       {/* Accept Confirmation Modal */}
       {confirmOpen && (
         <Modal title={t('acceptConfirmTitle')} onClose={() => setConfirmOpen(false)}>
-          <p className='text-slate-700' dangerouslySetInnerHTML={{ __html: t('acceptConfirmMessage') }} />
+          <p className='text-slate-700'>
+            {t.rich('acceptConfirmMessage', {
+              strong: (chunk) => <strong className="font-semibold">{chunk}</strong>
+            })}
+          </p>
           <div className='mt-6 flex justify-end gap-2'>
             <Button name={t('cancel')} color='secondary' onClick={() => setConfirmOpen(false)} className='!px-4 !py-2 text-sm !text-slate-700' disabled={actionLoading} />
             <Button name={t('confirmAccept')} color='green' onClick={confirmAccept} loading={actionLoading} className='!px-4 !py-2 text-sm' icon={<Check className='h-4 w-4' />} />

@@ -241,7 +241,7 @@ const NotificationController = () => {
                 </div>
             )}
 
-            <TabsPagination loading={loading} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={pagination.limit} />
+            <TabsPagination loading={loading} recordsCount={pageNotifications.length} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={pagination.limit} />
         </div>
     );
 };

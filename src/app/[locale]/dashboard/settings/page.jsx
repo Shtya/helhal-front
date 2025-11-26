@@ -309,7 +309,7 @@ export default function AdminSettingsDashboard() {
         {successMessage && <div className='mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800'>{successMessage}</div>}
 
         {/* KPI Row (No affiliate, no platform wallet KPI) */}
-        <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+        <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2'>
           <MetricBadge icon={<Globe className='h-4 w-4' />} label='Brand' value={settings.siteName || '—'} intent='neutral' />
           <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Platform Fee' value={`${Number(settings.platformPercent || 0).toFixed(1)}%`} intent='success' />
           {/* <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Default Currency ID' value={String(settings.defaultCurrency || 1)} intent='info' hint='Change in Financial Settings' /> */}
@@ -358,16 +358,16 @@ export default function AdminSettingsDashboard() {
               <h2 className='text-lg font-semibold'>{t('sections.financial')}</h2>
             </div>
 
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-1'>
               <div>
                 <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.platformFee')}</label>
                 <Input type='number' error={formErrors?.platformPercent} value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
               </div>
-
+              {/* 
               <div>
                 <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.defaultCurrency')}</label>
                 <Input type='number' value={settings.defaultCurrency} onChange={e => updateField('defaultCurrency', parseInt(numberOnly(e.target.value), 10) || 1)} min='1' />
-              </div>
+              </div> */}
             </div>
 
             <div className='mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3'>
@@ -581,12 +581,8 @@ function PreviewBox({ text }) {
     return <div className='rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-slate-500'>Nothing to preview yet.</div>;
   }
   return (
-    <div className='prose max-w-none rounded-lg border border-slate-200 bg-white p-4'>
-      {text.split('\n').map((p, i) => (
-        <p key={i} className='whitespace-pre-wrap text-slate-800'>
-          {p}
-        </p>
-      ))}
+    <div className='prose max-w-none rounded-lg border border-slate-200 bg-white p-4 whitespace-pre-line'>
+      {text}
     </div>
   );
 }
@@ -640,7 +636,7 @@ function MetricBadge({ icon, label, value, hint, intent = 'neutral', size = 'md'
           {hint ? <div className='mt-1 text-xs text-slate-500'>{hint}</div> : null}
         </div>
 
-        {isSm ? null : <div className={['ml-auto hidden items-center gap-2 rounded-full px-2 py-1 text-xs sm:inline-flex', i.chip].join(' ')}>{label}</div>}
+        {/* {isSm ? null : <div className={['ml-auto hidden items-center gap-2 rounded-full px-2 py-1 text-xs sm:inline-flex', i.chip].join(' ')}>{label}</div>} */}
       </div>
     </div>
   );
@@ -691,11 +687,11 @@ function GlassCard({ children, className, gradient, padding = 'p-4', header, foo
     </Tag>
   );
 }
-
-
 function FaqsEditor({ label, hint, value = [], onChange, icon }) {
   const [draftQ, setDraftQ] = useState('');
   const [draftA, setDraftA] = useState('');
+  const [editIndex, setEditIndex] = useState(null);
+
   const items = Array.isArray(value) ? value : [];
 
   const add = () => {
@@ -707,6 +703,28 @@ function FaqsEditor({ label, hint, value = [], onChange, icon }) {
 
   const remove = (idx) => {
     onChange(items.filter((_, i) => i !== idx));
+    if (editIndex === idx) setEditIndex(null);
+  };
+
+  const startEdit = (idx) => {
+    setEditIndex(idx);
+    setDraftQ(items[idx].question);
+    setDraftA(items[idx].answer);
+  };
+
+  const saveEdit = () => {
+    const updated = [...items];
+    updated[editIndex] = { question: draftQ.trim(), answer: draftA.trim() };
+    onChange(updated);
+    setEditIndex(null);
+    setDraftQ('');
+    setDraftA('');
+  };
+
+  const cancelEdit = () => {
+    setEditIndex(null);
+    setDraftQ('');
+    setDraftA('');
   };
 
   return (
@@ -721,42 +739,99 @@ function FaqsEditor({ label, hint, value = [], onChange, icon }) {
       {hint ? <div className="mb-2 text-xs text-slate-500">{hint}</div> : null}
 
       <div className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2 ">
+
+        {/* List */}
         <div className='flex flex-col gap-2 max-h-64 overflow-y-auto'>
           {items.length === 0 ? (
             <span className="text-xs text-slate-400">No FAQs yet</span>
           ) : (
-            items.map((faq, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col gap-1 rounded bg-slate-50 p-2 text-xs text-slate-700"
-              >
-                <div className="font-semibold">Q: {faq.question}</div>
-                <div>A: {faq.answer}</div>
-                <button
-                  onClick={() => remove(idx)}
-                  className="self-end rounded bg-white/70 px-1 text-[11px] text-slate-500 hover:bg-white hover:text-red-600"
-                  title="Remove"
+            items.map((faq, idx) => {
+              const isEditing = editIndex === idx;
+
+              return (
+                <div
+                  key={idx}
+                  className="flex flex-col gap-2 rounded bg-slate-50 p-2 text-xs text-slate-700"
                 >
-                  ×
-                </button>
-              </div>
-            ))
+
+                  {isEditing ? (
+                    <>
+                      <Input
+                        value={draftQ}
+                        onChange={(e) => setDraftQ(e.target.value)}
+                        placeholder="Edit question"
+                      />
+                      <Input
+                        value={draftA}
+                        onChange={(e) => setDraftA(e.target.value)}
+                        placeholder="Edit answer"
+                      />
+
+                      <div className="flex gap-1 justify-end">
+                        <button
+                          onClick={cancelEdit}
+                          className="rounded bg-slate-200 px-2 py-1 text-[11px]"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={saveEdit}
+                          className="rounded bg-emerald-600 px-2 py-1 text-[11px] text-white"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-semibold">Q: {faq.question}</div>
+                      <div>A: {faq.answer}</div>
+
+                      <div className="flex gap-1 self-end">
+
+                        <button
+                          onClick={() => startEdit(idx)}
+                          className="rounded bg-white/70 px-2 text-[11px] text-blue-600 hover:bg-white"
+                          title="Edit"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => remove(idx)}
+                          className="rounded bg-white/70 px-2 text-[11px] text-red-600 hover:bg-white"
+                          title="Remove"
+                        >
+                          ×
+                        </button>
+
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })
           )}
 
         </div>
-        <div className="flex flex-col gap-2 mt-2">
-          <Input
-            value={draftQ}
-            onChange={(e) => setDraftQ(e.target.value)}
-            placeholder="Add question"
-          />
-          <Input
-            value={draftA}
-            onChange={(e) => setDraftA(e.target.value)}
-            placeholder="Add answer"
-          />
-          <Button className="px-3 py-2 text-sm" onClick={add} name="Add FAQ" />
-        </div>
+
+        {/* Bottom add form */}
+        {editIndex === null && (
+          <div className="flex flex-col gap-2 mt-2">
+            <Input
+              value={draftQ}
+              onChange={(e) => setDraftQ(e.target.value)}
+              placeholder="Add question"
+            />
+            <Input
+              value={draftA}
+              onChange={(e) => setDraftA(e.target.value)}
+              placeholder="Add answer"
+            />
+            <Button className="px-3 py-2 text-sm" onClick={add} name="Add FAQ" />
+          </div>
+        )}
+
       </div>
     </div>
   );

@@ -8,10 +8,10 @@ import { isErrorAbort } from '@/utils/helper';
 
 // transactionTypes.ts
 const getTransactionTypes = (t) => [
-  { id: 'all', label: t('Dashboard.finance.tabs.all') },
-  { id: 'escrow_deposit', label: t('Dashboard.finance.tabs.escrowDeposit') },
-  { id: 'escrow_release', label: t('Dashboard.finance.tabs.escrowRelease') },
-  { id: 'withdrawal', label: t('Dashboard.finance.tabs.withdrawal') },
+  { id: 'all', label: t('tabs.all') },
+  { id: 'escrow_deposit', label: t('tabs.escrowDeposit') },
+  { id: 'escrow_release', label: t('tabs.escrowRelease') },
+  { id: 'withdrawal', label: t('tabs.withdrawal') },
 ];
 
 const formatMoney = (n, currency = 'SAR') => {
@@ -78,11 +78,6 @@ export default function WithdrawManagement() {
       const { transactions = [], pagination = {} } = res.data || {};
       setTransactions(transactions);
       setTotal(pagination.total ?? 0);
-      setFilters(prev => ({
-        ...prev,
-        page: pagination.page ?? prev.page,
-        limit: pagination.limit ?? prev.limit,
-      }));
     } catch (e) {
       if (!isErrorAbort(e)) {
         console.error('Error fetching transactions:', e);

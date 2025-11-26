@@ -179,8 +179,15 @@ export default function Invite() {
         data-aos='fade-up'>
         <div className='absolute inset-0 bg-gradient-to-b from-black/40 via-black/40 to-black/50' />
         <div className='relative z-10 max-w-4xl mx-auto px-6 text-white' data-aos='zoom-in' data-aos-delay='150'>
-          <h1 className='text-left text-3xl md:text-5xl font-extrabold mb-4 leading-tight' dangerouslySetInnerHTML={{ __html: t('hero.title') }} />
-          <p className='text-left text-lg md:text-2xl text-white/90' dangerouslySetInnerHTML={{ __html: t('hero.subtitle') }} />
+          <h1 className='text-left text-3xl md:text-5xl font-extrabold mb-4 leading-tight'>
+            {t('hero.title')}
+          </h1>
+
+          <p className='text-left text-lg md:text-2xl text-white/90'>
+            {t.rich('hero.subtitle', {
+              strong: (chunk) => <strong className='text-white font-semibold'>{chunk}</strong>
+            })}
+          </p>
         </div>
       </section>
 
@@ -262,7 +269,11 @@ export default function Invite() {
                 <Input label={t('yourName')} placeholder={t('namePlaceholder')} value={senderName} onChange={e => setSenderName(e.target.value)} />
               </div>
               <Textarea placeholder={t('messagePlaceholder')} value={message} onChange={e => setMessage(e.target.value)} rows={6} label={t('message')} />
-              <p className='mt-1 text-xs text-[#6B7280]'  >{t('linkHint')}</p>
+              <span className="mt-1 text-xs text-[#6B7280]">
+                {t.rich('linkHint', {
+                  link: (chunk) => <a href={inviteUrl} className="text-blue-600 underline">{chunk}</a>
+                })}
+              </span>
 
             </div>
           </div>

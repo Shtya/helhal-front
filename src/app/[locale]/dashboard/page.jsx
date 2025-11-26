@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Users, ShoppingBag, Wallet, BarChart3, ArrowUpRight, ArrowDownRight, RefreshCw, Calendar, Download } from 'lucide-react';
 import api from '@/lib/axios';
 import { BarChart } from '@/components/dashboard/charts/BarChart';
 import { DoughnutChart } from '@/components/dashboard/charts/DoughnutChart';
 import { useTranslations } from 'next-intl';
+import { isErrorAbort } from '@/utils/helper';
 
 export default function StatisticsPage() {
   const t = useTranslations('Dashboard.overview'); // 👈 namespace
@@ -38,8 +39,14 @@ export default function StatisticsPage() {
 
 
   const [recent, setRecent] = useState({ orders: [], withdraws: [] });
+  const controllerRef = useRef();
 
   async function fetchAll() {
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
+
     setLoading(true);
     setError(null);
     try {
@@ -53,10 +60,11 @@ export default function StatisticsPage() {
 
 
     } catch (e) {
-
-      setError('Failed to load stats');
+      if (!isErrorAbort(error))
+        setError('Failed to load stats');
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   }
 

@@ -54,11 +54,6 @@ export default function InvoicesManagement() {
 
         setInvoices(data?.records || []);
         setTotal(data?.total_records ?? 0);
-        setFilters(prev => ({
-          ...prev,
-          page: data?.current_page ?? prev.page,
-          limit: (data?.per_page ?? prev.limit).toString(),
-        }));
 
       } catch (error) {
         if (!isErrorAbort(error)) {

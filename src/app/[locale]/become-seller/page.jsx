@@ -9,8 +9,11 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
+import { useValues } from '@/context/GlobalContext';
 
 const page = () => {
+  const { settings, loadingSettings } = useValues();
+  const faqs = settings?.faqs;
   const t = useTranslations('BecomeSeller');
   const stats = [
     { value: '4 Sec', label: t('stats.gigBought') },
@@ -76,14 +79,14 @@ const page = () => {
     },
   ];
 
-  const faqs = [
-    { question: t('faqs.whatCanISell.question'), answer: t('faqs.whatCanISell.answer') },
-    { question: t('faqs.howMuchMoney.question'), answer: t('faqs.howMuchMoney.answer') },
-    { question: t('faqs.howMuchTime.question'), answer: t('faqs.howMuchTime.answer') },
-    { question: t('faqs.howDoIGetPaid.question'), answer: t('faqs.howDoIGetPaid.answer') },
-    { question: t('faqs.howMuchDoesItCost.question'), answer: t('faqs.howMuchDoesItCost.answer') },
-    { question: t('faqs.howDoIPrice.question'), answer: t('faqs.howDoIPrice.answer') },
-  ];
+  // const faqs = [
+  //   { question: t('faqs.whatCanISell.question'), answer: t('faqs.whatCanISell.answer') },
+  //   { question: t('faqs.howMuchMoney.question'), answer: t('faqs.howMuchMoney.answer') },
+  //   { question: t('faqs.howMuchTime.question'), answer: t('faqs.howMuchTime.answer') },
+  //   { question: t('faqs.howDoIGetPaid.question'), answer: t('faqs.howDoIGetPaid.answer') },
+  //   { question: t('faqs.howMuchDoesItCost.question'), answer: t('faqs.howMuchDoesItCost.answer') },
+  //   { question: t('faqs.howDoIPrice.question'), answer: t('faqs.howDoIPrice.answer') },
+  // ];
 
   return (
     <div className='container'>
@@ -176,7 +179,7 @@ const page = () => {
 
       {/* FAQ */}
       <section className='divider' data-aos='fade-up' data-aos-duration='1000'>
-        <FAQSection faqs={faqs} />
+        <FAQSection faqs={faqs} loading={loadingSettings} />
       </section>
     </div>
   );

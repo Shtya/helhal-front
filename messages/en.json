@@ -1,4 +1,9 @@
 {
+  "phoneInput": {
+    "countryCodeLabel": "Country Code",
+    "chooseCountry": "Choose country",
+    "phoneLabel": "Phone"
+  },
   "toast": {
     "failedToUploadFiles": "Failed to upload files. Please try again.",
     "fileDeletedSuccessfully": "File deleted successfully.",
@@ -1846,14 +1851,14 @@
       "subtitle": "Start the conversation by sending the first message."
     },
     "newerMessages": "Newer messages",
-    "replyingTo": "Replying to <b>{username}</b>: \"{message}\"",
+    "replyingTo": "Replying to <strong>{username}</strong>: \"{message}\"",
     "cancel": "cancel",
     "writeMessage": "Write a message…",
     "send": "Send",
     "reply": "↩ Reply",
     "replyToMessage": "Reply to this message",
     "goToParent": "Go to parent message",
-    "inReplyTo": "In reply to <b>{username}</b>: \"{message}\"",
+    "inReplyTo": "In reply to <strong>{username}</strong>: \"{message}\"",
     "system": "System",
     "user": "User",
     "me": "Me",
@@ -2456,7 +2461,7 @@
     "page": {
       "hero": {
         "title": "Take the credit for referring friends to UpPhoto",
-        "subtitle": "Earn up to <b>US$500</b> in credits — up to <b>US$100</b> from each referral."
+        "subtitle": "Earn up to <strong>$500</strong> in credits — up to <strong>$100</strong> from each referral."
       },
       "inviteFriends": "Invite friends through email",
       "addEmailsPlaceholder": "Add emails (separate with commas, spaces, or new lines)",
@@ -2478,7 +2483,7 @@
       "namePlaceholder": "e.g., Mohamed",
       "message": "Message",
       "messagePlaceholder": "Write your invite message…",
-      "linkHint": "You can use <code>{'{link}'}</code> in your message—it will be replaced with your unique invite URL.",
+      "linkHint": "You can use '{link}' in your message, and it will be replaced with your unique invitation link.",
       "emailPreview": "Email preview",
       "to": "To:",
       "subject": "Subject:",
@@ -3004,7 +3009,6 @@
       }
     },
     "orders": {
-      "title": "Orders",
       "tabs": {
         "all": "All Orders",
         "pending": "Pending",
@@ -3013,16 +3017,8 @@
         "completed": "Completed",
         "cancelled": "Cancelled"
       },
-      "searchPlaceholder": "Search orders…",
-      "orderBy": "Order by",
-      "sortOptions": {
-        "newest": "Newest",
-        "oldest": "Oldest",
-        "priceHigh": "Price: High to Low",
-        "priceLow": "Price: Low to High"
-      },
       "columns": {
-        "orderTitle": "Order Title",
+        "title": "Order Title",
         "status": "Status",
         "amount": "Amount",
         "buyer": "Buyer",
@@ -3030,19 +3026,50 @@
         "package": "Package",
         "orderDate": "Order Date"
       },
-      "actions": {
-        "view": "View",
-        "setPending": "Set Pending",
+      "statusLabels": {
+        "pending": "Set Pending",
         "accept": "Accept",
-        "markDelivered": "Mark Delivered",
+        "delivered": "Mark Delivered",
         "complete": "Complete",
         "cancel": "Cancel",
         "disputed": "Disputed"
       },
-      "toast": {
+      "searchPlaceholder": "Search orders…",
+      "sortPlaceholder": "Order by",
+      "sortOptions": {
+        "newest": "Newest",
+        "oldest": "Oldest",
+        "priceHigh": "Price: High to Low",
+        "priceLow": "Price: Low to High"
+      },
+      "actions": {
+        "view": "View"
+      },
+      "messages": {
         "updatingStatus": "Updating order status to {status}...",
-        "statusUpdated": "Order status updated to {status}",
-        "statusError": "Error updating order status."
+        "statusUpdated": "Order status updated to {status}"
+      },
+      "errors": {
+        "fetchFailed": "Failed to fetch orders.",
+        "loadFailed": "Failed to load order.",
+        "statusUpdateFailed": "Error updating order status."
+      },
+      "view": {
+        "orderTitle": "Order Title",
+        "status": "Status",
+        "buyer": "Buyer",
+        "seller": "Seller",
+        "totalAmount": "Total Amount",
+        "packageType": "Package Type",
+        "orderDate": "Order Date",
+        "deliveredAt": "Delivered At",
+        "completedAt": "Completed At",
+        "cancelledAt": "Cancelled At",
+        "invoice": "Invoice",
+        "invoiceNumber": "Invoice",
+        "invoiceStatus": "Status",
+        "invoiceTotal": "Total",
+        "close": "Close"
       }
     },
     "services": {
@@ -3265,6 +3292,7 @@
       },
       "modal": {
         "title": "User Details",
+        "username": "Username:",
         "editTitle": "Edit User {username}",
         "userInformation": "User Information",
         "memberSince": "Member Since:",

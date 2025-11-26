@@ -3,6 +3,7 @@ const { default: Select } = require("./Select");
 import countryCodes from '@/constants/CountryCodes.json';
 import Input from './Input';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 const FlagSvg = ({ code }) => {
     const [data, setData] = useState('');
@@ -38,6 +39,7 @@ export default function PhoneInputWithCountry({
     value = { countryCode, phone: '' },
     onChange,
 }) {
+    const t = useTranslations();
     const [internalPhone, setInternalPhone] = useState(value.phone || '');
     const [internalCountry, setInternalCountry] = useState(value.countryCode);
 
@@ -80,11 +82,11 @@ export default function PhoneInputWithCountry({
     return (
         <div className="grid gap-2 items-center grid-cols-1 sm:grid-cols-[auto_1fr]">
             <Select
-                label="Country Code"
+                label={t('phoneInput.countryCodeLabel')}
                 options={formattedOptions}
                 value={value.countryCode?.code}
                 onChange={handleCodeChange}
-                placeholder="Choose country"
+                placeholder={t('phoneInput.chooseCountry')}
                 cnSelect="w-full sm:!w-[120px]"
                 cnMenu="sm:!min-w-[302px]"
                 VirtualizeWidth={300}
@@ -105,7 +107,7 @@ export default function PhoneInputWithCountry({
                 }}
             />
             <Input
-                label="Phone"
+                label={t('phoneInput.phoneLabel')}
                 value={internalPhone}
                 onChange={handlePhoneChange}
                 onBlur={handleBlur}
