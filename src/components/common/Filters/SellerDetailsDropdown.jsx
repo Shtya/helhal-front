@@ -271,26 +271,26 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
             )}
 
             {/* Extras (boolean filters) */}
-            {(filterOptions.fastDelivery !== undefined || filterOptions.additionalRevision !== undefined) && (
-              <Section title={t('extras')} one>
-                {/* fastDelivery */}
-                <BoolRow
+            {/* {(filterOptions.fastDelivery !== undefined || filterOptions.additionalRevision !== undefined) && (
+              <Section title={t('extras')} one> */}
+            {/* fastDelivery */}
+            {/* <BoolRow
                   key='fastDelivery'
                   label={t('fastDelivery')}
                   count={filterOptions.fastDelivery ?? 0}
                   active={!!selected.fastDelivery}
                   onClick={() => toggleExtra('fastDelivery')}
-                />
-                {/* additionalRevision */}
-                <BoolRow
+                /> */}
+            {/* additionalRevision */}
+            {/* <BoolRow
                   key='additionalRevision'
                   label={t('additionalRevision')}
                   count={filterOptions.additionalRevision ?? 0}
                   active={!!selected.additionalRevision}
                   onClick={() => toggleExtra('additionalRevision')}
-                />
-              </Section>
-            )}
+                /> */}
+            {/* </Section>
+            )} */}
 
             {/* Footer */}
             <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>

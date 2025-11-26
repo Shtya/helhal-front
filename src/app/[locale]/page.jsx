@@ -174,6 +174,15 @@ function SearchBar({ className = '', large = false }) {
         value={query}
         onChange={e => setQuery(e.target.value)}
         placeholder={t('searchPlaceholder')}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const trimmed = query.trim();
+            if (trimmed) {
+              router.push(`/services/all?page=1&q=${encodeURIComponent(trimmed)}`);
+            }
+          }
+        }}
         className={[
           'w-full bg-white/95 border border-emerald-200/60 shadow-sm',
           'focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500',
@@ -386,7 +395,23 @@ export function PopularServicesSwiper() {
     fetchPopular();
   }, [t]);
 
+  if (error) {
+    return (
+      <section className="relative -mt-6 pb-4">
+        <div className="container !px-4 sm:!px-6 lg:!px-8">
+          <div className="mt-8">
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              {t('popularServices.error.loadFailedMessage')}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+
   if (!loading && items.length === 0) return null;
+
   return (
     <section className="container !px-4 sm:!px-6 lg:!px-8 !py-12">
       <div className="flex items-end justify-between mb-4">
@@ -433,7 +458,7 @@ export function PopularServicesSwiper() {
             return (<SwiperSlide key={service.slug}>
               <Link
                 // primary target: service detail using service.slug
-                href={`/services/${encodeURIComponent(service.categorySlug)}/${encodeURIComponent(service.slug)}`}
+                href={`/services/${encodeURIComponent(service?.category?.slug)}/${encodeURIComponent(service.slug)}`}
                 className={[
                   'group relative flex flex-col items-center text-center',
                   'bg-white rounded-2xl border border-emerald-100/70',
@@ -460,12 +485,6 @@ export function PopularServicesSwiper() {
             </SwiperSlide>)
           })}
       </Swiper>
-
-      {error && (
-        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
     </section>
   );
 }

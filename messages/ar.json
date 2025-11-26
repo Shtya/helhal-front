@@ -208,7 +208,7 @@
     "sections": {
       "recent": "حديث",
       "trySearchingFor": "جرب البحث عن",
-      "live": "مباشر {scope}"
+      "live": "{scope} المباشرة"
     },
     "loading": "جاري التحميل…",
     "empty": {
@@ -224,6 +224,9 @@
     }
   },
   "navigation_sections": {
+    "categories": {
+      "noCategories": "لا توجد فئات"
+    },
     "forClients": {
       "title": "للعملاء",
       "yourAccount": "حسابك",
@@ -248,7 +251,7 @@
       "title": "للمستقلين",
       "createService": "أنشئ خدمة",
       "jobs": "ابحث عن وظيفة",
-      "yourProposals": "مقترحاتك",
+      "yourProposals": "عروضك",
       "trustSafety": "الثقة والأمان",
       "buying": "الشراء على هلهل",
       "selling": "البيع على هلهل"
@@ -265,11 +268,12 @@
       "explore": "استكشف",
       "services": "الخدمات",
       "allServices": "جميع الخدمات",
+      "myServices": "خدماتي",
       "jobs": "الوظائف",
       "browseJobs": "تصفح الوظائف",
       "createJob": "إنشاء وظيفة",
       "myJobs": "وظائفي",
-      "myJobsBuyer": "وظائفي (مشتري)",
+      "myJobsBuyer": "وظائفي",
       "myProposals": "عروضي",
       "dashboard": "لوحة التحكم",
       "becomeSeller": "كن بائعًا",
@@ -2619,9 +2623,22 @@
       "sections": {
         "general": "الإعدادات العامة",
         "financial": "الإعدادات المالية",
-        "legal": "القانونية والامتثال"
+        "legal": "القانونية والامتثال",
+        "socialMedia": "إدارة وسائل التواصل الاجتماعي"
       },
       "fields": {
+        "facebook": "فيسبوك",
+        "facebookPlaceholder": "أدخل رابط فيسبوك",
+        "linkedin": "لينكد إن",
+        "linkedinPlaceholder": "أدخل رابط لينكد إن",
+        "twitter": "تويتر",
+        "twitterPlaceholder": "أدخل رابط تويتر",
+        "instagram": "إنستغرام",
+        "instagramPlaceholder": "أدخل رابط إنستغرام",
+        "pinterest": "بينتريست",
+        "pinterestPlaceholder": "أدخل رابط بينتريست",
+        "tiktok": "تيك توك",
+        "tiktokPlaceholder": "أدخل رابط تيك توك",
         "siteName": "اسم الموقع",
         "siteNamePlaceholder": "اسم منصتك",
         "logo": "الشعار",
@@ -2639,7 +2656,9 @@
         "privacyPolicy": "سياسة الخصوصية",
         "termsOfService": "شروط الخدمة",
         "faqs": "الأسئلة الشائعة",
-        "faqsHint": "أضف أسئلة وإجابات للعرض عبر الموقع."
+        "faqsHint": "أضف أسئلة وإجابات للعرض عبر الموقع.",
+        "socialMediaHint": "قم بإدارة حسابات وسائل التواصل الاجتماعي المرتبطة هنا.",
+        "socialMediaControllerHint": "تتيح لك هذه الإعدادات ربط وإدارة حضورك على وسائل التواصل الاجتماعي."
       },
       "tabs": {
         "privacy": "سياسة الخصوصية",

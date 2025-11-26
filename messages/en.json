@@ -367,11 +367,12 @@
       "explore": "Explore",
       "services": "Services",
       "allServices": "All Services",
+      "myServices": "My Services",
       "jobs": "Jobs",
       "browseJobs": "Browse Jobs",
       "createJob": "Create Job",
       "myJobs": "My Jobs",
-      "myJobsBuyer": "My Jobs (Buyer)",
+      "myJobsBuyer": "My Jobs",
       "myProposals": "My Proposals",
       "dashboard": "Dashboard",
       "becomeSeller": "Become Seller",
@@ -624,7 +625,8 @@
       "from": "From {price}",
       "bookNow": "Book now →",
       "error": {
-        "loadFailed": "Failed to load popular services"
+        "loadFailed": "Failed to load popular services",
+        "loadFailedMessage": "Unable to load popular services. Please try again later."
       }
     },
     "whyChoose": {
@@ -721,7 +723,6 @@
     "messagesButtonAriaLabel": "Messages",
     "notificationsButtonAriaLabel": "Notifications",
     "userAvatarAlt": "User Avatar",
-    "userMenuAriaLabel": "user Menu Aria Label",
     "searchPlaceholder": "Explore services and categories...",
     "searchButtonAriaLabel": "Search",
     "profileLink": "Profile",
@@ -915,6 +916,9 @@
   },
   "socialMediaTitle": "Follow Us on Social Media",
   "navigation_sections": {
+    "categories": {
+      "noCategories": "No categories"
+    },
     "forClients": {
       "title": "For Clients",
       "yourAccount": "Your Account",
@@ -3022,9 +3026,22 @@
       "sections": {
         "general": "General Settings",
         "financial": "Financial Settings",
-        "legal": "Legal & Compliance"
+        "legal": "Legal & Compliance",
+        "socialMedia": "Social Media Controller"
       },
       "fields": {
+        "facebook": "Facebook",
+        "facebookPlaceholder": "Enter Facebook URL",
+        "linkedin": "LinkedIn",
+        "linkedinPlaceholder": "Enter LinkedIn URL",
+        "twitter": "Twitter",
+        "twitterPlaceholder": "Enter Twitter URL",
+        "instagram": "Instagram",
+        "instagramPlaceholder": "Enter Instagram URL",
+        "pinterest": "Pinterest",
+        "pinterestPlaceholder": "Enter Pinterest URL",
+        "tiktok": "TikTok",
+        "tiktokPlaceholder": "Enter TikTok URL",
         "siteName": "Site Name",
         "siteNamePlaceholder": "Your Platform Name",
         "logo": "Logo",
@@ -3042,7 +3059,9 @@
         "privacyPolicy": "Privacy Policy",
         "termsOfService": "Terms of Service",
         "faqs": "FAQs",
-        "faqsHint": "Add questions and answers to display across the site."
+        "faqsHint": "Add questions and answers to display across the site.",
+        "socialMediaHint": "Manage your connected social media accounts here.",
+        "socialMediaControllerHint": "These settings allow linking and controlling your social media presence."
       },
       "tabs": {
         "privacy": "Privacy Policy",

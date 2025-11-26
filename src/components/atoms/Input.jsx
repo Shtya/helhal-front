@@ -4,7 +4,7 @@
 import { forwardRef } from 'react';
 import FormErrorMessage from './FormErrorMessage';
 
-const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placeholder = 'Enter text', iconLeft, actionIcon, onAction, onChange, onBlur, name, type = 'text', required = false, showMsgError = true, ...props }, ref) => {
+const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placeholder = 'Enter text', iconLeft, icon, actionIcon, onAction, onChange, onBlur, name, type = 'text', required = false, showMsgError = true, ...props }, ref) => {
   return (
     <div className={`w-full ${className}`}>
       {label && (
@@ -22,6 +22,8 @@ const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placehold
             <img src={iconLeft} alt='' className='w-4' />
           </span>
         )}
+
+        {icon}
 
         <input required ref={ref} id={name} name={name} type={type} placeholder={placeholder} onChange={onChange} onBlur={onBlur} className={`${actionIcon && 'w-[calc(100%-50px)]'} w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400`} {...props} />
 

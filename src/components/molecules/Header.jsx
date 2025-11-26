@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useTranslations } from 'next-intl';
@@ -52,81 +52,90 @@ export default function Header() {
   const toggleMobileNav = () => setIsMobileNavOpen(s => !s);
 
   const buildNavLinks = u => {
-    const common = [
-      { href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> },
-      {
-        label: tHeader('navigation.services'),
-        icon: <Briefcase className='h-5 w-5' />,
-        children: [
-          {
-            href: '/services',
-            label: tHeader('navigation.services'),
-            icon: <Briefcase className='h-4 w-4' />,
-          },
-          {
-            href: '/services/all',
-            label: tHeader('navigation.allServices'),
-            icon: <ListChecks className='h-4 w-4' />,
-          },
-        ],
-      },
-    ];
+    return useMemo(() => {
+      const common = [
+        { href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> },
+        {
+          label: tHeader('navigation.services'),
+          icon: <Briefcase className='h-5 w-5' />,
+          children: [
+            {
+              href: '/services',
+              label: tHeader('navigation.services'),
+              icon: <Briefcase className='h-4 w-4' />,
+            },
+            {
+              href: '/services/all',
+              label: tHeader('navigation.allServices'),
+              icon: <ListChecks className='h-4 w-4' />,
+            },
+            ,
+            u?.role === 'seller'
+              ? {
+                href: '/my-gigs',
+                label: tHeader('navigation.myServices'),
+                icon: <LayoutGrid size={18} className="h-4 w-4" />,
+              }
+              : null,
+          ].filter(Boolean),
+        },
+      ];
 
-    //guest
+      //guest
+      const guest = [
+        {
+          label: tHeader('navigation.jobs'),
+          icon: <Briefcase className='h-5 w-5' />,
+          children: [
+            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+          ],
+        },
+      ]
+      // Buyer-only
+      const buyer = [
+        {
+          label: tHeader('navigation.jobs'),
+          icon: <Briefcase className='h-5 w-5' />,
+          children: [
+            { href: '/share-job-description', label: tHeader('navigation.createJob'), icon: <FilePlus2 className='h-4 w-4' /> },
+            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+            { href: '/my-jobs', label: tHeader('navigation.myJobsBuyer'), icon: <ClipboardList className='h-4 w-4' /> },
+          ],
+        },
+      ];
 
-    const guest = [
-      {
-        label: tHeader('navigation.jobs'),
-        icon: <Briefcase className='h-5 w-5' />,
-        children: [
-          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-        ],
-      },
-    ]
-    // Buyer-only
-    const buyer = [
-      {
-        label: tHeader('navigation.jobs'),
-        icon: <Briefcase className='h-5 w-5' />,
-        children: [
-          { href: '/share-job-description', label: tHeader('navigation.createJob'), icon: <FilePlus2 className='h-4 w-4' /> },
-          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-          { href: '/my-jobs', label: tHeader('navigation.myJobsBuyer'), icon: <ClipboardList className='h-4 w-4' /> },
-        ],
-      },
-    ];
+      // Seller-only
+      const seller = [
+        {
+          label: tHeader('navigation.jobs'),
+          icon: <Briefcase className='h-5 w-5' />,
+          children: [
+            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+            { href: '/jobs/proposals', label: tHeader('navigation.myProposals'), icon: <FileText className='h-4 w-4' /> },
+          ],
+        },
+      ];
 
-    // Seller-only
-    const seller = [
-      {
-        label: tHeader('navigation.jobs'),
-        icon: <Briefcase className='h-5 w-5' />,
-        children: [
-          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-          { href: '/jobs/proposals', label: tHeader('navigation.myProposals'), icon: <FileText className='h-4 w-4' /> },
-        ],
-      },
-    ];
-
-    // Seller-only
-    const admin = [
-      {
-        label: tHeader('navigation.jobs'),
-        icon: <Briefcase className='h-5 w-5' />,
-        children: [
-          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-        ],
-      },
-      { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
-    ];
+      // Seller-only
+      const admin = [
+        {
+          label: tHeader('navigation.jobs'),
+          icon: <Briefcase className='h-5 w-5' />,
+          children: [
+            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+          ],
+        },
+        { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
+      ];
 
 
-    // Conditional + common
-    if (isGuest) return [...common, ...guest, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }]
-    if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }];
-    if (u?.role === 'seller') return [...common, ...seller];
-    if (u?.role === 'admin') return [...common, ...admin];
-    return [...common]; // fallback if no role
+      // Conditional + common
+      if (isGuest) return [...common, ...guest, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }]
+      if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }];
+      if (u?.role === 'seller') return [...common, ...seller];
+      if (u?.role === 'admin') return [...common, ...admin];
+      return [...common]; // fallback if no role
+    }, [u?.role, isGuest]);
   };
 
   const navLinks = buildNavLinks(user);
@@ -288,7 +297,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
   return (
     <div className='relative' ref={dropdownRef}>
-      <motion.button onClick={() => setIsOpen(v => !v)} className='hidden lg:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} aria-label={t('userMenuAriaLabel') || 'User menu'}>
+      <motion.button onClick={() => setIsOpen(v => !v)} className='hidden lg:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
 
         <Img src={user?.profileImage || '/images/placeholder-avatar.png'} altSrc='/images/placeholder-avatar.png' loader={localImageLoader} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
       </motion.button>

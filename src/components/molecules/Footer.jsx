@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useMemo, useState, useTransition } from 'react';
 import Image from 'next/image';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
@@ -26,13 +26,7 @@ export const CATEGORY_LINKS = [
   { key: 'photography', href: '/' },
 ];
 
-export const SOCIAL_LINKS = [
-  { name: 'LinkedIn', href: '/', icon: '/images/linkedin.png' },
-  { name: 'Google', href: '/', icon: '/images/google.png' },
-  { name: 'TikTok', href: '/', icon: '/images/tiktok.png' },
-  { name: 'Pinterest', href: '/', icon: '/images/pinterest.png' },
-  { name: 'Facebook', href: '/', icon: '/images/facebook.png' },
-];
+
 
 
 
@@ -156,16 +150,25 @@ function TrustRow() {
 /* ===================== FOOTER ===================== */
 export function Footer() {
   const t = useTranslations();
-  const { categories, loadingCategory } = useValues();
-  const locale = useLocale();
-  const year = new Date().getFullYear();
+  const { categories, settings, loadingSettings } = useValues();
+
+  const SOCIAL_LINKS = [
+    { name: 'Facebook', href: settings?.facebook, icon: '/images/facebook.png' },
+    { name: 'Twitter', href: settings?.twitter, icon: '/images/twitter.png' },
+    { name: 'LinkedIn', href: settings?.linkedin, icon: '/images/linkedin.png' },
+    { name: 'Instagram', href: settings?.instagram, icon: '/images/instagram.png' },
+    { name: 'Pinterest', href: settings?.pinterest, icon: '/images/pinterest.png' },
+    { name: 'TikTok', href: settings?.tiktok, icon: '/images/tiktok.png' },
+    { name: 'Email', href: settings?.contactEmail ? `mailto:${settings.contactEmail}` : null, icon: '/images/google.png' },
+  ];
   // Build top 10 category links
-  const categoryLinks = categories ? (categories)
+
+  const categoryLinks = useMemo(() => categories ? (categories)
     ?.slice(0, 10)
     .map(cat => ({
       key: cat.name, // translation key
       href: `/services/${cat.slug}`, // link path
-    })) : [];
+    })) : [{ key: t('navigation_sections.categories.noCategories'), href: '#' }], [categories]);
 
   const FOOTER_NAVIGATION_STRUCTURE = [
     {
@@ -240,11 +243,31 @@ export function Footer() {
             <div className='flex flex-col sm:flex-row gap-6 sm:items-center'>
               {/* Social icons */}
               <div className='flex gap-4'>
-                {SOCIAL_LINKS.map(item => (
-                  <Link key={item.name} href={item.href} aria-label={item.name}>
-                    <Image src={item.icon} loader={localImageLoader} alt={item.name} width={36} height={36} className='transition-transform hover:-translate-y-0.5 hover:opacity-90' />
-                  </Link>
-                ))}
+                {SOCIAL_LINKS.map(item => {
+                  // Show placeholder skeleton while loading
+                  if (loadingSettings) {
+                    return (
+                      <div
+                        key={item.name}
+                        className="w-9 h-9 bg-slate-200 rounded-full animate-pulse"
+                      />
+                    );
+                  }
+                  // After load, only show if link exists
+                  if (!item.href) return null;
+                  return (
+                    <Link key={item.name} href={item.href} aria-label={item.name}>
+                      <Image
+                        src={item.icon}
+                        loader={localImageLoader}
+                        alt={item.name}
+                        width={36}
+                        height={36}
+                        className="transition-transform hover:-translate-y-0.5 hover:opacity-90"
+                      />
+                    </Link>
+                  );
+                })}
               </div>
 
               <LanguageSwitcher />

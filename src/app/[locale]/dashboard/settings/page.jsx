@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Save, RefreshCw, DollarSign, Shield, Globe, Mail, Phone, Image as ImageIcon, Wallet, Info } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Save, RefreshCw, DollarSign, Shield, Globe, Mail, Phone, Image as ImageIcon, Wallet, Info, Share2 } from 'lucide-react';
 
 import api from '@/lib/axios';
 import Input from '@/components/atoms/Input';
@@ -12,6 +12,7 @@ import z from 'zod';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
+import { FaFacebook, FaInstagram, FaLinkedin, FaPinterest, FaTiktok, FaTwitter } from 'react-icons/fa';
 
 const getSettingsSchema = (t) => z.object({
   contactEmail: z
@@ -170,6 +171,13 @@ export default function AdminSettingsDashboard() {
     privacyPolicy: '',
     termsOfService: '',
     faqs: [], // now array of { question, answer }
+    // socialLinks
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    linkedin: '',
+    pinterest: '',
+    tiktok: '',
   });
 
   const [loading, setLoading] = useState(true);
@@ -281,7 +289,6 @@ export default function AdminSettingsDashboard() {
     );
   }
 
-  console.log(settings, settings.siteLogo)
 
   return (
     <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
@@ -376,26 +383,102 @@ export default function AdminSettingsDashboard() {
           </GlassCard>
         </div>
 
-        {/* Jobs Setting (simple) */}
-        {/* <div className='mb-6 grid grid-cols-1 gap-6'>
-          <GlassCard className='p-6'>
-            <div className='mb-4 flex items-center'>
-              <Globe size={20} className='mr-2 text-indigo-600' />
-              <h2 className='text-lg font-semibold'>Jobs Settings</h2>
-            </div>
 
-            <div className='flex items-center justify-between rounded-md bg-slate-50 p-3'>
-              <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>Job Posting Auto-Publish</label>
-                <p className='text-sm text-slate-600'>If enabled, new jobs go live immediately. If disabled, jobs remain pending until an admin approves.</p>
-              </div>
-              <Switcher checked={!settings.jobsRequireApproval} onChange={handleJobsAutoPublishToggle} />
-            </div>
-          </GlassCard>
-        </div> */}
+
 
         {/* FAQs (Q&A text) */}
-        <div className="mb-6 grid grid-cols-1 gap-6">
+        <div className="mb-6 grid grid-cols-2 gap-6">
+          <GlassCard className="p-6">
+            <div className="mb-4 flex items-center">
+              <Share2 size={20} className="mr-2 text-blue-600" />
+              <h2 className="text-lg font-semibold">{t('sections.socialMedia')}</h2>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t('fields.facebook')}
+                </label>
+                <Input
+                  value={settings.facebook || ''}
+                  onChange={e => updateField('facebook', e.target.value)}
+                  placeholder={t('fields.facebookPlaceholder')}
+                  icon={<FaFacebook size={16} />}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t('fields.linkedin')}
+                </label>
+                <Input
+                  value={settings.linkedin || ''}
+                  onChange={e => updateField('linkedin', e.target.value)}
+                  placeholder={t('fields.linkedinPlaceholder')}
+                  icon={<FaLinkedin size={16} />}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t('fields.twitter')}
+                </label>
+                <Input
+                  value={settings.twitter || ''}
+                  onChange={e => updateField('twitter', e.target.value)}
+                  placeholder={t('fields.twitterPlaceholder')}
+                  icon={<FaTwitter size={16} />}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t('fields.instagram')}
+                </label>
+                <Input
+                  value={settings.instagram || ''}
+                  onChange={e => updateField('instagram', e.target.value)}
+                  placeholder={t('fields.instagramPlaceholder')}
+                  icon={<FaInstagram size={16} />}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t('fields.pinterest')}
+                </label>
+                <Input
+                  value={settings.pinterest || ''}
+                  onChange={e => updateField('pinterest', e.target.value)}
+                  placeholder={t('fields.pinterestPlaceholder')}
+                  icon={<FaPinterest size={16} />}
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  {t('fields.tiktok')}
+                </label>
+                <Input
+                  value={settings.tiktok || ''}
+                  onChange={e => updateField('tiktok', e.target.value)}
+                  placeholder={t('fields.tiktokPlaceholder')}
+                  icon={<FaTiktok size={16} />}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                {t('fields.socialMediaHint')}
+              </label>
+              <div className="mt-2 flex items-start gap-2 text-xs text-slate-600">
+                <Info className="mt-0.5 h-4 w-4 text-slate-500" />
+                <p>{t('fields.socialMediaControllerHint')}</p>
+              </div>
+            </div>
+          </GlassCard>
+
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center">
               <Info size={20} className="mr-2 text-teal-600" />
@@ -410,7 +493,9 @@ export default function AdminSettingsDashboard() {
               icon={<Info size={16} className="text-slate-500" />}
             />
           </GlassCard>
+
         </div>
+
 
 
         {/* Legal & Compliance – Tabs + Preview */}

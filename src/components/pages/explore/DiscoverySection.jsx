@@ -28,8 +28,6 @@ export default function DiscoverySection() {
   const fetchServices = async tab => {
     setErr(null);
 
-
-
     // cache hit (valid within TTL)
     const cached = cacheRef.current.get(tab);
     if (cached && Date.now() - cached.at < TTL_MS) {
@@ -53,7 +51,6 @@ export default function DiscoverySection() {
       const list = res.data.services.slice(0, 8);
       cacheRef.current.set(tab, { data: list, at: Date.now() });
       setServices(list);
-
     } catch (e) {
       if (e?.name !== 'CanceledError' && e?.message !== 'canceled') {
         setErr(e?.response?.data?.message || e?.message || t('discovery.errors.loadFailed'));

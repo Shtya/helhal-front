@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
-import { MailPlus, UserRoundCog, UserIcon, ArrowRight } from 'lucide-react';
+import { MailPlus, UserRoundCog, UserIcon, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 function HeroAnother() {
@@ -199,6 +199,9 @@ export default function Hero() {
 
 function ActionCard({ icon, title, lines, buttonLabel, href, accent = 'from-emerald-400/15 to-emerald-400/0', chip, delay = 0 }) {
   const t = useTranslations('Explore');
+  const locale = useLocale()
+  const isArabic = locale === 'ar';
+
   const displayChip = chip || t('hero.defaultChip');
   return (
     <motion.article initial={{ opacity: 0, y: 12, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4, ease: 'easeOut', delay }} whileHover={{ y: -2 }} className='group relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow'>
@@ -211,7 +214,7 @@ function ActionCard({ icon, title, lines, buttonLabel, href, accent = 'from-emer
           <div className='rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-600'>{displayChip}</div>
         </div>
 
-        <ArrowRight className='h-5 w-5 text-slate-400 group-hover:text-slate-600 transition' />
+        {isArabic ? <ArrowLeft className='h-5 w-5 text-slate-400 group-hover:text-slate-600 transition' /> : <ArrowRight className='h-5 w-5 text-slate-400 group-hover:text-slate-600 transition' />}
       </div>
 
       <h3 className='mt-4 text-xl font-semibold text-slate-900'>{title}</h3>
@@ -231,7 +234,7 @@ function ActionCard({ icon, title, lines, buttonLabel, href, accent = 'from-emer
           className='w-full justify-center !h-[42px] !rounded-lg shadow-sm'
           icon={
             <span className='inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/0'>
-              <ArrowRight className='h-4 w-4' />
+              {isArabic ? <ArrowLeft className='h-4 w-4' /> : <ArrowRight className='h-4 w-4' />}
             </span>
           }
         />

@@ -4,6 +4,7 @@ import { routing } from './i18n/routing';
 import { getJwtPayload } from './utils/auth';
 
 
+
 // 1) Initialize next-intl middleware
 const intlMiddleware = createMiddleware({
   locales: routing.locales,
@@ -13,17 +14,18 @@ const intlMiddleware = createMiddleware({
 
 // 2) Public (unprotected) routes
 const PUBLIC_ROUTES = [
-  '/auth',
-  '/explore',
-  '/services',
-  '/become-seller',
-  '/invite',
-  '/jobs',
-  '/terms',
-  '/messagesprivacy-policy',
-  'profile/:id',
-  '/'
+  { path: '/auth' },
+  { path: '/explore' },
+  { path: '/services' },
+  { path: '/become-seller' },
+  { path: '/invite' },
+  { path: '/jobs' },
+  { path: '/terms' },
+  { path: '/messagesprivacy-policy' },
+  { path: '/profile/:id', regex: true, strict: true },
+  { path: '/' }
 ];
+
 
 // Only buyers
 const BUYER_ROUTES = [
@@ -62,10 +64,9 @@ export async function middleware(request) {
   // -----------------------------
   // 1) PUBLIC ROUTES → always allowed
   // -----------------------------
-  const isPublic =
-    PUBLIC_ROUTES.includes(pathWithoutLocale) ||
-    /^\/profile\/[^/]+$/.test(pathWithoutLocale); // allow /profile/:id but not /profile
-
+  if (isPublicRoute(pathWithoutLocale)) {
+    return intlMiddleware(request);
+  }
   if (isPublic) {
     return intlMiddleware(request);
   }
@@ -122,3 +123,35 @@ export const config = {
     '/((?!api|_next|_vercel|.*\\..*).*)'
   ]
 };
+
+
+function createPathRegex(pattern, exact = true) {
+  // Escape regex special chars except ":" and "/"
+  let regexStr = pattern.replace(/([.+*?=^!${}()[\]|\\])/g, "\\$1");
+
+  // Replace :param with a capturing group for non-slash segments
+  regexStr = regexStr.replace(/:([A-Za-z0-9_]+)/g, "([^/]+)");
+
+  if (exact) {
+    // Match the whole string
+    regexStr = `^${regexStr}$`;
+  } else {
+    // Match paths that start with the pattern
+    regexStr = `^${regexStr}(?:/.*)?$`;
+  }
+
+  return new RegExp(regexStr);
+}
+
+function isPublicRoute(path) {
+  return PUBLIC_ROUTES.some(route => {
+    if (route.regex) {
+      return createPathRegex(route.path, route?.strict).test(path);
+    }
+    if (route.strict) {
+      return path === route.path;
+    }
+    // default: startWith
+    return path.startsWith(route.path);
+  });
+}

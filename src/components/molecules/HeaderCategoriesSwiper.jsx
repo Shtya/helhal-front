@@ -105,7 +105,7 @@ export default function HeaderCategoriesSwiper({ category }) {
 
       {/* EMPTY: no categories after loading */}
       {!loadingCategory && !hasData && (
-        <div className='px-12'>
+        <div className='px-12 py-2'>
           <span className='inline-flex items-center rounded-full border border-slate-200 bg-white px-5 py-2 text-sm text-slate-600'>{t('categories.noCategoriesAvailable')}</span>
         </div>
       )}
