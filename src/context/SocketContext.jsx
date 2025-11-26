@@ -160,6 +160,7 @@ export const SocketProvider = ({ children }) => {
             value={{
                 isConnected,
                 unreadChatCount,
+                setUnreadChatCount,
 
                 // Publisher/Subscriber
                 subscribe,

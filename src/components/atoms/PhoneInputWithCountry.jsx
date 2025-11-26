@@ -35,15 +35,15 @@ const FlagSvg = ({ code }) => {
 //countryCode is a object: { code: 'SA', dial_code: '+966' }
 //phone is a string: '234589654'
 export default function PhoneInputWithCountry({
-    value = { countryCode: { code: 'SA', dial_code: '+966' }, phone: '' },
+    value = { countryCode, phone: '' },
     onChange,
 }) {
     const [internalPhone, setInternalPhone] = useState(value.phone || '');
-    const [internalCountry, setInternalCountry] = useState(value.countryCode || { code: 'SA', dial_code: '+966' });
+    const [internalCountry, setInternalCountry] = useState(value.countryCode);
 
     useEffect(() => {
         setInternalPhone(value.phone || '');
-        setInternalCountry(value.countryCode || { code: 'SA', dial_code: '+966' });
+        setInternalCountry(value.countryCode);
     }, [value]);
 
     const formattedOptions = useMemo(() => countryCodes.map(({ name, dial_code, code }) => ({
@@ -60,8 +60,9 @@ export default function PhoneInputWithCountry({
 
 
     const handleCodeChange = (opt) => {
-        setInternalCountry({ code: opt.id, dial_code: opt.value });
-        onChange({ countryCode: internalCountry });
+        const newCountryCode = { code: opt.id, dial_code: opt.value };
+        setInternalCountry(newCountryCode);
+        onChange({ phone: internalPhone, countryCode: newCountryCode });
     };
 
     const handlePhoneChange = (e) => {

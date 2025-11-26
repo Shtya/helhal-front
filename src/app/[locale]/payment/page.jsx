@@ -66,7 +66,11 @@ export default function PaymentPage() {
   const [canceling, setCanceling] = useState(false);
 
   useEffect(() => {
-    if (!orderId) return;
+    if (!orderId) {
+      setLoading(false);
+      return;
+    };
+
     (async () => {
       try {
         const data = await getOrder(orderId);

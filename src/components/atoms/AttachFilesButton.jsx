@@ -2,10 +2,14 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import ReactDOM from 'react-dom';
+import { useTranslations } from 'next-intl'; // added
 import { FiUpload, FiX } from 'react-icons/fi';
 import { FaSpinner } from 'react-icons/fa';
 import { File, FileText, ImageIcon, Music, Video, Check, Search } from 'lucide-react';
 import api, { baseImg } from '@/lib/axios';
+import { isErrorAbort } from '@/utils/helper';
+import TabsPagination from '../common/TabsPagination';
+import { useDebounce } from '@/hooks/useDebounce';
 
 // Icon by mime
 export const getFileIcon = mimeType => {
@@ -18,9 +22,9 @@ export const getFileIcon = mimeType => {
 
 
 export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange, value, cnBtn, maxSelection = undefined, cnModel }) {
+  const t = useTranslations('AttachFiles'); // added
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attachments, setAttachments] = useState([]);
-  const [loadedOnce, setLoadedOnce] = useState(false);
 
   // selection by ID (no duplicates)
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -28,7 +32,19 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
 
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+
+
+  // pagination
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [pages, setPages] = useState(1);
+
+  // search
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce({ value: query, onDebounce: () => setPage(1) });
+  const controllerRef = useRef();
+
+
 
   // Derived selected array for chips outside modal
   const selectedFiles = useMemo(() => Array.from(selectedMap.values()), [selectedMap]);
@@ -59,19 +75,32 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
 
   // Fetch assets (cached after first successful load)
   const fetchUserAssets = useCallback(async () => {
-    if (loadedOnce) return; // cache
+
+    if (controllerRef.current) controllerRef.current.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     setLoading(true);
     try {
-      const res = await api.get('/assets');
-      const list = Array.isArray(res?.data?.records) ? res.data.records : res.data;
+      const response = await api.get('/assets', {
+        params: {
+          page,
+          limit,
+          search: debouncedQuery.trim(),
+        },
+      });
+      const list = Array.isArray(response?.data?.records) ? response.data.records : response.data;
       setAttachments(list || []);
-      setLoadedOnce(true);
-    } catch {
-      setAttachments([]);
+      setPages(Math.ceil(response.data.total_records / response.data.per_page),);
+    } catch (err) {
+      if (!isErrorAbort(err)) {
+        setAttachments([]);
+      }
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
-  }, [loadedOnce]);
+  }, [page, limit, debouncedQuery.trim()]);
 
   // Load on open (first time)
   useEffect(() => {
@@ -126,25 +155,26 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
     closeModal();
   };
 
-  const handleDeleteFile = async (fileId, e) => {
-    e.stopPropagation();
-    try {
-      await api.delete(`/assets/${fileId}`);
-      setAttachments(prev => prev.filter(f => f.id !== fileId));
-      setSelectedIds(prev => {
-        const next = new Set(prev);
-        next.delete(fileId);
-        return next;
-      });
-      setSelectedMap(prev => {
-        const next = new Map(prev);
-        next.delete(fileId);
-        return next;
-      });
-    } catch {
-      // keep silent or toast here
-    }
-  };
+  //disable file delete for now because of poor FK constraints in backend for assets urls
+  // const handleDeleteFile = async (fileId, e) => {
+  //   e.stopPropagation();
+  //   try {
+  //     await api.delete(`/assets/${fileId}`);
+  //     setAttachments(prev => prev.filter(f => f.id !== fileId));
+  //     setSelectedIds(prev => {
+  //       const next = new Set(prev);
+  //       next.delete(fileId);
+  //       return next;
+  //     });
+  //     setSelectedMap(prev => {
+  //       const next = new Map(prev);
+  //       next.delete(fileId);
+  //       return next;
+  //     });
+  //   } catch {
+  //     // keep silent or toast here
+  //   }
+  // };
 
   const handleFileChange = async e => {
     const files = Array.from(e.target.files || []);
@@ -195,6 +225,12 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
     return attachments.filter(a => (a.filename || '').toLowerCase().includes(q));
   }, [attachments, query]);
 
+
+  const onSearch = value => {
+    setQuery(value);
+    setPage(1);
+  };
+
   // Modal content
   const modalContent = (
     <div
@@ -206,17 +242,26 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
         {/* Header */}
         <div className='px-5 py-4 border-b border-slate-200 flex items-center justify-between'>
           <div className='flex items-center gap-3'>
-            <span className='text-lg font-semibold text-slate-800'>Your Library</span>
+            <span className='text-lg font-semibold text-slate-800'>{t('title')}</span>
             {selectedIds.size > 0 && (
               <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                {selectedIds.size}
-                {typeof maxSelection === "number" && ` / ${maxSelection}`} selected
+                {typeof maxSelection === "number" ? `${selectedIds.size} / ${maxSelection} ${t('selected')}` : `${selectedIds.size} ${t('selected')}`}
               </span>
             )}
           </div>
           <button onClick={closeModal} className='p-2 rounded-md hover:bg-slate-100'>
             <FiX className='w-5 h-5 text-slate-500' />
           </button>
+        </div>
+
+        {/* SEARCH BAR */}
+        <div className='p-3 border-b'>
+          <input
+            value={query}
+            onChange={e => onSearch(e.target.value)}
+            className='w-full bg-slate-100 text-sm p-2 rounded-md'
+            placeholder={t('searchPlaceholder')}
+          />
         </div>
 
         {/* Body */}
@@ -228,7 +273,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
               {!uploading ? (
                 <div className='flex flex-col items-center text-slate-600'>
                   <FiUpload className='w-6 h-6' />
-                  <span className='mt-1 text-xs'>Upload</span>
+                  <span className='mt-1 text-xs'>{t('upload')}</span>
                 </div>
               ) : (
                 <FaSpinner className='animate-spin h-5 w-5 text-emerald-600' />
@@ -239,16 +284,16 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
             {loading ? (
               Array.from({ length: 6 }).map((_, i) => <div key={i} className='h-[140px] rounded-xl border border-slate-200 bg-slate-50 animate-pulse' />)
             ) : filtered.length === 0 ? (
-              <div className='col-span-full text-center text-sm text-slate-500 py-8'>No files found</div>
+              <div className='col-span-full text-center text-sm text-slate-500 py-8'>{t('noFiles')}</div>
             ) : (
               filtered.map(asset => {
                 const isSelected = selectedIds.has(asset.id);
                 return (
                   <button key={asset.id} onClick={() => toggleSelect(asset)} className={['group relative h-[140px] rounded-xl border transition text-left', isSelected ? 'border-emerald-500 bg-emerald-50/40' : 'border-slate-200 hover:border-emerald-400 bg-white'].join(' ')}>
                     {/* delete button */}
-                    <div onClick={e => handleDeleteFile(asset.id, e)} className='cursor-pointer absolute top-2 right-2 p-1 rounded-full bg-white/90 border border-slate-200 shadow-sm opacity-0 group-hover:opacity-100 transition' title='Delete'>
+                    {/* <div onClick={e => handleDeleteFile(asset.id, e)} className='cursor-pointer absolute top-2 right-2 p-1 rounded-full bg-white/90 border border-slate-200 shadow-sm opacity-0 group-hover:opacity-100 transition' title='Delete'>
                       <FiX className='w-4 h-4 text-red-600' />
-                    </div>
+                    </div> */}
 
                     {/* check mark */}
                     {isSelected && (
@@ -273,15 +318,31 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
           </div>
         </div>
 
+        {/* PAGINATION */}
+        <div className='p-4 border-t'>
+          <TabsPagination
+            loading={loading}
+            currentPage={page}
+            recordsCount={attachments.length}
+            totalPages={pages}
+            onPageChange={p => setPage(p)}
+            itemsPerPage={limit}
+            onItemsPerPageChange={sz => {
+              setLimit(sz);
+              setPage(1);
+            }}
+          />
+        </div>
+
         {/* Footer */}
         <div className='px-5 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between'>
-          <div className='text-sm text-slate-600'>{selectedIds.size > 0 ? `${selectedIds.size} file${selectedIds.size > 1 ? 's' : ''} selected` : 'No files selected'}</div>
+          <div className='text-sm text-slate-600'>{selectedIds.size > 0 ? t('selectedCount', { count: selectedIds.size }) : t('noneSelected')}</div>
           <div className='flex items-center gap-2'>
             <button onClick={closeModal} className='  px-4 py-2 text-slate-700 hover:bg-white border border-slate-300 rounded-md'>
-              Cancel
+              {t('cancel')}
             </button>
             <button onClick={handleOkClick} disabled={selectedIds.size === 0} className='gradient px-4 py-2 rounded-md bg-emerald-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-700'>
-              Use {selectedIds.size} file{selectedIds.size > 1 ? 's' : ''}
+              {t('useFiles', { count: selectedIds.size })}
             </button>
           </div>
         </div>
@@ -295,7 +356,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
       <div className='flex flex-col md:flex-row  md:items-center gap-4 mt-6 mb-6'>
         <button onClick={openModal} className={[iconOnly ? '!w-fit !px-2 !rounded-md' : 'px-10', 'flex-none flex items-center gap-2 py-2 rounded-lg border border-emerald-500 text-emerald-500 cursor-pointer hover:bg-emerald-50', cnBtn].join(' ')}>
           <img src='/icons/attachment-green.svg' alt='' className='w-5 h-5' />
-          <span className={iconOnly ? 'hidden' : 'font-medium'}>Attach Files</span>
+          <span className={iconOnly ? 'hidden' : 'font-medium'}>{t('attachFiles')}</span>
         </button>
 
         {!hiddenFiles && (

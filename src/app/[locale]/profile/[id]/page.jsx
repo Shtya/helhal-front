@@ -10,6 +10,7 @@ import { StatCard } from '@/components/dashboard/Ui';
 import { useAuth } from '@/context/AuthContext';
 import { resolveUrl } from '@/utils/helper';
 import { formatResponseTime } from '@/utils/profile';
+import { FiClipboard } from 'react-icons/fi';
 
 export default function ProfilePageClient() {
   const t = useTranslations('Profile.public');
@@ -319,7 +320,7 @@ function ServiceCard({ service }) {
   const initials = getInitials(service?.title || 'Service');
   const price = pickPrice(service?.packages);
   const delivery = service?.packages?.[0]?.deliveryTime ?? service?.deliveryTime ?? '—';
-  const rating = clampToOneDecimal(service?.rating ?? 0);
+  const ordersCount = service?.ordersCount ?? 0;
 
   return (
     <div className='group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300'>
@@ -337,7 +338,7 @@ function ServiceCard({ service }) {
       {/* Metrics */}
       <div className='mt-3 grid grid-cols-3 gap-2 text-sm'>
         <Metric icon={DollarSign} label={t('from')} value={formatMoney(price)} />
-        <Metric icon={Star} label={t('rating')} value={rating} />
+        <Metric icon={FiClipboard} label={t('ordersCount')} value={ordersCount} />
         <Metric icon={Clock} label={t('deliveryTime')} value={`${delivery}d`} />
       </div>
 

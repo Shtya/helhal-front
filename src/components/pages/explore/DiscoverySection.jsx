@@ -53,7 +53,7 @@ export default function DiscoverySection() {
       setServices(list);
     } catch (e) {
       if (e?.name !== 'CanceledError' && e?.message !== 'canceled') {
-        setErr(e?.response?.data?.message || e?.message || t('discovery.errors.loadFailed'));
+        setErr(t('discovery.errors.loadFailed'));
         setServices([]);
       }
     } finally {

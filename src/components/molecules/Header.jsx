@@ -146,6 +146,8 @@ export default function Header() {
 
     const common = [
       { href: '/profile', label: tHeader('userMenu.myProfile'), icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
+      { href: '/my-orders', label: tHeader('userMenu.myOrders'), icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
+      { href: '/my-disputes', label: tHeader('userMenu.myDisputes'), icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/my-disputes'), order: 4 },
       { href: '/my-billing', label: tHeader('userMenu.myBilling'), icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
       { href: '/settings', label: tHeader('userMenu.settings'), icon: <Settings size={18} className='text-gray-500' />, active: pathname.startsWith('/settings'), order: 16 },
       { href: '/invite', label: tHeader('userMenu.inviteNewUser'), icon: <UserPlus size={18} className='text-gray-500' />, active: pathname.startsWith('/invite'), order: 17 },
@@ -156,15 +158,11 @@ export default function Header() {
       { href: '/share-job-description', label: tHeader('userMenu.shareYourJob'), icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/share-job-description'), order: 10 },
       { href: '/my-jobs', label: tHeader('userMenu.myJobs'), icon: <Briefcase size={18} className='text-gray-500' />, active: pathname.startsWith('/my-jobs'), order: 11 },
       { href: '/become-seller', label: tHeader('userMenu.becomeASeller'), icon: <DollarSign size={18} className='text-gray-500' />, active: pathname.startsWith('/become-seller'), order: 12 },
-      { href: '/my-orders', label: tHeader('userMenu.myOrders'), icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
-      { href: '/my-disputes', label: tHeader('userMenu.myDisputes'), icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/my-disputes'), order: 4 },
     ];
 
     const seller = [
       { href: '/my-gigs', label: tHeader('userMenu.myServices'), icon: <LayoutGrid size={18} className='text-gray-500' />, active: pathname.startsWith('/my-gigs'), order: 14 },
       { href: '/create-gig', label: tHeader('userMenu.createAService'), icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/create-gig'), order: 15 },
-      { href: '/my-orders', label: tHeader('userMenu.myOrders'), icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
-      { href: '/my-disputes', label: tHeader('userMenu.myDisputes'), icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/my-disputes'), order: 4 },
     ];
 
     const items = [...common];

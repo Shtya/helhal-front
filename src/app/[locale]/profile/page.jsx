@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState, useRef, use } from 'react';
-import api, { baseImg } from '@/lib/axios';
+import api, { baseImg, uploadTimeout } from '@/lib/axios';
 import { FileText, UploadCloud, Upload, Video, Camera, MapPin, CalendarDays, Copy, Shield, Star, Plus, Trash2, Info, Award, CheckCircle2, Repeat, DollarSign, Settings2, AlertTriangle, Mail, Phone, X, Loader2 } from 'lucide-react';
 
 import Input from '@/components/atoms/Input';
@@ -93,6 +93,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
 
                   <AttachFilesButton
                     hiddenFiles
+                    maxSelection={1}
                     className='absolute inset-0 scale-y-[4] opacity-0'
                     onChange={files => {
                       const img = (files || []).find(f => String(f.mimeType || '').startsWith('image/'));
@@ -206,7 +207,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
             <li className='flex items-center justify-between gap-2'>
               <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>{t('referralStats')}</span>
               <span className='font-semibold break-words max-lg:break-all'>
-                {meta.referralCount ?? 0} {t('referrals')} · {meta.referralRewardsCount ?? 0} {t('rewards')}
+                {meta.referralCount ?? 0} {t('referrals')}
               </span>
             </li>
             {meta.referredBy ? (
@@ -422,6 +423,7 @@ function Assets({
       const form = new FormData();
       form.append('file', file);
       const { data } = await api.post('/auth/video', form, {
+        timeout: uploadTimeout,
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: ev => {
           console.log('Video upload progress:', ev);
@@ -600,7 +602,7 @@ function Assets({
         <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
           <div>
             <h3 className='text-xl font-semibold text-black'>{t('portfolio')}</h3>
-            <p className='text-sm text-slate-600'>{t('addImagesSubtitle')}</p>
+            {/* <p className='text-sm text-slate-600'>{t('addImagesSubtitle')}</p> */}
           </div>
 
           <Button className='sm:!w-fit' name={t('addImages')} icon={<Plus size={18} />} onClick={handlePickImages} disabled={imgs.length >= 6} />
@@ -957,10 +959,12 @@ export default function Overview() {
     };
   }, [id]);
 
+
   useEffect(() => {
     if (loading || reverting) return;
 
     const current = stableStringify(pickEditable(state));
+
     setDirty(baselineRef.current != null && current !== baselineRef.current);
   }, [state, loading, reverting]);
 
@@ -1008,23 +1012,6 @@ export default function Overview() {
         countryId: state.countryId,
         type: state.type,
 
-
-        // role: state.role, 
-        // status: state.status, 
-        // ownerType: state.ownerType,
-        // sellerLevel: state.sellerLevel,
-        // introVideoUrl: state.introVideoUrl,
-        // portfolioItems: state.portfolioItems,
-        // portfolioFile: state.portfolioFile,
-        // responseTime: state.responseTime,
-        // deliveryTime: state.deliveryTime,
-        // ageGroup: state.ageGroup,
-        // revisions: state.revisions,
-        // preferences: state.preferences,
-        // balance: state.balance,
-        // totalSpent: state.totalSpent,
-        // totalEarned: state.totalEarned,
-        // reputationPoints: state.reputationPoints
       };
 
       const res = await toast.promise(
@@ -1219,13 +1206,12 @@ function stableStringify(obj) {
 
 function pickEditable(state) {
   // only fields you actually send to the backend (payload)
-  const { username, email, password, type, phone, profileImage, role, status, ownerType, description, languages, countryId, sellerLevel, skills, education, certifications, introVideoUrl, portfolioItems, portfolioFile, responseTime, deliveryTime, ageGroup, revisions, preferences, balance, totalSpent, totalEarned, reputationPoints } = state;
+  const { countryCode, username, type, phone, profileImage, role, status, ownerType, description, languages, countryId, sellerLevel, skills, education, certifications, introVideoUrl, portfolioItems, portfolioFile } = state;
   return {
     username: username?.trim(),
-    email,
-    password: password || undefined,
     type,
     phone,
+    countryCode,
     profileImage,
     role,
     status,
@@ -1239,15 +1225,6 @@ function pickEditable(state) {
     certifications,
     introVideoUrl,
     portfolioItems,
-    portfolioFile,
-    responseTime,
-    deliveryTime,
-    ageGroup,
-    revisions,
-    preferences,
-    balance,
-    totalSpent,
-    totalEarned,
-    reputationPoints,
+    portfolioFile
   };
 }

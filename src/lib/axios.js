@@ -9,6 +9,8 @@ const api = axios.create({
   timeout: 30000,
 });
 
+export const uploadTimeout = 10 * 60 * 1000;
+
 // a plain client WITHOUT interceptors for refresh
 export const refreshClient = axios.create({
   baseURL: BASE_URL,

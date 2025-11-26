@@ -20,6 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 
+
 export default function Page() {
   const t = useTranslations('Settings');
   const [activeTab, setActiveTab] = useState('account');
@@ -100,7 +101,7 @@ function AccountSettings() {
 
   useEffect(() => {
     setPendingEmail(me?.pendingEmail);
-  }, [me]);
+  }, [me?.pendingEmail]);
 
 
   useEffect(() => {
@@ -197,7 +198,13 @@ function AccountSettings() {
     <div>
       {pendingEmail && (
         <div className=' max-w-[450px] mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>
-          <p dangerouslySetInnerHTML={{ __html: t('pendingEmail', { email: maskEmail(pendingEmail) }) }} />
+          <p>
+            {t.rich('pendingEmail', {
+              email: maskEmail(pendingEmail),
+              strong: (chunk) => <strong>{chunk}</strong>
+            })}
+          </p>
+
           <div className='grid items-center grid-cols-1 xs:grid-cols-2 gap-2'>
             <Button
               name={cancelLoading ? t('canceling') : t('cancelRequest')}

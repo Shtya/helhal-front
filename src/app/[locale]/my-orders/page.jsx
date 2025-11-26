@@ -203,15 +203,15 @@ export default function Page() {
         };
       });
 
-      setPagination(prev => ({ ...prev, page: data.current_page, limit: data.per_page, total: data.total_records }))
+      setPagination(prev => ({ ...prev, total: data.total_records }))
 
       setOrders(rows);
     } catch (e) {
       if (!isErrorAbort(e)) {
         console.error(e);
         setErr(e?.response?.data?.message || t('errors.failedToLoad'));
+        setOrders([]);
       }
-      setOrders([]);
     } finally {
       if (controllerRef.current === controller)
         setLoading(false);
@@ -316,11 +316,11 @@ export default function Page() {
       console.error(err);
       toast.error(t('errors.failedToCancel'));
     } finally {
-      setRowLoading(row);
+      setRowLoading(row.id);
     }
   };
 
-  function renderActions(row) {
+  const renderActions = useCallback((row) => {
     const s = row.status;
 
     const hasOpenDispute = !!(s === 'Disputed' || s === 'in_review');
@@ -411,7 +411,7 @@ export default function Page() {
     ];
 
     return <ActionsMenu options={options} align="right" />;
-  }
+  }, [actionLoading, isBuyer, isSeller, t]);
 
   return (
     <div className='container'>

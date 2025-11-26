@@ -1,4 +1,10 @@
 {
+  "toast": {
+    "failedToUploadFiles": "فشل في رفع الملفات. يرجى المحاولة مرة أخرى.",
+    "fileDeletedSuccessfully": "تم حذف الملف بنجاح.",
+    "filesUploadedSuccessfully": "تم رفع الملفات بنجاح.",
+    "failedToDeleteFile": "فشل في حذف الملف. يرجى المحاولة مرة أخرى."
+  },
   "Auth": {
     "hero": {
       "title": "ابدأ نجاحك الآن!",
@@ -531,6 +537,7 @@
   "copyright": "© {{year}} Helhal. جميع الحقوق محفوظة.",
   "CategoryPage": {
     "categoryNotFound": "الفئة غير موجودة",
+    "failedToLoad": "فشل تحميل الخدمات",
     "categoryNotFoundDesc": "الفئة التي تبحث عنها غير موجودة أو تمت إزالتها. يرجى التحقق من الرابط أو استكشاف فئات أخرى.",
     "backToServices": "العودة إلى الخدمات",
     "services": "الخدمات",
@@ -753,6 +760,7 @@
       "responseTimeNotCalculated": "لم يتم حسابه بعد"
     },
     "public": {
+      "ordersCount": "عدد الطلبات",
       "failedToLoad": "فشل تحميل المستخدم. حاول مرة أخرى.",
       "unknown": "غير معروف",
       "memberSince": "عضو منذ",
@@ -1178,9 +1186,23 @@
         "description": "احصل على اعتمادات Upphoto."
       },
       "phoneVerification": {
-        "title": "التحقق من الهاتف",
-        "description": "أحضر أشخاصاً تعرفهم ويفيد الجميع!",
-        "button": "التحقق من الهاتف"
+        "verified": "تم التحقق من رقم الهاتف",
+        "description": "قم بالتحقق من رقم هاتفك لتأمين حسابك.",
+        "sendOtp": "إرسال رمز التحقق",
+        "sending": "جاري الإرسال...",
+        "otpSentSuccess": "تم إرسال رمز التحقق بنجاح!",
+        "failedToSend": "فشل في إرسال رمز التحقق. حاول مرة أخرى.",
+        "phoneLabel": "رقم الهاتف",
+        "enterOtpLabel": "أدخل رمز التحقق",
+        "verify": "تحقق",
+        "invalidOtpLength": "يجب أن يكون رمز التحقق 6 أرقام.",
+        "invalidOtp": "رمز التحقق غير صحيح. حاول مرة أخرى.",
+        "verifiedSuccess": "تم التحقق من رقم الهاتف بنجاح!",
+        "didNotReceive": "لم تستلم الرمز؟",
+        "resendOtp": "إعادة إرسال رمز التحقق",
+        "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية",
+        "otpResentSuccess": "تمت إعادة إرسال رمز التحقق بنجاح!",
+        "failedToResend": "فشل في إعادة إرسال رمز التحقق. حاول مرة أخرى."
       }
     },
     "billingInformation": {
@@ -1202,6 +1224,9 @@
       "saving": "جاري الحفظ...",
       "loading": "جاري التحميل...",
       "errors": {
+        "fullNameTooShort": "يجب أن يكون الاسم الكامل 3 أحرف على الأقل",
+        "stateTooShort": "يجب أن تكون الولاية حرفين على الأقل",
+        "countryRequired": "يرجى اختيار الدولة",
         "loading": "خطأ في تحميل معلومات الفوترة",
         "updating": "خطأ في تحديث معلومات الفوترة"
       },
@@ -1507,6 +1532,15 @@
       "tagsHint": "أحرف وأرقام فقط.",
       "maxTags": "حد أقصى 5 علامات.",
       "continue": "متابعة",
+      "placeholders": {
+        "titleExample": "مثال: سأقوم بتصميم صفحة هبوط متجاوبة باستخدام Next.js",
+        "briefExample": "وصف مختصر للنتيجة، النهج، وما يميزك.",
+        "selectCategory": "اختر فئة",
+        "selectSubcategory": "اختر تصنيفًا فرعيًا",
+        "selectCategoryFirst": "اختر فئة أولاً",
+        "enterTagsLabel": "أدخل الوسوم",
+        "addTag": "أضف وسمًا ثم اضغط إدخال"
+      },
       "validation": {
         "titleRequired": "عنوان الخدمة مطلوب",
         "titleMax": "لا يمكن أن يتجاوز عنوان الخدمة 100 حرف",
@@ -1984,6 +2018,11 @@
       "errors": {
         "failedToRemove": "فشل إزالة العنصر",
         "failedToClear": "فشل مسح السلة"
+      },
+      "emptyState": {
+        "mainText": "سلة الخدمات فارغة",
+        "additionalText": "لم تقم بحفظ أي خدمات بعد. تصفح وأضف الخدمات إلى السلة.",
+        "buttonText": "استكشف الخدمات"
       }
     }
   },
@@ -1992,6 +2031,7 @@
     "save": "حفظ",
     "star": "مفضلة",
     "more": "المزيد",
+    "fileSearch": "بحث في الملفات",
     "noMatches": "لا توجد نتائج",
     "labels": {
       "from": "من",
@@ -2786,6 +2826,108 @@
       "next": "التالي",
       "jumpBack": "الرجوع {count} صفحات",
       "jumpForward": "التقدم {count} صفحات"
+    }
+  },
+  "AttachFiles": {
+    "title": "مكتبتك",
+    "selected": "محدد",
+    "searchPlaceholder": "ابحث في الملفات...",
+    "upload": "تحميل",
+    "noFiles": "لا توجد ملفات",
+    "noneSelected": "لا توجد ملفات محددة",
+    "selectedCount": "{count, plural, =0{لا توجد ملفات محددة} one{ملف واحد محدد} other{# ملفات محددة}}",
+    "cancel": "إلغاء",
+    "useFiles": "{count, plural, one{استخدم # ملف} other{استخدم # ملفات}}",
+    "attachFiles": "إرفاق ملفات"
+  },
+  "ServiceDetails": {
+    "preview": {
+      "message": "هذه الصفحة في وضع المعاينة ولم تُنشر. مرئية فقط لك."
+    },
+    "features": {
+      "topRated": {
+        "title": "مصنف أعلى",
+        "desc": "يقدم خدمات عالية الجودة باستمرار وفقاً لمعاييرنا الصارمة."
+      }
+    },
+    "documents": {
+      "title": "المستندات المرفقة"
+    },
+    "video": {
+      "title": "معاينة الفيديو"
+    },
+    "about": {
+      "title": "عن هذه الخدمة",
+      "noDescription": "لا توجد وصف.",
+      "readMore": "اقرأ المزيد",
+      "showLess": "عرض أقل",
+      "tags": "الوسوم"
+    },
+    "packages": {
+      "title": "الحزم",
+      "cards": "بطاقات",
+      "cardsView": "عرض البطاقات",
+      "compare": "مقارنة",
+      "compareView": "عرض المقارنة",
+      "recommended": "موصى به",
+      "test": "تجريبي",
+      "price": "السعر",
+      "delivery": "التسليم",
+      "days": "يوم (أيام)",
+      "revisions": "المراجعات",
+      "features": "الميزات",
+      "selected": "محدد",
+      "select": "اختر",
+      "selectPackage": "اختر حزمة"
+    },
+    "requirements": {
+      "title": "المتطلبات",
+      "subtitle": "يرجى تقديم المعلومات التالية لمساعدتنا في تخصيص الخدمة لاحتياجاتك.",
+      "complete": "مكتمل",
+      "textPlaceholder": "اكتب إجابتك…",
+      "inputPlaceholder": "إجابتك",
+      "clickToUpload": "انقر للتحميل",
+      "orDragDrop": "أو اسحب وأفلت",
+      "anyFileType": "أي نوع ملف",
+      "selected": "محدد",
+      "fieldRequired": "هذا الحقل مطلوب",
+      "required": "هذا الحقل مطلوب"
+    },
+    "seller": {
+      "orders": "الطلبات",
+      "from": "من",
+      "memberSince": "عضو منذ",
+      "languages": "اللغات",
+      "keySkills": "المهارات الأساسية",
+      "certifications": "الشهادات",
+      "education": "التعليم",
+      "portfolio": "المحفظة",
+      "readMore": "اقرأ المزيد",
+      "showLess": "عرض أقل"
+    },
+    "sidebar": {
+      "features": "ميزات",
+      "feature": "ميزة",
+      "test": "تجريبي",
+      "fastDelivery": "تسليم سريع",
+      "extraRevisions": "مراجعات إضافية",
+      "dayDelivery": "تسليم يومي",
+      "revisions": "المراجعات",
+      "more": "المزيد",
+      "continue": "متابعة",
+      "chatWithSeller": "تحدث مع البائع",
+      "secureCheckout": "دفع آمن",
+      "buyerProtection": "حماية المشتري",
+      "selectPackage": "اختر حزمة للمتابعة"
+    },
+    "orderOptions": {
+      "title": "خيارات الطلب",
+      "close": "إغلاق خيارات الطلب",
+      "specialInstructions": "تعليمات خاصة (اختياري)",
+      "sellerShouldKnow": "أي شيء يجب على البائع معرفته…",
+      "chars": "أحرف",
+      "total": "الإجمالي",
+      "continueToRequirements": "المتابعة إلى المتطلبات"
     }
   }
 }

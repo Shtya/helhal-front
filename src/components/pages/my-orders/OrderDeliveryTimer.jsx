@@ -17,7 +17,7 @@ export default function OrderDeliveryTimer({ order }) {
     useEffect(() => {
         if (!order?.deliveryTime) return;
 
-        const orderDate = order?.submissionDate || order.completedAt;
+        const orderDate = order?.submissionDate || order.created_at;
         if (!orderDate) return;
 
         const deliveryDeadline = new Date(orderDate);
@@ -56,10 +56,11 @@ export default function OrderDeliveryTimer({ order }) {
         tick();
         const interval = setInterval(tick, 1000);
         return () => clearInterval(interval);
-    }, [order?.completedAt, order?.deliveryTime]);
+    }, [order?.created_at, order?.deliveryTime]);
 
-    if (!order?.completedAt || !order?.deliveryTime) return null;;
+    if (!order?.created_at || !order?.deliveryTime) return null;;
 
+    if (order.completedAt) return null;
     return (
         <div>
             <div className="pt-5 border-t border-slate-200">

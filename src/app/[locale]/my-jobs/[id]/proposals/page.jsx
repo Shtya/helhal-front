@@ -39,7 +39,7 @@ export const getJobProposals = async (
   if (search) params.append('search', search);
   if (status) params.append('status', status);
   if (sortBy) params.append('sortBy', sortBy);
-  if (sortOrder) params.append('sortdir', sortdir);
+  if (sortdir) params.append('sortdir', sortdir);
 
   const res = await api.get(`/jobs/${jobId}/proposals?${params.toString()}`, {
     signal
@@ -388,7 +388,7 @@ export default function JobProposalsPage() {
         const { sortBy, sortdir } = SORT_CONFIG[sortKey] || {};
         setLoading(true);
         const response = await getJobProposals({
-          jobId, page: pagination.page, limit: pagination.limit, search: debouncedQuery, sortBy, sortBy, sortdir, status: statusFilter === 'all' ? '' : statusFilter,
+          jobId, page: pagination.page, limit: pagination.limit, search: debouncedQuery.trim(), sortBy, sortBy, sortdir, status: statusFilter === 'all' ? '' : statusFilter,
           signal: controller.signal
         });
         setProposals(response.proposals || []);
@@ -404,7 +404,7 @@ export default function JobProposalsPage() {
           setLoading(false);
       }
     },
-    [jobId, debouncedQuery, sortKey, statusFilter, pagination.page, pagination.limit],
+    [jobId, debouncedQuery.trim(), sortKey, statusFilter, pagination.page, pagination.limit],
   );
 
   function resetPage() {

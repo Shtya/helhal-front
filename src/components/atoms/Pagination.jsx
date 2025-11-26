@@ -72,6 +72,8 @@ export default function Pagination({
   className = '',
   siblingCount = 1,
   boundaryCount = 1,
+  loading = false,
+  recordsCount = false,
   jumpBy = 5, // how many pages to jump when clicking ellipsis
 }) {
   const navRef = useRef(null);
@@ -111,6 +113,7 @@ export default function Pagination({
   if (totalPages <= 1) {
     return null;
   };
+  if (!loading && (recordsCount ?? 0) === 0) return null;
 
   return (
     <div className={`flex justify-center mt-8 ${className}`}>
@@ -130,7 +133,7 @@ export default function Pagination({
           whileTap="tap"
           type="button"
           onClick={() => goTo(page - 1)}
-          disabled={page === 1}
+          disabled={page === 1 || loading}
           aria-label={t('previous')}
           className="cursor-pointer h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
         >
@@ -150,6 +153,7 @@ export default function Pagination({
                 variants={dotVariants}
                 whileHover="hover"
                 type="button"
+                disabled={loading}
                 onClick={() => goTo(jumpTarget)}
                 aria-label={
                   token === 'left-ellipsis'
@@ -174,6 +178,7 @@ export default function Pagination({
               whileTap="tap"
               type="button"
               onClick={() => goTo(token)}
+              disabled={loading}
               aria-current={isActive ? 'page' : undefined}
               className={[
                 'cursor-pointer h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-lg text-sm font-medium focus:outline-none focus:ring-2',
@@ -196,7 +201,7 @@ export default function Pagination({
           whileTap="tap"
           type="button"
           onClick={() => goTo(page + 1)}
-          disabled={page === totalPages}
+          disabled={page === totalPages || loading}
           aria-label={t('next')}
           className="cursor-pointer h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
         >

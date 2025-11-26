@@ -4,11 +4,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Img from '@/components/atoms/Img';
 import { X, Star, Pin, Search, Archive, LifeBuoy } from 'lucide-react';
 import { Shimmer } from './ChatApp';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export function AllMessagesPanel({ showContactAdmin, adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t: tProp, searchResults, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
   const t = tProp || useTranslations('Chat');
-
+  const locale = useLocale();
+  const isArabic = locale === 'ar'
   return (
     <div className='flex flex-col h-full'>
 
@@ -20,7 +21,7 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
 
             <div className='flex items-center gap-1.5'>
               {/* Contact Admin */}
-              {showContactAdmin && <button disabled={loading || adminLoading} onClick={onContactAdmin} className='p-2 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors' aria-label='Contact admin' title='Contact admin'>
+              {showContactAdmin && <button disabled={loading || adminLoading} onClick={onContactAdmin} className='p-2 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors' title={t('contactAdmin')}>
                 <LifeBuoy size={18} />
               </button>
               }
@@ -120,28 +121,31 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
       </div>
 
       {/* Pagination */}
-      {activeTab === 'all' && <div className="mt-auto flex items-center justify-between p-3 border-t border-t-gray-200 bg-white rounded-b-xl">
-        <button
-          onClick={() => setUserPagination((uP) => ({ ...uP, page: Math.max(1, p - 1) }))}
-          disabled={userPagination.page === 1}
-          className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 rounded-full"
-        >
-          ◀
-        </button>
+      {
+        activeTab === 'all' && <div className="mt-auto flex items-center justify-between p-3 border-t border-t-gray-200 bg-white rounded-b-xl">
+          <button
+            onClick={() => setUserPagination((uP) => ({ ...uP, page: Math.max(1, p - 1) }))}
+            disabled={userPagination.page === 1}
+            className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 rounded-full"
+          >
+            {isArabic ? "▶" : "◀"}
+          </button>
 
-        <span className="text-sm font-medium">
-          {t('page', { current: userPagination.page, total: userPagination.pages })}
-        </span>
+          <span className="text-sm font-medium">
+            {t('page', { current: userPagination.page, total: userPagination.pages })}
+          </span>
 
-        <button
-          onClick={() => setUserPagination((uP) => ({ ...uP, pages: Math.min(userPagination.pages, userPagination.page + 1) }))}
-          disabled={userPagination.page === userPagination.pages}
-          className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 rounded-full"
-        >
-          ▶
-        </button>
-      </div>}
-    </div>
+          <button
+            onClick={() => setUserPagination((uP) => ({ ...uP, pages: Math.min(userPagination.pages, userPagination.page + 1) }))}
+            disabled={userPagination.page === userPagination.pages}
+            className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 rounded-full"
+          >
+            {isArabic ? "◀" : "▶"}
+
+          </button>
+        </div>
+      }
+    </div >
   );
 }
 

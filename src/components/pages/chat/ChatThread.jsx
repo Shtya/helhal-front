@@ -11,12 +11,12 @@ import { MessageSkeletonBubble } from './ChatApp';
 import { useTranslations } from 'next-intl';
 
 export const NoMessagesPlaceholder = () => {
-  const t = useTranslations('Chat.thread');
+  const t = useTranslations('Chat');
   return (
     <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 text-slate-500 rounded-xl p-6">
       <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400" />
       <p className="text-sm max-w-xs">
-        {t('noMessages')}
+        {t('noMessages.title')}
       </p>
     </div>
   );
@@ -25,8 +25,7 @@ export const NoMessagesPlaceholder = () => {
 const emojiRange = Array.from({ length: 80 }, (_, i) => String.fromCodePoint(0x1F600 + i));
 
 export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, loadingOlder, onLoadOlder, thread, messages, onSend, t: tProp, isFavorite, isPinned, isArchived, toggleFavorite, togglePin, toggleArchive, isConnected, currentUser }) {
-  const t = useTranslations('Chat.thread');
-  const tChat = useTranslations('Chat');
+  const t = useTranslations('Chat');
   const [text, setText] = useState('');
   const [assets, setAssets] = useState([]);
   const [sending, setSending] = useState(false);
@@ -331,7 +330,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
       {/* Message Input */}
       <div className='mt-3'>
         <form className='flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 ' onSubmit={handleSubmit}>
-          <input ref={inputRef} type='text' placeholder={tChat('placeholders.message')} aria-label={tChat('placeholders.message')} className='w-full bg-transparent text-[14px] placeholder:text-slate-400 focus:outline-none' value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown} disabled={sending} />
+          <input ref={inputRef} type='text' placeholder={t('placeholders.message')} aria-label={t('placeholders.message')} className='w-full bg-transparent text-[14px] placeholder:text-slate-400 focus:outline-none' value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown} disabled={sending} />
 
           {/* Attach */}
           <AttachFilesButton hiddenFiles={true} onChange={selectedAssets => setAssets(selectedAssets)} className='!m-0' />
@@ -384,7 +383,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
         {/* <span className='absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500' /> */}
       </div>
 
-      <div className={`flex-1 ${me ? 'items-end' : ''}`}>
+      <div className={`flex-1 ${me ? 'flex flex-col items-end' : ''}`}>
         <div className={`${me ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-800'} mt-1 inline-block max-w-[85%] rounded-2xl px-4 py-2 shadow-sm  ${failed ? 'bg-red-100 text-red-800' : ''}`}>
           {text && <p className='max-w-4xl text-sm leading-5 break-words whitespace-pre-wrap'>{text}</p>}
 

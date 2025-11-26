@@ -16,6 +16,7 @@ import { usernameSchema } from "@/utils/profile";
 import api from "@/lib/axios";
 import { allLanguages } from "@/constants/languages";
 import { showWarningToast } from "@/utils/notifications";
+import { useValues } from "@/context/GlobalContext";
 
 
 function SectionHeader({ title, iconSrc, actionAria, onAction, disabled }) {
@@ -263,7 +264,7 @@ const aboutSchema = z.object({
 export default function InfoCard({ loading, about, setAbout, onRemoveEducation, onRemoveCertification, onCountryChange, accountTypeOptions = [], onTypeChange, className }) {
     const t = useTranslations('Profile.infoCard');
     const [internalDesc, setInternalDesc] = useState(about?.description || '');
-
+    const { countries: countriesOptions, countryLoading, } = useValues();
     useEffect(() => {
         setInternalDesc(about?.description || '');
     }, [about?.description]);
@@ -291,27 +292,6 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
         }
     }, [about, reset]);
 
-    const [countriesOptions, setCountriesOptions] = useState([]);
-    const [countryLoading, setCountryLoading] = useState(false);
-    const [countryError, setCountryError] = useState(null);
-
-    //load countries
-    useEffect(() => {
-        const fetchCountries = async () => {
-            setCountryLoading(true);
-            setCountryError(null);
-            try {
-                const res = await api.get(`/countries`);
-                setCountriesOptions(res.data);
-            } catch (err) {
-                setCountryError(t('errors.failedToLoadCountries'));
-            } finally {
-                setCountryLoading(false);
-            }
-        };
-
-        fetchCountries();
-    }, []);
 
     // Sync about when form changes
     useEffect(() => {

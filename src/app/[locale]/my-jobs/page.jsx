@@ -107,8 +107,10 @@ export default function MyJobsPage() {
       setJobs(response.records);
       setTotalPages(Math.ceil(response.total_records / response.per_page));
     } catch (e) {
-      if (!isErrorAbort(e))
+      if (!isErrorAbort(e)) {
+        setJobs([]);
         console.error('Error loading jobs:', e);
+      }
     } finally {
       if (controllerRef.current === controller)
         setLoading(false);
@@ -241,7 +243,7 @@ export default function MyJobsPage() {
         )}
       </div>
 
-      <TabsPagination loading={loading} currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={itemsPerPage}
+      <TabsPagination loading={loading} recordsCount={jobs.length} currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={itemsPerPage}
         options={[
           { id: 5, name: '5' },
           { id: 10, name: '10' },

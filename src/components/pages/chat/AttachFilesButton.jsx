@@ -8,6 +8,9 @@ import { X, Star, Pin, Search, Send, Paperclip, Smile, Archive, LifeBuoy } from 
 import api, { baseImg } from '@/lib/axios';
 import { showNotification } from '@/utils/notifications';
 import { useTranslations } from 'next-intl';
+import TabsPagination from '@/components/common/TabsPagination';
+import { useDebounce } from '@/hooks/useDebounce';
+import { isErrorAbort } from '@/utils/helper';
 
 
 /** Get file icon based on type */
@@ -26,7 +29,7 @@ export const getFileIcon = mimeType => {
 };
 
 export function AttachFilesButton({ hiddenFiles, className, onChange }) {
-  const t = useTranslations('Chat.toast');
+  const t = useTranslations('toast');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -35,21 +38,50 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
 
   const selectedCount = selectedFiles.length;
 
-  useEffect(() => {
-    if (isModalOpen) fetchUserAssets();
-  }, [isModalOpen]);
+  // pagination
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [pages, setPages] = useState(1);
 
-  const fetchUserAssets = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get('/assets');
-      setAttachments(response.data.records || response.data || []);
-    } catch {
-      setAttachments([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // search
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce({ value: query, onDebounce: () => setPage(1) });
+  const controllerRef = useRef();
+
+
+  useEffect(() => {
+    const fetchUserAssets = async () => {
+      if (controllerRef.current) controllerRef.current.abort();
+      const controller = new AbortController();
+      controllerRef.current = controller;
+      setLoading(true);
+
+      try {
+        const response = await api.get('/assets', {
+          params: {
+            page,
+            limit,
+            search: debouncedQuery.trim(),
+          },
+        });
+
+        const data = response.data.records || response.data?.data || [];
+        setAttachments(data);
+        setPages(Math.ceil(response.data.total_records / response.data.per_page));
+      } catch (err) {
+
+        if (!isErrorAbort(err)) {
+          setAttachments([]);
+        }
+      } finally {
+        if (controllerRef.current === controller)
+          setLoading(false);
+      }
+    };
+
+    if (isModalOpen) fetchUserAssets();
+  }, [isModalOpen, page, limit, debouncedQuery.trim()]);
+
 
   const toggleModal = () => setIsModalOpen(v => !v);
 
@@ -86,18 +118,27 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
     toggleModal();
   };
 
-  const handleDeleteFile = async (fileId, e) => {
-    e.stopPropagation();
-    try {
-      await api.delete(`/assets/${fileId}`);
-      setAttachments(prev => prev.filter(f => f.id !== fileId));
-      setSelectedFiles(prev => prev.filter(f => f.id !== fileId));
-      showNotification(t('fileDeletedSuccessfully'), 'success');
-    } catch (err) {
-      console.error(err);
-      showNotification(t('failedToDeleteFile'), 'error');
-    }
+
+  //disable file delete for now because of poor FK constraints in backend for assets urls
+  // const handleDeleteFile = async (fileId, e) => {
+  //   e.stopPropagation();
+  //   try {
+  //     await api.delete(`/assets/${fileId}`);
+  //     setAttachments(prev => prev.filter(f => f.id !== fileId));
+  //     setSelectedFiles(prev => prev.filter(f => f.id !== fileId));
+  //     showNotification(t('fileDeletedSuccessfully'), 'success');
+  //   } catch (err) {
+  //     console.error(err);
+  //     showNotification(t('failedToDeleteFile'), 'error');
+  //   }
+  // };
+
+
+  const onSearch = value => {
+    setQuery(value);
+    setPage(1);
   };
+
 
   const tChat = useTranslations('Chat');
   const Trigger = (
@@ -122,6 +163,16 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
           </label>
         </div>
 
+        {/* SEARCH BAR */}
+        <div className='p-3 border-b'>
+          <input
+            value={query}
+            onChange={e => onSearch(e.target.value)}
+            className='w-full bg-slate-100 text-sm p-2 rounded-md'
+            placeholder={tChat('fileSearch')}
+          />
+        </div>
+
         {/* body */}
         <div className='max-h-[65vh] overflow-auto p-3 sm:p-4'>
           <div className='grid grid-cols-3 sm:grid-cols-4 gap-3'>
@@ -131,11 +182,11 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
               const isImage = asset.mimeType?.startsWith?.('image/');
               return (
                 <div key={asset.id} onClick={() => handleFileSelect(asset)} className={['relative group cursor-pointer rounded-lg border p-2', 'border-slate-200 hover:border-emerald-400 transition', isSelected ? 'ring-2 ring-emerald-500/60 border-emerald-300 bg-emerald-50/40' : 'bg-white'].join(' ')}>
-                  <button onClick={e => handleDeleteFile(asset.id, e)} aria-label='Delete file' className='absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity'>
+                  {/* <button onClick={e => handleDeleteFile(asset.id, e)} aria-label='Delete file' className='absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity'>
                     <span className='grid h-6 w-6 place-items-center rounded-full bg-red-500 text-white'>
                       <FiX className='h-3 w-3' />
                     </span>
-                  </button>
+                  </button> */}
 
                   {isImage ? <img src={absolute} alt={asset.filename} className='mx-auto aspect-square w-[88px] object-contain rounded' loading='lazy' /> : <div className='mx-auto aspect-square w-[88px] grid place-items-center rounded bg-slate-50'>{getFileIcon(asset.mimeType)}</div>}
                   <p className='mt-1.5 text-[11px] text-slate-600 text-center truncate' title={asset.filename}>
@@ -146,9 +197,25 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
             })}
             {/* Empty state */}
             {!loading && !attachments.length && <div className='col-span-full text-center text-sm text-slate-500 py-6'>{tChat('noFilesYet')}</div>}
+
           </div>
         </div>
 
+        {/* PAGINATION */}
+        <div className='p-4 border-t'>
+          <TabsPagination
+            loading={loading}
+            currentPage={page}
+            recordsCount={attachments.length}
+            totalPages={pages}
+            onPageChange={p => setPage(p)}
+            itemsPerPage={limit}
+            onItemsPerPageChange={sz => {
+              setLimit(sz);
+              setPage(1);
+            }}
+          />
+        </div>
         {/* footer */}
         <div className='flex items-center justify-between gap-2 px-4 py-3 border-t'>
           <button type='button' onClick={toggleModal} className='text-[13px] px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50'>

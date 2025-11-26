@@ -113,10 +113,10 @@ const useChat = () => {
   const messagesPaginationByThreadRef = useRef(new Map());
   const threadsRef = useRef([]);
   const { user } = useAuth();
-  const { setUnreadChatCount } = useValues();
 
   const {
     isConnected,
+    setUnreadChatCount,
     // Publisher/Subscriber
     subscribe,
     // External controls
@@ -324,7 +324,9 @@ const useChat = () => {
   // Auto-select target user if provided
   useEffect(() => {
     async function create() {
-      if (targetUserId && currentUser && threads.length) {
+      if (loading) return;
+
+      if (targetUserId && currentUser) {
         const existing = threads.find(t => String(t.otherUserId) === String(targetUserId));
         if (existing) {
           if (activeThreadId !== existing.id) selectThread(existing.id);

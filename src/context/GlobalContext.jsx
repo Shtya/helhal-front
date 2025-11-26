@@ -16,6 +16,26 @@ export const GlobalProvider = ({ children }) => {
   const [loadingSettings, setLoadingSettings] = useState(true); // ← added
 
 
+  const [countriesOptions, setCountriesOptions] = useState([]);
+  const [countryLoading, setCountryLoading] = useState(false);
+  const [countryError, setCountryError] = useState(null);
+
+  const fetchCountries = async () => {
+    setCountryLoading(true);
+    setCountryError(null);
+
+    try {
+      const res = await api.get(`/countries`);
+      setCountriesOptions(res.data);
+    } catch (err) {
+      setCountryError("Failed to load countries");
+    } finally {
+      setCountryLoading(false);
+    }
+  };
+
+
+
   // NEW — fetch public settings
   const fetchSettings = async () => {
     try {
@@ -60,6 +80,7 @@ export const GlobalProvider = ({ children }) => {
     fetchCategories();
     fetchCart();
     fetchSettings();
+    fetchCountries();
   }, []);
 
   return <GlobalContext.Provider value={{
@@ -67,6 +88,8 @@ export const GlobalProvider = ({ children }) => {
     setCart,
     categories,
     settings,
+    countries: countriesOptions,
+    countryLoading,
     loadingSettings,
     loadingCategory,
     loadingCart,

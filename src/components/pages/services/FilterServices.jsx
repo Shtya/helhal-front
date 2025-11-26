@@ -19,6 +19,7 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { isErrorAbort, updateUrlParams } from '@/utils/helper';
+import toast from 'react-hot-toast';
 
 const defaultFilters = {
 
@@ -163,18 +164,16 @@ export default function FilterServices({ category = 'all' }) {
 
         try {
             const q = buildQuery({ ...formData, search: debounced?.trim() }, pagination);
-            const res = await apiService.getServices(category, q, { signal: controller.signal }); // <-- uses your /services/me
-            // expect shape: { services: [], pagination: { page, limit, total, pages } }
+            const res = await apiService.getServices(category, q, { signal: controller.signal });
             if (res?.services) setServices(res.services);
-            if (res?.pagination) setPagination(res.pagination);
+            if (res?.pagination) setPagination(p => ({ ...p, total: res.pagination.total, pages: res.pagination.pages }));
             setCategorydata(res?.category)
         } catch (err) {
             // ignore aborts
             if (!isErrorAbort(err)) {
                 console.error('Error fetching services:', err);
+                toast.error(t('failedToLoad'));
                 setServices([]);
-                setCategorydata(null)
-                setPagination(p => ({ ...p, total: 0, pages: 1 }));
             }
 
         } finally {
@@ -362,10 +361,7 @@ export default function FilterServices({ category = 'all' }) {
                         : <NoResults mainText={t('noServices')} additionalText={t('noServicesDesc')} buttonText={t('resetFilters')} onClick={resetFilters} />}</section>
 
             {/* ==== Pagination ==== */}
-            {!loading && services?.length > 0 &&
-
-                <Pagination page={pagination?.page} totalPages={pagination?.pages || 0} setPage={handlePageChange} />
-            }
+            <Pagination loading={loading} recordsCount={services.length} page={pagination?.page} totalPages={pagination?.pages || 0} setPage={handlePageChange} />
         </main>
     );
 }

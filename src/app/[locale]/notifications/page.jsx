@@ -41,15 +41,15 @@ const NotificationsPage = () => {
       const response = await notificationService.getNotifications(pagination.page, pagination.limit, controller.signal);
       const records = response.data.records || [];
       setPageNotifications(records);
-      setPagination({
-        page: response.data.current_page,
-        limit: response.data.per_page,
+      setPagination(p => ({
+        ...p,
         total: response.data.total_records,
-        pages: Math.ceil(response.data.total_records / pagination.limit),
-      });
+        pages: Math.ceil(response.data.total_records / response.data.per_page),
+      }));
     } catch (error) {
       if (!isErrorAbort(error)) {
         console.error('Error loading notifications:', error);
+        setPageNotifications([]);
         toast.error(t('failedToLoad'));
       }
     } finally {
@@ -241,7 +241,7 @@ const NotificationsPage = () => {
         </div>
       )}
 
-      <TabsPagination loading={loading} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={pagination.limit} />
+      <TabsPagination loading={loading} recordsCount={pageNotifications.length} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={pagination.limit} />
     </div>
   );
 };

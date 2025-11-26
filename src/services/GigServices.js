@@ -1,4 +1,4 @@
-import api from '@/lib/axios';
+import api, { uploadTimeout } from '@/lib/axios';
 
 class ApiService {
   constructor() {
@@ -141,6 +141,7 @@ class ApiService {
     return this.request({
       method: 'POST',
       url: '/services',
+      timeout: uploadTimeout,
       data: serviceData, // axios بيحوّل JSON تلقائيًا
       ...extra,
     });
@@ -160,6 +161,7 @@ class ApiService {
     return this.request({
       method: 'PUT',
       url: `/services/${id}`,
+      timeout: uploadTimeout,
       data: serviceData,
       ...extra,
     });

@@ -21,6 +21,7 @@ import { useAuth } from '@/context/AuthContext';
 import AttachFilesButton from '@/components/atoms/AttachFilesButton';
 import Textarea from '@/components/atoms/Textarea';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
+import { useTranslations } from 'next-intl'; // Add this import
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -88,6 +89,7 @@ const scrollToRequirement = id => {
 };
 
 export default function ServiceDetailsPage({ params }) {
+  const t = useTranslations('ServiceDetails'); // Add this
   const { service } = use(params);
   const { user, role } = useAuth()
   const [serviceData, setServiceData] = useState(null);
@@ -313,6 +315,7 @@ const countryFlag = code => {
 };
 
 function HeaderPanel({ serviceData = {}, Img }) {
+  const t = useTranslations('ServiceDetails');
   const { user } = useAuth()
   const seller = serviceData?.seller || {};
   const rating = Number(serviceData?.rating ?? 0);
@@ -346,8 +349,8 @@ function HeaderPanel({ serviceData = {}, Img }) {
   let features = []
   if (seller?.topRated) {
     features.push({
-      title: 'Top Rated',
-      desc: 'Consistently delivers high-quality service meeting our strict standards.',
+      title: t('features.topRated.title'),
+      desc: t('features.topRated.desc'),
       Icon: (
         <svg className='stroke-blue-600' width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
           {' '}
@@ -369,7 +372,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
       {serviceData?.seller?.id === user?.id && serviceData?.status !== 'Active' && (
         <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-2 text-sm text-amber-700 flex items-center gap-2">
           <Eye className="h-4 w-4 text-amber-600" />
-          <span>This page is in preview mode and not published. Only visible to you.</span>
+          <span>{t('preview.message')}</span>
         </div>
       )}
       {/* Title + Chips */}
@@ -480,6 +483,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
 
 function DocumentViewer({ gallery }) {
+  const t = useTranslations('ServiceDetails');
   // get all files that are not images or videos
   const documents = useMemo(() => {
     return Array.isArray(gallery)
@@ -502,7 +506,7 @@ function DocumentViewer({ gallery }) {
             <FileText className="h-4 w-4" />
           </span>
           <h2 id="documents-title" className="text-xl font-semibold text-slate-900">
-            Attached Documents
+            {t('documents.title')}
           </h2>
         </div>
       </div>
@@ -516,6 +520,7 @@ function DocumentViewer({ gallery }) {
 }
 
 function VedioPlayer({ gallery }) {
+  const t = useTranslations('ServiceDetails');
   // find first video in gallery 
   const vedio = useMemo(() => {
     return gallery?.find(gal => gal.type === 'video')
@@ -532,7 +537,7 @@ function VedioPlayer({ gallery }) {
             <PlayCircle className="h-4 w-4" />
           </span>
           <h2 id="video-title" className="text-xl font-semibold text-slate-900">
-            Video Preview
+            {t('video.title')}
           </h2>
         </div>
       </div>
@@ -678,6 +683,7 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
 }
 
 function AboutService({ serviceData = {}, onTagClick }) {
+  const t = useTranslations('ServiceDetails');
   const [expanded, setExpanded] = useState(false);
 
   const tags = useMemo(() => {
@@ -705,7 +711,7 @@ function AboutService({ serviceData = {}, onTagClick }) {
             <Info className='h-4 w-4' />
           </span>
           <h2 id='about-title' className='text-xl font-semibold text-slate-900'>
-            About this Service
+            {t('about.title')}
           </h2>
         </div>
       </div>
@@ -713,13 +719,13 @@ function AboutService({ serviceData = {}, onTagClick }) {
       {/* Brief with collapse */}
       <div className='px-6 pb-4'>
         <div className={`relative mt-4 text-slate-700 leading-7 ${expanded ? '' : 'max-h-32 overflow-hidden pr-1'}`}>
-          <p className='whitespace-pre-line'>{brief || 'No description provided.'}</p>
+          <p className='whitespace-pre-line'>{brief || t('about.noDescription')}</p>
           {!expanded && longBrief && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent' />}
         </div>
 
         {longBrief && (
           <button onClick={() => setExpanded(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800' aria-expanded={expanded}>
-            {expanded ? 'Show less' : 'Read more'}
+            {expanded ? t('about.showLess') : t('about.readMore')}
             <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} aria-hidden='true' />
           </button>
         )}
@@ -730,7 +736,7 @@ function AboutService({ serviceData = {}, onTagClick }) {
         <div className='border-t border-slate-100 px-6 pb-6 pt-4'>
           <div className='mb-2 flex items-center gap-2'>
             <TagIcon className='h-4 w-4 text-slate-500' />
-            <h3 className='text-sm font-medium text-slate-900'>Tags</h3>
+            <h3 className='text-sm font-medium text-slate-900'>{t('about.tags')}</h3>
             <span className='text-xs text-slate-500'>({tags.length})</span>
           </div>
 
@@ -755,6 +761,7 @@ function AboutService({ serviceData = {}, onTagClick }) {
   );
 }
 function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
+  const t = useTranslations('ServiceDetails');
   const [view, setView] = useState('cards');
   const containerRef = useRef(null);
 
@@ -793,7 +800,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
             <Table2 className="h-4 w-4 text-slate-700" />
           </div>
           <h2 id="packages-title" className="text-lg md:text-xl font-semibold text-slate-900">
-            Packages
+            {t('packages.title')}
           </h2>
         </div>
 
@@ -805,9 +812,9 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
         ${view === 'cards' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
             aria-pressed={view === 'cards'}
-            aria-label="Cards view"
+            aria-label={t('packages.cardsView')}
           >
-            <LayoutGrid className="h-4 w-4" /> Cards
+            <LayoutGrid className="h-4 w-4" /> {t('packages.cards')}
           </button>
           <button
             type="button"
@@ -815,9 +822,9 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
         ${view === 'compare' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
             aria-pressed={view === 'compare'}
-            aria-label="Compare view"
+            aria-label={t('packages.compareView')}
           >
-            <Table2 className="h-4 w-4" /> Compare
+            <Table2 className="h-4 w-4" /> {t('packages.compare')}
           </button>
         </div>
       </div>
@@ -845,13 +852,13 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                         <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type}</h3>
                         {recommended && (
                           <span className='inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800'>
-                            <Crown className='h-3.5 w-3.5' /> Recommended
+                            <Crown className='h-3.5 w-3.5' /> {t('packages.recommended')}
                           </span>
                         )}
                         {/* ✅ Show Test flag if pkg.test is true */}
                         {pkg.test && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-800">
-                            <Beaker className="h-3.5 w-3.5" /> Test
+                            <Beaker className="h-3.5 w-3.5" /> {t('packages.test')}
                           </span>
                         )}
                       </div>
@@ -893,7 +900,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
 
                     {/* CTA */}
                     <Button
-                      name={active ? 'Selected' : 'Select Package'}
+                      name={active ? t('packages.selected') : t('packages.select')}
                       className={`absolute left-[10px] !w-[calc(100%-20px)] bottom-[10px] h-10 transition
                         ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`}
                       onClick={e => {
@@ -984,7 +991,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                     const active = selectedName === p.type;
                     return (
                       <div key={'cta' + i} className='px-2 py-2 text-center'>
-                        <Button name={active ? 'Selected' : 'Select'} className={`w-full transition  
+                        <Button name={active ? t('packages.selected') : t('packages.select')} className={`w-full transition  
                           ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`} onClick={() => setSelectedPackage(p)} />
                       </div>
                     );
@@ -1000,6 +1007,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
 }
 
 function RequirementsSection({ triedSubmit, requirements, answers, onChange, validationErrors = {}, onComplete }) {
+  const t = useTranslations('ServiceDetails');
   const [expanded, setExpanded] = useState({});
 
   const total = requirements.length;
@@ -1022,12 +1030,12 @@ function RequirementsSection({ triedSubmit, requirements, answers, onChange, val
       {/* header */}
       <div className='flex items-center justify-between gap-3 px-6 pt-6'>
         <div className='min-w-0'>
-          <h2 className='text-xl font-semibold text-slate-900'>Requirements</h2>
-          <p className='mt-1 text-sm text-slate-600'>Please provide the following information to help us tailor the service to your needs.</p>
+          <h2 className='text-xl font-semibold text-slate-900'>{t('requirements.title')}</h2>
+          <p className='mt-1 text-sm text-slate-600'>{t('requirements.subtitle')}</p>
         </div>
         {total > 0 && (
           <div className='shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800'>
-            {answered}/{total} complete
+            {answered}/{total} {t('requirements.complete')}
           </div>
         )}
       </div>
@@ -1061,11 +1069,12 @@ function RequirementsSection({ triedSubmit, requirements, answers, onChange, val
 
 
 function RequirementField({ idx, answers, requirement, triedSubmit, validationErrors, onChange }) {
+  const t = useTranslations('ServiceDetails');
   const req = requirement;
   const val = answers?.[req.id];
   const missing = req.isRequired && (req.requirementType === 'file' ? !val : !String(val ?? '').trim());
   const showErr = triedSubmit && (missing || !!validationErrors?.[req.id]);
-  const errMsg = triedSubmit && (validationErrors?.[req.id] || missing ? 'This field is required' : '');
+  const errMsg = triedSubmit && (validationErrors?.[req.id] || missing ? t('requirements.required') : '');
 
   // local state for text editing
   const [localVal, setLocalVal] = useState(val);
@@ -1113,7 +1122,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
             <Textarea
               ref={textareaRef}
               rows={4}
-              placeholder='Type your answer…'
+              placeholder={t('requirements.textPlaceholder')}
               value={localVal}
               onChange={e => setLocalVal(e.target.value.slice(0, 3000))}
               onBlur={() => onChange(req.id, localVal)}
@@ -1127,7 +1136,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
         <Input
           ref={inputRef}
           type='text'
-          placeholder='Your answer'
+          placeholder={t('requirements.inputPlaceholder')}
           value={localVal}
           onChange={e => setLocalVal(e.target.value.slice(0, 3000))}
           onBlur={() => onChange(req.id, localVal)}
@@ -1148,9 +1157,9 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
             <div className='text-center'>
               <UploadCloud className='mx-auto h-7 w-7 text-slate-500' />
               <p className='mt-2 text-sm text-slate-700'>
-                <span className='font-medium'>Click to upload</span> or drag & drop
+                <span className='font-medium'>{t('requirements.clickToUpload')}</span> {t('requirements.orDragDrop')}
               </p>
-              <p className='text-xs text-slate-500'>Any file type</p>
+              <p className='text-xs text-slate-500'>{t('requirements.anyFileType')}</p>
             </div>
             {/* <input type='file' className='hidden' onChange={e => onChange(req.id, e.target.files?.[0] || null)} /> */}
             <AttachFilesButton cnBtn={'absolute inset-0  opacity-0 '} maxSelection={1} hiddenFiles={true} onChange={files => {
@@ -1161,7 +1170,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
           {!!val && (
             <div className='mt-2 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700'>
               <CheckCircle2 className='h-4 w-4 text-emerald-600' />
-              Selected: <span className='font-medium'>{val?.name || val?.filename || String(val)}</span>
+              {t('requirements.selected')}: <span className='font-medium'>{val?.name || val?.filename || String(val)}</span>
             </div>
           )}
         </div>
@@ -1170,7 +1179,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
       {showErr && (
         <p className='mt-2 inline-flex items-center gap-1.5 text-sm text-red-600'>
           <AlertCircle className='h-4 w-4' />
-          {errMsg}
+          {errMsg || t('requirements.fieldRequired')}
         </p>
       )}
 
@@ -1179,7 +1188,14 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
   );
 }
 
+
+function SkeletonLine({ className = '' }) {
+  return <div className={`!h-3 shimmer rounded bg-slate-200/80 ${className}`} />;
+}
+
+
 function AboutSeller({ serviceData }) {
+  const t = useTranslations('ServiceDetails');
   const seller = serviceData?.seller || {};
 
   const languages = useMemo(() => {
@@ -1263,7 +1279,7 @@ function AboutSeller({ serviceData }) {
         {/* quick stats */}
         <div className='mt-4 flex flex-wrap items-center gap-2 text-xs'>
           {!!serviceData?.rating && <StatPill icon={<Star className='h-3.5 w-3.5 text-amber-600' />} label='Rating' value={(serviceData?.rating ?? 0).toFixed(1)} />}
-          <StatPill icon={<Calendar className='h-3.5 w-3.5' />} label='Orders' value={String(serviceData?.ordersCount ?? 0)} />
+          <StatPill icon={<Calendar className='h-3.5 w-3.5' />} label={t('seller.orders')} value={String(serviceData?.ordersCount ?? 0)} />
         </div>
       </div>
 
@@ -1271,7 +1287,7 @@ function AboutSeller({ serviceData }) {
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-6 border-y border-slate-100'>
         <InfoRow
           icon={<MapPin className='h-5 w-5 text-slate-400' />}
-          title='From'
+          title={t('seller.from')}
           value={
             <span className='inline-flex items-start gap-1'>
               <span aria-hidden className='text-base'>
@@ -1281,10 +1297,10 @@ function AboutSeller({ serviceData }) {
             </span>
           }
         />
-        <InfoRow icon={<Calendar className='h-5 w-5 text-slate-400' />} title='Member Since' value={seller?.memberSince ? `${new Date(seller.memberSince).toLocaleDateString()} • ${timeSince(seller.memberSince)}` : 'Not specified'} />
+        <InfoRow icon={<Calendar className='h-5 w-5 text-slate-400' />} title={t('seller.memberSince')} value={seller?.memberSince ? `${new Date(seller.memberSince).toLocaleDateString()} • ${timeSince(seller.memberSince)}` : 'Not specified'} />
         <InfoRow
           icon={<Globe className='h-5 w-5 text-slate-400' />}
-          title={`Languages${languages.length ? ` (${languages.length})` : ''}`}
+          title={t('seller.languages')}
           value={
             languages.length ? (
               <div className='flex flex-wrap  mt-1 gap-1.5'>
@@ -1310,18 +1326,17 @@ function AboutSeller({ serviceData }) {
           </div>
           {(seller?.description || serviceData?.brief || '').length > 160 && (
             <button onClick={() => setDescOpen(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800'>
-              {descOpen ? 'Show less' : 'Read more'}
+              {descOpen ? t('seller.showLess') : t('seller.readMore')}
               <ChevronDown className={`h-4 w-4 transition ${descOpen ? 'rotate-180' : ''}`} />
             </button>
           )}
         </div>
       )}
 
-      {/* extras: skills / certification / education / portfolio */}
       <div className='px-6 pb-6 pt-4 space-y-6'>
         {!!skills.length && (
           <div>
-            <div className='mb-1 text-sm font-medium text-slate-900'>Key Skills</div>
+            <div className='mb-1 text-sm font-medium text-slate-900'>{t('seller.keySkills')}</div>
             <div className='flex flex-wrap gap-1.5'>
               {skills.slice(0, 6).map((s, i) => (
                 <span key={i} className='rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs text-emerald-800'>
@@ -1336,7 +1351,7 @@ function AboutSeller({ serviceData }) {
         {!!certifications.length && (
           <div>
             <div className='mb-1 flex items-center gap-2 text-sm font-medium text-slate-900'>
-              <ShieldCheck className='h-4 w-4 text-emerald-600' /> Certifications
+              <ShieldCheck className='h-4 w-4 text-emerald-600' /> {t('seller.certifications')}
             </div>
             <ul className='space-y-1 text-sm text-slate-700'>
               {certifications.slice(0, 3).map((c, i) => (
@@ -1351,7 +1366,7 @@ function AboutSeller({ serviceData }) {
         {!!education.length && (
           <div>
             <div className='mb-1 flex items-center gap-2 text-sm font-medium text-slate-900'>
-              <GraduationCap className='h-4 w-4 text-sky-600' /> Education
+              <GraduationCap className='h-4 w-4 text-sky-600' /> {t('seller.education')}
             </div>
             <ul className='space-y-1 text-sm text-slate-700'>
               {education.slice(0, 2).map((e, i) => (
@@ -1366,7 +1381,7 @@ function AboutSeller({ serviceData }) {
         {!!portfolio.length && (
           <div>
             <div className='mb-2 flex items-center gap-2 text-sm font-medium text-slate-900'>
-              <ImageIcon className='h-4 w-4' /> Portfolio
+              <ImageIcon className='h-4 w-4' /> {t('seller.portfolio')}
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
               {portfolio.map((p, i) => (
@@ -1387,6 +1402,7 @@ function AboutSeller({ serviceData }) {
 }
 
 function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrderOptions }) {
+  const t = useTranslations('ServiceDetails');
   const { user } = useAuth();
   const [showAllFeatures, setShowAllFeatures] = useState(false);
   const features = Array.isArray(selectedPackage?.features) ? selectedPackage.features : [];
@@ -1420,19 +1436,19 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
               </div>
 
               <div className='mb-4 flex flex-wrap items-center gap-2 text-xs text-slate-500'>
-                <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>{valueMeta.count} features</span>
-                <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>~ {valueMeta.perFeature} / feature</span>
+                <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>{valueMeta.count} {t('sidebar.features')}</span>
+                <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>~ {valueMeta.perFeature} / {t('sidebar.feature')}</span>
                 {selectedPackage.test && <span className='flex gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5'>
-                  <Beaker className="h-3.5 w-3.5" /> Test</span>
+                  <Beaker className="h-3.5 w-3.5" /> {t('sidebar.test')}</span>
                 }
                 {serviceData?.fastDelivery && (
                   <span className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-800'>
-                    <Zap className='h-3.5 w-3.5' /> Fast delivery
+                    <Zap className='h-3.5 w-3.5' /> {t('sidebar.fastDelivery')}
                   </span>
                 )}
                 {serviceData?.additionalRevision && (
                   <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5'>
-                    <Repeat className='h-3.5 w-3.5' /> Extra revisions
+                    <Repeat className='h-3.5 w-3.5' /> {t('sidebar.extraRevisions')}
                   </span>
                 )}
               </div>
@@ -1441,10 +1457,10 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
 
               <div className='mb-5 space-y-2 text-sm text-slate-700'>
                 <div className='flex items-center'>
-                  <Clock className='mr-2 h-4 w-4 text-slate-400' /> <span>{selectedPackage.deliveryTime} Day Delivery</span>
+                  <Clock className='mr-2 h-4 w-4 text-slate-400' /> <span>{selectedPackage.deliveryTime} {t('sidebar.dayDelivery')}</span>
                 </div>
                 <div className='flex items-center'>
-                  <Box className='mr-2 h-4 w-4 text-slate-400' /> <span>{selectedPackage.revisions} Revisions</span>
+                  <Box className='mr-2 h-4 w-4 text-slate-400' /> <span>{selectedPackage.revisions} {t('sidebar.revisions')}</span>
                 </div>
               </div>
 
@@ -1457,26 +1473,26 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
                 ))}
                 {hasMore && (
                   <button onClick={() => setShowAllFeatures(true)} className='pl-6 text-left text-xs font-medium text-emerald-700 hover:text-emerald-800'>
-                    + {features.length - featuresPreview.length} more
+                    + {features.length - featuresPreview.length} {t('sidebar.more')}
                   </button>
                 )}
               </ul>
 
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
-                <Button name='Continue' className='flex-1' disabled={!canOrder} onClick={onTryOpenOrderOptions} />
-                {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label='Chat with seller' className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+                <Button name={t('sidebar.continue')} className='flex-1' disabled={!canOrder} onClick={onTryOpenOrderOptions} />
+                {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500'>
                   <MessageCircle size={18} />
                 </Link>}
               </div>
 
               <div className='mt-4 flex items-center justify-center text-xs text-slate-500'>
                 <Shield className='mr-1 h-4 w-4' />
-                Secure checkout • Buyer protection
+                {t('sidebar.secureCheckout')} • {t('sidebar.buyerProtection')}
               </div>
             </>
           ) : (
-            <div className='py-8 text-center text-slate-500'>Select a package to continue</div>
+            <div className='py-8 text-center text-slate-500'>{t('sidebar.selectPackage')}</div>
           )}
         </div>
       </aside>
@@ -1517,9 +1533,6 @@ function Chip({ icon, label }) {
   );
 }
 
-function SkeletonLine({ className = '' }) {
-  return <div className={`!h-3 shimmer rounded bg-slate-200/80 ${className}`} />;
-}
 
 function SkeletonPage() {
   return (
@@ -1720,18 +1733,18 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
       {/* Inline "Other" text field if chosen */}
       {isOther && (
         <div className='mt-3'>
-          <label className='mb-1 block text-sm font-medium text-slate-900'>Please specify</label>
+          <label className='mb-1 block text-sm font-medium text-slate-900'>{t('requirements.otherText')}</label>
           <input
             type="text"
             value={otherText}
-            placeholder="Type here…"
+            placeholder={t('requirements.otherPlaceholder')}
             onChange={e => setOtherText(e.target.value.slice(0, 500))} // enforce max length
             onBlur={() => UpdateOtherText(otherText)}
             maxLength={500} // browser-level enforcement
             className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100'
           />
           <div className="mt-1 text-[11px] text-slate-500">
-            {otherText.length}/500 • We’ll include this with your selection.
+            {otherText.length}/500 • {t('requirements.includeWithSelection')}
           </div>
         </div>
       )}
@@ -1740,6 +1753,7 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
 }
 
 function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOpen, serviceData, selectedPackage }) {
+  const t = useTranslations('ServiceDetails');
   const drawerRef = useRef(null);
   const firstFocusRef = useRef(null);
   const [notes, setNotes] = useState('');
@@ -1793,9 +1807,9 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
           <div className='sticky top-0 z-10 bg-white px-6 pt-6 pb-4'>
             <div className='flex items-start justify-between gap-3'>
               <h2 id='order-options-title' className='text-2xl font-bold text-slate-900'>
-                Order Options
+                {t('orderOptions.title')}
               </h2>
-              <button ref={firstFocusRef} onClick={toggleSidebar} aria-label='Close order options' className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50'>
+              <button ref={firstFocusRef} onClick={toggleSidebar} aria-label={t('orderOptions.close')} className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50'>
                 <X className='h-5 w-5' />
               </button>
             </div>
@@ -1814,13 +1828,13 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
             <div>
               <label className='mb-2 flex items-center gap-2 text-sm font-medium text-slate-900'>
                 <FileText className='h-4 w-4 text-slate-500' />
-                Special instructions (optional)
+                {t('orderOptions.specialInstructions')}
               </label>
               <textarea rows={4} value={notes} onChange={e => {
                 if (e.target.value.length <= 750) setNotes(e.target.value);
               }}
-                maxLength={750} placeholder='Anything the seller should know…' className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
-              <div className='mt-1 text-right text-xs text-slate-500'> {notes.length}/750 chars</div>
+                maxLength={750} placeholder={t('orderOptions.sellerShouldKnow')} className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
+              <div className='mt-1 text-right text-xs text-slate-500'> {notes.length}/750 {t('orderOptions.chars')}</div>
             </div>
 
             {/* Summary card */}
@@ -1844,11 +1858,11 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
         {/* Sticky Footer */}
         <div className='absolute bottom-0 left-0 right-0 z-10 border-t border-slate-200 bg-white/95 px-6 py-4 backdrop-blur'>
           <div className='mb-3 flex items-center justify-between'>
-            <span className='text-sm text-slate-600'>Total</span>
+            <span className='text-sm text-slate-600'>{t('orderOptions.total')}</span>
             <PriceTag price={selectedPackage?.price ?? 0} className='!text-xl font-bold' />
           </div>
 
-          <Button name='Continue to Requirements' loading={loadingSubmit} className='w-full' onClick={() => onComplete(notes)} iconRight={<ChevronRight className='ml-1 h-4 w-4' />} />
+          <Button name={t('orderOptions.continueToRequirements')} loading={loadingSubmit} className='w-full' onClick={() => onComplete(notes)} iconRight={<ChevronRight className='ml-1 h-4 w-4' />} />
         </div>
       </aside>
     </div>

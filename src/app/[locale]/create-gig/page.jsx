@@ -557,7 +557,6 @@ function Step1({ formData, setFormData, nextStep }) {
   };
 
 
-
   return (
     <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 bg-white/60 p-6 md:p-10'>
       {/* Header */}
@@ -571,12 +570,12 @@ function Step1({ formData, setFormData, nextStep }) {
       <div className='mx-auto max-w-5xl space-y-8'>
         {/* Gig Title */}
         <Field title={t('gigTitle')} desc={t('gigTitleDesc')} required error={errors?.title?.message} hint={`${titleVal.length}/80`}>
-          <Textarea placeholder='e.g., I will design a responsive landing page in Next.js' {...register('title')} rows={2} className='resize-none' maxLength={80} />
+          <Textarea placeholder={t('placeholders.titleExample')} {...register('title')} rows={2} className='resize-none' maxLength={80} />
         </Field>
 
         {/* Gig Brief */}
         <Field className='pt-8 border-t border-slate-200' title={t('gigBrief')} desc={t('gigBriefDesc')} required error={errors?.brief?.message} hint={`${briefVal.length}/300`}>
-          <Textarea placeholder='Briefly describe the outcome, approach, and what sets you apart.' {...register('brief')} rows={4} className='resize-y' maxLength={300} />
+          <Textarea placeholder={t('placeholders.briefExample')} {...register('brief')} rows={4} className='resize-y' maxLength={300} />
         </Field>
 
         {/* Category / Subcategory */}
@@ -584,14 +583,14 @@ function Step1({ formData, setFormData, nextStep }) {
           <div className='grid gap-4 md:grid-cols-2'>
             <div className='mb-4'>
               <Controller name='categoryId' control={control} render={({ field }) => (
-                <CategorySelect type='category' label={t('category')} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder='Select a category' />
+                <CategorySelect type='category' label={t('category')} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder={t('placeholders.selectCategory')} />
               )} />
             </div>
 
             <div className='mb-4'>
               <Controller name='subcategoryId' control={control} render={({ field }) =>
               (
-                <CategorySelect type='subcategory' parentId={watch('category')?.id} label={t('subcategory')} value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? 'Select a subcategory' : 'Select a category first'} />
+                <CategorySelect type='subcategory' parentId={watch('category')?.id} label={t('subcategory')} value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? t('placeholders.selectSubcategory') : t('placeholders.selectCategoryFirst')} />
               )} />
             </div>
 
@@ -603,7 +602,7 @@ function Step1({ formData, setFormData, nextStep }) {
         {/* Tags */}
         <Field className='pt-8 border-t border-slate-200' title={t('searchTags')} desc={t('searchTagsDesc')} hint={t('tagsHint')}>
           <div>
-            <InputList onChange={handleInputListChange} onRemoveItemHandler={handleRemoveInputList} label='Enter tags' value={formData.tags} setValue={setValue} getValues={getValues} fieldName='tags' placeholder='Add a tag and press Enter' errors={errors} validationMessage={errors?.tags?.message} maxItems={5} />
+            <InputList onChange={handleInputListChange} onRemoveItemHandler={handleRemoveInputList} label={t('placeholders.enterTagsLabel')} value={formData.tags} setValue={setValue} getValues={getValues} fieldName='tags' placeholder={t('placeholders.addTag')} errors={errors} validationMessage={errors?.tags?.message} maxItems={5} />
             <div className='mt-2 flex items-center justify-between text-xs text-slate-500'>
               <span>{t('maxTags')}</span>
               <span>{(formData.tags || []).length}/5</span>

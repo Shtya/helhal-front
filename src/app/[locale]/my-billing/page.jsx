@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Tabs from '@/components/common/Tabs';
 import InputDate from '@/components/atoms/InputDate';
@@ -13,6 +13,13 @@ import { Wallet, CreditCard, DollarSign, Icon, ShieldCheck } from 'lucide-react'
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
 import { useTranslations } from 'next-intl';
+import { isErrorAbort } from '@/utils/helper';
+import { useValues } from '@/context/GlobalContext';
+import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
+import OTPInput from 'react-otp-input';
+
+const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
 const accountingAPI = {
   // Billing Information
@@ -54,9 +61,9 @@ const accountingAPI = {
 
   // Existing methods...
   getBillingHistory: async (params = {}) => {
-    const { page = 1, search, startDate, endDate } = params;
+    const { page = 1, limit = 10, search, startDate, endDate } = params;
     const response = await api.get('/accounting/billing-history', {
-      params: { page, search, startDate, endDate },
+      params: { page, search, limit, startDate, endDate },
     });
     return response.data;
   },
@@ -138,7 +145,7 @@ const BillingHistory = () => {
   const t = useTranslations('MyBilling.billingHistory');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [pagination, setPagination] = useState({ page: 1, total: 0 });
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, pages: 0, total: 0 });
 
   const columns = [
     { key: 'created_at', label: t('columns.date') },
@@ -148,8 +155,19 @@ const BillingHistory = () => {
     { key: 'currencyId', label: t('columns.currency') },
     { key: 'amount', label: t('columns.total'), type: 'price' },
   ];
+  const controllerRef = useRef(null);
 
-  const fetchBillingHistory = async (page = 1, search = '', date = '') => {
+
+  const limit = pagination.limit;
+  const fetchBillingHistory = async (page = 1, limit, search = '', date = '') => {
+    // Abort previous request
+    if (controllerRef.current) {
+      controllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     setLoading(true);
     try {
       const response = await accountingAPI.getBillingHistory({
@@ -157,13 +175,19 @@ const BillingHistory = () => {
         search,
         startDate: date,
         endDate: date,
+        limit,
       });
       setData(response.transactions);
+      setPagination(prev => ({ ...prev, total: response.pagination?.pages }))
       setPagination(response.pagination);
     } catch (error) {
-      console.error('Error fetching billing history:', error);
+      if (!isErrorAbort(error)) {
+        setData([]);
+        console.error('Error fetching billing history:', error);
+      }
     } finally {
-      setLoading(false);
+      if (controllerRef.current === controller)
+        setLoading(false);
     }
   };
 
@@ -172,13 +196,18 @@ const BillingHistory = () => {
   }, []);
 
   const handleSearch = searchTerm => {
-    fetchBillingHistory(1, searchTerm);
+    fetchBillingHistory(1, limit, searchTerm);
   };
 
   const handleDateChange = date => {
-    fetchBillingHistory(1, '', date);
+    fetchBillingHistory(1, limit, '', date);
   };
 
+
+  const handlePageChange = newPage => {
+    setPagination(p => ({ ...p, page: newPage }))
+    fetchBillingHistory(newPage, limit);
+  };
   return (
     <div>
       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
@@ -189,15 +218,17 @@ const BillingHistory = () => {
         </div>
       </div>
 
-      {loading ? <div className='text-center py-8'>{t('loading')}</div> : <Table data={data} columns={columns} />}
+      <Table data={data} columns={columns} page={pagination.page} loading={loading} totalCount={pagination.total} onPageChange={handlePageChange} rowsPerPage={pagination.limit} />
     </div>
   );
 };
 
-const AvailableBalances = () => {
+const AvailableBalances = ({ userPhone, userCountryCode }) => {
   const t = useTranslations('MyBilling.availableBalances');
+  const { user } = useAuth();
   const [balances, setBalances] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [phoneVerified, setPhoneVerified] = useState(user?.phoneVerified);
 
   const fetchBalances = async () => {
     try {
@@ -241,7 +272,29 @@ const AvailableBalances = () => {
     },
   ];
 
-  if (loading) return <div className='text-center py-8'>{t('loading')}</div>;
+  if (loading) {
+    return (
+      <div className='mb-12'>
+        <div className='mb-6'>
+          <div className='h-7 w-64 bg-gray-200 rounded animate-pulse' />
+        </div>
+        <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className='rounded-2xl border border-gray-200 bg-white shadow-sm p-6'>
+              <div className='flex justify-between items-start'>
+                <div className='h-5 w-36 bg-gray-200 rounded animate-pulse' />
+                <div className='w-9 h-9 bg-gray-200 rounded-full animate-pulse' />
+              </div>
+              <div className='mt-4'>
+                <div className='h-9 w-28 bg-gray-200 rounded animate-pulse' />
+              </div>
+              <div className='mt-2 h-4 w-40 bg-gray-200 rounded animate-pulse' />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mb-12'>
@@ -260,7 +313,6 @@ const AvailableBalances = () => {
                   <Icon className='w-5 h-5' />
                 </span>
               </div>
-
               <div className='mt-4'>
                 <p className='text-4xl font-extrabold text-gray-900'>
                   {card.amount} <span className='text-xl font-semibold'>{card.currency}</span>
@@ -271,26 +323,34 @@ const AvailableBalances = () => {
           );
         })}
 
+        {/* Phone Verification Card */}
         <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
-          <div className='flex justify-between items-start'>
-            <p className='text-3xl font-semibold'>{t('phoneVerification.title')}</p>
-            <span className={`w-9 h-9 flex items-center justify-center rounded-full bg-[#cfe8cc] text-[#108a00]`}>
-              <ShieldCheck className='w-5 h-5' />
-            </span>
-          </div>
-          <p className='mt-1 mb-4 text-lg text-gray-500'>{t('phoneVerification.description')}</p>
-          <Button name={t('phoneVerification.button')} color='green' />
+          {!phoneVerified ? (
+            <PhoneVerification
+              phone={user?.phone}
+              countryCode={user?.countryCode?.dial_code}
+              onVerified={() => setPhoneVerified(true)}
+            />
+          ) : (
+            <div className='text-center'>
+              <p className='text-green-600 font-semibold'>{t('phoneVerification.verified')}</p>
+              <ShieldCheck className='mx-auto mt-2 w-6 h-6 text-green-600' />
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
+
 const BillingInformation = () => {
   const t = useTranslations('MyBilling.billingInformation');
+  const { countries: countriesOptions, countryLoading, } = useValues();
+
   const [billingInfo, setBillingInfo] = useState({
     fullName: '',
-    country: '',
+    countryId: null,
     state: '',
     isSaudiResident: null,
     agreeToInvoiceEmails: false,
@@ -299,26 +359,6 @@ const BillingInformation = () => {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  const countryOptions = [
-    { id: 1, name: 'United States' },
-    { id: 2, name: 'United Kingdom' },
-    { id: 3, name: 'Canada' },
-    { id: 4, name: 'Germany' },
-    { id: 5, name: 'France' },
-    { id: 6, name: 'Italy' },
-    { id: 7, name: 'Spain' },
-    { id: 8, name: 'Australia' },
-    { id: 9, name: 'Brazil' },
-    { id: 10, name: 'India' },
-    { id: 11, name: 'China' },
-    { id: 12, name: 'Japan' },
-    { id: 13, name: 'South Korea' },
-    { id: 14, name: 'Mexico' },
-    { id: 15, name: 'Saudi Arabia' },
-    { id: 16, name: 'United Arab Emirates' },
-    { id: 17, name: 'South Africa' },
-    { id: 18, name: 'Egypt' },
-  ];
 
   const fetchBillingInfo = async () => {
     setLoading(true);
@@ -338,6 +378,23 @@ const BillingInformation = () => {
   }, []);
 
   const handleSave = async () => {
+    if (!billingInfo.fullName || billingInfo.fullName.trim().length < 3) {
+      setMessage(t('errors.fullNameTooShort'));
+      return;
+    }
+
+    // validation: state min length 2
+    if (!billingInfo.state || billingInfo.state.trim().length < 2) {
+      setMessage(t('errors.stateTooShort'));
+      return;
+    }
+
+    // You can also add country required
+    if (!billingInfo.country) {
+      setMessage(t('errors.countryRequired'));
+      return;
+    }
+
     setSaving(true);
     setMessage('');
     try {
@@ -358,9 +415,27 @@ const BillingInformation = () => {
     }));
   };
 
-  if (loading) {
-    return <div className='text-center py-8'>{t('loading')}</div>;
+  if (loading || countryLoading) {
+    return (
+      <div className='max-w-[800px] w-full mx-auto mb-12'>
+        <Skeleton className='h-8 w-64 mb-6' />
+
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <Skeleton className='h-12 w-full' />
+          <Skeleton className='h-12 w-full' />
+          <Skeleton className='h-12 w-full' />
+          <Skeleton className='h-12 w-full' />
+        </div>
+
+        <Skeleton className='h-6 w-40 mt-8' />
+        <Skeleton className='h-4 w-72 mt-2 mb-6' />
+
+        <Skeleton className='h-5 w-56 mt-4' />
+        <Skeleton className='h-10 w-40 mt-6' />
+      </div>
+    );
   }
+
 
   return (
     <div className='max-w-[800px] w-full mx-auto mb-12'>
@@ -373,7 +448,7 @@ const BillingInformation = () => {
       <div className='max-w-[800px] w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
         <Input cnInput={'!border-[#108A00]'} label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={billingInfo.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
         <Input cnInput={'!border-[#108A00]'} label={t('state')} placeholder={t('statePlaceholder')} value={billingInfo.state} onChange={e => handleInputChange('state', e.target.value)} />
-        <Select cnSelect={'!border-[#108A00]'} label={t('country')} placeholder={t('selectCountry')} options={countryOptions} value={billingInfo.country} onChange={value => handleInputChange('country', value)} />
+        <Select showSearch cnSelect={'!border-[#108A00]'} label={t('country')} placeholder={t('selectCountry')} options={countriesOptions} isLoading={countryLoading} value={billingInfo.countryId} onChange={value => handleInputChange('country', value?.id)} />
         <Select
           cnSelect={'!border-[#108A00]'}
           label={t('saudiResident')}
@@ -418,15 +493,7 @@ const PaymentMethods = () => {
     mobileNumber: '',
   });
 
-  const countryOptions = [
-    { id: 1, name: 'Saudi Arabia' },
-    { id: 2, name: 'United Arab Emirates' },
-    { id: 3, name: 'Kuwait' },
-    { id: 4, name: 'Qatar' },
-    { id: 5, name: 'Bahrain' },
-    { id: 6, name: 'Oman' },
-    { id: 7, name: 'Egypt' },
-  ];
+  const { countries: countriesOptions, countryLoading, } = useValues();
 
   const fetchBankAccounts = async () => {
     setLoading(true);
@@ -500,6 +567,26 @@ const PaymentMethods = () => {
     }
   };
 
+  if (loading || countryLoading) {
+    return (
+      <div className='max-w-[1400px] w-full mx-auto mb-12'>
+        <Skeleton className='h-8 w-64 mb-6' />
+
+        <Skeleton className='h-6 w-52 mb-4' />
+        <Skeleton className='h-20 w-full mb-4' />
+        <Skeleton className='h-20 w-full mb-4' />
+
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4'>
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className='h-12 w-full' />
+          ))}
+          <Skeleton className='h-12 w-48 lg:col-span-2 ml-auto' />
+        </div>
+      </div>
+    );
+  }
+
+
   return (
     <div className='max-w-[1400px] w-full mx-auto mb-12'>
       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
@@ -547,7 +634,7 @@ const PaymentMethods = () => {
         <Input cnInput='!border-[#108A00]' label={t('ibanLabel')} placeholder={t('ibanPlaceholder')} value={formData.iban} onChange={e => handleInputChange('iban', e.target.value)} />
         <Input cnInput='!border-[#108A00]' label={t('clientId')} placeholder={t('clientIdPlaceholder')} value={formData.clientId} onChange={e => handleInputChange('clientId', e.target.value)} />
         <Input cnInput='!border-[#108A00]' label={t('clientSecret')} placeholder={t('clientSecretPlaceholder')} type='password' value={formData.clientSecret} onChange={e => handleInputChange('clientSecret', e.target.value)} />
-        <Select cnSelect='!border-[#108A00]' label={t('country')} placeholder={t('selectCountry')} options={countryOptions} value={formData.country} onChange={value => handleInputChange('country', value)} />
+        <Select cnSelect='!border-[#108A00]' label={t('country')} placeholder={t('selectCountry')} showSearch isLoading={countryLoading} options={countriesOptions} value={formData.country} onChange={value => handleInputChange('country', value)} />
         <Input cnInput='!border-[#108A00]' label={t('state')} placeholder={t('statePlaceholder')} value={formData.state} onChange={e => handleInputChange('state', e.target.value)} />
         <Input cnInput='!border-[#108A00]' label={t('mobileNumber')} placeholder={t('mobileNumberPlaceholder')} value={formData.mobileNumber} onChange={e => handleInputChange('mobileNumber', e.target.value)} />
 
@@ -556,312 +643,127 @@ const PaymentMethods = () => {
     </div>
   );
 };
-// const BillingHistory = () => {
-//   const columns = [
-//     { key: 'Date', label: 'Date' },
-//     { key: 'Document', label: 'Document' },
-//     { key: 'Service', label: 'Service' },
-//     { key: 'Order', label: 'Order' },
-//     { key: 'Currency', label: 'Currency' },
-//     { key: 'Total', label: 'Total', type: 'price' },
-//   ];
 
-//   const data = [
-//     {
-//       Date: '01 Apr 2025',
-//       Document: 'Invoice #INV-1001',
-//       Service: 'SEO Optimization',
-//       Order: 'SEO1234567890',
-//       Currency: 'USD',
-//       Total: '150',
-//     },
-//     {
-//       Date: '02 Apr 2025',
-//       Document: 'Invoice #INV-1002',
-//       Service: 'Content Writing',
-//       Order: 'CW2345678901',
-//       Currency: 'USD',
-//       Total: '50',
-//     },
-//     {
-//       Date: '03 Apr 2025',
-//       Document: 'Invoice #INV-1003',
-//       Service: 'Graphic Design',
-//       Order: 'GD9876543210',
-//       Currency: 'EUR',
-//       Total: '200',
-//     },
-//     {
-//       Date: '04 Apr 2025',
-//       Document: 'Invoice #INV-1004',
-//       Service: 'Web Development',
-//       Order: 'WD8765432109',
-//       Currency: 'USD',
-//       Total: '450',
-//     },
-//     {
-//       Date: '05 Apr 2025',
-//       Document: 'Invoice #INV-1005',
-//       Service: 'Video Editing',
-//       Order: 'VE7654321098',
-//       Currency: 'GBP',
-//       Total: '300',
-//     },
-//     {
-//       Date: '01 Apr 2025',
-//       Document: 'Invoice #INV-1001',
-//       Service: 'SEO Optimization',
-//       Order: 'SEO1234567890',
-//       Currency: 'USD',
-//       Total: '150',
-//     },
-//     {
-//       Date: '02 Apr 2025',
-//       Document: 'Invoice #INV-1002',
-//       Service: 'Content Writing',
-//       Order: 'CW2345678901',
-//       Currency: 'USD',
-//       Total: '50',
-//     },
-//     {
-//       Date: '03 Apr 2025',
-//       Document: 'Invoice #INV-1003',
-//       Service: 'Graphic Design',
-//       Order: 'GD9876543210',
-//       Currency: 'EUR',
-//       Total: '200',
-//     },
-//     {
-//       Date: '04 Apr 2025',
-//       Document: 'Invoice #INV-1004',
-//       Service: 'Web Development',
-//       Order: 'WD8765432109',
-//       Currency: 'USD',
-//       Total: '450',
-//     },
-//     {
-//       Date: '05 Apr 2025',
-//       Document: 'Invoice #INV-1005',
-//       Service: 'Video Editing',
-//       Order: 'VE7654321098',
-//       Currency: 'GBP',
-//       Total: '300',
-//     },
-//     {
-//       Date: '01 Apr 2025',
-//       Document: 'Invoice #INV-1001',
-//       Service: 'SEO Optimization',
-//       Order: 'SEO1234567890',
-//       Currency: 'USD',
-//       Total: '150',
-//     },
-//     {
-//       Date: '02 Apr 2025',
-//       Document: 'Invoice #INV-1002',
-//       Service: 'Content Writing',
-//       Order: 'CW2345678901',
-//       Currency: 'USD',
-//       Total: '50',
-//     },
-//     {
-//       Date: '03 Apr 2025',
-//       Document: 'Invoice #INV-1003',
-//       Service: 'Graphic Design',
-//       Order: 'GD9876543210',
-//       Currency: 'EUR',
-//       Total: '200',
-//     },
-//     {
-//       Date: '04 Apr 2025',
-//       Document: 'Invoice #INV-1004',
-//       Service: 'Web Development',
-//       Order: 'WD8765432109',
-//       Currency: 'USD',
-//       Total: '450',
-//     },
-//     {
-//       Date: '05 Apr 2025',
-//       Document: 'Invoice #INV-1005',
-//       Service: 'Video Editing',
-//       Order: 'VE7654321098',
-//       Currency: 'GBP',
-//       Total: '300',
-//     },
-//   ];
 
-//   return (
-//     <div>
-//       {/* Tabs */}
-//       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6 '>
-//         <h1 className='text-2xl max-md:text-xl font-bold  text-gray-800 tracking-wide'>Billing History</h1>
-//         <div className='flex max-sm:flex-col justify-end max-md:w-full max-md:justify-center items-center flex-1 gap-2'>
-//           <InputDate className={'max-w-[250px] w-full'} placeholder='Search by date' onChange={d => console.log('Picked:', d)} />
-//           <InputSearch className={'!max-w-[250px] w-full'} iconLeft={'/icons/search.svg'} placeholder='Search by order number' onSearch={e => console.log(e)} />
-//         </div>
-//       </div>
-//       <Table data={data} columns={columns} />
-//     </div>
-//   );
-// };
+const PhoneVerification = ({ phone, countryCode, onVerified }) => {
+  const t = useTranslations('MyBilling.availableBalances');
+  const [otpSent, setOtpSent] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [resending, setResending] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [loading, setLoading] = useState(false);
 
-// const BillingInformation = () => {
-//   const [agree, setAgree] = useState(false);
+  // Countdown timer for resend
+  useEffect(() => {
+    if (seconds <= 0) return;
+    const timer = setTimeout(() => setSeconds(prev => prev - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [seconds]);
 
-//   const countryOptions = [
-//     { id: 1, name: 'United States' },
-//     { id: 2, name: 'United Kingdom' },
-//     { id: 3, name: 'Canada' },
-//     { id: 4, name: 'Germany' },
-//     { id: 5, name: 'France' },
-//     { id: 6, name: 'Italy' },
-//     { id: 7, name: 'Spain' },
-//     { id: 8, name: 'Australia' },
-//     { id: 9, name: 'Brazil' },
-//     { id: 10, name: 'India' },
-//     { id: 11, name: 'China' },
-//     { id: 12, name: 'Japan' },
-//     { id: 13, name: 'South Korea' },
-//     { id: 14, name: 'Mexico' },
-//     { id: 15, name: 'Saudi Arabia' },
-//     { id: 16, name: 'United Arab Emirates' },
-//     { id: 17, name: 'South Africa' },
-//     { id: 18, name: 'Egypt' },
-//   ];
+  // Send OTP
+  const sendOtp = async () => {
+    try {
+      setLoading(true);
+      await api.post('/auth/send-phone-otp');
+      toast.success(t('phoneVerification.otpSentSuccess'));
+      setOtpSent(true);
+      setSeconds(30); // disable resend for 30 seconds
+    } catch (err) {
+      toast.error(t('phoneVerification.failedToSend'));
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//   return (
-//     <div className='max-w-[800px] w-full mx-auto mb-12 '>
-//       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6 '>
-//         <h1 className='text-2xl max-md:text-xl font-bold  text-gray-800 tracking-wide'>Billing Information</h1>
-//       </div>
+  // Verify OTP
+  const verifyOtp = async e => {
+    e.preventDefault();
+    if (otp.length !== 6) return toast.error(t('phoneVerification.invalidOtpLength'));
+    try {
+      setLoading(true);
+      const res = await api.post('/auth/verify-phone', { code: otp });
+      toast.success(t('phoneVerification.verifiedSuccess'));
+      onVerified?.(res.data);
+    } catch (err) {
+      toast.error(t('phoneVerification.invalidOtp'));
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//       <div className=' max-w-[800px] w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
-//         <Input cnInput={'!border-[#108A00]'} label='Full name' placeholder='John Doe' />
-//         <Input cnInput={'  !border-[#108A00]'} label='State ' placeholder='Gadah' />
-//         <Select cnSelect={'!border-[#108A00]'} label='Country' placeholder='Select Currency' options={countryOptions} />
-//         <Input cnInput={'!border-[#108A00]'} label='Are you a citizen / resident of Saudi Arabia' placeholder='Yes' />
-//       </div>
+  const resendOtp = async () => {
+    if (seconds > 0) return;
+    try {
+      setResending(true);
+      await api.post('/auth/send-phone-otp');
+      toast.success(t('phoneVerification.otpResentSuccess'));
+      setSeconds(30);
+    } catch (err) {
+      toast.error(t('phoneVerification.failedToResend'));
+    } finally {
+      setResending(false);
+    }
+  };
 
-//       <h1 className='h2 mt-6 '>Invoices</h1>
-//       <p className='p mb-6'>You will find your invoices under the billing history tab</p>
-//       {/* Checkbox */}
-//       <div className='flex items-center gap-3'>
-//         <AnimatedCheckbox checked={agree} onChange={setAgree} />
-//         <span className='text-sm text-gray-700'>Inbox Messages</span>
-//       </div>
+  return (
+    <motion.div className="w-full max-w-md mx-auto flex-1 flex flex-col justify-between">
+      {!otpSent ? (
+        <>
+          <p className="mt-1 mb-4 text-lg text-gray-500">{t('phoneVerification.description')}</p>
+          <div className='mt-auto'>
 
-//       {/* Save Button */}
-//       <div className='max-w-[250px] mt-6 '>
-//         <Button name='Save Changes' color='green' />
-//       </div>
-//     </div>
-//   );
-// };
+            <Button
+              onClick={sendOtp}
+              disabled={loading}
+              name={loading ? t('phoneVerification.sending') : t('phoneVerification.sendOtp')}
+            />
+          </div>
+        </>
+      ) : (
+        <div>
+          <Input
+            label={t('phoneVerification.phoneLabel')}
+            value={`${countryCode} ${phone}`}
+            disabled
+            cnInput="cursor-not-allowed"
+          />
+          <form onSubmit={verifyOtp} className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t('phoneVerification.enterOtpLabel')}
+            </label>
+            <OTPInput
+              value={otp}
+              onChange={setOtp}
+              numInputs={6}
+              renderSeparator={<span className="mx-1">-</span>}
+              renderInput={props => (
+                <input
+                  {...props}
+                  className="!w-10 h-10 border rounded-lg text-center text-xl"
+                />
+              )}
+              containerStyle="flex justify-center flex-wrap gap-y-2"
+            />
+            <Button type="submit" name={t('phoneVerification.verify')} className="mt-4" isLoading={loading} />
+          </form>
 
-// const AvailableBalances = () => {
-//   const cardsData = [
-//     {
-//       title: 'Earnings to date',
-//       amount: '0.00',
-//       currency: '﷼',
-//       description: 'Available for withdraw or purchases.',
-//       icon: Wallet,
-//       iconBg: 'bg-[#cfe8cc] text-[#108a00]',
-//     },
-//     {
-//       title: 'UpPhoto Balance',
-//       amount: '120.50',
-//       currency: '﷼',
-//       description: 'Use for purchases.',
-//       icon: CreditCard,
-//       iconBg: 'bg-[#cfe8cc] text-[#108a00]',
-//     },
-//     {
-//       title: 'UpPhoto Credits',
-//       amount: '50.00',
-//       currency: '﷼',
-//       description: 'Earn Upphoto Credits.',
-//       icon: DollarSign,
-//       iconBg: 'bg-[#cfe8cc] text-[#108a00]',
-//     },
-//   ];
+          <p className="text-center text-gray-600 mt-4">
+            {t('phoneVerification.didNotReceive')}{' '}
+            <button
+              type="button"
+              disabled={seconds > 0 || resending}
+              onClick={resendOtp}
+              className={`text-blue-600 hover:underline disabled:opacity-50 ${seconds > 0 ? 'cursor-not-allowed' : ''
+                }`}
+            >
+              {seconds > 0 ? t('phoneVerification.resendIn', { seconds }) : t('phoneVerification.resendOtp')}
+            </button>
+          </p>
+        </div>
+      )}
+    </motion.div>
+  );
+};
 
-//   return (
-//     <div className=' mb-12 '>
-//       <div className=' mb-6 '>
-//         <h1 className='text-2xl max-md:text-xl font-bold  text-gray-800 tracking-wide'>Available balances</h1>
-//       </div>
-
-//       <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
-//         {cardsData.map((card, idx) => {
-//           const Icon = card.icon;
-//           return (
-//             <div key={idx} className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
-//               <div className='flex justify-between items-start'>
-//                 <p className='text-lg text-gray-600 font-medium'>{card.title}</p>
-//                 <span className={`w-9 h-9 flex items-center justify-center rounded-full ${card.iconBg}`}>
-//                   <Icon className='w-5 h-5' />
-//                 </span>
-//               </div>
-
-//               <div className='mt-4'>
-//                 <p className='text-4xl font-extrabold text-gray-900'>
-//                   {card.amount} <span className='text-xl font-semibold'>{card.currency}</span>
-//                 </p>
-//               </div>
-//               <p className='mt-2 text-base font-[600]'>{card.description}</p>
-//             </div>
-//           );
-//         })}
-
-//         <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
-//           {/* Header */}
-//           <div className='flex justify-between items-start'>
-//             <p className='text-3xl font-semibold '>Phone Verification</p>
-//             <span className={`w-9 h-9 flex items-center justify-center rounded-full bg-[#cfe8cc] text-[#108a00]`}>
-//               <ShieldCheck className='w-5 h-5' />
-//             </span>
-//           </div>
-//           <p className='mt-1 mb-4 text-lg text-gray-500'>Refer people you know and everyone benefits!</p>
-
-//           <Button name='Save Changes' color='green' />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// const PaymentMethods = () => {
-//   const [agree, setAgree] = useState(false);
-
-//   const countryOptions = [
-//     { id: 1, name: 'Saudi Arabia' },
-//     { id: 2, name: 'United Arab Emirates' },
-//     { id: 3, name: 'Kuwait' },
-//     { id: 4, name: 'Qatar' },
-//     { id: 5, name: 'Bahrain' },
-//     { id: 6, name: 'Oman' },
-//     { id: 7, name: 'Egypt' },
-//   ];
-
-//   return (
-//     <div className=' max-w-[1400px] w-full mx-auto mb-12'>
-//       {/* Header */}
-//       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-//         <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>Bank Account Information</h1>
-//       </div>
-
-//       {/* Grid Inputs */}
-//       <div className=' w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-//         <Input cnInput='!border-[#108A00]' label='Full name' placeholder='Bader Alkhamees' />
-//         <Input cnInput='!border-[#108A00]' label='International Bank Account Number' placeholder='Enter IBAN' />
-//         <Input cnInput='!border-[#108A00]' label='Client Id' placeholder='Enter client ID' />
-//         <Input cnInput='!border-[#108A00]' label='Client secret' placeholder='Enter client secret' type='password' />
-//         <Select cnSelect='!border-[#108A00]' label='Country' placeholder='Select Country' options={countryOptions} />
-//         <Input cnInput={'  !border-[#108A00]'} label='State ' placeholder='Gadah' />
-
-//         <Input cnInput='!border-[#108A00]' label='Mobile number' placeholder='+966555521471' />
-//         <Button className='lg:col-span-2 ml-auto mt-auto !h-[45px] !py-1 max-w-[250px]' name='Save Changes' color='green' />
-//       </div>
-//     </div>
-//   );
-// };

@@ -51,16 +51,9 @@ export default function Page() {
       setPagination(prev => {
         const newPagination = {
           ...prev,
-          page: Number(response.pagination.page),
-          limit: Number(response.pagination.limit),
           total: response.pagination.total,
           pages: response.pagination.pages,
         };
-
-        // لو القيم ما اتغيرتش رجّع نفس الـ prev
-        if (prev.page === newPagination.page && prev.limit === newPagination.limit && prev.total === newPagination.total && prev.pages === newPagination.pages) {
-          return prev;
-        }
 
         return newPagination;
       });

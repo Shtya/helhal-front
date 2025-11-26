@@ -1,4 +1,10 @@
 {
+  "toast": {
+    "failedToUploadFiles": "Failed to upload files. Please try again.",
+    "fileDeletedSuccessfully": "File deleted successfully.",
+    "filesUploadedSuccessfully": "Files uploaded successfully.",
+    "failedToDeleteFile": "Failed to delete file. Please try again."
+  },
   "servicesPage": {
     "breadcrumbs": {
       "services": "Services"
@@ -888,6 +894,7 @@
   },
   "CategoryPage": {
     "categoryNotFound": "Category Not Found",
+    "failedToLoad": "Failed to load services.",
     "categoryNotFoundDesc": "The category you are looking for doesn’t exist or has been removed. Please check the URL or explore other categories.",
     "backToServices": "Back to Services",
     "services": "Services",
@@ -1309,6 +1316,7 @@
       "responseTimeNotCalculated": "Not yet calculated"
     },
     "public": {
+      "ordersCount": "Orders Count",
       "failedToLoad": "Failed to load user. Try again.",
       "unknown": "Unknown",
       "memberSince": "Member since",
@@ -1734,9 +1742,23 @@
         "description": "Earn Upphoto Credits."
       },
       "phoneVerification": {
-        "title": "Phone Verification",
-        "description": "Refer people you know and everyone benefits!",
-        "button": "Verify Phone"
+        "verified": "Phone number verified",
+        "description": "Verify your phone number to secure your account.",
+        "sendOtp": "Send OTP",
+        "sending": "Sending...",
+        "otpSentSuccess": "OTP has been sent successfully!",
+        "failedToSend": "Failed to send OTP. Please try again.",
+        "phoneLabel": "Phone Number",
+        "enterOtpLabel": "Enter OTP Code",
+        "verify": "Verify",
+        "invalidOtpLength": "OTP must be 6 digits.",
+        "invalidOtp": "Invalid OTP code. Please try again.",
+        "verifiedSuccess": "Phone number verified successfully!",
+        "didNotReceive": "Didn't receive the code?",
+        "resendOtp": "Resend OTP",
+        "resendIn": "Resend in {{seconds}}s",
+        "otpResentSuccess": "OTP has been resent successfully!",
+        "failedToResend": "Failed to resend OTP. Please try again."
       }
     },
     "billingInformation": {
@@ -1758,6 +1780,9 @@
       "saving": "Saving...",
       "loading": "Loading...",
       "errors": {
+        "fullNameTooShort": "Full name must be at least 3 characters",
+        "stateTooShort": "State must be at least 2 characters",
+        "countryRequired": "Please select a country",
         "loading": "Error loading billing information",
         "updating": "Error updating billing information"
       },
@@ -2062,7 +2087,28 @@
       "searchTagsDesc": "Use up to 5 tags that buyers would actually search.",
       "tagsHint": "Letters and numbers only.",
       "maxTags": "Max 5 tags.",
-      "continue": "Continue"
+      "continue": "Continue",
+      "placeholders": {
+        "titleExample": "e.g., I will design a responsive landing page in Next.js",
+        "briefExample": "Briefly describe the outcome, approach, and what sets you apart.",
+        "selectCategory": "Select a category",
+        "selectSubcategory": "Select a subcategory",
+        "selectCategoryFirst": "Select a category first",
+        "enterTagsLabel": "Enter tags",
+        "addTag": "Add a tag and press Enter"
+      },
+      "validation": {
+        "titleRequired": "Service title is required",
+        "titleMax": "Service title cannot exceed 100 characters",
+        "briefRequired": "Service brief is required",
+        "briefMax": "Service brief cannot exceed 500 characters",
+        "categoryRequired": "Category is required",
+        "tagMax": "Tag must be 50 characters or less",
+        "tagPattern": "Tags can contain letters and numbers only",
+        "tagRequired": "Tag is required",
+        "tagsMin": "At least one tag is required",
+        "tagsMax": "A maximum of 5 tags is allowed"
+      }
     },
     "step2": {
       "field": "Field",
@@ -2076,7 +2122,41 @@
       "checkErrors": "Check errors",
       "back": "Back",
       "continue": "Continue",
-      "addFeature": "Add feature"
+      "addFeature": "Add feature",
+      "packageTypes": {
+        "basic": "Basic",
+        "standard": "Standard",
+        "premium": "Premium"
+      },
+      "placeholders": {
+        "title": "Example: Basic Logo",
+        "description": "Short description (what’s included?)",
+        "deliveryTime": "3",
+        "revisions": "1",
+        "price": "50",
+        "feature": "Feature {number}"
+      },
+      "validation": {
+        "packageTitleRequired": "Package title is required",
+        "packageTitleMax": "Maximum 60 characters allowed",
+        "packageDescriptionRequired": "Package description is required",
+        "packageDescriptionMax": "Maximum 220 characters allowed",
+        "deliveryTimeRequired": "Delivery time is required",
+        "deliveryTimeMin": "Minimum is 1 day",
+        "deliveryTimeMax": "Maximum delivery time is 1200 days",
+        "revisionsRequired": "Revisions are required",
+        "revisionsMin": "Cannot be negative",
+        "revisionsMax": "Be realistic",
+        "priceRequired": "Price is required",
+        "priceMin": "Price must be at least 1",
+        "priceMax": "Price must not exceed 100,000",
+        "testRequired": "Test field is required",
+        "featureRequired": "Feature is required",
+        "featureMax": "Feature must be 50 characters or less",
+        "featuresMin": "At least 3 features required",
+        "featuresMax": "Maximum of 5 features allowed",
+        "atLeastOnePackage": "At least one package is required"
+      }
     },
     "step3": {
       "faqs": "FAQs",
@@ -2087,7 +2167,14 @@
       "answer": "Answer",
       "addFaq": "Add FAQ",
       "back": "Back",
-      "continue": "Continue"
+      "continue": "Continue",
+      "validation": {
+        "faqQuestionRequired": "Question is required",
+        "faqQuestionMax": "Question must not exceed 200 characters",
+        "faqAnswerRequired": "Answer is required",
+        "faqAnswerMax": "Answer must not exceed 1000 characters",
+        "faqsMax": "You can add up to 12 questions only"
+      }
     },
     "step4": {
       "questions": "Questions",
@@ -2111,7 +2198,17 @@
       "atLeastOneOption": "At least one option is required for multiple choice",
       "addQuestion": "Add Question",
       "back": "Back",
-      "continue": "Continue"
+      "continue": "Continue",
+      "validation": {
+        "questionRequired": "Question is required",
+        "questionMax": "Question must not exceed 200 characters",
+        "requirementTypeRequired": "Question type is required",
+        "optionRequired": "Option is required",
+        "optionMax": "Option must not exceed 100 characters",
+        "optionMin": "At least one option is required for multiple-choice questions",
+        "optionMaxCount": "You can add up to 10 options only",
+        "questionsMax": "You can add up to 12 questions only"
+      }
     },
     "step5": {
       "images": "Images (up to 3)",
@@ -2124,7 +2221,16 @@
       "documentDesc": "Get noticed by the right buyers with visual examples of your services.",
       "browseDocuments": "Browse documents",
       "back": "Back",
-      "continue": "Continue"
+      "continue": "Continue",
+      "validation": {
+        "imageInvalid": "Each image file must be valid (JPEG, PNG, WEBP, etc.) and less than 5 MB.",
+        "imagesMin": "At least one image must be uploaded",
+        "imagesMax": "You can upload up to 3 images",
+        "videoInvalid": "Video must be in a supported format (MP4, MOV, AVI, etc.) and less than 50 MB.",
+        "videoMax": "You can upload only one video",
+        "documentInvalid": "Documents must be in PDF, Word, PowerPoint, Excel, or TXT format and less than 25 MB.",
+        "documentsMax": "You can upload up to 2 documents"
+      }
     },
     "step6": {
       "congratulations": "Congratulations!",
@@ -2207,7 +2313,7 @@
       "security": "Security"
     },
     "account": {
-      "pendingEmail": "A confirmation link has been sent to <strong>{email}</strong>. Please check your inbox to confirm the change.",
+      "pendingEmail": "A confirmation link has been sent to <strong> {email} </strong>. Please check your inbox to confirm the change.",
       "cancelRequest": "Cancel request",
       "canceling": "Canceling…",
       "resendEmail": "Resend Email",
@@ -2401,6 +2507,11 @@
       "errors": {
         "failedToRemove": "Failed to remove item",
         "failedToClear": "Failed to clear cart"
+      },
+      "emptyState": {
+        "mainText": "Your cart is empty",
+        "additionalText": "You haven’t saved any services yet. Browse and add services to your cart.",
+        "buttonText": "Explore Services"
       }
     }
   },
@@ -2410,6 +2521,7 @@
     "star": "Star",
     "more": "More",
     "noMatches": "No matches",
+    "fileSearch": "Search files",
     "labels": {
       "from": "From",
       "onPlatform": "On Platform",
@@ -2435,7 +2547,9 @@
     },
     "placeholders": {
       "search": "Search conversations",
-      "message": "Write a message…"
+      "message": "Write a message…",
+      "selectConversation": "Select a conversation to start chatting",
+      "searchUsers": "Or search for users above to start a new chat"
     },
     "clear": "Clear",
     "searching": "Searching…",
@@ -2514,7 +2628,19 @@
     "searchForUsers": "Or search for users above to start a new conversation",
     "failedToLoadConversations": "Failed to load conversations",
     "failedToLoadMessages": "Failed to load messages",
-    "failedToSendMessage": "Failed to send message"
+    "failedToSendMessage": "Failed to send message",
+    "aboutPanel": {
+      "about": "About {name}",
+      "topRated": "Top Rated",
+      "lastMessage": "Last Message",
+      "onPlatform": "On Platform",
+      "languages": "Languages",
+      "level": "Level",
+      "responseRate": "Response Rate",
+      "ordersCompleted": "Orders Completed",
+      "role": "Role",
+      "contact": "Contact"
+    }
   },
   "NotFound": {
     "errorCode": "Error 404",
@@ -3189,6 +3315,108 @@
       "next": "Next",
       "jumpBack": "Jump back {count} pages",
       "jumpForward": "Jump forward {count} pages"
+    }
+  },
+  "AttachFiles": {
+    "title": "Your Library",
+    "selected": "selected",
+    "searchPlaceholder": "Search files...",
+    "upload": "Upload",
+    "noFiles": "No files found",
+    "noneSelected": "No files selected",
+    "selectedCount": "{count, plural, =0{No files selected} one{# file selected} other{# files selected}}",
+    "cancel": "Cancel",
+    "useFiles": "{count, plural, one{Use # file} other{Use # files}}",
+    "attachFiles": "Attach Files"
+  },
+  "ServiceDetails": {
+    "preview": {
+      "message": "This page is in preview mode and not published. Only visible to you."
+    },
+    "features": {
+      "topRated": {
+        "title": "Top Rated",
+        "desc": "Consistently delivers high-quality service meeting our strict standards."
+      }
+    },
+    "documents": {
+      "title": "Attached Documents"
+    },
+    "video": {
+      "title": "Video Preview"
+    },
+    "about": {
+      "title": "About this Service",
+      "noDescription": "No description provided.",
+      "readMore": "Read more",
+      "showLess": "Show less",
+      "tags": "Tags"
+    },
+    "packages": {
+      "title": "Packages",
+      "cards": "Cards",
+      "cardsView": "Cards view",
+      "compare": "Compare",
+      "compareView": "Compare view",
+      "recommended": "Recommended",
+      "test": "Test",
+      "price": "Price",
+      "delivery": "Delivery",
+      "days": "Day(s)",
+      "revisions": "Revisions",
+      "features": "Features",
+      "selected": "Selected",
+      "select": "Select",
+      "selectPackage": "Select Package"
+    },
+    "requirements": {
+      "title": "Requirements",
+      "subtitle": "Please provide the following information to help us tailor the service to your needs.",
+      "complete": "complete",
+      "textPlaceholder": "Type your answer…",
+      "inputPlaceholder": "Your answer",
+      "clickToUpload": "Click to upload",
+      "orDragDrop": "or drag & drop",
+      "anyFileType": "Any file type",
+      "selected": "Selected",
+      "fieldRequired": "This field is required",
+      "required": "This field is required"
+    },
+    "seller": {
+      "orders": "Orders",
+      "from": "From",
+      "memberSince": "Member Since",
+      "languages": "Languages",
+      "keySkills": "Key Skills",
+      "certifications": "Certifications",
+      "education": "Education",
+      "portfolio": "Portfolio",
+      "readMore": "Read more",
+      "showLess": "Show less"
+    },
+    "sidebar": {
+      "features": "features",
+      "feature": "feature",
+      "test": "Test",
+      "fastDelivery": "Fast delivery",
+      "extraRevisions": "Extra revisions",
+      "dayDelivery": "Day Delivery",
+      "revisions": "Revisions",
+      "more": "more",
+      "continue": "Continue",
+      "chatWithSeller": "Chat with seller",
+      "secureCheckout": "Secure checkout",
+      "buyerProtection": "Buyer protection",
+      "selectPackage": "Select a package to continue"
+    },
+    "orderOptions": {
+      "title": "Order Options",
+      "close": "Close order options",
+      "specialInstructions": "Special instructions (optional)",
+      "sellerShouldKnow": "Anything the seller should know…",
+      "chars": "chars",
+      "total": "Total",
+      "continueToRequirements": "Continue to Requirements"
     }
   }
 }

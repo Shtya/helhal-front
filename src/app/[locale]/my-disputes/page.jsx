@@ -142,7 +142,7 @@ export default function MyDisputesPage() {
         setSelectedId(list[0]?.id);
       }
 
-      setPagination(prev => ({ ...prev, total: data?.pagination.total, pages: data?.pagination.pages }))
+      setPagination(prev => ({ ...prev, pages: data?.pagination.pages }))
     } catch {
       setDisputes([]);
     } finally {
@@ -314,7 +314,7 @@ export default function MyDisputesPage() {
             </div>
             <div className='p-4'>
 
-              <TabsPagination loading={loadingList} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} className="max-md:flex-1" />
+              <TabsPagination loading={loadingList} recordsCount={disputes.length} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} className="max-md:flex-1" />
             </div>
           </div>
         </aside>

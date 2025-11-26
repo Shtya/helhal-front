@@ -75,7 +75,7 @@ async function listPublishedJobs({ page = 1, limit = 12, search = '', category, 
     ? res.data
     : {
       jobs: res.data?.records ?? [],
-      pagination: { page, limit, total: res.data?.total_records ?? 0, pages: res.data?.pages ?? 1 },
+      pagination: { page, limit, total: res.data?.total_records ?? 0, pages: Math.ceil(res.data?.total_records / res.data.per_page) || 1 },
     };
 }
 
@@ -288,13 +288,13 @@ export default function SellerJobsPage() {
         const query = buildQuery({ page, limit, search: debouncedQ?.trim(), filters });
 
         const res = await listPublishedJobs(query, { signal: controller.signal });
-
         setJobs(res.jobs || []);
         setPages(res.pagination?.pages || 1);
       } catch (e) {
         if (!isErrorAbort(e)) {
           console.error(e);
           toast.error(t('page.errors.failedToLoad'));
+          setJobs([]);
         }
       } finally {
         // Only clear loading if THIS request is still the active one
@@ -305,6 +305,7 @@ export default function SellerJobsPage() {
     fetchJobs();
   }, [page, limit, debouncedQ?.trim(), filters]);
 
+  console.log(page, pages)
 
   return (
     <div className='container !mb-12 !pt-8 '>
@@ -393,9 +394,9 @@ export default function SellerJobsPage() {
       </motion.div>
 
       <div className='mt-8'>
-        <TabsPagination loading={loading} currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => {
+        <TabsPagination loading={loading} recordsCount={jobs.length} currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => {
           setLimit(sz)
-          resetpage();
+          setPage(1);
         }} itemsPerPage={limit} />
       </div>
 

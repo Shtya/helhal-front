@@ -133,7 +133,7 @@ export default function ReviewSubmissionModel({
                                 type="button"
                                 color="red"
                                 name={t('requestChanges')}
-                                disabled={!submission}
+                                disabled={!submission || completeloading}
                                 onClick={() => setShowRequestModal(true)}
                                 className="!w-fit"
                             />

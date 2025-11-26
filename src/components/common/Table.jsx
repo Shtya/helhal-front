@@ -204,7 +204,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
       <div className=' mt-8 py-4 px-4 border-t border-t-slate-200'>
 
         <div className='md:hidden'>
-          <TabsPagination loading={loading} currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} className="max-md:flex-1" />
+          <TabsPagination loading={loading} recordsCount={data.length} currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} className="max-md:flex-1" />
         </div>
         <div className='hidden md:flex justify-between items-center'>
           <span className='text-sm text-gray-500'>
@@ -219,7 +219,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
 
           {/* Pagination */}
           <div className={loading ? 'opacity-60 pointer-events-none' : ''}>
-            <Pagination className='!mt-0' page={page} totalPages={totalPages} setPage={handlePageChange} />
+            <Pagination recordsCount={data.length} className='!mt-0' page={page} totalPages={totalPages} setPage={handlePageChange} />
           </div>
         </div>
       </div>
