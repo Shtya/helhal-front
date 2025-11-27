@@ -324,7 +324,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
         })}
 
         {/* Phone Verification Card */}
-        {/* <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
+        <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
           {!phoneVerified ? (
             <PhoneVerification
               phone={user?.phone}
@@ -337,7 +337,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
               <ShieldCheck className='mx-auto mt-2 w-6 h-6 text-green-600' />
             </div>
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   );
