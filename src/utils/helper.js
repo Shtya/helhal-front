@@ -31,7 +31,7 @@ export function updateUrlParams(pathname, params) {
 }
 
 
-export const fmtMoney = n => `$${n?.toLocaleString()}`;
+export const fmtMoney = n => `${n?.toLocaleString()}`;
 
 
 export function initialsFromName(name) {

@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 import { useValues } from '@/context/GlobalContext';
+import Currency from '@/components/common/Currency';
 
 const page = () => {
   const { settings, loadingSettings } = useValues();
@@ -18,7 +19,11 @@ const page = () => {
   const stats = [
     { value: '4 Sec', label: t('stats.gigBought') },
     { value: '50M+', label: t('stats.transactions') },
-    { value: '$5 - $10,000', label: t('stats.priceRange') },
+    {
+      value: <div className='flex gap-1'>
+        <Currency size={28} />5 - <Currency size={28} />10,000
+      </div>, label: t('stats.priceRange')
+    },
   ];
 
   const categories = [

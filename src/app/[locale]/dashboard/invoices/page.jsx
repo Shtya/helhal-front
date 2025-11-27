@@ -6,6 +6,7 @@ import { isErrorAbort } from '@/utils/helper';
 import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import { useTranslations } from 'next-intl';
+import Currency from '@/components/common/Currency';
 
 export default function InvoicesManagement() {
   const t = useTranslations('Dashboard.invoices');
@@ -84,12 +85,18 @@ export default function InvoicesManagement() {
     {
       key: 'subtotal',
       title: t('columns.subtotal'),
-      render: (value) => `$${value}`
+      render: v => <div className='flex gap-1 '>
+        <Currency size={14} />
+        {v}
+      </div>,
     },
     {
       key: 'serviceFee',
       title: t('columns.serviceFee'),
-      render: (value) => `$${value}`
+      render: v => <div className='flex gap-1 '>
+        <Currency size={14} />
+        {v}
+      </div>,
     },
     {
       key: 'totalAmount',

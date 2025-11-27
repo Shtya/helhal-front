@@ -14,6 +14,7 @@ import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 import TruncatedText from '@/components/dashboard/TruncatedText';
+import Currency from '@/components/common/Currency';
 
 const OrderStatus = {
   PENDING: 'Pending',
@@ -179,7 +180,10 @@ export default function AdminOrdersDashboard() {
     {
       key: 'totalAmount',
       label: t('columns.amount'),
-      render: v => `$${v.totalAmount}`
+      render: v => <div className='flex gap-1 text-gray-500'>
+        <Currency style={{ fill: "#6a7282" }} size={14} />
+        {v.totalAmount}
+      </div>,
     },
     {
       key: 'buyer',

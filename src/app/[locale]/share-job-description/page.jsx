@@ -21,6 +21,7 @@ import InputList from '@/components/atoms/InputList';
 import AttachmentList from '@/components/common/AttachmentList';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+import Currency from '@/components/common/Currency';
 
 const MIN_SKILL_LENGTH = 2;
 const MAX_SKILL_LENGTH = 50;
@@ -649,7 +650,17 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
         </div>
 
         <div className='mt-6 grid grid-cols-1 sm:grid-cols-2 gap-8'>
-          <Item label={t('budget')} value={`$${data.budget} (${data.budgetType})`} />
+          <Item
+            label={t('budget')}
+            value={
+              <div className="flex items-center gap-1">
+                <Currency />
+                {`${data.budget} (${data.budgetType})`}
+              </div>
+            }
+          />
+
+
           <Item label={t('deliveryDays')} value={data.preferredDeliveryDays || t('notSpecified')} />
         </div>
       </section>

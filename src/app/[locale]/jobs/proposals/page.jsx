@@ -228,7 +228,7 @@ function ProposalCard({ proposal, onOpenJob }) {
             <Banknote className='h-4 w-4' /> {proposal?.bidAmount}
           </span>
           <span className={chip}>
-            <Clock className='h-4 w-4' /> {proposal?.deliveryDays} {t('days')}
+            <Clock className='h-4 w-4' /> {proposal?.estimatedTimeDays} {t('days')}
           </span>
           <span className={chip}>
             <CalendarDays className='h-4 w-4' /> {submitted}

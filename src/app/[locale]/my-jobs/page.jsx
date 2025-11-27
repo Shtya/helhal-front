@@ -19,6 +19,7 @@ import { useAuth } from '@/context/AuthContext';
 import { CalendarDays, CheckCircle2, CircleX, FolderOpen, X } from 'lucide-react';
 import AttachmentList from '@/components/common/AttachmentList';
 import api from '@/lib/axios';
+import Currency from '@/components/common/Currency';
 
 
 // -------------------------------------------------
@@ -365,7 +366,7 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Budget + Price Type */}
                     <div className="rounded-xl border border-slate-200 p-4">
-                      <div className="text-slate-900 font-semibold">{fmtMoney(budget)}</div>
+                      <div className="text-slate-900 font-semibold flex gap-1">{fmtMoney(budget)}<Currency /></div>
                       <div className="text-xs text-slate-500">{priceType}</div>
                     </div>
 

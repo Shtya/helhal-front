@@ -87,7 +87,7 @@ export default function PaymentSuccessPage() {
           <h2 className="text-xl font-semibold text-slate-900">{t('orderSummary')}</h2>
           <p><span className="font-medium">{t('orderId')}</span> {order.id}</p>
           <p><span className="font-medium">{t('titleLabel')}</span> {order.title}</p>
-          <p><span className="font-medium">{t('amount')}</span> {order.totalAmount} {order.invoices?.[0]?.currencyId || 'USD'}</p>
+          <p><span className="font-medium">{t('amount')}</span> {order.totalAmount} {order.invoices?.[0]?.currencyId || 'SAR'}</p>
           <p><span className="font-medium">{t('status')}</span> <span className="text-emerald-600">{order.status}</span></p>
           <p><span className="font-medium">{t('buyer')}</span> {order.buyer?.username}</p>
           <p><span className="font-medium">{t('seller')}</span> {order.seller?.username}</p>

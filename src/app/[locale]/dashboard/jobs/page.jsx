@@ -15,6 +15,7 @@ import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import { useTranslations } from 'next-intl';
+import Currency from '@/components/common/Currency';
 
 export default function AdminJobsDashboard() {
   const t = useTranslations('Dashboard.jobs');
@@ -174,7 +175,10 @@ export default function AdminJobsDashboard() {
     {
       key: 'budget',
       label: t('columns.budget'),
-      render: v => `$${v.budget}`,
+      render: v => <div className='flex gap-1 text-gray-500'>
+        <Currency style={{ fill: "#6a7282" }} size={14} />
+        {v.budget}
+      </div>,
     },
     {
       key: 'budgetType',

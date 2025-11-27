@@ -23,6 +23,7 @@ import { usePathname } from '@/i18n/navigation';
 import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdown';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import Client from '@/components/pages/jobs/Client';
+import Currency from '@/components/common/Currency';
 
 // -------------------------------------------------
 // Services
@@ -109,7 +110,7 @@ function timeAgo(iso, t) {
 function formatBudget(job, t) {
   if (!job?.budget) return '—';
   const val = Number(job.budget);
-  const money = Number.isFinite(val) ? `$${val.toLocaleString()}` : `$${job.budget}`;
+  const money = Number.isFinite(val) ? `${val.toLocaleString()}` : `${job.budget}`;
   return `${job.budgetType === 'hourly' ? t('page.hourly') : t('page.fixedPrice')} • ${t('page.estBudget')}: ${money}`;
 }
 
@@ -488,7 +489,7 @@ function JobCard({ job, onOpen, index }) {
 
       <h2 className='text-lg sm:text-xl font-semibold text-slate-900 leading-snug'>{job.title}</h2>
 
-      <div className='mt-1 text-sm text-slate-600'>{budgetLine || `${t('page.fixedPrice')} · Intermediate`}</div>
+      <div className='mt-1 text-sm text-slate-600 flex gap-1'> {budgetLine || `{t('page.fixedPrice')} · Intermediate`}<Currency style={{ fill: "#45556c" }} /></div>
 
       {/* Description */}
       {job.description ? <p className='mt-2 text-slate-700 text-[15px] md:text-base line-clamp-6   md:line-clamp-2'>{job.description}</p> : null}
@@ -716,7 +717,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                   <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Budget + Price Type */}
                     <div className="rounded-xl border border-slate-200 p-4">
-                      <div className="text-slate-900 font-semibold">{fmtMoney(budget)}</div>
+                      <div className="text-slate-900 font-semibold flex gap-1">{fmtMoney(budget)}<Currency /></div>
                       <div className="text-xs text-slate-500">{priceType}</div>
                     </div>
 

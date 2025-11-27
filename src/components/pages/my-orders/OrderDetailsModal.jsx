@@ -8,6 +8,7 @@ import { Package, DollarSign, FileText, Clock, CheckCircle, XCircle } from 'luci
 import OrderDeliveryTimer from './OrderDeliveryTimer';
 import { resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
+import Currency from '@/components/common/Currency';
 
 export default function OrderDetailsModal({ open, onClose, orderId }) {
   const t = useTranslations('MyOrders.modals.orderDetails');
@@ -130,7 +131,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                 <DollarSign className="h-4 w-4 text-slate-500" />
                 <div>
                   <p className="text-sm font-medium text-slate-700">{t('totalAmount')}</p>
-                  <p className="text-lg font-semibold text-slate-900">${Number(order.totalAmount).toFixed(2)}</p>
+                  <p className="text-lg font-semibold text-slate-900 flex gap-1"><Currency /> {Number(order.totalAmount).toFixed(2)}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
