@@ -5,13 +5,14 @@ import api from '@/lib/axios';
 import { ArrowUpRight, Wallet, Banknote, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { isErrorAbort } from '@/utils/helper';
-
+import Tabs from '@/components/common/Tabs';
+import { motion } from 'framer-motion';
 // transactionTypes.ts
 const getTransactionTypes = (t) => [
-  { id: 'all', label: t('tabs.all') },
-  { id: 'escrow_deposit', label: t('tabs.escrowDeposit') },
-  { id: 'escrow_release', label: t('tabs.escrowRelease') },
-  { id: 'withdrawal', label: t('tabs.withdrawal') },
+  { value: 'all', label: t('tabs.all') },
+  { value: 'escrow_deposit', label: t('tabs.escrowDeposit') },
+  { value: 'escrow_release', label: t('tabs.escrowRelease') },
+  { value: 'withdrawal', label: t('tabs.withdrawal') },
 ];
 
 const formatMoney = (n, currency = 'SAR') => {
@@ -124,7 +125,10 @@ export default function WithdrawManagement() {
     setFilters(p => ({ ...p, page: 1 }));
   }
   function onTabChange(tab) {
-    setFilters(p => ({ ...p, page: 1, kind: tab }));
+
+    const v = typeof tab === 'string' ? tab : tab?.value;
+
+    setFilters(p => ({ ...p, page: 1, kind: v }));
   }
   function onLimitChange(val) {
     setFilters(p => ({ ...p, page: 1, limit: val }));
@@ -193,20 +197,9 @@ export default function WithdrawManagement() {
       </div>
 
       {/* Filters */}
-      <div className="mb-3 text-nowrap inline-flex p-1 max-w-full overflow-x-auto space-x-2">
-        {transactionTypes.map(type => (
-          <button
-            key={type.id}
-            onClick={() => onTabChange(type.id)}
-            className={`px-4 py-2 rounded-lg ${filters.kind === type.id
-              ? 'bg-blue-600 text-white'
-              : 'bg-white text-gray-700 border border-gray-300'
-              }`}
-          >
-            {type.label}
-          </button>
-        ))}
-      </div>
+      <GlassCard className='mb-6'>
+        <Tabs tabs={transactionTypes} activeTab={filters.kind} setActiveTab={onTabChange} />
+      </GlassCard>
 
       {/* Table */}
       <DataTable
@@ -258,5 +251,16 @@ function MiniStat({ label, value }) {
       <div className='text-xs text-slate-500'>{label}</div>
       <div className='mt-1 text-lg font-semibold text-slate-900'>{value}</div>
     </div>
+  );
+}
+
+
+function GlassCard({ children, className = '', gradient = 'from-sky-400 via-indigo-400 to-violet-500' }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={` border border-slate-200 relative rounded-2xl bg-white/90 ring-1 ring-slate-200 p-5 sm:p-6 ${className}`}>
+      <div className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`} style={{ border: '2px solid transparent' }} />
+      <div className={`absolute -inset-px rounded-2xl ${gradient}`} />
+      <div className='relative'>{children}</div>
+    </motion.div>
   );
 }

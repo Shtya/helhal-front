@@ -294,11 +294,11 @@ export default function AdminSettingsDashboard() {
     <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
       <div className='p-6'>
         {/* Header */}
-        <GlassCard gradient='from-indigo-500 via-fuchsia-500 to-rose-500' className='mb-6'>
+        <GlassCard gradient='bg-emerald-500/60' className='mb-6'>
           <div className='flex items-center justify-between'>
             <div>
-              <h1 className='text-2xl font-bold'>{t('title')}</h1>
-              <p>{t('subtitle')}</p>
+              <h1 className='text-2xl font-bold text-black'>{t('title')}</h1>
+              <p className='text-black'> {t('subtitle')}</p>
             </div>
             <Button icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin' /> : <Save size={16} className='mr-2' />} name={saving ? t('saving') : t('saveSettings')} onClick={handleSave} disabled={saving} className='!w-fit' />
           </div>

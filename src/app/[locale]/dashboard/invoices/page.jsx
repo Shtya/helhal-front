@@ -7,6 +7,9 @@ import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import { useTranslations } from 'next-intl';
 import Currency from '@/components/common/Currency';
+import Tabs from '@/components/common/Tabs';
+import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 
 export default function InvoicesManagement() {
   const t = useTranslations('Dashboard.invoices');
@@ -25,7 +28,9 @@ export default function InvoicesManagement() {
   }
 
   function onTabChange(tab) {
-    setFilters(p => ({ ...p, page: 1, status: tab }))
+
+    const v = typeof tab === 'string' ? tab : tab?.value;
+    setFilters(p => ({ ...p, page: 1, status: v }))
   }
 
   function onLimitChange(val) {
@@ -142,24 +147,18 @@ export default function InvoicesManagement() {
 
   };
 
+  const tabs = [
+    { value: 'all', label: "All" },
+    { value: 'paid', label: "Paid" },
+    { value: 'pending', label: "Pending" },
+    { value: 'failed', label: "Failed" },
+  ];
   return (
     <div>
-      <div className="mb-6 flex justify-between items-center">
-        <div className="text-nowrap inline-flex p-1 max-w-full overflow-x-auto space-x-2">
-          {['all', 'paid', 'pending', 'failed'].map(status => (
-            <button
-              key={status}
-              onClick={() => onTabChange(status)}
-              className={`px-4 py-2 rounded-lg ${statusFilter === status
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 border border-gray-300'
-                }`}
-            >
-              {t(`tabs.${status}`)}
-            </button>
-          ))}
-        </div>
-      </div>
+      <GlassCard className='mb-6'>
+        <Tabs tabs={tabs} activeTab={statusFilter} setActiveTab={onTabChange} />
+      </GlassCard>
+
 
       <DataTable
         columns={columns}
@@ -181,5 +180,16 @@ export default function InvoicesManagement() {
         orderId={current?.id}
       />
     </div>
+  );
+}
+
+
+function GlassCard({ children, className = '', gradient = 'from-sky-400 via-indigo-400 to-violet-500' }) {
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={` border border-slate-200 relative rounded-2xl bg-white/90 ring-1 ring-slate-200 p-5 sm:p-6 ${className}`}>
+      <div className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`} style={{ border: '2px solid transparent' }} />
+      <div className={`absolute -inset-px rounded-2xl ${gradient}`} />
+      <div className='relative'>{children}</div>
+    </motion.div>
   );
 }
