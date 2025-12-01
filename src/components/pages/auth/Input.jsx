@@ -21,7 +21,7 @@ export const Input = ({
         <input
           type={inputType}
           placeholder=" "
-          className={`
+          className={` ${type === "password" && "pe-8"}
             peer w-full rounded-xl border px-4 pt-5 pb-2 text-end 
             bg-white/90 text-gray-900 text-[16px] shadow-inner transition-all
             focus:border-transparent focus:ring-2 focus:ring-emerald-500/70
