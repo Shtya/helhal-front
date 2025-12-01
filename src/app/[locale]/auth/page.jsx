@@ -515,7 +515,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
       <div className='flex-1 flex flex-col items-center justify-center gap-4 py-6'>
         <ContinueWithEmailButton onClick={onEmailClick} />
         <ContinueWithGoogleButton referralCode={referralCode} />
-        <ContinueWithAppleButton referralCode={referralCode} />
+        {/* <ContinueWithAppleButton referralCode={referralCode} /> */}
         {/* <ContinueWithPhoneButton onClick={onPhoneClick} /> */}
       </div>
       <p className='text-sm text-gray-500 border-t border-slate-200 mt-6 pt-6'>{t('terms')}</p>
