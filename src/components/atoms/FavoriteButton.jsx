@@ -6,9 +6,13 @@ import { Heart, Loader2 } from 'lucide-react';
 import api from '@/lib/axios';
 import { useValues } from '@/context/GlobalContext';
 import { useTranslations } from 'next-intl';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function FavoriteButton({ className = '', serviceId, syncWithCart = true, onAdded, onRemoved }) {
   const { cart, setCart } = useValues();
+  const { user } = useAuth()
+  const router = useRouter();
   const t = useTranslations('Explore');
   const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,6 +29,10 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
   }, [cart, serviceId, syncWithCart]);
 
   const toggleFavorite = async () => {
+    if (!user) {
+      router.push('/auth?tab=login');
+    }
+
     if (!serviceId) {
       setMsg('Missing serviceId');
       return;
@@ -109,7 +117,7 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 900, damping: 50 }}
+              transition={{ type: ' spring', stiffness: 900, damping: 50 }}
               className="flex"
             >
               <Heart className="w-5 h-5 text-slate-600" />
