@@ -13,6 +13,7 @@ import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
 import { FaFacebook, FaInstagram, FaLinkedin, FaPinterest, FaTiktok, FaTwitter } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const getSettingsSchema = (t) => z.object({
   contactEmail: z
@@ -220,7 +221,8 @@ export default function AdminSettingsDashboard() {
       setFormErrors(null)
 
       await update(payload);
-      setSuccessMessage(t('toast.saved'));
+      // setSuccessMessage(t('toast.saved'));
+      toast.success(t('toast.saved'))
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (e) {
       if (e instanceof z.ZodError) {
