@@ -56,6 +56,10 @@ export default function ServiceSlider({ title, className, swiperConfig = swiperS
     }
   };
 
+  async function HandleRefetch() {
+    await fetchServices()
+  }
+
   useEffect(() => {
     setMounted(true);
     fetchServices();
@@ -99,7 +103,7 @@ export default function ServiceSlider({ title, className, swiperConfig = swiperS
           ))}
         </Swiper>
       ) : err ? (
-        <ErrorState title="Failed to load services" message={err} onRetry={() => fetchServices(activeTab)} />
+        <ErrorState title="Failed to load services" message={err} onRetry={HandleRefetch} />
       ) : services.length === 0 ? (
         <EmptyState onReset={fetchServices} />
       ) : (

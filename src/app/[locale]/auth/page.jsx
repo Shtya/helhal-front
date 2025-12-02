@@ -515,7 +515,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
       <div className='flex-1 flex flex-col items-center justify-center gap-4 py-6'>
         <ContinueWithEmailButton onClick={onEmailClick} />
         <ContinueWithGoogleButton referralCode={referralCode} />
-        <ContinueWithAppleButton referralCode={referralCode} />
+        {/* <ContinueWithAppleButton referralCode={referralCode} /> */}
         {/* <ContinueWithPhoneButton onClick={onPhoneClick} /> */}
       </div>
       <p className='text-sm text-gray-500 border-t border-slate-200 mt-6 pt-6'>{t('terms')}</p>
@@ -532,6 +532,7 @@ export default function AuthPage() {
 
   const tabParam = searchParams?.get('tab') || 'login';
   const loginError = searchParams?.get('error');
+  const errorMessage = searchParams?.get('error_message');
   const accessTokenFromUrl = searchParams?.get('accessToken');
   const refreshTokenFromUrl = searchParams?.get('refreshToken');
   const redirectUrl = searchParams?.get('redirect') || '/explore';
@@ -549,12 +550,13 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (loginError === 'oauth_failed') {
-      toast.error(t('errors.loginFailedTryAgain'));
+      toast.error(errorMessage || t('errors.loginFailedTryAgain'));
 
 
       // 🔥 Remove query param from URL without reload
       const params = new URLSearchParams(window.location.search);
       params.delete('error');
+      params.delete('error_message');
 
       const newUrl =
         window.location.pathname + '?' + params.toString();
@@ -563,11 +565,12 @@ export default function AuthPage() {
     }
 
     if (loginError === 'confirmation_failed') {
-      toast.error(t('errors.emailConfirmationFailed'));
+      toast.error(errorMessage || t('errors.emailConfirmationFailed'));
 
       // 🔥 Remove query param from URL without reload
       const params = new URLSearchParams(window.location.search);
       params.delete('error');
+      params.delete('error_message');
 
       const newUrl =
         window.location.pathname + '?' + params.toString();
