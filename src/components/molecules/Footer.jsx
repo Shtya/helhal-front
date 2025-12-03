@@ -8,6 +8,7 @@ import { ChevronDown, ChevronUp, Globe2, BadgeCheck } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { localImageLoader } from '@/utils/helper';
 import { useValues } from '@/context/GlobalContext';
+import { useSearchParams } from 'next/navigation';
 
 /* ===================== DATA ===================== */
 export const CATEGORY_LINKS = [
@@ -100,6 +101,7 @@ function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const isRTL = locale === 'ar';
 
@@ -111,7 +113,10 @@ function LanguageSwitcher() {
   const handleChange = nextLocale => {
     if (nextLocale !== locale) {
       startTransition(() => {
-        router.push(pathname, { locale: nextLocale });
+        const queryString = searchParams.toString();
+        const url = queryString ? `${pathname}?${queryString}` : pathname;
+
+        router.push(url, { locale: nextLocale });
       });
     }
   };

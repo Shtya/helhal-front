@@ -228,8 +228,6 @@ const getStep1Schema = (t) => yup.object({
     .of(
       yup.string()
         .trim()
-        .max(50, t('validation.tagMax'))
-        .matches(/^[A-Za-z0-9]+$/, t('validation.tagPattern'))
         .required(t('validation.tagRequired'))
     )
     .min(1, t('validation.tagsMin'))
