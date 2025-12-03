@@ -1,7 +1,7 @@
 // lib/axios.ts
 import axios from 'axios';
 
-export const baseImg = 'http://localhost:8081/';
+export const baseImg = process.env.NEXT_PUBLIC_WS_URL;
 export const BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1`;
 
 const api = axios.create({
