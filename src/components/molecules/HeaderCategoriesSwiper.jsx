@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation } from 'swiper/modules';
-import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -11,6 +10,7 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import { useValues } from '@/context/GlobalContext';
+import { Link } from '@/i18n/navigation';
 
 export default function HeaderCategoriesSwiper({ category }) {
   const t = useTranslations('Explore');
