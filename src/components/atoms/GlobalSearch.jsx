@@ -2,12 +2,12 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Search, Clock, ChevronDown, ExternalLink, Loader2, X } from 'lucide-react';
 import api from '@/lib/axios';
 import { apiService } from '@/services/GigServices';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useRouter } from '@/i18n/navigation';
 
 export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   const t = useTranslations('GlobalSearch');
