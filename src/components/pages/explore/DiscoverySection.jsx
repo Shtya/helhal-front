@@ -7,7 +7,7 @@ import ServiceCard from '../services/ServiceCard';
 import Tabs from '@/components/common/Tabs';
 import { useValues } from '@/context/GlobalContext';
 import Button from '@/components/atoms/Button';
-import api from '@/lib/axios';
+import api, { BASE_URL, baseImg } from '@/lib/axios';
 import NoResults from '@/components/common/NoResults';
 import ErrorState from '@/components/common/ErrorState';
 

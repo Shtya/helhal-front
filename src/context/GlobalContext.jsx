@@ -2,12 +2,14 @@
 
 import api from '@/lib/axios';
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { useAuth } from './AuthContext';
 
 const GlobalContext = createContext();
 
 // Provider Component
 export const GlobalProvider = ({ children }) => {
   const [categories, setCategories] = useState();
+  const { user } = useAuth()
   const [cart, setCart] = useState();
   const [loadingCategory, setLoadingCategory] = useState(true);
   const [loadingCart, setLoadingCart] = useState(true);
@@ -62,6 +64,9 @@ export const GlobalProvider = ({ children }) => {
   };
 
   const fetchCart = async () => {
+    const access = localStorage.getItem('accessToken');
+    if (!access) return;
+
     try {
       setLoadingCart(true);
       const res = await api.get("/cart")
@@ -75,10 +80,13 @@ export const GlobalProvider = ({ children }) => {
 
 
 
+  useEffect(() => {
+    if (cart && cart?.userId === user?.id) return;
+    fetchCart();
+  }, [user?.id])
 
   useEffect(() => {
     fetchCategories();
-    fetchCart();
     fetchSettings();
     fetchCountries();
   }, []);

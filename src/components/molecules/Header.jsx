@@ -191,7 +191,7 @@ export default function Header() {
       // purge local
       await logout();
       // optional: hit your API (swap to your endpoint)
-      await fetch('/api/logout', { method: 'POST' }).catch(() => { });
+      await fetch('/api/auth/logout', { method: 'POST' }).catch(() => { });
     } finally {
       setIsLogoutLoading(false);
       router.push('/');

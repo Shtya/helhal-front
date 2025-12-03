@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState, useRef, use } from 'react';
-import api, { baseImg, uploadTimeout } from '@/lib/axios';
+import api, { baseImg, fileTimeout, uploadTimeout } from '@/lib/axios';
 import { FileText, UploadCloud, Upload, Video, Camera, MapPin, CalendarDays, Copy, Shield, Star, Plus, Trash2, Info, Award, CheckCircle2, Repeat, DollarSign, Settings2, AlertTriangle, Mail, Phone, X, Loader2 } from 'lucide-react';
 
 import Input from '@/components/atoms/Input';
@@ -386,6 +386,7 @@ function Assets({
   const [videoUrl, setVideoUrl] = useState(initialVideoUrl || '');
   const [videoDeleting, setDeletingVideo] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
+  const [videoUploadProgress, setVideoUploadProgress] = useState(0); // Add this
 
   const [imgs, setImgs] = useState((initialImages || []).slice(0, 6).map((u, i) => ({ id: `init-${i}`, url: u, uploading: false })));
   const [imgUploadingCount, setImgUploadingCount] = useState(0);
@@ -427,16 +428,21 @@ function Assets({
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: ev => {
           console.log('Video upload progress:', ev);
-          // optional: show progress
-          // const pct = Math.round((ev.loaded / (ev.total || 1)) * 100);
+          if (ev.total) {
+            const progress = Math.round((ev.loaded / ev.total) * 100);
+            setVideoUploadProgress(progress);
+          }
 
         },
       });
+
       setVideoUrl(data.url);
     } catch (err) {
+      console.log("code: ", err.code)
       console.error(err);
       toast.error('Failed to upload video');
     } finally {
+      setVideoUploadProgress(0);
       setVideoUploading(false);
       e.target.value = '';
     }
@@ -499,6 +505,7 @@ function Assets({
       toUpload.forEach(f => form.append('files', f));
 
       const { data } = await api.post('/auth/images', form, {
+        timeout: fileTimeout,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -572,7 +579,29 @@ function Assets({
         {/* Video preview / skeleton */}
         <div className='mt-5'>
           {videoUploading || videoDeleting ? (
-            <div className='aspect-video w-full rounded-2xl bg-slate-200 animate-pulse' />
+            <div className='space-y-3'>
+              <div className='aspect-video w-full rounded-2xl bg-slate-200 animate-pulse' />
+
+              {/* Progress Bar */}
+              {videoUploading && (
+                <div className='space-y-2'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-sm font-medium text-slate-700'>{t('uploading')}</span>
+                    <span className='text-sm font-semibold text-emerald-600'>{videoUploadProgress}%</span>
+                  </div>
+                  <div className='w-full h-3 bg-slate-200 rounded-full overflow-hidden'>
+                    <div
+                      className='h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500 ease-out'
+                      style={{ width: `${videoUploadProgress}%` }}
+                      aria-valuenow={videoUploadProgress}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      role='progressbar'
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           ) : videoUrl ? (
             <div className='relative'>
               <video src={resolveUrl(videoUrl)} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />
@@ -713,6 +742,7 @@ function PortfolioFileBox({
       const form = new FormData();
       form.append('file', file); // field name must be "file"
       const { data } = await api.post('/auth/portfolio-file', form, {
+        timeout: fileTimeout,
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setFileUrl(data.url);

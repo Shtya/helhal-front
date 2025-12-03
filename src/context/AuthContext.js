@@ -10,6 +10,9 @@ export function AuthProvider({ children }) {
   const [loadingUser, setLoadingUser] = useState(true);
 
   const fetchUser = async () => {
+    const access = localStorage.getItem('accessToken');
+    if (!access) return;
+
     try {
       setLoadingUser(true);
       const res = await api.get('/auth/me');
