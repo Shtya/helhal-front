@@ -561,7 +561,7 @@
       "rating": "التقييم",
       "newest": "الأحدث"
     },
-    "searchPlaceholder": "بحث",
+    "searchPlaceholder": "ابحث...",
     "results": "نتيجة/نتائج",
     "noServices": "لم يتم العثور على خدمات",
     "noServicesDesc": "لم نتمكن من العثور على أي خدمات تطابق عوامل التصفية الخاصة بك. حاول تعديل عوامل التصفية أو كلمات البحث.",
@@ -584,7 +584,7 @@
       "anyBudgetType": "أي نوع ميزانية",
       "fixed": "ثابت",
       "hourly": "بالساعة",
-      "searchPlaceholder": "ابحث بالعنوان أو الوصف أو المهارات",
+      "searchPlaceholder": "ابحث...",
       "noJobs": "لا توجد وظائف في الوقت الحالي",
       "noJobsDescription": "حاول توسيع الفلاتر أو تحقق لاحقاً.",
       "resetFilters": "إعادة تعيين الفلاتر",
@@ -639,8 +639,11 @@
         "failedToLoad": "فشل تحميل الوظائف",
         "unableToOpen": "تعذر فتح الوظيفة",
         "failedToLoadJob": "فشل تحميل الوظيفة",
-        "failedToSubmit": "فشل الإرسال"
-      }
+        "failedToSubmit": "فشل الإرسال",
+        "jobNotFoundTitle": "لم يتم العثور على الوظيفة",
+        "jobNotFoundDescription": "الوظيفة التي تبحث عنها غير موجودة أو ربما تم حذفها."
+      },
+      "close": "إغلاق"
     },
     "proposals": {
       "title": "عروضي",
@@ -1672,10 +1675,10 @@
       "back": "رجوع",
       "continue": "متابعة",
       "validation": {
-        "imageInvalid": "يجب أن يكون كل ملف صورة صالحة (JPEG، PNG، WEBP، إلخ) وأقل من 5 ميجابايت.",
+        "imageInvalid": "يجب أن يكون كل ملف صورة صالحة (JPEG، PNG، WEBP، إلخ) وأقل من 510 ميجابايت.",
         "imagesMin": "يجب رفع صورة واحدة على الأقل",
         "imagesMax": "يمكنك رفع حتى 3 صور",
-        "videoInvalid": "يجب أن يكون الفيديو بتنسيق مدعوم (MP4، MOV، AVI، إلخ) وأقل من 50 ميجابايت.",
+        "videoInvalid": "يجب أن يكون الفيديو بتنسيق مدعوم (MP4، MOV، AVI، إلخ) وأقل من 200 ميجابايت.",
         "videoMax": "يمكنك رفع فيديو واحد فقط",
         "documentInvalid": "يجب أن تكون المستندات بتنسيق PDF أو Word أو PowerPoint أو Excel أو TXT وأقل من 25 ميجابايت.",
         "documentsMax": "يمكنك رفع حتى مستندين"
@@ -2857,6 +2860,7 @@
     }
   },
   "AttachFiles": {
+     "fileTooLarge": "الملف {name} يتجاوز الحجم الأقصى المسموح وهو {max}.",
     "title": "مكتبتك",
     "selected": "محدد",
     "searchPlaceholder": "ابحث في الملفات...",

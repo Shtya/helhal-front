@@ -234,7 +234,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
                   <span className="absolute h-full w-full rounded-full border-4 border-transparent border-r-white animate-spin-slow"></span>
                 </span>}
             </button>
-            <Img src={selectedImage} alt='Preview' className={`${!isImageLoading && 'bg-white ring-1 ring-slate-200'}   p-4 max-w-[80vw] max-h-[80vh] rounded-md  `} onLoad={() => setIsImageLoading(false)} />
+            <Img src={selectedImage} alt='Preview' className={`${!isImageLoading && 'bg-white ring-1 ring-slate-200'}   p-4 max-w-[80vw] max-h-[80vh] rounded-md w-full `} onLoad={() => setIsImageLoading(false)} />
           </div>
         </div>
       )}

@@ -12,7 +12,7 @@ import AttachmentList from '@/components/common/AttachmentList';
 import NoResults from '@/components/common/NoResults';
 import TabsPagination from '@/components/common/TabsPagination';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, CalendarDays, CheckCircle2, FolderOpen, X, CircleX } from 'lucide-react';
+import { ArrowUpRight, CalendarDays, CheckCircle2, FolderOpen, X, CircleX, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AdvancedJobsDropdown from '@/components/Filters/AdvancedJobsDropdown';
 import UserAvatar from '@/components/common/UserAvatar';
@@ -310,7 +310,7 @@ export default function SellerJobsPage() {
 
   return (
     <div className='container !mb-12 !pt-8 '>
-      {role === 'buyer' && <HeroHeader />}
+      {role === 'seller' && <HeroHeader />}
 
       {/* Filters Panel */}
       <motion.section variants={fadeItem} initial='hidden' animate='show' transition={spring} className='card'>
@@ -668,6 +668,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
   const created = (localJob?.created_at || '').split('T')[0];
 
 
+
   return (
     <AnimatePresence>
       {open && (
@@ -679,159 +680,177 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
           <motion.aside className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col' initial={{ x: -580 }} animate={{ x: 0 }} exit={{ x: -580 }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
             {jobLoading ? (
               <JobDrawerSkeleton onClose={onClose} />
-            ) : (
-              <>
+            ) : !localJob ? (
+              // Not found state
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                <AlertTriangle className="w-12 h-12 text-amber-500 mb-4" />
+                <h3 className="text-lg font-semibold text-slate-900">
+                  {t("page.errors.jobNotFoundTitle")}
+                </h3>
+                <p className="text-sm text-slate-600 mt-2 max-w-sm">
+                  {t("page.errors.jobNotFoundDescription")}
+                </p>
+                <button
+                  onClick={onClose}
+                  className="mt-6 px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  {t("page.close")}
+                </button>
+              </div>
+            )
+              : (
+                <>
 
-                {/* Header */}
-                <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
-                  <div className='flex items-center flex-wrap gap-3'>
-                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || t('page.jobDetails')}</h3>
-                    {/* show relation badge in drawer header */}
-                    {user && (localJob?.buyer?.id === user?.id || localJob?.seller?.id === user?.id) && (
-                      <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
-                        {t('page.youPostedThis')}
-                      </span>
-                    )}
+                  {/* Header */}
+                  <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
+                    <div className='flex items-center flex-wrap gap-3'>
+                      <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || t('page.jobDetails')}</h3>
+                      {/* show relation badge in drawer header */}
+                      {user && (localJob?.buyer?.id === user?.id || localJob?.seller?.id === user?.id) && (
+                        <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
+                          {t('page.youPostedThis')}
+                        </span>
+                      )}
+                    </div>
+                    <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
+                      <X className='h-5 w-5 text-slate-700' />
+                    </button>
                   </div>
-                  <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
-                    <X className='h-5 w-5 text-slate-700' />
-                  </button>
-                </div>
 
-                {/* Scrollable body */}
-                <div className='flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-6'>
-                  {/* Summary */}
-                  {localJob?.description && (
-                    <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.summary')}</h4>
+                  {/* Scrollable body */}
+                  <div className='flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-6'>
+                    {/* Summary */}
+                    {localJob?.description && (
+                      <section>
+                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.summary')}</h4>
 
-                      <p className="text-sm text-slate-700 whitespace-pre-wrap">
-                        {localJob?.description}
-                      </p>
+                        <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                          {localJob?.description}
+                        </p>
 
-                    </section>
-                  )}
+                      </section>
+                    )}
 
 
-                  {/* Basic meta */}
-                  <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Budget + Price Type */}
-                    <div className="rounded-xl border border-slate-200 p-4">
-                      <div className="text-slate-900 font-semibold flex gap-1">{fmtMoney(budget)}<Currency /></div>
-                      <div className="text-xs text-slate-500">{priceType}</div>
-                    </div>
-
-                    {/* Preferred Delivery */}
-                    <div className="rounded-xl border border-slate-200 p-4">
-                      <div className="text-slate-900 font-semibold">
-                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? t('page.day') : t('page.days')}
+                    {/* Basic meta */}
+                    <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Budget + Price Type */}
+                      <div className="rounded-xl border border-slate-200 p-4">
+                        <div className="text-slate-900 font-semibold flex gap-1">{fmtMoney(budget)}<Currency /></div>
+                        <div className="text-xs text-slate-500">{priceType}</div>
                       </div>
-                      <div className="text-xs text-slate-500">{t('page.preferredDelivery')}</div>
-                    </div>
-                  </section>
 
-                  {/* Skills */}
-                  {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
-                    <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.skillsAndExpertise')}</h4>
-                      <div className='flex flex-wrap gap-2'>
-                        {localJob?.skillsRequired.map((s, i) => (
-                          <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-
-                  {/* Client */}
-                  <section>
-                    <Client name={buyerName} subtitle={country} />
-
-                    <div className='mt-3 space-y-2 text-sm'>
-                      <div className='flex items-center gap-2'>
-
-                        {localJob?.buyer?.paymentVerified ?
-                          <CheckCircle2 className='h-4 w-4 text-emerald-600' />
-                          : <CircleX className='h-4 w-4 text-red-600' />}
-                        <span>{t('page.paymentMethodVerified')}</span>
-                      </div>
-                      <div className='flex items-center gap-2 text-slate-700'>
-                        <CalendarDays className='h-4 w-4' />
-                        <span>{t('page.posted')} {created || '—'}</span>
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* Attachments */}
-                  {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
-                    <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.attachments')}</h4>
-                      <div className='rounded-xl border border-slate-200 p-3'>
-                        <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                          <FolderOpen className='h-4 w-4' /> {t('page.files')}
+                      {/* Preferred Delivery */}
+                      <div className="rounded-xl border border-slate-200 p-4">
+                        <div className="text-slate-900 font-semibold">
+                          {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? t('page.day') : t('page.days')}
                         </div>
-                        <AttachmentList attachments={localJob?.attachments} />
+                        <div className="text-xs text-slate-500">{t('page.preferredDelivery')}</div>
                       </div>
                     </section>
-                  )}
-                  {/* additionalInfo */}
-                  {localJob?.additionalInfo && (
+
+                    {/* Skills */}
+                    {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
+                      <section>
+                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.skillsAndExpertise')}</h4>
+                        <div className='flex flex-wrap gap-2'>
+                          {localJob?.skillsRequired.map((s, i) => (
+                            <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                      </section>
+                    )}
+
+                    {/* Client */}
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.additionalDetails')}</h4>
-                      <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
+                      <Client name={buyerName} subtitle={country} />
+
+                      <div className='mt-3 space-y-2 text-sm'>
+                        <div className='flex items-center gap-2'>
+
+                          {localJob?.buyer?.paymentVerified ?
+                            <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+                            : <CircleX className='h-4 w-4 text-red-600' />}
+                          <span>{t('page.paymentMethodVerified')}</span>
+                        </div>
+                        <div className='flex items-center gap-2 text-slate-700'>
+                          <CalendarDays className='h-4 w-4' />
+                          <span>{t('page.posted')} {created || '—'}</span>
+                        </div>
+                      </div>
                     </section>
-                  )}
 
-                  {/* APPLY FORM */}
-                  <section id='apply'>
-                    <div className='flex items-center justify-between mb-2'>
-                      <h4 className='text-sm font-semibold text-slate-900'>{t('page.apply')}</h4>
-                    </div>
+                    {/* Attachments */}
+                    {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
+                      <section>
+                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.attachments')}</h4>
+                        <div className='rounded-xl border border-slate-200 p-3'>
+                          <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
+                            <FolderOpen className='h-4 w-4' /> {t('page.files')}
+                          </div>
+                          <AttachmentList attachments={localJob?.attachments} />
+                        </div>
+                      </section>
+                    )}
+                    {/* additionalInfo */}
+                    {localJob?.additionalInfo && (
+                      <section>
+                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.additionalDetails')}</h4>
+                        <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
+                      </section>
+                    )}
 
-                    <form className='space-y-4' onSubmit={handleSubmit(submit)}>
-                      {/* Bid + Delivery */}
-                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                    {/* APPLY FORM */}
+                    <section id='apply'>
+                      <div className='flex items-center justify-between mb-2'>
+                        <h4 className='text-sm font-semibold text-slate-900'>{t('page.apply')}</h4>
+                      </div>
+
+                      <form className='space-y-4' onSubmit={handleSubmit(submit)}>
+                        {/* Bid + Delivery */}
+                        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                          <div>
+                            <label className='block text-sm font-medium text-slate-700'>{t('page.bidAmount')}</label>
+                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
+                            {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
+                          </div>
+                          <div>
+                            <label className='block text-sm font-medium text-slate-700'>{t('page.delivery')}</label>
+                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
+                            {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
+                          </div>
+                        </div>
+
+                        {/* Cover letter */}
                         <div>
-                          <label className='block text-sm font-medium text-slate-700'>{t('page.bidAmount')}</label>
-                          <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
-                          {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
+                          <label className='block text-sm font-medium text-slate-700'>{t('page.coverLetter')}</label>
+                          <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.coverLetterPlaceholder')} {...register('coverLetter')} />
+                          {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
                         </div>
+
+                        {/* Portfolio links */}
                         <div>
-                          <label className='block text-sm font-medium text-slate-700'>{t('page.delivery')}</label>
-                          <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
-                          {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
+                          <label className='block text-sm font-medium text-slate-700'>{t('page.portfolioLinks')}</label>
+                          <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.portfolioLinksPlaceholder')} {...register('portfolioUrls')} />
+                          {errors.portfolioUrls && (
+                            <p className="mt-1 text-xs text-rose-600">{errors.portfolioUrls.message}</p>
+                          )}
                         </div>
-                      </div>
 
-                      {/* Cover letter */}
-                      <div>
-                        <label className='block text-sm font-medium text-slate-700'>{t('page.coverLetter')}</label>
-                        <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.coverLetterPlaceholder')} {...register('coverLetter')} />
-                        {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
-                      </div>
-
-                      {/* Portfolio links */}
-                      <div>
-                        <label className='block text-sm font-medium text-slate-700'>{t('page.portfolioLinks')}</label>
-                        <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.portfolioLinksPlaceholder')} {...register('portfolioUrls')} />
-                        {errors.portfolioUrls && (
-                          <p className="mt-1 text-xs text-rose-600">{errors.portfolioUrls.message}</p>
-                        )}
-                      </div>
-
-                      <div className='flex items-center justify-end gap-2'>
-                        <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
-                          {t('page.cancel')}
-                        </button>
-                        <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
-                          {isSubmitting ? t('page.submitting') : t('page.applyNow')}
-                        </button>
-                      </div>
-                    </form>
-                  </section>
-                </div>
-              </>)}
+                        <div className='flex items-center justify-end gap-2'>
+                          <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
+                            {t('page.cancel')}
+                          </button>
+                          <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
+                            {isSubmitting ? t('page.submitting') : t('page.applyNow')}
+                          </button>
+                        </div>
+                      </form>
+                    </section>
+                  </div>
+                </>)}
           </motion.aside>
         </>
       )}

@@ -171,25 +171,38 @@ export default function Page() {
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-
+    let toastId;
     try {
       setDeleting(true);
-      await toast.promise(
-        apiService.deleteService(deleteTarget.id),
-        {
-          loading: t('toast.deleting', { title: deleteTarget.title }),
-          success: t('toast.deleted', { title: deleteTarget.title }),
-          error: t('toast.failed', { title: deleteTarget.title }),
-        }
+
+      // show loading toast and keep its id
+      toastId = toast.loading(
+        t('toast.deleting', { title: deleteTarget.title })
       );
+
+      await apiService.deleteService(deleteTarget.id);
+
+      // update toast to success
+      toast.success(
+        t('toast.deleted', { title: deleteTarget.title }),
+        { id: toastId }
+      );
+
+      // update local state
       setServices(prev => prev.filter(s => s.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (err) {
+      toast.error(
+        err?.response?.data?.message || err.message ||
+        t('toast.failed', { title: deleteTarget.title }),
+        { id: toastId }
+      );
       console.error('Delete failed', err);
     } finally {
       setDeleting(false);
     }
   };
+
 
   const handleDelete = row => {
     const index = services.findIndex(e => e.id == row.id);

@@ -247,7 +247,7 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
             className='w-full border-0 outline-none focus:ring-0 text-sm text-gray-900 placeholder:text-gray-400 pr-8'
             disabled={!canAddMore}
           />
-          <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute right-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md  disabled:opacity-40' disabled={!canAddMore || !inputValue.trim() || (minTagLength && inputValue?.length < minTagLength)}>
+          <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute end-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md  disabled:opacity-40' disabled={!canAddMore || !inputValue.trim() || (minTagLength && inputValue?.length < minTagLength)}>
             <Plus size={16} />
           </button>
         </div>

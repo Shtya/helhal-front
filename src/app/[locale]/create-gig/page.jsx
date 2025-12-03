@@ -315,8 +315,8 @@ const getStep4Schema = (t) =>
 
 
 
-const MAX_IMAGE_SIZE_MB = 5;   // example
-const MAX_VIDEO_SIZE_MB = 50; // example
+const MAX_IMAGE_SIZE_MB = 10;   // example
+const MAX_VIDEO_SIZE_MB = 200; // example
 const MAX_PORTFOLIO_SIZE_MB = 25;
 
 const ALLOWED_PORTFOLIO_TYPES = [
@@ -1399,6 +1399,8 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     }
   };
 
+
+
   const handleFileSelection = (files, type) => {
     let limitedFiles = [];
 
@@ -1453,7 +1455,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
               <div className=''><span className='text-[#108A00] font-[500]'>{t('browseImages')}</span></div>
-              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} />
+              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} maxSelection={3} />
             </div>
           </div>
         </LabelWithInput>
@@ -1481,7 +1483,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
               <div className=''><span className='text-[#108A00] font-[500]'>{t('browseVideo')}</span></div>
-              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} />
+              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} maxSelection={1} />
             </div>
           </div>
         </LabelWithInput>
@@ -1508,7 +1510,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
               <div className=''><span className='text-[#108A00] font-[500]'>{t('browseDocuments')}</span></div>
-              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} />
+              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} maxSelection={2} />
             </div>
           </div>
         </LabelWithInput>

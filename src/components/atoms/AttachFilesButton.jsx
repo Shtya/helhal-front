@@ -10,6 +10,7 @@ import api, { baseImg } from '@/lib/axios';
 import { isErrorAbort } from '@/utils/helper';
 import TabsPagination from '../common/TabsPagination';
 import { useDebounce } from '@/hooks/useDebounce';
+import toast from 'react-hot-toast';
 
 // Icon by mime
 export const getFileIcon = mimeType => {
@@ -176,9 +177,41 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
   //   }
   // };
 
+  const MAX_SIZES = {
+    image: 10 * 1024 * 1024,   // 10 MB
+    video: 200 * 1024 * 1024,  // 200 MB
+    other: 25 * 1024 * 1024    // 25 MB
+  };
+
   const handleFileChange = async e => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
+
+    // validate sizes before upload
+    for (const f of files) {
+      const type = f?.type || "";
+      let maxSize;
+
+      if (type.startsWith("image/")) {
+        maxSize = MAX_SIZES.image;
+      } else if (type.startsWith("video/")) {
+        maxSize = MAX_SIZES.video;
+      } else {
+        maxSize = MAX_SIZES.other;
+      }
+
+      if (f.size > maxSize) {
+        toast.error(
+          t("fileTooLarge", {
+            name: f.name,
+            max: `${Math.round(maxSize / (1024 * 1024))} MB`
+          })
+        );
+        e.target.value = ""; // reset input
+        return; // stop upload
+      }
+    }
+
     setUploading(true);
     try {
       const formData = new FormData();

@@ -918,7 +918,7 @@
       "rating": "Rating",
       "newest": "Newest"
     },
-    "searchPlaceholder": "Search",
+    "searchPlaceholder": "Search...",
     "results": "result(s)",
     "noServices": "No services found",
     "noServicesDesc": "We couldn’t find any services matching your filters. Try adjusting the filters or search keywords.",
@@ -1141,7 +1141,7 @@
       "anyBudgetType": "Any Budget Type",
       "fixed": "Fixed",
       "hourly": "Hourly",
-      "searchPlaceholder": "Search by title, description, or skills",
+      "searchPlaceholder": "Search...",
       "noJobs": "No jobs right now",
       "noJobsDescription": "Try widening your filters or check back later.",
       "resetFilters": "Reset Filters",
@@ -1196,8 +1196,12 @@
         "failedToLoad": "Failed to load jobs",
         "unableToOpen": "Unable to open job",
         "failedToLoadJob": "Failed to load job",
-        "failedToSubmit": "Failed to submit"
-      }
+        "failedToSubmit": "Failed to submit",
+        "jobNotFoundTitle": "Job Not Found",
+        "jobNotFoundDescription": "The job you are looking for could not be found. It may have been removed.",
+        "failedToLoadJobDetails": "Failed to load job details."
+      },
+      "close": "Close"
     },
     "proposals": {
       "title": "My Proposals",
@@ -2228,10 +2232,10 @@
       "back": "Back",
       "continue": "Continue",
       "validation": {
-        "imageInvalid": "Each image file must be valid (JPEG, PNG, WEBP, etc.) and less than 5 MB.",
+        "imageInvalid": "Each image file must be valid (JPEG, PNG, WEBP, etc.) and less than 10 MB.",
         "imagesMin": "At least one image must be uploaded",
         "imagesMax": "You can upload up to 3 images",
-        "videoInvalid": "Video must be in a supported format (MP4, MOV, AVI, etc.) and less than 50 MB.",
+        "videoInvalid": "Video must be in a supported format (MP4, MOV, AVI, etc.) and less than 200 MB.",
         "videoMax": "You can upload only one video",
         "documentInvalid": "Documents must be in PDF, Word, PowerPoint, Excel, or TXT format and less than 25 MB.",
         "documentsMax": "You can upload up to 2 documents"
@@ -3346,6 +3350,7 @@
     }
   },
   "AttachFiles": {
+    "fileTooLarge": "File {name} exceeds the maximum size of {max}.",
     "title": "Your Library",
     "selected": "selected",
     "searchPlaceholder": "Search files...",
