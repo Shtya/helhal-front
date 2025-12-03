@@ -166,7 +166,8 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
     }
   };
 
-  const canCreate = allowCreate && query.trim().length > 0 && !items.some(i => (i.name || '').trim().toLowerCase() === query.trim().toLowerCase());
+  // const canCreate = allowCreate && query.trim().length > 0 && !items.some(i => (i.name || '').trim().toLowerCase() === query.trim().toLowerCase());
+  const canCreate = false;
 
   return (
     <div className={`${className || ''} w-full relative`} ref={rootRef}>

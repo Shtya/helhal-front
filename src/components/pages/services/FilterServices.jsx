@@ -82,7 +82,7 @@ export default function FilterServices({ category = 'all' }) {
         { id: 's0', name: t('sort.newest') },
         { id: 's1', name: t('sort.priceLowHigh') },
         { id: 's2', name: t('sort.priceHighLow') },
-        { id: 's3', name: t('sort.rating') },
+        // { id: 's3', name: t('sort.rating') },
         // { id: 's4', name: t('sort.newest') },
     ];
 

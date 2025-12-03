@@ -421,7 +421,7 @@ function SecuritySettings() {
     try {
       setRevokingAll(true)
       await api.post('/auth/logout-all'); // keeps current
-      await load();
+      await loadInitial();
     }
     finally {
       setRevokingAll(false)

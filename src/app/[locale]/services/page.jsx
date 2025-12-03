@@ -1,16 +1,18 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import ServiceCard from '@/components/pages/services/ServiceCard';
 import { CardSlider } from '@/components/pages/services/CardSlider';
 import { apiService } from '@/services/GigServices';
 import CardSkeleton from '@/components/skeleton/CardSkeleton';
 import NoResults from '@/components/common/NoResults';
 import Button from '@/components/atoms/Button';
-import { ChevronsRight } from 'lucide-react';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 export default function ServicesHomePage() {
   const t = useTranslations('Services');
+  const locale = useLocale()
+  const isArabic = locale == 'ar';
   const [topServices, setTopServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,7 +56,7 @@ export default function ServicesHomePage() {
       <div className='flex items-center justify-between mt-12 mb-4'>
         <h1 className='text-3xl max-md:text-xl font-[900] '>{t('page.featured')}</h1>
 
-        <Button href={'/services/all'} className='!w-[35px] !px-2   !h-[35px] !rounded-lg !text-base ' icon={<ChevronsRight size={22} />} />
+        <Button href={'/services/all'} className='!w-[35px] !px-2   !h-[35px] !rounded-lg !text-base ' icon={isArabic ? <ChevronsLeft size={22} /> : <ChevronsRight size={22} />} />
       </div>
 
       {topServices.length === 0 ? (
