@@ -3446,5 +3446,15 @@
       "total": "Total",
       "continueToRequirements": "Continue to Requirements"
     }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "notFoundTitle": "Privacy Policy Not Found",
+    "notFoundDescription": "We couldn’t find a privacy policy at the moment. Please check back later."
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "notFoundTitle": "Terms of Service Not Found",
+    "notFoundDescription": "We couldn’t find the terms of service right now. Please check back later."
   }
 }

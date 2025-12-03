@@ -160,7 +160,7 @@ function AccountSettings() {
       toast.success(t('toast.emailResent'));
       startResendCooldown(); // trigger cooldown
     } catch (err) {
-      toast.error(t('toast.failedToResend'));
+      toast.error(err?.response?.data?.message || t('toast.failedToResend'));
     } finally {
       setResendLoading(false);
     }

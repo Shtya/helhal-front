@@ -102,7 +102,6 @@ export default function Invite() {
 
 
 
-
   const shareLinks = useMemo(
     () => ({
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`,
@@ -113,6 +112,7 @@ export default function Invite() {
     }),
     [link, subject, gmailHref],
   );
+
 
   // ======= Actions =======
   const handleCopy = async () => {
