@@ -2788,6 +2788,7 @@
         "namePlaceholder": "Enter category name",
         "slug": "Slug *",
         "slugPlaceholder": "category-slug",
+        "desPlaceholder": "Enter description",
         "description": "Description",
         "close": "Close",
         "cancel": "Cancel",
@@ -3339,6 +3340,7 @@
     },
     "table": {
       "perPage": "per page",
+      "searchPlaceholder": "Search…",
       "actionsHeader": "Actions",
       "emptyTitle": "Nothing to show here",
       "emptySubtitle": "No rows match your current filters. You can clear filters or try a different search.",

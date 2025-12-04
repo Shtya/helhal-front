@@ -7,6 +7,7 @@ import PriceTag from '@/components/atoms/priceTag';
 
 import Img from '@/components/atoms/Img';
 import TableEmptyState from './TableEmptyState';
+import { useTranslations } from 'next-intl';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
@@ -22,6 +23,7 @@ export default function Table({
   totalCount, // NEW (optional): server total rows
   onPageChange, // NEW (optional): server page setter
 }) {
+  const t = useTranslations('Dashboard.table');
   const [currentPage, setCurrentPage] = useState(1); // client mode fallback
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -141,7 +143,7 @@ export default function Table({
             {!loading && data.length === 0 && (
               <tr>
                 <td colSpan={columns.length + (Actions ? 1 : 0)} className='px-4'>
-                  <TableEmptyState title='Nothing to show here' subtitle='No rows match your current filters. You can clear filters or try a different search.' />
+                  <TableEmptyState title={t('emptyTitle')} subtitle={t('emptySubtitle')} />
                 </td>
               </tr>
             )}
@@ -155,7 +157,7 @@ export default function Table({
             <Skeleton className='h-4 w-56' />
           ) : (
             <>
-              Showing {showingFrom}-{showingTo} of {fullCount}
+              {t('showing', { from: showingFrom, to: showingTo, total: fullCount })}
             </>
           )}
         </span>

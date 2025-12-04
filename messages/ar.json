@@ -2298,6 +2298,7 @@
         "namePlaceholder": "أدخل اسم الفئة",
         "slug": "الرابط *",
         "slugPlaceholder": "رابط-الفئة",
+        "desPlaceholder": "ادخل الوصف",
         "description": "الوصف",
         "close": "إغلاق",
         "cancel": "إلغاء",
@@ -2849,6 +2850,7 @@
     },
     "table": {
       "perPage": "لكل صفحة",
+      "searchPlaceholder": "ابحث...",
       "actionsHeader": "الإجراءات",
       "emptyTitle": "لا يوجد شيء لعرضه هنا",
       "emptySubtitle": "لا توجد صفوف تطابق عوامل التصفية الحالية. يمكنك مسح عوامل التصفية أو تجربة بحث مختلف.",

@@ -438,6 +438,7 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.description')}</label>
         <Textarea
           disabled={readOnly}
+          placeholder={t('modal.desPlaceholder')}
           rows={3}
           {...register('description')}
           error={errors.description?.message}

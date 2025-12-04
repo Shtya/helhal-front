@@ -11,8 +11,16 @@ import Tabs from '@/components/common/Tabs';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
+const getInvoiceTabs = (t) => [
+  { value: 'all', label: t('tabs.all') },
+  { value: 'paid', label: t('tabs.paid') },
+  { value: 'pending', label: t('tabs.pending') },
+  { value: 'failed', label: t('tabs.failed') },
+];
+
 export default function InvoicesManagement() {
   const t = useTranslations('Dashboard.invoices');
+  const invoiceTabs = getInvoiceTabs(t);
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -147,16 +155,11 @@ export default function InvoicesManagement() {
 
   };
 
-  const tabs = [
-    { value: 'all', label: "All" },
-    { value: 'paid', label: "Paid" },
-    { value: 'pending', label: "Pending" },
-    { value: 'failed', label: "Failed" },
-  ];
+
   return (
     <div>
       <GlassCard className='mb-6'>
-        <Tabs tabs={tabs} activeTab={statusFilter} setActiveTab={onTabChange} />
+        <Tabs tabs={invoiceTabs} activeTab={statusFilter} setActiveTab={onTabChange} />
       </GlassCard>
 
 

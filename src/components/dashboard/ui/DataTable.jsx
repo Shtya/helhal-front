@@ -42,7 +42,7 @@ export default function DataTable({
     <div className="bg-white shadow rounded-lg overflow-hidden">
       {/* Search and controls */}
       <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
-        <DataTableSearchBox onSearch={onSearch} search={search} />
+        <DataTableSearchBox onSearch={onSearch} search={search} placeholder={t('searchPlaceholder')} />
 
         <div className="flex items-center space-x-2">
           <select
@@ -198,7 +198,7 @@ export default function DataTable({
                 <button
                   onClick={() => onPageChange(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-s-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                 >
                   {t('previous')}
                 </button>
@@ -238,7 +238,7 @@ export default function DataTable({
                 <button
                   onClick={() => onPageChange(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-e-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                 >
                   {t('next')}
                 </button>
