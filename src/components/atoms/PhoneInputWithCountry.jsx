@@ -79,6 +79,15 @@ export default function PhoneInputWithCountry({
     };
 
 
+    // Debounce effect: auto update after 300ms of no typing
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            onChange({ phone: internalPhone, countryCode: internalCountry });
+        }, 300);
+
+        return () => clearTimeout(handler);
+    }, [internalPhone, internalCountry]);
+
     return (
         <div className="grid gap-2 items-center grid-cols-1 sm:grid-cols-[auto_1fr]">
             <Select

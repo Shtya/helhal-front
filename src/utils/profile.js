@@ -21,7 +21,7 @@ export function validateUsername(value) {
 }
 
 export function validatPhone(value) {
-    const isInvalid = value && (value.length < 6 || !/^\d+$/.test(value));
+    const isInvalid = value.length < 6 || !/^[\d+\s]+$/.test(value);
     return isInvalid;
 }
 

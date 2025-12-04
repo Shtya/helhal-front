@@ -74,7 +74,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                         }}
                         autoFocus
                         placeholder={placeholder || t('addItem')}
-                        className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500'
+                        className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-600'
                     />
                     <button
                         onClick={() => {
@@ -83,7 +83,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                             setInput('');
                             setShowInput(false);
                         }}
-                        className='rounded-xl border border-emerald-500 px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50' disabled={!input}>
+                        className='rounded-xl border border-emerald-600 px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50' disabled={!input}>
                         {t('save')}
                     </button>
                 </div>
@@ -612,6 +612,7 @@ function LanguageSelector({ value = [], setValue }) {
                             isLoading={langLoading}
                             options={filteredLanguageOptions}
                             placeholder={t('chooseLanguage')}
+                            showSearch
                             onChange={opt => setSelectedLang(opt)}
                             name='languageSelect'
                         />
@@ -623,7 +624,7 @@ function LanguageSelector({ value = [], setValue }) {
                                 setShowLangInput(false);
                             }}
                             disabled={!selectedLang}
-                            className={`rounded-xl border px-3 py-2 text-sm border-emerald-500 text-emerald-600 hover:bg-emerald-50`}>
+                            className={`rounded-xl border px-3 py-2 text-sm border-emerald-600 text-emerald-600 hover:bg-emerald-50`}>
                             {t('add')}
                         </button>
                     </div>

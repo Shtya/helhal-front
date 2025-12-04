@@ -1027,6 +1027,7 @@ export default function Overview() {
   /* ------------------------------- Save handler ----------------------------- */
   async function saveAuthProfile() {
     if (hasError) return;
+    let toastId;
     setSaving(true);
     try {
       const payload = {
@@ -1043,15 +1044,11 @@ export default function Overview() {
         type: state.type,
 
       };
+      toastId = toast.loading(t('savingProfile'));
 
-      const res = await toast.promise(
-        api.put('/auth/profile', payload),
-        {
-          loading: t('savingProfile'),
-          success: t('profileUpdated'),
-          error: t('profileUpdateFailed'),
-        }
-      );
+      const res = await api.put('/auth/profile', payload);
+
+      toast.success(t('profileUpdated'), { id: toastId });
 
       setCurrentUser(res.data); // 👈 directly update global user state
 
@@ -1071,6 +1068,10 @@ export default function Overview() {
       setDirty(false);
     } catch (e) {
       console.error(e);
+      toast.error(
+        e?.response?.data?.message || t('profileUpdateFailed'),
+        { id: toastId }
+      );
     } finally {
       setSaving(false);
     }

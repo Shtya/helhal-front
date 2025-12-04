@@ -480,11 +480,17 @@ function fromNow(iso) {
 function formatMoney(numLike) {
   const n = Number(numLike ?? 0);
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+    // Use Saudi Riyal (SAR)
+    return new Intl.NumberFormat('en-SA', {
+      style: 'currency',
+      currency: 'SAR',
+      maximumFractionDigits: 0
+    }).format(n);
   } catch {
     return String(n);
   }
 }
+
 
 function clampToOneDecimal(n) {
   const x = Number(n || 0);

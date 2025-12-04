@@ -402,7 +402,7 @@ const useChat = () => {
         onPlatform: other?.memberSince ? t('memberSince', { date: formatDate(other.memberSince) }) : '—',
         languages: other?.languages?.join(', ') || '—',
         level: other?.sellerLevel ? other?.sellerLevel : '—',
-        responseRate: other?.responseTime ? `${other.responseTime} hrs` : '—',
+        responseRate: other?.responseTime ? `${other.responseTimeFormatted}` : '—',
         ordersCompleted: other?.ordersCompleted ?? 0,
         role: other?.role ?? 'member',
         topRated: other?.topRated ?? false,
