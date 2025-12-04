@@ -133,6 +133,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
                 <Select
                     disabled={readOnly}
                     value={watch('type')}
+                    placeholder={t('selectPlaceholder')}
                     onChange={opt => setValue('type', opt?.id)}
                     options={[
                         { id: 'money', name: t('types.money') },

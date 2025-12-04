@@ -1871,8 +1871,10 @@
       "detailed": "Proposed resolution → Seller: {sellerAmount} • Buyer refund: {buyerRefund}{note}"
     },
     "errors": {
+      "loadOlderFailed": "Failed to load older messages.",
       "failedToSend": "Failed to send message."
-    }
+    },
+    "loadOlderMessages": "Load older messages"
   },
   "MyOrders": {
     "page": {
@@ -1948,6 +1950,7 @@
         "explanationHint": "Provide enough details about the problem so we can understand your dispute.",
         "submit": "Submit Dispute",
         "submitting": "Submitting…",
+        "selectPlaceholder": "Select a dispute type",
         "types": {
           "money": "Money issues",
           "quality": "Work quality concerns",
@@ -3363,6 +3366,7 @@
     "attachFiles": "Attach Files"
   },
   "ServiceDetails": {
+    "ordersCompleted": "Orders Completed",
     "preview": {
       "message": "This page is in preview mode and not published. Only visible to you."
     },

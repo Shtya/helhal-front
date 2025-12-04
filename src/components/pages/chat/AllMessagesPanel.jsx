@@ -5,11 +5,16 @@ import Img from '@/components/atoms/Img';
 import { X, Star, Pin, Search, Archive, LifeBuoy } from 'lucide-react';
 import { Shimmer } from './ChatApp';
 import { useLocale, useTranslations } from 'next-intl';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
+import { useRef } from 'react';
 
-export function AllMessagesPanel({ showContactAdmin, adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t: tProp, searchResults, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
+export function AllMessagesPanel({ showContactAdmin, adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t: tProp, searchResults, onCloseSearchMenu, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
   const t = tProp || useTranslations('Chat');
   const locale = useLocale();
   const isArabic = locale === 'ar'
+  const searchRef = useRef(null)
+  useOutsideClick(searchRef, () => onCloseSearchMenu())
+
   return (
     <div className='flex flex-col h-full'>
 
@@ -51,7 +56,7 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
           <div className='relative rounded-lg bg-white px-3 py-2 mb-4 ring-1 ring-inset ring-slate-200'>
             <div className='flex  items-center' disabled={loading}>
               <Search size={18} className='text-gray-500 mr-2' />
-              <input value={query} onChange={e => onSearch(e.target.value)} className='w-full bg-transparent text-sm outline-none placeholder:text-gray-500' placeholder={t('placeholders.search')} aria-label={t('placeholders.search')} />
+              <input value={query} onChange={e => onSearch(e.target.value?.trim())} className='w-full bg-transparent text-sm outline-none placeholder:text-gray-500' placeholder={t('placeholders.search')} aria-label={t('placeholders.search')} />
               {query && (
                 <AccessibleButton className='text-gray-500 hover:text-gray-700 transition-colors' title={t('clear')} type='button' onClick={() => onSearch('')} ariaLabel={t('clear')}>
                   <X size={18} />
@@ -69,7 +74,8 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
                     {t('searching')}
                   </div>
                 ) : searchResults.length > 0 ? (
-                  <ul>
+                  <ul
+                    ref={searchRef}>
                     {searchResults.map(user => (
                       <li key={user.id}>
                         <AccessibleButton className='w-full text-left p-3 hover:bg-slate-50 flex items-center gap-3' onClick={() => onSearchResultClick(user)} role='option' aria-describedby={`user-desc-${user.id}`}>

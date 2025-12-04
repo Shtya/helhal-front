@@ -83,7 +83,7 @@ export default function PaymentSuccessPage() {
         <p className="mb-10 text-slate-700">{t('description')}</p>
 
         {/* Order summary */}
-        <div className="rounded-2xl border bg-white shadow-sm p-6 text-left space-y-4">
+        <div className="rounded-2xl border bg-white shadow-sm p-6 text-start space-y-4">
           <h2 className="text-xl font-semibold text-slate-900">{t('orderSummary')}</h2>
           <p><span className="font-medium">{t('orderId')}</span> {order.id}</p>
           <p><span className="font-medium">{t('titleLabel')}</span> {order.title}</p>

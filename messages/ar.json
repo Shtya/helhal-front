@@ -1314,8 +1314,10 @@
       "detailed": "الحل المقترح → البائع: {sellerAmount} • استرداد المشتري: {buyerRefund}{note}"
     },
     "errors": {
+      "loadOlderFailed": "فشل في تحميل الرسائل الأقدم.",
       "failedToSend": "فشل إرسال الرسالة."
-    }
+    },
+    "loadOlderMessages": "تحميل الرسائل الأقدم"
   },
   "MyOrders": {
     "page": {
@@ -1391,6 +1393,7 @@
         "explanationHint": "قدم تفاصيل كافية عن المشكلة حتى نتمكن من فهم نزاعك.",
         "submit": "إرسال النزاع",
         "submitting": "جاري الإرسال…",
+        "selectPlaceholder": "اختر نوع النزاع",
         "types": {
           "money": "مشاكل مالية",
           "quality": "مخاوف جودة العمل",
@@ -2860,7 +2863,7 @@
     }
   },
   "AttachFiles": {
-     "fileTooLarge": "الملف {name} يتجاوز الحجم الأقصى المسموح وهو {max}.",
+    "fileTooLarge": "الملف {name} يتجاوز الحجم الأقصى المسموح وهو {max}.",
     "title": "مكتبتك",
     "selected": "محدد",
     "searchPlaceholder": "ابحث في الملفات...",
@@ -2873,6 +2876,7 @@
     "attachFiles": "إرفاق ملفات"
   },
   "ServiceDetails": {
+    "ordersCompleted": "الطلبات المكتملة",
     "preview": {
       "message": "هذه الصفحة في وضع المعاينة ولم تُنشر. مرئية فقط لك."
     },

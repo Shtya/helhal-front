@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from 'next-intl';
+import { OrderStatus } from "@/constants/order";
 
 export default function OrderDeliveryTimer({ order }) {
     const t = useTranslations('OrderDeliveryTimer');
@@ -61,6 +62,11 @@ export default function OrderDeliveryTimer({ order }) {
     if (!order?.created_at || !order?.deliveryTime) return null;;
 
     if (order.completedAt) return null;
+
+    const allawed = [OrderStatus.ACCEPTED, OrderStatus.DELIVERED, OrderStatus.CHANGES_REQUESTED]
+    const showTime = useMemo(() => allawed.includes(order.status))
+    if (!showTime) return null
+
     return (
         <div>
             <div className="pt-5 border-t border-slate-200">

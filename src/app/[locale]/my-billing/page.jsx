@@ -600,30 +600,44 @@ const PaymentMethods = () => {
         <div className='mb-8'>
           <h2 className='text-xl font-semibold mb-4'>{t('yourBankAccounts')}</h2>
           <div className='grid gap-4'>
-            {bankAccounts.map(account => (
-              <div key={account.id} className='border rounded-lg p-4 flex justify-between items-center'>
-                <div>
-                  <p className='font-semibold'>{account.fullName}</p>
-                  <p className='text-gray-600'>{t('iban')} {account.iban}</p>
-                  <p className='text-gray-600'>
-                    {account.country} - {account.state}
-                  </p>
-                  {account.isDefault && <span className='inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
+            {bankAccounts.map(account => {
+              let country = account.country;
+
+              if (typeof country === "string") {
+                try {
+                  // only parse if it's a non-empty string
+                  country = country.trim() ? JSON.parse(country) : null;
+                } catch (err) {
+                  console.error("Failed to parse country JSON:", account.country, err);
+                  country = null;
+                }
+              }
+
+              return (
+                <div key={account.id} className='border rounded-lg p-4 flex justify-between items-center'>
+                  <div>
+                    <p className='font-semibold'>{account.fullName}</p>
+                    <p className='text-gray-600'>{t('iban')} {account.iban}</p>
+                    <p className='text-gray-600'>
+                      {country?.name} - {account.state}
+                    </p>
+                    {account.isDefault && <span className='inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
+                  </div>
+                  <div className='flex gap-2'>
+                    {!account.isDefault && (
+                      <>
+                        <button onClick={() => handleSetDefault(account.id)} className='text-blue-600 hover:text-blue-800 text-sm'>
+                          {t('setDefault')}
+                        </button>
+                        <button onClick={() => handleDeleteAccount(account.id)} className='text-red-600 hover:text-red-800 text-sm'>
+                          {t('delete')}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className='flex gap-2'>
-                  {!account.isDefault && (
-                    <>
-                      <button onClick={() => handleSetDefault(account.id)} className='text-blue-600 hover:text-blue-800 text-sm'>
-                        {t('setDefault')}
-                      </button>
-                      <button onClick={() => handleDeleteAccount(account.id)} className='text-red-600 hover:text-red-800 text-sm'>
-                        {t('delete')}
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}

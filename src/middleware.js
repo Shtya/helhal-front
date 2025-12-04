@@ -14,16 +14,16 @@ const intlMiddleware = createMiddleware({
 
 // 2) Public (unprotected) routes
 const PUBLIC_ROUTES = [
-  { path: '/auth' },
-  { path: '/explore' },
+  { path: '/auth', strict: true },
+  { path: '/explore', strict: true },
   { path: '/services' },
   { path: '/become-seller' },
   { path: '/invite' },
-  { path: '/jobs' },
-  { path: '/terms' },
-  { path: '/messagesprivacy-policy' },
+  { path: '/jobs', strict: true },
+  { path: '/terms', strict: true },
+  { path: '/privacy-policy', strict: true },
   { path: '/profile/:id', regex: true, strict: true },
-  { path: '/' }
+  { path: '/', strict: true }
 ];
 
 
@@ -31,8 +31,6 @@ const PUBLIC_ROUTES = [
 const BUYER_ROUTES = [
   '/share-job-description',
   '/my-jobs',
-  '/my-disputes',
-  '/my-orders'
 ];
 
 // Only sellers
@@ -40,8 +38,6 @@ const SELLER_ROUTES = [
   '/create-gig',
   '/my-gigs',
   '/jobs/proposals',
-  '/my-disputes',
-  '/my-orders'
 ];
 
 // Only admins
@@ -65,9 +61,6 @@ export async function middleware(request) {
   // 1) PUBLIC ROUTES → always allowed
   // -----------------------------
   if (isPublicRoute(pathWithoutLocale)) {
-    return intlMiddleware(request);
-  }
-  if (isPublic) {
     return intlMiddleware(request);
   }
 
@@ -95,19 +88,19 @@ export async function middleware(request) {
   // -----------------------------
   if (BUYER_ROUTES.some((r) => pathWithoutLocale.startsWith(r))) {
     if (role !== 'buyer') {
-      return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));
+      return NextResponse.redirect(new URL(`/${locale}/auth`, request.url));
     }
   }
 
   if (SELLER_ROUTES.some((r) => pathWithoutLocale.startsWith(r))) {
     if (role !== 'seller') {
-      return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));
+      return NextResponse.redirect(new URL(`/${locale}/auth`, request.url));
     }
   }
 
   if (ADMIN_ROUTES.some((r) => pathWithoutLocale.startsWith(r))) {
     if (role !== 'admin') {
-      return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));
+      return NextResponse.redirect(new URL(`/${locale}/auth`, request.url));
     }
   }
 
@@ -151,6 +144,7 @@ function isPublicRoute(path) {
     if (route.strict) {
       return path === route.path;
     }
+
     // default: startWith
     return path.startsWith(route.path);
   });

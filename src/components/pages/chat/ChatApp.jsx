@@ -625,6 +625,12 @@ const useChat = () => {
     setSearchResults([]);
   };
 
+  function onCloseSearchMenu() {
+    setQuery('');
+    setShowSearchResults(false);
+    setSearchResults([]);
+  }
+
   const selectThread = useCallback(
     id => {
       setActiveThreadId(id);
@@ -885,7 +891,8 @@ const useChat = () => {
     loadOlderMessages,
     loadingOlderThreads,
     contactAdmin,
-    adminLoading
+    adminLoading,
+    onCloseSearchMenu
   };
 };
 
@@ -917,7 +924,7 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
   const t = useTranslation('Chat');
   useKeyboardShortcuts();
 
-  const { threads, adminLoading, messagesPaginationByThread, userPagination, setUserPagination, loadingMessagesId, loadingOlderThreads, loadOlderMessages, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin } = useChat();
+  const { threads, adminLoading, messagesPaginationByThread, userPagination, setUserPagination, loadingMessagesId, loadingOlderThreads, loadOlderMessages, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, onCloseSearchMenu, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin } = useChat();
 
   const activeThread = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
 
@@ -927,7 +934,7 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
         {/* Left Panel - Conversations List */}
         <div className=' '>
           <Panel className="h-full" cdCard="h-full !p-0">
-            <AllMessagesPanel showContactAdmin={showContactAdmin} adminLoading={adminLoading} userPagination={userPagination} setUserPagination={setUserPagination} items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={() => fetchConversations()} onContactAdmin={contactAdmin} />
+            <AllMessagesPanel showContactAdmin={showContactAdmin} adminLoading={adminLoading} userPagination={userPagination} setUserPagination={onCloseSearchMenu} items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} onCloseSearchMenu={onCloseSearchMenu} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={() => fetchConversations()} onContactAdmin={contactAdmin} />
           </Panel>
         </div>
 

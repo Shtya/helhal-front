@@ -306,8 +306,6 @@ export default function SellerJobsPage() {
     fetchJobs();
   }, [page, limit, debouncedQ?.trim(), filters]);
 
-  console.log(page, pages)
-
   return (
     <div className='container !mb-12 !pt-8 '>
       {role === 'seller' && <HeroHeader />}

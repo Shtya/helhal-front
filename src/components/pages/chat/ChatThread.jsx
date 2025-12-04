@@ -86,7 +86,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
     setSending(true);
 
     const newMsg = {
-      id: crypto.randomUUID(),
+      id: crypto && crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
       authorId: currentUser?.id ?? 0,
       authorName: 'You',
       authorAvatar: currentUser?.profileImage,

@@ -21,7 +21,8 @@ import { useAuth } from '@/context/AuthContext';
 import AttachFilesButton from '@/components/atoms/AttachFilesButton';
 import Textarea from '@/components/atoms/Textarea';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
-import { useTranslations } from 'next-intl'; // Add this import
+import { useLocale, useTranslations } from 'next-intl'; // Add this import
+import { resolveUrl } from '@/utils/helper';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -316,6 +317,9 @@ const countryFlag = code => {
 
 function HeaderPanel({ serviceData = {}, Img }) {
   const t = useTranslations('ServiceDetails');
+
+  const locale = useLocale()
+  const isArabic = locale === 'ar'
   const { user } = useAuth()
   const seller = serviceData?.seller || {};
   const rating = Number(serviceData?.rating ?? 0);
@@ -395,7 +399,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
             <Separator />
 
-            <Stat icon={ShieldCheck} value={ordersCount} label='orders completed' title='Orders completed' />
+            <Stat icon={ShieldCheck} value={ordersCount} label={t('ordersCompleted')} title={t('ordersCompleted')} />
 
             {country ? (
               <>
@@ -450,12 +454,12 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
         {/* Right mini-stats */}
         <div className='justify-self-end hidden md:flex items-center gap-4 text-sm'>
-          <div className='flex items-center gap-2'>
+          <div className={`flex items-center gap-2  ${isArabic && "flex-row-reverse"}`}>
             <Clock3 className='h-4 w-4 text-slate-600' />
             <span className='text-slate-700'>Avg. response</span>
-            <span className='font-semibold text-slate-900'>{serviceData?.avgResponse || '—'}</span>
+            <span className='font-semibold text-slate-900'>{serviceData?.seller?.responseTimeFormatted || '—'}</span>
           </div>
-          <div className='flex items-center gap-2'>
+          <div className={`flex items-center gap-2  ${isArabic && "flex-row-reverse"}`}>
             <Globe2 className='h-4 w-4 text-slate-600' />
             <span className='text-slate-700'>Lang</span>
             <span className='font-semibold text-slate-900'>{Array.isArray(seller?.languages) && seller.languages.length ? seller.languages.slice(0, 2).join(', ') : '—'}</span>
@@ -760,6 +764,7 @@ function AboutService({ serviceData = {}, onTagClick }) {
     </section>
   );
 }
+
 function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
   const t = useTranslations('ServiceDetails');
   const [view, setView] = useState('cards');
@@ -1385,8 +1390,8 @@ function AboutSeller({ serviceData }) {
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
               {portfolio.map((p, i) => (
-                <a key={i} href={p.url} target='_blank' rel='noopener noreferrer' className='group relative block overflow-hidden rounded-xl border border-slate-200 bg-slate-50' title={p.title}>
-                  <Img src={p.image} alt={p.title || 'Portfolio'} className='h-28 w-full object-cover transition group-hover:scale-[1.02]' />
+                <a key={i} href={resolveUrl(p)} target='_blank' rel='noopener noreferrer' className='group relative block overflow-hidden rounded-xl border border-slate-200 bg-slate-50' title={p.title}>
+                  <Img src={p} alt={p.title || 'Portfolio'} className='h-28 w-full object-cover transition group-hover:scale-[1.02]' />
                   <div className='absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/50 to-transparent px-2 py-1.5 text-xs text-white opacity-0 group-hover:opacity-100 transition'>
                     <span className='line-clamp-1'>{p.title}</span>
                     <ExternalLink className='h-3.5 w-3.5' />

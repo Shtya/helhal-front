@@ -8,6 +8,7 @@ import { initialsFromName } from "@/utils/helper";
 import { ArrowDown, MessageSquare, Reply, Send } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from 'next-intl';
+import { FaSpinner } from "react-icons/fa";
 
 
 
@@ -22,6 +23,11 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
     const { user: me } = useAuth();
     const atBottom = true;
 
+    // pagination / load older
+    const [olderPage, setOlderPage] = useState(1); // current loaded page (default 1)
+    const [loadingOlder, setLoadingOlder] = useState(false);
+
+
     const parsedResolution = useMemo(() => {
         const r = detail?.dispute?.resolution;
         const resolutionApplyed = detail?.dispute?.resolutionApplied;
@@ -33,6 +39,36 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
             return r;
         }
     }, [detail]);
+
+
+    // load older messages (page increments)
+    const onLoadOlder = async () => {
+        if (!selectedId || loadingOlder) return;
+        const nextPage = (olderPage || 1) + 1;
+        setLoadingOlder(true);
+        try {
+            const res = await api.get(`/disputes/${selectedId}/messages`, { params: { page: nextPage } });
+            const msgs = Array.isArray(res?.data?.messages) ? res.data.messages : [];
+            const page = Number(res?.data?.pagination?.page || nextPage);
+            const pages = Number(res?.data?.pagination?.pages || page);
+
+            // prepend older messages and keep resolution/system message handling via detail.messages
+            setDetail(prev => {
+                if (!prev) return prev;
+                const existing = prev.messages || [];
+                // avoid duplicates by id
+                const incoming = msgs.filter(m => !existing.some(e => e.id === m.id));
+                return { ...prev, messages: [...incoming, ...existing], hasMore: page < pages };
+            });
+
+            setOlderPage(page);
+        } catch (e) {
+            Notification(e?.response?.data?.message || t('errors.loadOlderFailed'), 'error');
+        } finally {
+            setLoadingOlder(false);
+        }
+    };
+
 
     // Add a system "resolution" message to head (dedup by id)
     const tDisputes = useTranslations('MyDisputes');
@@ -184,6 +220,23 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
 
                 {/* Scrollable list */}
                 <div ref={scrollRef} className='mb-[73px] flex-1 min-h-[300px] max-h-[485px] overflow-y-auto px-3 sm:px-4 pt-3 pb-2 space-y-3 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]'>
+                    {/* Load older messages control */}
+                    {detail?.hasMore && (
+                        <div className='text-center'>
+                            {loadingOlder ? (
+                                <FaSpinner className='mx-auto h-5 w-5 animate-spin text-emerald-500' />
+                            ) : (
+                                <button
+                                    type='button'
+                                    onClick={onLoadOlder}
+                                    className='text-emerald-600 text-sm hover:underline'
+                                >
+                                    {t('loadOlderMessages')}
+                                </button>
+                            )}
+                        </div>
+                    )}
+
                     {threaded.length ? (
                         threaded.map(n => <MessageNode key={n.id} node={n} onReply={setReplyTo} messageById={messageById} meId={me?.id} onJump={handleJumpToMessage} isDisputeClosed={isDisputeClosed} />)
                     ) : (
