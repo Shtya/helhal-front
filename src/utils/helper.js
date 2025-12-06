@@ -17,6 +17,23 @@ export function resolveUrl(u) {
     return (baseImg || '') + u.replace(/^\/+/, '');
 }
 
+
+export function resolveImageUrl(u) {
+    if (!u) return '';
+
+    // absolute URLs or blob/data URLs → return as-is
+    if (/^(https?:|blob:|data:)/i.test(u)) return u;
+
+    // if it starts with /uploads → prepend baseImg
+    if (/^\/uploads/i.test(u)) {
+        return (baseImg || '') + u.replace(/^\/+/, '');
+    }
+
+    // everything else → return as provided
+    return u;
+}
+
+
 export function maskEmail(email) {
     const [user, domain] = email.split('@');
     const maskedUser = user.length <= 3 ? user[0] + '*'.repeat(user.length - 1) : user.slice(0, 2) + '*'.repeat(user.length - 3) + user.slice(-1);

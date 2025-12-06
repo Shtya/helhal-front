@@ -12,13 +12,12 @@ import React, { useEffect, useState, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { Modal } from '@/components/common/Modal';
 import { maskEmail } from '@/utils/helper';
-import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { usernameSchema } from '@/utils/profile';
 import { useForm } from 'react-hook-form';
-import z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
+import z from 'zod';
 
 
 export default function Page() {

@@ -10,7 +10,7 @@ import Textarea from '@/components/atoms/Textarea';
 import { Switcher } from '@/components/atoms/Switcher';
 import z from 'zod';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
-import { resolveUrl } from '@/utils/helper';
+import { resolveImageUrl, resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
 import { FaFacebook, FaInstagram, FaLinkedin, FaPinterest, FaTiktok, FaTwitter } from 'react-icons/fa';
 import toast from 'react-hot-toast';
@@ -24,10 +24,17 @@ const getSettingsSchema = (t) => z.object({
     .number()
     .min(0, t('validation.platformFeeMin'))
     .max(100, t('validation.platformFeeMax')),
+  siteLogo: z
+    .string()
+    .refine(
+      (val) =>
+        // absolute http or https URL
+        /^https?:\/\/.+/.test(val) ||
+        // relative uploads path
+        /^\/uploads\/.+/.test(val),
+      t('validation.logoInvalid')
+    ),
 
-  siteLogo: process.env.NODE_ENV === "development"
-    ? z.string().min(1, t('validation.logoRequired'))
-    : z.url(t('validation.logoInvalid')),
 });
 
 const MODULE = 'settings';
@@ -141,9 +148,8 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
 
       <div className='mt-3'>
         <label className='mb-1 block text-xs font-medium text-slate-600'>Or paste image URL</label>
-        <Input value={resolveUrl(value) || ''} onChange={e => {
-          if (e.target.value)
-            onChangeUrl(e.target.value)
+        <Input value={resolveImageUrl(value) || ''} onChange={e => {
+          onChangeUrl(e.target.value)
         }} placeholder='/logo.png' iconLeft={<ImageIcon size={16} />} />
       </div>
       <p className='mt-1 text-xs text-slate-500'>PNG/SVG recommended. Square works best.</p>

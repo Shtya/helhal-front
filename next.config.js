@@ -26,12 +26,12 @@ const nextConfig = {
       },
       {
         protocol: 'http',
-        hostname: 'helhal',
+        hostname: 'helhal.com',
         pathname: '/uploads/**',
       },
       {
         protocol: 'https',
-        hostname: 'helhal',
+        hostname: 'helhal.com',
         pathname: '/uploads/**',
       },
     ],
