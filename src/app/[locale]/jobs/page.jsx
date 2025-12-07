@@ -146,8 +146,8 @@ export default function SellerJobsPage() {
   // Search
   const [q, setQ] = useState(searchParams.get('q') || '');
 
-  const debouncedQ = useDebounce({ value: q, onDebounce: resetPage });
-  const skipDebouncedRef = useRef(false);
+  const { debouncedValue: debouncedQ, setDebouncedValue } = useDebounce({ value: q, onDebounce: resetPage });
+
 
 
   // Drawer state
@@ -205,7 +205,7 @@ export default function SellerJobsPage() {
     setFiltersState(defaultFilters);
     setQ('');
     resetPage();
-    if (debouncedQ) skipDebouncedRef.current = true;
+    setDebouncedValue('')
   };
 
   const qParams = searchParams.get('q') ?? '';
@@ -279,12 +279,6 @@ export default function SellerJobsPage() {
       const controller = new AbortController();
       controllerRef.current = controller;
       try {
-        if (skipDebouncedRef.current) {
-          skipDebouncedRef.current = false;
-          return; // skip this fetch triggered by debounce reset
-        }
-
-
         setLoading(true);
         const query = buildQuery({ page, limit, search: debouncedQ?.trim(), filters });
 

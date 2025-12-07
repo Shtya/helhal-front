@@ -599,7 +599,7 @@ const useChat = () => {
     }
   };
 
-  const debouncedQuery = useDebounce({ value: query })
+  const { debouncedValue: debouncedQuery } = useDebounce({ value: query })
   useEffect(() => {
     if (query.trim()) {
       searchUsers(query);

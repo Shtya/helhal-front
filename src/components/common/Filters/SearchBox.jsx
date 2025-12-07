@@ -5,7 +5,7 @@ import { useState } from "react";
 
 export default function SearchBox({ placeholder = 'Search…', onSearch, className = '!w-fit' }) {
     const [localValue, setLocalValue] = useState('');
-    const debouncedValue = useDebounce({
+    const { debouncedValue } = useDebounce({
         value: localValue,
         onDebounce: () => onSearch(localValue)
     });

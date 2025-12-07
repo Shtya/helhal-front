@@ -42,7 +42,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
 
   // search
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce({ value: query, onDebounce: () => setPage(1) });
+  const { debouncedValue: debouncedQuery } = useDebounce({ value: query, onDebounce: () => setPage(1) });
   const controllerRef = useRef();
 
 

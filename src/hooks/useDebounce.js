@@ -14,5 +14,5 @@ export function useDebounce({ value, delay = 275, onDebounce }) {
     };
   }, [value, delay]);
 
-  return debouncedValue;
+  return { debouncedValue, setDebouncedValue };
 }

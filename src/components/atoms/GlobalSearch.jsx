@@ -16,7 +16,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   // ---------- UI state
   const [q, setQ] = useState('');
-  const debouncedQ = useDebounce({ value: q })
+  const { debouncedValue: debouncedQ } = useDebounce({ value: q })
   const [open, setOpen] = useState(false); // search dropdown
   const [scopeOpen, setScopeOpen] = useState(false); // scope dropdown
   const [highlight, setHighlight] = useState({ section: 'recent', index: -1 });

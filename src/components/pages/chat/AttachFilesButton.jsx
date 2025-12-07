@@ -48,7 +48,7 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
 
   // search
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce({ value: query, onDebounce: () => setPage(1) });
+  const { debouncedValue: debouncedQuery } = useDebounce({ value: query, onDebounce: () => setPage(1) });
   const controllerRef = useRef();
 
 

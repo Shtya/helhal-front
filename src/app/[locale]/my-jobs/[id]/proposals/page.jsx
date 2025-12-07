@@ -371,7 +371,7 @@ export default function JobProposalsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortKey, setSortKey] = useState('recent');
   const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce({ value: query, onDebounce: () => resetPage() });
+  const { debouncedValue: debouncedQuery } = useDebounce({ value: query, onDebounce: () => resetPage() });
 
   // Accept confirmation modal
   const [confirmOpen, setConfirmOpen] = useState(false);

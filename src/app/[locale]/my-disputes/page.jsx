@@ -82,7 +82,7 @@ export default function MyDisputesPage() {
   }
 
   const [search, setSearch] = useState('');
-  const debounced = useDebounce({ value: search, onDebounce: () => handlePageChange(1) });
+  const { debouncedValue: debounced } = useDebounce({ value: search, onDebounce: () => handlePageChange(1) });
 
   const [disputes, setDisputes] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
