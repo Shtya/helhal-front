@@ -1,5 +1,5 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 import FAQSection from '@/components/common/Faqs';
@@ -14,7 +14,7 @@ import Currency from '@/components/common/Currency';
 
 const page = () => {
   const { settings, loadingSettings } = useValues();
-  const { updateTokens, setCurrentUser, role } = useAuth()
+  const { updateTokens, setCurrentUser, role, user } = useAuth()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false)
   const router = useRouter();
@@ -29,6 +29,9 @@ const page = () => {
       </div>, label: t('stats.priceRange')
     },
   ];
+
+
+  const hasRelatedSeller = useMemo(() => user?.relatedUsers?.some(r => r.role === 'seller'), [user])
 
 
   const categories = [
@@ -101,6 +104,7 @@ const page = () => {
 
 
   const createSellerAccount = async () => {
+    if (hasRelatedSeller) return;
     setLoading(true);
     try {
       const res = await api.post('/auth/create-seller-account');
@@ -163,15 +167,17 @@ const page = () => {
           onClose={() => setIsModalOpen(false)}
         >
           <div className="space-y-4">
-            <p className="text-gray-700 ">
-              {t('message')} {/* "Once you create, you can easily switch between them without losing data" */}
-            </p>
+            {hasRelatedSeller ? <p className="text-gray-700 ">{t('alreadyHas')}</p> :
+              <p className="text-gray-700 ">
+                {t('message')} {/* "Once you create, you can easily switch between them without losing data" */}
+              </p>}
 
 
             <div className="flex gap-3 mt-4">
               <Button
                 name={t('createSeller')}
                 onClick={createSellerAccount}
+                disabled={hasRelatedSeller}
                 loading={loading}
                 color="green"
                 className="flex-1"

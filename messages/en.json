@@ -2272,6 +2272,7 @@
       "swichedFailed": "Failed to switch account"
     },
     "message": "Once you create, you can easily switch between them without losing data.",
+    "alreadyHas": "You already have a seller account linked to your profile.",
     "createSeller": "Create Seller Account",
     "cancel": "Cancel",
     "hero": {

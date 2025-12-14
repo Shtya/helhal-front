@@ -149,8 +149,11 @@ export default function Header() {
   };
 
   const navLinks = buildNavLinks(user);
-  const getNavItemsByRole = role => {
+  const getNavItemsByRole = (role, user) => {
     const byOrder = (a, b) => (a.order ?? 99999) - (b.order ?? 99999);
+
+    const hasRelatedSeller = user?.relatedUsers?.some(r => r.role === 'seller');
+
 
     if (role === 'guest') return [];
 
@@ -164,10 +167,21 @@ export default function Header() {
       { divider: true, order: 8 },
     ];
 
+
     const buyer = [
       { href: '/share-job-description', label: tHeader('userMenu.shareYourJob'), icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/share-job-description'), order: 10 },
       { href: '/my-jobs', label: tHeader('userMenu.myJobs'), icon: <Briefcase size={18} className='text-gray-500' />, active: pathname.startsWith('/my-jobs'), order: 11 },
-      { href: '/become-seller', label: tHeader('userMenu.becomeASeller'), icon: <DollarSign size={18} className='text-gray-500' />, active: pathname.startsWith('/become-seller'), order: 12 },
+      ...(!hasRelatedSeller
+        ? [
+          {
+            href: '/become-seller',
+            label: tHeader('userMenu.becomeASeller'),
+            icon: <DollarSign size={18} className='text-gray-500' />,
+            active: pathname.startsWith('/become-seller'),
+            order: 12,
+          },
+        ]
+        : []),
     ];
 
     const seller = [
@@ -193,7 +207,7 @@ export default function Header() {
     return out;
   };
 
-  const navItems = user ? getNavItemsByRole(user.role) : [];
+  const navItems = user ? getNavItemsByRole(user.role, user) : [];
 
   const handleLogout = async () => {
     try {
