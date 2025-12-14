@@ -1050,7 +1050,12 @@ export default function Overview() {
 
       toast.success(t('profileUpdated'), { id: toastId });
 
-      setCurrentUser(res.data); // 👈 directly update global user state
+
+      setCurrentUser(prev => ({
+        ...prev,
+        ...res.data,
+        relatedUsers: prev?.relatedUsers || [], // keep previous relatedUsers
+      }));
 
 
       // refresh minimal meta from server if you want

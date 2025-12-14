@@ -2265,6 +2265,15 @@
     }
   },
   "BecomeSeller": {
+    "success": {
+      "swiched": "Switched successfully"
+    },
+    "errors": {
+      "swichedFailed": "Failed to switch account"
+    },
+    "message": "Once you create, you can easily switch between them without losing data.",
+    "createSeller": "Create Seller Account",
+    "cancel": "Cancel",
     "hero": {
       "title": "Freelance services",
       "subtitle": "are just a click away!",

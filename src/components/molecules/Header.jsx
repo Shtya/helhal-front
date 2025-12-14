@@ -13,6 +13,8 @@ import Img from '../atoms/Img';
 import Logo from '../common/Logo';
 import NotificationPopup, { getLink } from '../common/NotificationPopup';
 import { useSocket } from '@/context/SocketContext';
+import toast from 'react-hot-toast';
+import api from '@/lib/axios';
 
 /* =========================================================
    Animations
@@ -128,10 +130,18 @@ export default function Header() {
         { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
       ];
 
+      // Determine if buyer already has related seller users
+      const hasRelatedSeller = u?.relatedUsers?.some(r => r.role === 'seller');
 
       // Conditional + common
       if (isGuest) return [...common, ...guest, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }]
-      if (u?.role === 'buyer') return [...common, ...buyer, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }];
+      if (u?.role === 'buyer') {
+        const links = [...common, ...buyer];
+        if (!hasRelatedSeller) {
+          links.push({ href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> });
+        }
+        return links;
+      }
       if (u?.role === 'seller') return [...common, ...seller];
       if (u?.role === 'admin') return [...common, ...admin];
       return [...common]; // fallback if no role
@@ -306,6 +316,8 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
             <UserMiniCard user={user} />
 
             <Divider className='!my-0' />
+            <RelatedUsers onClose={() => setIsOpen(false)} user={user} />
+
 
             <nav className='py-1'>
               {navItems.map((item, index) => {
@@ -458,7 +470,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               )}
 
               <Divider className='!my-0' />
-
+              <RelatedUsers onClose={onClose} user={user} />
               {/* Primary links */}
               <motion.nav variants={stagger} initial='hidden' animate='show' className='flex flex-col px-2 py-2'>
                 {navLinks.map(link => {
@@ -615,3 +627,87 @@ function UserMiniCard({ user }) {
     </div>
   );
 }
+
+
+function RelatedUsers({ user, onClose }) {
+  const [loadingId, setLoadingId] = useState(null);
+  const { setCurrentUser, updateTokens } = useAuth();
+  const router = useRouter();
+
+
+
+  const onSwitchUser = async (relatedUserId) => {
+    setLoadingId(relatedUserId);
+    try {
+      const res = await api.post(`/auth/login-as-related/${relatedUserId}`);
+      const { accessToken, refreshToken, user: switchedUser } = res.data;
+
+      // Optionally show toast
+      toast.success('Switched successfully');
+
+      // Store login tokens and current user
+      await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken, refreshToken, user: switchedUser }),
+      });
+
+      // Keep previous relatedUsers in state
+      setCurrentUser(switchedUser);
+      updateTokens({ accessToken, refreshToken });
+
+      // Close dropdown and navigate
+      onClose();
+      router.push('/explore');
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to switch user';
+      toast.error(msg);
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  if (!user?.relatedUsers?.length) return null;
+
+  return (
+    <>
+
+      <nav className="py-1 flex flex-col">
+        {user?.relatedUsers?.map(relUser => (
+          <motion.div
+            key={relUser.id}
+            initial={{ x: -10, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.02 }}
+          >
+            <button
+              disabled={loadingId === relUser.id}
+              onClick={() => onSwitchUser(relUser.id)}
+              className={`w-full text-left flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${loadingId === relUser.id
+                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                : 'text-gray-700 hover:bg-gray-50'
+                }`}
+            >
+              <Img
+                src={relUser.profileImage || '/images/placeholder-avatar.png'}
+                alt={relUser.username}
+                width={28}
+                height={28}
+                className="rounded-full object-cover"
+              />
+              <div className='flex flex-col'>
+                <span className="truncate">{relUser.username}</span>
+                <span className={`w-fit text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${roleStyles[relUser.role]?.chip || roleStyles.member}`} title={`Role: ${relUser.role}`}>
+                  <UserIcon className='h-2.5 w-2.5' />
+                  {relUser.role}
+                </span>
+              </div>
+            </button>
+          </motion.div>
+        ))}
+      </nav>
+      <Divider className='!my-0' />
+    </>
+  );
+}
+

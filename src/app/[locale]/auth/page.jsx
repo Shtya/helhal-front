@@ -613,7 +613,12 @@ export default function AuthPage() {
     setLoading(true);
     try {
       const me = await api.put('/auth/profile', { type: userType }).then(r => r.data);
-      setCurrentUser(me);
+      setCurrentUser(prev => ({
+        ...prev,
+        ...me,
+        relatedUsers: prev?.relatedUsers || [], // keep previous relatedUsers
+      }));
+
       toast.success(t('success.userTypeUpdatedSuccessfully'));
       router.push(redirectUrl);
     } catch (e) {

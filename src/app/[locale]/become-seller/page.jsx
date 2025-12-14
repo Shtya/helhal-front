@@ -14,6 +14,10 @@ import Currency from '@/components/common/Currency';
 
 const page = () => {
   const { settings, loadingSettings } = useValues();
+  const { updateTokens, setCurrentUser, role } = useAuth()
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false)
+  const router = useRouter();
   const faqs = settings?.faqs;
   const t = useTranslations('BecomeSeller');
   const stats = [
@@ -25,6 +29,7 @@ const page = () => {
       </div>, label: t('stats.priceRange')
     },
   ];
+
 
   const categories = [
     {
@@ -93,6 +98,35 @@ const page = () => {
   //   { question: t('faqs.howDoIPrice.question'), answer: t('faqs.howDoIPrice.answer') },
   // ];
 
+
+
+  const createSellerAccount = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post('/auth/create-seller-account');
+      const { accessToken, refreshToken, user: fatchedUser } = res.data;
+
+      toast.success(t('success.swiched'));
+
+      //set login data at cookie
+      await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken, refreshToken, user: fatchedUser }),
+      });
+
+      setCurrentUser(fatchedUser)
+      updateTokens({ accessToken, refreshToken })
+      router.push('/profile');
+    } catch (err) {
+      const msg = err?.response?.data?.message || t('errors.swichedFailed');
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   return (
     <div className='container'>
       {/* Hero Section */}
@@ -113,14 +147,45 @@ const page = () => {
           <p className='text-xl opacity-90 md:text-4xl mb-8'>{t('hero.subtitle')}</p>
           <Button
             name={t('hero.button')}
-            href='/auth?tab=register&type=seller'
+            href={role === 'guest' ? '/auth?tab=register&type=seller' : undefined}
+            onClick={() => setIsModalOpen(true)}
+            disabled={loading}
             color='green'
             className={'!max-w-[300px] w-full'}
           />
         </div>
       </section>
+      {/* Add Education */}
+      {isModalOpen && (
+        <Modal
+          title={t('hero.button')}
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        >
+          <div className="space-y-4">
+            <p className="text-gray-700 ">
+              {t('message')} {/* "Once you create, you can easily switch between them without losing data" */}
+            </p>
 
-      {/* Stats */}
+
+            <div className="flex gap-3 mt-4">
+              <Button
+                name={t('createSeller')}
+                onClick={createSellerAccount}
+                loading={loading}
+                color="green"
+                className="flex-1"
+              />
+              <Button
+                name={t('cancel')}
+                onClick={() => setIsModalOpen(false)}
+                color="secondary"
+                className="flex-1"
+              />
+            </div>
+          </div>
+        </Modal>
+      )}
       <section className='w-full max-w-[1200px] mx-auto divider px-4' data-aos='fade-up' data-aos-duration='1000'>
         <div className='grid grid-cols-1 sm:grid-cols-3 gap-6'>
           {stats.map((stat, index) => (
