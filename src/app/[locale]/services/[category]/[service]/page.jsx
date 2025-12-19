@@ -23,6 +23,7 @@ import Textarea from '@/components/atoms/Textarea';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
 import { useLocale, useTranslations } from 'next-intl'; // Add this import
 import { resolveUrl } from '@/utils/helper';
+import toast from 'react-hot-toast';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -225,8 +226,9 @@ export default function ServiceDetailsPage({ params }) {
       setLoadingSubmit(true);
       const res = await api.post('/orders/checkout', { ...orderData });
       router.push(res.data.paymentUrl + `?orderId:${res.data.order.id}`);
-    } catch (e) {
-      console.error('Error creating order:', e);
+    } catch (err) {
+      console.error('Error creating order:', err);
+      toast.error(err.response?.data?.message)
     } finally {
       setLoadingSubmit(false);
     }
