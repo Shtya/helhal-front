@@ -707,7 +707,7 @@ function RelatedUsers({ user, onClose }) {
                 alt={relUser.username}
                 width={28}
                 height={28}
-                className="rounded-full object-cover"
+                className="w-7 h-7 rounded-full shrink-0 object-cover"
               />
               <div className='flex flex-col'>
                 <span className="truncate">{relUser.username}</span>
