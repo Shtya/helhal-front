@@ -30,7 +30,7 @@ const page = () => {
     },
   ];
 
-
+  const isNotBuyer = user && role !== 'buyer';
   const hasRelatedSeller = useMemo(() => user?.relatedUsers?.some(r => r.role === 'seller'), [user])
 
 
@@ -167,7 +167,7 @@ const page = () => {
           onClose={() => setIsModalOpen(false)}
         >
           <div className="space-y-4">
-            {hasRelatedSeller ? <p className="text-gray-700 ">{t('alreadyHas')}</p> :
+            {isNotBuyer ? t('not_Buyer') : hasRelatedSeller ? <p className="text-gray-700 ">{t('alreadyHas')}</p> :
               <p className="text-gray-700 ">
                 {t('message')} {/* "Once you create, you can easily switch between them without losing data" */}
               </p>}
@@ -177,7 +177,7 @@ const page = () => {
               <Button
                 name={t('createSeller')}
                 onClick={createSellerAccount}
-                disabled={hasRelatedSeller}
+                disabled={hasRelatedSeller || isNotBuyer}
                 loading={loading}
                 color="green"
                 className="flex-1"

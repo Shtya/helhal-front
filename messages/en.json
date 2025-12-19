@@ -2273,6 +2273,7 @@
     },
     "message": "Once you create, you can easily switch between them without losing data.",
     "alreadyHas": "You already have a seller account linked to your profile.",
+    "not_Buyer": "Only buyers can create seller sub accounts",
     "createSeller": "Create Seller Account",
     "cancel": "Cancel",
     "hero": {

@@ -6,6 +6,7 @@ import { useNotifications } from '@/context/NotificationContext';
 import api from '@/lib/axios';
 import { Bell, Check, ChevronRight, TypeIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useAuth } from '@/context/AuthContext';
 
 export const getLink = (relatedEntityType, relatedEntityId) => {
   if (relatedEntityType === 'proposal') {
@@ -47,6 +48,7 @@ const NotificationPopup = ({ admin = false }) => {
   const t = useTranslations('MyOrders.modals.notifications');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const [meta, setMeta] = useState({ total_records: 0, per_page: 10, current_page: 1 });
   const btnRef = useRef(null);
   const menuRef = useRef(null);
@@ -137,7 +139,7 @@ const NotificationPopup = ({ admin = false }) => {
       mounted = false;
       document.removeEventListener('mousedown', onClick);
     };
-  }, []);
+  }, [user?.id]);
 
 
   const goToTarget = n => (n.relatedEntityType === 'order' ? `/my-orders/${n.relatedEntityId}` : '/notifications');
