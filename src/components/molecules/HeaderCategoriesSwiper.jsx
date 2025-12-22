@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation } from 'swiper/modules';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -15,6 +15,7 @@ import { Link } from '@/i18n/navigation';
 export default function HeaderCategoriesSwiper({ category }) {
   const t = useTranslations('Explore');
   const { categories = [], loadingCategory } = useValues();
+  const locale = useLocale()
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
 
@@ -95,7 +96,7 @@ export default function HeaderCategoriesSwiper({ category }) {
             return (
               <SwiperSlide key={c.slug} className='!w-auto py-2 '>
                 <Link href={`/services/${c.slug}`} aria-current={active ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ease-out ' + (active ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-emerald-500 from-emerald-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-emerald-400/60 hover:text-emerald-700')}>
-                  {c.name}
+                  {locale === 'ar' ? c.name_ar : c.name_en}
                 </Link>
               </SwiperSlide>
             );

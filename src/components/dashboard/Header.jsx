@@ -8,6 +8,7 @@ import { Menu, X, Bell, Check } from 'lucide-react';
 import api from '@/lib/axios';
 import NotificationPopup from '../common/NotificationPopup';
 import { useTranslations } from 'next-intl';
+import SmallLanguageSwitcher from '../molecules/SmallLanguageSwitcher';
 
 /* --------------------------------- Header --------------------------------- */
 
@@ -57,6 +58,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
 
           {/* Right: actions */}
           <div className='flex items-center gap-2'>
+            <SmallLanguageSwitcher />
             <NotificationPopup admin />
           </div>
         </div>

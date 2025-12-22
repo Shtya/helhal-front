@@ -266,7 +266,7 @@ export function CategorySwiper() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const locale = useLocale()
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true);
@@ -286,6 +286,7 @@ export function CategorySwiper() {
 
     fetchCategories();
   }, [t]);
+
 
   if (error) {
     return (
@@ -338,8 +339,9 @@ export function CategorySwiper() {
                   </div>
                 </SwiperSlide>
               ))
-              : items.map(category => (
-                <SwiperSlide key={category.id} className="py-2">
+              : items.map(category => {
+                const name = locale === 'ar' ? category.name_ar : category.name_en;
+                return <SwiperSlide key={category.id} className="py-2">
                   <Link
                     href={`/services/${encodeURIComponent(category.slug)}`}
                     className={[
@@ -349,18 +351,19 @@ export function CategorySwiper() {
                       'shadow-sm hover:shadow-emerald-200/60 hover:shadow-lg',
                       'hover:-translate-y-0.5',
                     ].join(' ')}
-                    aria-label={t('categories.browse', { name: category.name })}
+                    aria-label={t('categories.browse', { name })}
                   >
                     <span className="absolute inset-0 rounded-xl bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative w-12 h-12 mb-3">
-                      <Image src={category.topIconUrl ? resolveUrl(category.topIconUrl) : '/icons/service.png'} alt={category.name} fill sizes="48px" className="object-contain" />
+                      <Image src={category.topIconUrl ? resolveUrl(category.topIconUrl) : '/icons/service.png'} alt={name} fill sizes="48px" className="object-contain" />
                     </div>
                     <span className="text-nowrap truncate relative text-sm font-semibold text-gray-900 group-hover:text-emerald-700">
-                      {category.name}
+                      {name}
                     </span>
                   </Link>
                 </SwiperSlide>
-              ))}
+              }
+              )}
           </Swiper>
         </div>
       </div>

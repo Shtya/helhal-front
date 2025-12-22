@@ -6,13 +6,11 @@ import { useTranslations } from 'next-intl';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import BecomeFreelancer from '@/components/pages/shareJobDescription/BecomeFreelancer';
 import Textarea from '@/components/atoms/Textarea';
 import AttachFilesButton from '@/components/atoms/AttachFilesButton';
 import Button from '@/components/atoms/Button';
 import Input from '@/components/atoms/Input';
 import Select from '@/components/atoms/Select';
-import { Switcher } from '@/components/atoms/Switcher';
 import { Pencil, Paperclip } from 'lucide-react';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
 import { createJob, updateJob } from '@/services/jobService';
@@ -363,8 +361,6 @@ export default function CreateJobPage() {
   return (
     <div className='container mx-auto px-4 py-6'>
       <HeaderCategoriesSwiper />
-
-
       <div className='mt-6 mb-8 max-lg:hidden' data-aos='fade-down'>
         <StepBreadcrumbs items={steps} activeIndex={currentStep} onItemClick={handleToStep} onReset={handleReset} resetLabel={t('reset')} />
       </div>
@@ -479,8 +475,6 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
 
   return (
     <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
-      <BecomeFreelancer />
-
       <h2 className='h2 mt-6 mb-2'>{t('titleLabel')}</h2>
 
       <div className='mb-4'>
@@ -567,8 +561,6 @@ function BudgetAndDelivery({ register, control, errors, trigger, budgetTypeOptio
 
   return (
     <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
-      <BecomeFreelancer />
-
       <div className='space-y-3 mb-8 mt-6 '>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div>
@@ -597,12 +589,13 @@ function BudgetAndDelivery({ register, control, errors, trigger, budgetTypeOptio
 
 function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onEditJob, onBack, onSubmit, isSubmitting, errors }) {
   const t = useTranslations('CreateJob.review');
+  const locale = useLocale()
+  const isArabic = locale === 'ar';
   const tForm = useTranslations('CreateJob.form');
   const hasFiles = useMemo(() => (data.attachments || []).length > 0, [data.attachments]);
 
   return (
     <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
-      <BecomeFreelancer />
 
       <section className='pb-8  pt-5'>
         <div className='flex items-start justify-between gap-4  '>
@@ -618,8 +611,8 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
         <div className='mt-6 space-y-5'>
           <Item label={t('title')} value={data.title || '—'} />
           <Item label={t('description')} value={data.description || '—'} className cnValue='whitespace-pre-wrap' />
-          <Item label={t('category')} value={data.category.name || '—'} />
-          {data.subcategoryId && <Item label={t('subcategory')} value={data.subcategory.name || '—'} />}
+          <Item label={t('category')} value={isArabic ? data.category?.name_ar || '—' : data.category?.name_en || '—'} />
+          {data.subcategoryId && <Item label={t('subcategory')} value={isArabic ? data.subcategory?.name_ar || '—' : data.subcategory?.name_en || '—'} />}
 
           <ItemSkills label={t('skillsRequired')} value={data.skillsRequired} />
 

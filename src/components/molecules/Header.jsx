@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useLayoutEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransition } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
-import { useTranslations } from 'next-intl';
-import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard, Globe2 } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
 import { localImageLoader } from '@/utils/helper';
 import { useAuth } from '@/context/AuthContext';
@@ -15,6 +15,9 @@ import NotificationPopup, { getLink } from '../common/NotificationPopup';
 import { useSocket } from '@/context/SocketContext';
 import toast from 'react-hot-toast';
 import api from '@/lib/axios';
+import { useSearchParams } from 'next/navigation';
+import { useLangSwitcher } from '@/hooks/useLangSwitcher';
+import SmallLanguageSwitcher from './SmallLanguageSwitcher';
 
 /* =========================================================
    Animations
@@ -56,12 +59,12 @@ export default function Header() {
   const buildNavLinks = u => {
     return useMemo(() => {
       const common = [
-        { href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> },
+        ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
         {
           label: tHeader('navigation.services'),
           icon: <Briefcase className='h-5 w-5' />,
           children: [
-            {
+            ...(u?.role !== 'seller' ? [{
               href: '/services',
               label: tHeader('navigation.services'),
               icon: <Briefcase className='h-4 w-4' />,
@@ -70,7 +73,7 @@ export default function Header() {
               href: '/services/all',
               label: tHeader('navigation.allServices'),
               icon: <ListChecks className='h-4 w-4' />,
-            },
+            }] : []),
             ,
             u?.role === 'seller'
               ? {
@@ -100,7 +103,7 @@ export default function Header() {
           icon: <Briefcase className='h-5 w-5' />,
           children: [
             { href: '/share-job-description', label: tHeader('navigation.createJob'), icon: <FilePlus2 className='h-4 w-4' /> },
-            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+            // { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
             { href: '/my-jobs', label: tHeader('navigation.myJobsBuyer'), icon: <ClipboardList className='h-4 w-4' /> },
           ],
         },
@@ -232,12 +235,17 @@ export default function Header() {
         </div>
 
         {/* Middle: Search */}
-        <GlobalSearch isMobileNavOpen={isMobileNavOpen} />
 
         {/* Right: Actions */}
-        <div className='flex items-center gap-1 md:gap-1.5 lg:gap-2 shrink-0'>
+        <div className='flex-1 flex items-center gap-1 md:gap-1.5 lg:gap-2 shrink-0 justify-end'>
+          <div className={`${user ? "max-xl:order-0" : "max-xl:order-1"}  xl:flex-1 xl:flex justify-center items-center`}>
+            <GlobalSearch isMobileNavOpen={isMobileNavOpen} />
+          </div>
           {user ? (
             <>
+              <div className='max-lg:hidden '>
+                <SmallLanguageSwitcher />
+              </div>
               <Link href='/chat' aria-label='Go to chat' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
                 <MessageCircle className='h-5 w-5 text-slate-600' />
                 {unreadChatCount > 0 && (
@@ -263,15 +271,20 @@ export default function Header() {
               <AvatarDropdown user={user} navItems={navItems} onLogout={handleLogout} />
             </>
           ) : (
-            <div className='flex items-center gap-2 md:gap-3'>
+            <>
               <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-emerald-700 transition-colors rounded-xl'>
                 {tHeader('auth.signIn')}
               </Link>
               <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors'>
                 {tHeader('auth.signUp')}
               </Link>
-              <MobileToggle toggleMobileNav={toggleMobileNav} isMobileNavOpen={isMobileNavOpen} />
-            </div>
+              <div className='order-2 max-lg:hidden s'>
+                <SmallLanguageSwitcher />
+              </div>
+              <div className='order-3'>
+                <MobileToggle toggleMobileNav={toggleMobileNav} isMobileNavOpen={isMobileNavOpen} />
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -447,6 +460,11 @@ function DropdownPanel({ items = [] }) {
    ========================================================= */
 function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLogout, isLogoutLoading }) {
   const tHeader = useTranslations('Header');
+  const role = (user?.role || 'member').toLowerCase();
+  const { chip } = roleStyles[role] || roleStyles.member;
+
+  const { isPending, toggleLocale, locale } = useLangSwitcher()
+
   return (
     <AnimatePresence>
       {open && (
@@ -478,7 +496,11 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                   <div className='min-w-0'>
                     <p className='text-sm text-slate-900 font-medium truncate'>{user.username || tHeader('userMenu.user')}</p>
                     <p className='text-xs text-slate-500 truncate'>{user.email}</p>
-                    <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full capitalize'>{user.role || tHeader('userMenu.member')}</span>
+                    {/* <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full capitalize'>{user.role || tHeader('userMenu.member')}</span> */}
+                    <span className={`text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${chip}`} title={`Role: ${role}`}>
+                      <UserIcon className='h-3.5 w-3.5' />
+                      {role}
+                    </span>
                   </div>
                 </div>
               )}
@@ -533,6 +555,19 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               )}
 
               <Divider className='!my-0' />
+              {/* Language Switcher */}
+              <div className='mx-2'>
+                <motion.button
+                  onClick={toggleLocale}
+                  disabled={isPending}
+                  className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors'
+                  whileTap={{ scale: 0.98 }}
+                  aria-label={locale === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
+                >
+                  <Globe2 size={16} />
+                  <span>{locale === 'ar' ? 'English' : 'العربية'}</span>
+                </motion.button>
+              </div>
 
               {/* Logout */}
               {user && (
@@ -724,4 +759,7 @@ function RelatedUsers({ user, onClose }) {
     </>
   );
 }
+
+
+
 

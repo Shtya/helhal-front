@@ -11,6 +11,7 @@ import 'swiper/css/pagination';
 import Img from '@/components/atoms/Img';
 import NoResults from '@/components/common/NoResults';
 import { useValues } from '@/context/GlobalContext';
+import { useLocale } from 'next-intl';
 
 /**
  * Why this is better:
@@ -192,6 +193,9 @@ function NavButton({ dir }) {
   );
 }
 function CategoryCard({ c }) {
+  const locale = useLocale()
+  const isArabic = locale === 'ar';
+  const name = isArabic ? c.name_ar : c.name_en;
   const href = `/services/${encodeURIComponent(c.slug)}`;
 
   return (
@@ -207,11 +211,11 @@ function CategoryCard({ c }) {
 
       {/* Media */}
       <div className='relative aspect-[16/10] overflow-hidden'>
-        <Img src={c.image} alt={c.name} className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]' loading='lazy' />
+        <Img src={c.image} alt={name} className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]' loading='lazy' />
         <div className='absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent' />
 
         {/* slug chip */}
-        <span className='absolute left-3 top-3 z-10 rounded-lg bg-white/85 px-3 py-1 text-[11px] font-semibold text-slate-700 border border-slate-200 backdrop-blur'>{c.name}</span>
+        <span className='absolute left-3 top-3 z-10 rounded-lg bg-white/85 px-3 py-1 text-[11px] font-semibold text-slate-700 border border-slate-200 backdrop-blur'>{name}</span>
 
         {/* Arrow badge (appears on hover, purely visual; link wraps entire card) */}
         <span

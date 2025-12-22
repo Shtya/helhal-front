@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Save, RefreshCw, DollarSign, Shield, Globe, Mail, Phone, Image as ImageIcon, Wallet, Info, Share2 } from 'lucide-react';
 
 import api from '@/lib/axios';
@@ -14,6 +14,7 @@ import { resolveImageUrl, resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
 import { FaFacebook, FaInstagram, FaLinkedin, FaPinterest, FaTiktok, FaTwitter } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import Currency from '@/components/common/Currency';
 
 const getSettingsSchema = (t) => z.object({
   contactEmail: z
@@ -22,8 +23,7 @@ const getSettingsSchema = (t) => z.object({
   platformPercent: z
     .coerce
     .number()
-    .min(0, t('validation.platformFeeMin'))
-    .max(100, t('validation.platformFeeMax')),
+    .min(0, t('validation.platformFeeMin')),
   siteLogo: z
     .string()
     .refine(
@@ -175,8 +175,10 @@ export default function AdminSettingsDashboard() {
     // Flags (no affiliate)
     jobsRequireApproval: true,
     // Legal
-    privacyPolicy: '',
-    termsOfService: '',
+    privacyPolicy_en: '',
+    privacyPolicy_ar: '',
+    termsOfService_en: '',
+    termsOfService_ar: '',
     faqs: [], // now array of { question, answer }
     // socialLinks
     facebook: '',
@@ -275,10 +277,21 @@ export default function AdminSettingsDashboard() {
   const [activeLegalTab, setActiveLegalTab] = useState('privacy'); // 'privacy' | 'terms'
   const [showPreview, setShowPreview] = useState(false);
 
-  const privacyChars = settings.privacyPolicy?.length || 0;
-  const privacyWords = countWords(settings.privacyPolicy);
-  const termsChars = settings.termsOfService?.length || 0;
-  const termsWords = countWords(settings.termsOfService);
+  const { privacyCharsEn, privacyWordsEn, termsCharsEn, termsWordsEn, privacyCharsAr, privacyWordsAr, termsCharsAr, termsWordsAr } = useMemo(() => {
+
+    const privacyCharsEn = settings.privacyPolicy_en?.length || 0;
+    const privacyWordsEn = countWords(settings.privacyPolicy_en);
+
+    const termsCharsEn = settings.termsOfService_en?.length || 0;
+    const termsWordsEn = countWords(settings.termsOfService_en);
+
+    const privacyCharsAr = settings.privacyPolicy_ar?.length || 0;
+    const privacyWordsAr = countWords(settings.privacyPolicy_ar);
+
+    const termsCharsAr = settings.termsOfService_ar?.length || 0;
+    const termsWordsAr = countWords(settings.termsOfService_ar);
+    return { privacyCharsEn, privacyWordsEn, termsCharsEn, termsWordsEn, privacyCharsAr, privacyWordsAr, termsCharsAr, termsWordsAr }
+  })
 
   if (loading) {
     return (
@@ -319,7 +332,9 @@ export default function AdminSettingsDashboard() {
         {/* KPI Row (No affiliate, no platform wallet KPI) */}
         <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2'>
           <MetricBadge icon={<Globe className='h-4 w-4' />} label='Brand' value={settings.siteName || '—'} intent='neutral' />
-          <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Platform Fee' value={`${Number(settings.platformPercent || 0).toFixed(1)}%`} intent='success' />
+          <MetricBadge icon={<Currency style={{ fill: "#007a55" }} size={16} />} label='Platform Fee' value={<div className='flex gap-1 items-center '>
+            {Number(settings.platformPercent || 0).toFixed(1)}  <Currency style={{ fill: "#007a55" }} size={14} />
+          </div>} intent='success' />
           {/* <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Default Currency ID' value={String(settings.defaultCurrency || 1)} intent='info' hint='Change in Financial Settings' /> */}
         </div>
 
@@ -362,13 +377,13 @@ export default function AdminSettingsDashboard() {
           {/* Financial */}
           <GlassCard className='p-6'>
             <div className='mb-4 flex items-center'>
-              <DollarSign size={20} className='mr-2 text-green-600' />
+              <Currency style={{ fill: "#00a63e" }} size={20} />
               <h2 className='text-lg font-semibold'>{t('sections.financial')}</h2>
             </div>
 
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-1'>
               <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.platformFee')}</label>
+                <label className='mb-1 text-sm font-medium text-slate-700 flex items-center gap-1'>{t('fields.platformFee')} (<Currency style={{ fill: "#314158" }} size={14} />)</label>
                 <Input type='number' error={formErrors?.platformPercent} value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
               </div>
               {/* 
@@ -395,7 +410,7 @@ export default function AdminSettingsDashboard() {
 
 
         {/* FAQs (Q&A text) */}
-        <div className="mb-6 grid grid-cols-2 gap-6">
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center">
               <Share2 size={20} className="mr-2 text-blue-600" />
@@ -511,66 +526,146 @@ export default function AdminSettingsDashboard() {
           <GlassCard className='p-6'>
             <div className='mb-4 flex items-center'>
               <Shield size={20} className='mr-2 text-amber-600' />
-              <h2 className='text-lg font-semibold'>Legal & Compliance</h2>
+              <h2 className='text-lg font-semibold'>{t('legalCompliance')}</h2>
             </div>
 
             {/* Tabs */}
             <div className='mb-3 flex items-center justify-between'>
               <div className='inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1'>
                 {[
-                  { id: 'privacy', label: 'Privacy Policy' },
-                  { id: 'terms', label: 'Terms of Service' },
-                ].map(t => (
-                  <button key={t.id} onClick={() => setActiveLegalTab(t.id)} className={['px-3 py-1.5 text-sm rounded-md', activeLegalTab === t.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'].join(' ')}>
-                    {t.label}
+                  { id: 'privacy', label: t('privacyPolicy') },
+                  { id: 'terms', label: t('termsOfService') },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveLegalTab(tab.id)}
+                    className={[
+                      'px-3 py-1.5 text-sm rounded-md',
+                      activeLegalTab === tab.id
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900',
+                    ].join(' ')}
+                  >
+                    {tab.label}
                   </button>
                 ))}
               </div>
 
               <div className='flex items-center gap-3'>
                 <label className='inline-flex items-center gap-2 text-sm text-slate-600'>
-                  <input type='checkbox' className='accent-slate-700' checked={showPreview} onChange={e => setShowPreview(e.target.checked)} />
-                  Preview
+                  <input
+                    type='checkbox'
+                    className='accent-slate-700'
+                    checked={showPreview}
+                    onChange={e => setShowPreview(e.target.checked)}
+                  />
+                  {t('preview')}
                 </label>
               </div>
             </div>
 
             {/* Editors */}
             {activeLegalTab === 'privacy' ? (
-              <div>
-                {!showPreview ? (
-                  <>
-                    <Textarea value={settings.privacyPolicy} onChange={e => updateField('privacyPolicy', e.target.value)} rows={12} placeholder='Enter your privacy policy content...' />
-                    <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
-                      <span>
-                        {privacyChars} chars • {privacyWords} words
-                      </span>
-                      <span>Tip: use headings and short paragraphs for readability.</span>
-                    </div>
-                  </>
-                ) : (
-                  <PreviewBox text={settings.privacyPolicy} />
-                )}
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {/* English */}
+                <div>
+                  <h3 className='text-sm font-medium mb-2'>{t('privacyPolicyEn')}</h3>
+                  {!showPreview ? (
+                    <>
+                      <Textarea
+                        value={settings.privacyPolicy_en}
+                        onChange={e => updateField('privacyPolicy_en', e.target.value)}
+                        rows={12}
+                        placeholder={t('privacyPolicyPlaceholder')}
+                      />
+                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
+                        <span>
+                          {privacyCharsEn} {t('chars')} • {privacyWordsEn} {t('words')}
+                        </span>
+                        <span>{t('privacyTip')}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <PreviewBox text={settings.privacyPolicy_en} />
+                  )}
+                </div>
+
+                {/* Arabic */}
+                <div dir='rtl'>
+                  <h3 className='text-sm font-medium mb-2'>{t('privacyPolicyAr')}</h3>
+                  {!showPreview ? (
+                    <>
+                      <Textarea
+                        value={settings.privacyPolicy_ar}
+                        onChange={e => updateField('privacyPolicy_ar', e.target.value)}
+                        rows={12}
+                        placeholder={t('privacyPolicyPlaceholderAr')}
+                      />
+                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
+                        <span>
+                          {privacyCharsAr} {t('chars')} • {privacyWordsAr} {t('words')}
+                        </span>
+                        <span>{t('privacyTipAr')}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <PreviewBox text={settings.privacyPolicy_ar} />
+                  )}
+                </div>
               </div>
             ) : (
-              <div>
-                {!showPreview ? (
-                  <>
-                    <Textarea value={settings.termsOfService} onChange={e => updateField('termsOfService', e.target.value)} rows={12} placeholder='Enter your terms of service content...' />
-                    <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
-                      <span>
-                        {termsChars} chars • {termsWords} words
-                      </span>
-                      <span>Include refunds, deliveries, disputes, and governing law.</span>
-                    </div>
-                  </>
-                ) : (
-                  <PreviewBox text={settings.termsOfService} />
-                )}
+              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                {/* English */}
+                <div>
+                  <h3 className='text-sm font-medium mb-2'>{t('termsOfServiceEn')}</h3>
+                  {!showPreview ? (
+                    <>
+                      <Textarea
+                        value={settings.termsOfService_en}
+                        onChange={e => updateField('termsOfService_en', e.target.value)}
+                        rows={12}
+                        placeholder={t('termsOfServicePlaceholder')}
+                      />
+                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
+                        <span>
+                          {termsCharsEn} {t('chars')} • {termsWordsEn} {t('words')}
+                        </span>
+                        <span>{t('termsTip')}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <PreviewBox text={settings.termsOfService_en} />
+                  )}
+                </div>
+
+                {/* Arabic */}
+                <div dir='rtl'>
+                  <h3 className='text-sm font-medium mb-2'>{t('termsOfServiceAr')}</h3>
+                  {!showPreview ? (
+                    <>
+                      <Textarea
+                        value={settings.termsOfService_ar}
+                        onChange={e => updateField('termsOfService_ar', e.target.value)}
+                        rows={12}
+                        placeholder={t('termsOfServicePlaceholderAr')}
+                      />
+                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
+                        <span>
+                          {termsCharsAr} {t('chars')} • {termsWordsAr} {t('words')}
+                        </span>
+                        <span>{t('termsTipAr')}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <PreviewBox text={settings.termsOfService_ar} />
+                  )}
+                </div>
               </div>
             )}
           </GlassCard>
         </div>
+
+
 
         {/* Sticky Save */}
         <div className='pointer-events-none sticky bottom-4 mt-6 flex justify-end'>

@@ -46,6 +46,16 @@ const ADMIN_ROUTES = [
 ];
 
 export async function middleware(request) {
+  // Disable automatic browser detection
+  request.headers.set('accept-language', '');
+
+  // // Check for stored cookie
+  // const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value;
+
+  // if (req.nextUrl.pathname === '/' && cookieLocale) {
+  //   return NextResponse.redirect(new URL(`/${cookieLocale}`, req.url));
+  // }
+
   const token = request.cookies.get('accessToken')?.value;
   const { pathname } = request.nextUrl;
 

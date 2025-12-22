@@ -326,7 +326,7 @@ const useChat = () => {
     async function create() {
       if (loading) return;
 
-      if (targetUserId && currentUser) {
+      if (targetUserId && user) {
         const existing = threads.find(t => String(t.otherUserId) === String(targetUserId));
         if (existing) {
           if (activeThreadId !== existing.id) selectThread(existing.id);
@@ -337,7 +337,7 @@ const useChat = () => {
     }
     create();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetUserId, currentUser, threads.length, activeThreadId]);
+  }, [targetUserId, user, threads.length, activeThreadId]);
 
   useEffect(() => {
     setCurrentUser(user || {});

@@ -56,7 +56,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
 
 
   return (
-    <Card>
+    <Card className='lg:sticky lg:top-30 '>
       <div className='rounded-t-2xl px-6 py-7' style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0) 100%)' }}>
         <div className='flex items-center justify-between'>
           <div className='flex flex-wrap items-center gap-2'>
@@ -1118,6 +1118,27 @@ export default function Overview() {
             }}
           />
 
+
+
+          {/* {!loading && (
+            <div className='flex items-center justify-end gap-3'>
+              <Button color='secondary' name='Cancel' onClick={() => window.location.reload()} className='!w-auto !px-4' />
+              <Button color='green' name={saving ? '' : 'Save changes'} loading={saving} onClick={saveAuthProfile} className='!w-auto !px-5' />
+            </div>
+          )} */}
+        </div>
+
+        <div className='space-y-6 flex-1  h-fit'>
+          <KPICard
+            loading={loading}
+            stats={{
+              ordersCompleted: state?.ordersCompleted || 0,
+              repeatBuyers: state?.repeatBuyers || 0,
+              averageRating: state?.averageRating || 0,
+              responseTime: state?.responseTime,
+            }}
+          />
+
           <InfoCard
             loading={loading}
             about={{
@@ -1153,27 +1174,8 @@ export default function Overview() {
             onTypeChange={t => setState(s => ({ ...s, type: t }))}
           />
 
-          {/* {!loading && (
-            <div className='flex items-center justify-end gap-3'>
-              <Button color='secondary' name='Cancel' onClick={() => window.location.reload()} className='!w-auto !px-4' />
-              <Button color='green' name={saving ? '' : 'Save changes'} loading={saving} onClick={saveAuthProfile} className='!w-auto !px-5' />
-            </div>
-          )} */}
-        </div>
-
-        <div className='space-y-6 flex-1 lg:sticky lg:top-30 h-fit'>
-          <KPICard
-            loading={loading}
-            stats={{
-              ordersCompleted: state?.ordersCompleted || 0,
-              repeatBuyers: state?.repeatBuyers || 0,
-              averageRating: state?.averageRating || 0,
-              responseTime: state?.responseTime,
-            }}
-          />
-
-          <Assets initialVideoUrl={state.introVideoUrl} initialImages={(state.portfolioItems || []).slice(0, 6).map(it => (typeof it === 'string' ? it : it?.url))} onVideoChange={url => setState(s => ({ ...s, introVideoUrl: url }))} onImagesChange={urls => setState(s => ({ ...s, portfolioItems: urls }))} />
-          <PortfolioFileBox initialPortfolio={state?.portfolioFile || null} />
+          {/* <Assets initialVideoUrl={state.introVideoUrl} initialImages={(state.portfolioItems || []).slice(0, 6).map(it => (typeof it === 'string' ? it : it?.url))} onVideoChange={url => setState(s => ({ ...s, introVideoUrl: url }))} onImagesChange={urls => setState(s => ({ ...s, portfolioItems: urls }))} />
+          <PortfolioFileBox initialPortfolio={state?.portfolioFile || null} /> */}
         </div>
 
         {/* Bottom Save Drawer */}

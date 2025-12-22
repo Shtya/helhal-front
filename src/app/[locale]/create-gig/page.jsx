@@ -17,12 +17,13 @@ import AttachFilesButton, { getFileIcon } from '@/components/atoms/AttachFilesBu
 import { apiService } from '@/services/GigServices';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { AnimatedCheckbox } from '@/components/atoms/CheckboxAnimation';
-import { baseImg } from '@/lib/axios';
+import api, { baseImg } from '@/lib/axios';
 import toast from 'react-hot-toast';
 import { useRouter } from '@/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const normalizeFile = (file) => ({
   ...file,
@@ -61,7 +62,8 @@ export const useGigCreation = () => {
 
   useEffect(() => {
     const fetchGigData = async () => {
-      const gigSlug = searchParams.get('slug');
+      // const gigSlug = searchParams.get('slug');
+      const gigSlug = '';
       const savedData = sessionStorage.getItem('gigCreationData');
       const savedStep = sessionStorage.getItem('gigCreationStep');
 
@@ -220,8 +222,8 @@ export const useGigCreation = () => {
 
 // --- VALIDATION SCHEMAS ---
 const getStep1Schema = (t) => yup.object({
-  title: yup.string().trim().required(t('validation.titleRequired')).max(100, t('validation.titleMax')),
-  brief: yup.string().trim().required(t('validation.briefRequired')).max(500, t('validation.briefMax')),
+  title: yup.string().trim().required(t('validation.titleRequired')).min(5, t('validation.titleMin')).max(100, t('validation.titleMax')),
+  brief: yup.string().trim().required(t('validation.briefRequired')).min(10, t('validation.briefMin')).max(500, t('validation.briefMax')),
   category: yup.object().required(t('validation.categoryRequired')),
   subcategory: yup.object().nullable().notRequired(),
   tags: yup.array()
@@ -506,6 +508,72 @@ function Step1({ formData, setFormData, nextStep }) {
     }
   });
 
+  const [titleStatus, setTitleStatus] = useState({
+    loading: false,
+    valid: null,
+  });
+
+
+  const titleVal = watch('title') || '';
+  const briefVal = watch('brief') || '';
+
+  const { debouncedValue: debouncedTitle } = useDebounce({ value: titleVal, delay: 500 });
+
+  useEffect(() => {
+    if (!debouncedTitle || debouncedTitle.length < 5) {
+      setTitleStatus({ loading: false, valid: null });
+      return;
+    }
+
+    let cancelled = false;
+
+    const checkTitle = async () => {
+      setTitleStatus(prev => ({ ...prev, loading: true }));
+
+      try {
+        const res = await api.get(`/services/check-title/${debouncedTitle}`);
+
+        if (cancelled) return;
+        const { isUnique, ownedByCurrentUser } = res.data;
+
+        let message = '';
+        let valid = false;
+
+        if (isUnique) {
+          valid = true;
+          message = t('titleAvailable');
+        } else if (ownedByCurrentUser) {
+          valid = false; // allow user to proceed
+          message = t('titleUsedByYou');
+        } else {
+          valid = false;
+          message = t('titleUsedByOther');
+        }
+
+        setTitleStatus({
+          loading: false,
+          valid,
+          message,
+        });
+      } catch {
+        if (!cancelled) {
+          setTitleStatus({
+            loading: false,
+            valid: false,
+            message: t('errors.titleCheckFailed'),
+          });
+        }
+      }
+    };
+
+    checkTitle();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedTitle]);
+
+
   // reinitialize when formData changes
   useEffect(() => {
     reset({
@@ -517,13 +585,18 @@ function Step1({ formData, setFormData, nextStep }) {
     });
   }, [formData, reset]);
 
-  const titleVal = watch('title') || '';
-  const briefVal = watch('brief') || '';
 
 
   const onSubmit = async data => {
     const isValid = await trigger();
     if (!isValid) return;
+
+    if (titleStatus.valid === false || titleStatus.valid === null) {
+      setTitleStatus(prev => ({ ...prev, message: t('errors.titleInvalid') }));
+      return;
+    }
+
+
     setFormData({ ...formData, title: titleVal, brief: briefVal, ...data });
     nextStep();
   };
@@ -569,6 +642,24 @@ function Step1({ formData, setFormData, nextStep }) {
         {/* Gig Title */}
         <Field title={t('gigTitle')} desc={t('gigTitleDesc')} required error={errors?.title?.message} hint={`${titleVal.length}/80`}>
           <Textarea placeholder={t('placeholders.titleExample')} {...register('title')} rows={2} className='resize-none' maxLength={80} />
+          {/* Title status */}
+          {titleStatus.loading && (
+            <p className="mt-1 text-xs text-slate-400">
+              {t('checkingTitle')}...
+            </p>
+          )}
+
+          {!titleStatus.loading && titleStatus.valid === true && (
+            <p className="mt-1 text-xs text-emerald-600">
+              {titleStatus.message || t('titleAvailable')}
+            </p>
+          )}
+
+          {!titleStatus.loading && titleStatus.valid === false && (
+            <p className="mt-1 text-xs text-red-600">
+              {titleStatus.message}
+            </p>
+          )}
         </Field>
 
         {/* Gig Brief */}

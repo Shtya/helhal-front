@@ -200,7 +200,8 @@ export default function AdminCategoriesDashboard() {
   // Columns: use table’s native types instead of render functions
   const columns = [
     { key: 'image', label: 'Image', type: 'img' },
-    { key: 'name', label: 'Name' },
+    { key: 'name_en', label: 'Name (English)' },
+    { key: 'name_ar', label: 'Name (Arabic)' },
     { key: 'slug', label: 'Slug' },
     {
       key: 'type',
@@ -309,7 +310,11 @@ export default function AdminCategoriesDashboard() {
 }
 
 const getSchema = (t) => z.object({
-  name: z
+  name_ar: z
+    .string()
+    .min(1, t('validation.nameRequired'))
+    .max(70, t('validation.nameMax')),
+  name_en: z
     .string()
     .min(1, t('validation.nameRequired'))
     .max(70, t('validation.nameMax')),
@@ -351,7 +356,8 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
   } = useForm({
     resolver: zodResolver(getSchema(t)),
     defaultValues: {
-      name: value?.name ?? '',
+      name_en: value?.name_en ?? '',
+      name_ar: value?.name_ar ?? '',
       slug: value?.slug ?? '',
       description: value?.description ?? '',
       type: value?.type ?? 'category',
@@ -360,17 +366,18 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
     },
   });
 
-  const name = watch('name');
+  const name_en = watch('name_en');
+  const name_ar = watch('name_ar');
   const slug = watch('slug');
   const type = watch('type');
 
   // Auto-update slug when name changes
   useEffect(() => {
-    const autoSlug = slugify(name || '');
-    if (!slug || slug === slugify(value?.name || '')) {
+    const autoSlug = slugify(name_en || '');
+    if (!slug || slug === slugify(value?.name_en || '')) {
       setValue('slug', autoSlug);
     }
-  }, [name]);
+  }, [name_en]);
 
   const submit = data => {
     if (readOnly || submitting) return;
@@ -415,12 +422,22 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
 
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.name')}</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.nameEn')}</label>
         <Input
           disabled={readOnly}
-          placeholder={t('modal.namePlaceholder')}
-          {...register('name')}
-          error={errors.name?.message}
+          placeholder={t('modal.nameEnPlaceholder')}
+          {...register('name_en')}
+          error={errors.name_en?.message}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.nameAr')}</label>
+        <Input
+          disabled={readOnly}
+          placeholder={t('modal.nameArPlaceholder')}
+          {...register('name_ar')}
+          error={errors.name_ar?.message}
         />
       </div>
 

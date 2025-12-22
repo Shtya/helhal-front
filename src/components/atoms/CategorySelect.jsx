@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState, forwardRef, useMemo } from 'react';
 import { ChevronDown, Loader2, Plus } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import toast from 'react-hot-toast';
 import api from '@/lib/axios';
 import FormErrorMessage from './FormErrorMessage';
 
 const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId, value, onChange, allowCreate = true, placeholder, loadingText, label, cnLabel, className, cnPlaceholder, cnSelect, name, required = false, error = null, onBlur, disabled }, ref) => {
   const t = useTranslations('CategorySelect');
+  const locale = useLocale()
   const defaultPlaceholder = placeholder || t('selectOption');
   const defaultLoadingText = loadingText || t('loading');
   const [open, setOpen] = useState(false);
@@ -116,7 +117,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
     if (!q && excludeIds.size === 0) return items;
 
     return items.filter(i => {
-      const matchesQuery = !q || (i.name || '').toLowerCase().includes(q);
+      const matchesQuery = !q || (i.name_en || '').toLowerCase().includes(q) || (i.name_ar || '').toLowerCase().includes(q);
       const notExcluded = !excludeIds.has(i.id);
       return matchesQuery && notExcluded;
     });
@@ -169,6 +170,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
   // const canCreate = allowCreate && query.trim().length > 0 && !items.some(i => (i.name || '').trim().toLowerCase() === query.trim().toLowerCase());
   const canCreate = false;
 
+
   return (
     <div className={`${className || ''} w-full relative`} ref={rootRef}>
       {label && (
@@ -191,7 +193,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
           aria-haspopup='listbox'
           aria-expanded={open}
           name={name}>
-          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{loading ? defaultLoadingText : selected?.name || defaultPlaceholder}</span>
+          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{loading ? defaultLoadingText : selected ? locale === 'ar' ? selected?.name_ar : selected?.name_en : defaultPlaceholder}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
         </button>
 
@@ -220,13 +222,15 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
                 <div className='p-3 text-sm text-gray-500'>{t('noFound', { type })}</div>
               ) : (
                 <ul className='divide-y divide-gray-100'>
-                  {filtered?.map(opt => (
-                    <li key={opt.id}>
+                  {filtered?.map(opt => {
+                    const name = locale === 'ar' ? opt.name_ar : opt.name_en;
+                    return <li key={opt.id}>
                       <button onClick={() => handleSelect(opt)} className={`w-full text-left px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-emerald-500 to-emerald-400 hover:text-white'}`}>
-                        {opt.name}
+                        {name}
                       </button>
                     </li>
-                  ))}
+                  }
+                  )}
                 </ul>
               )}
             </div>

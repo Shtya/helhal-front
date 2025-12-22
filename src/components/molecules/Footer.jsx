@@ -9,6 +9,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { localImageLoader } from '@/utils/helper';
 import { useValues } from '@/context/GlobalContext';
 import { useSearchParams } from 'next/navigation';
+import { useLangSwitcher } from '@/hooks/useLangSwitcher';
+import { useAuth } from '@/context/AuthContext';
 
 /* ===================== DATA ===================== */
 export const CATEGORY_LINKS = [
@@ -98,44 +100,17 @@ function LinksSection({ titleKey, links, directTexts = false }) {
 
 /* ===================== LANGUAGE SWITCHER ===================== */
 function LanguageSwitcher() {
-  const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const isRTL = locale === 'ar';
-
-  const languages = [
-    { code: 'en', label: 'English' },
-    { code: 'ar', label: 'العربية' },
-  ];
-
-  const handleChange = nextLocale => {
-    if (nextLocale !== locale) {
-      startTransition(() => {
-        const queryString = searchParams.toString();
-        const url = queryString ? `${pathname}?${queryString}` : pathname;
-
-        router.push(url, { locale: nextLocale });
-      });
-    }
-  };
+  const { isPending, toggleLocale, languages, locale } = useLangSwitcher()
 
   return (
     <div className='w-[180px]'>
       <div className='flex justify-between text-sm font-bold rounded-xl border border-emerald-200 overflow-hidden'>
         {languages.map(({ code, label }) => (
-          <button key={code} disabled={isPending} onClick={() => handleChange(code)} className={['w-1/2 text-center py-2 transition-colors cursor-pointer', locale === code ? 'bg-emerald-600 text-white' : 'text-emerald-700 hover:bg-emerald-50'].join(' ')} aria-label={`Switch to ${label}`}>
+          <button key={code} disabled={isPending} onClick={() => toggleLocale(code)} className={['w-1/2 text-center py-2 transition-colors cursor-pointer', locale === code ? 'bg-emerald-600 text-white' : 'text-emerald-700 hover:bg-emerald-50'].join(' ')} aria-label={`Switch to ${label}`}>
             {label}
           </button>
         ))}
       </div>
-      {/* <div className={`mt-2 flex items-center gap-2 text-xs ${isRTL ? 'justify-end' : ''}`}>
-        <Globe2 className='w-3.5 h-3.5 text-emerald-700' />
-        <span className='text-gray-600'>
-          {locale === 'ar' ? 'اللغة' : 'Language'}
-        </span>
-      </div> */}
     </div>
   );
 }
@@ -155,6 +130,8 @@ function TrustRow() {
 /* ===================== FOOTER ===================== */
 export function Footer() {
   const t = useTranslations();
+  const locale = useLocale()
+  const { role } = useAuth()
   const { categories, settings, loadingSettings } = useValues();
 
   const SOCIAL_LINKS = [
@@ -171,9 +148,9 @@ export function Footer() {
   const categoryLinks = useMemo(() => categories ? (categories)
     ?.slice(0, 10)
     .map(cat => ({
-      key: cat.name, // translation key
+      key: locale === 'ar' ? cat.name_ar : cat.name_en, // translation key
       href: `/services/${cat.slug}`, // link path
-    })) : [{ key: t('navigation_sections.categories.noCategories'), href: '#' }], [categories]);
+    })) : [{ key: t('navigation_sections.categories.noCategories'), href: '#' }], [categories, locale]);
 
   const FOOTER_NAVIGATION_STRUCTURE = [
     {
@@ -181,7 +158,7 @@ export function Footer() {
       directTexts: true,
       links: categoryLinks,
     },
-    {
+    ...(role === 'buyer' ? [{
       titleKey: 'navigation_sections.forClients.title',
       links: [
         { key: 'navigation_sections.forClients.yourAccount', href: '/profile' },
@@ -193,7 +170,17 @@ export function Footer() {
         // { key: 'navigation_sections.forClients.partnerships', href: '/' },
         // { key: 'navigation_sections.forClients.ipClaims', href: '/' },
       ],
-    },
+    }] : []),
+    ...(role === 'seller' ? [{
+      titleKey: 'navigation_sections.forFreelancers.title',
+      links: [
+        { key: 'navigation_sections.forFreelancers.createService', href: '/create-gig' },
+        { key: 'navigation_sections.forFreelancers.jobs', href: '/jobs' },
+        { key: 'navigation_sections.forFreelancers.yourProposals', href: '/jobs/proposals' },
+        //       { key: 'navigation_sections.forFreelancers.buying', href: '/' },
+        // { key: 'navigation_sections.forFreelancers.selling', href: '/' },
+      ],
+    }] : []),
     {
       titleKey: 'navigation_sections.company.title',
       links: [
@@ -205,24 +192,6 @@ export function Footer() {
         // { key: 'navigation_sections.company.helpSupport', href: '/' },
       ],
     },
-    {
-      titleKey: 'navigation_sections.forFreelancers.title',
-      links: [
-        { key: 'navigation_sections.forFreelancers.createService', href: '/create-gig' },
-        { key: 'navigation_sections.forFreelancers.jobs', href: '/jobs' },
-        { key: 'navigation_sections.forFreelancers.yourProposals', href: '/jobs/proposals' },
-        //       { key: 'navigation_sections.forFreelancers.buying', href: '/' },
-        // { key: 'navigation_sections.forFreelancers.selling', href: '/' },
-      ],
-    },
-    // {
-    //   titleKey: 'navigation_sections.businessSolutions.title',
-    //   links: [
-    //     { key: 'navigation_sections.businessSolutions.events', href: '/' },
-    //     { key: 'navigation_sections.businessSolutions.communityStandards', href: '/' },
-    //     { key: 'navigation_sections.businessSolutions.podcast', href: '/' },
-    //   ],
-    // },
   ];
 
   return (

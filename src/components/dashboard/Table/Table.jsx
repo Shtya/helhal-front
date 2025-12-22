@@ -1,6 +1,6 @@
 // ===== components/common/Table.jsx =====
 'use client';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Pagination from './Pagination';
 import { Eye, X } from 'lucide-react';
 import PriceTag from '@/components/atoms/priceTag';
@@ -8,6 +8,7 @@ import PriceTag from '@/components/atoms/priceTag';
 import Img from '@/components/atoms/Img';
 import TableEmptyState from './TableEmptyState';
 import { useTranslations } from 'next-intl';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
@@ -56,7 +57,8 @@ export default function Table({
   };
 
   const closeImagePreview = () => setSelectedImage(null);
-
+  const ref = useRef(null);
+  useOutsideClick(ref, closeImagePreview)
   const displayRows = loading ? Array.from({ length: rowsPerPage }).map((_, i) => ({ __skeleton: i })) : currentRows;
 
   const fullCount = serverMode ? totalCount ?? 0 : data.length;
@@ -64,6 +66,7 @@ export default function Table({
   const totalPages = Math.max(1, Math.ceil(fullCount / rowsPerPage));
   const showingFrom = loading || fullCount === 0 ? 0 : Math.min((effectivePage - 1) * rowsPerPage + 1, fullCount);
   const showingTo = loading || fullCount === 0 ? 0 : Math.min(effectivePage * rowsPerPage, fullCount);
+
 
 
   return (
@@ -169,7 +172,7 @@ export default function Table({
 
       {selectedImage && !loading && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div className={`relative  rounded-xl `}>
+          <div ref={ref} className={`relative  rounded-xl `}>
             <button onClick={closeImagePreview} className='w-9 h-9 inline-flex items-center justify-center z-[52] absolute -top-3 -right-3 text-white bg-slate-900 rounded-full shadow hover:opacity-90'>
               {!isImageLoading ? <X /> :
                 <span className="relative flex h-6 w-6">
@@ -178,7 +181,6 @@ export default function Table({
                 </span>}
             </button>
             <Img src={selectedImage} alt='Preview' className={`${!isImageLoading && 'bg-white ring-1 ring-slate-200'}   p-4 max-w-[80vw] max-h-[80vh] rounded-md  `} onLoad={() => setIsImageLoading(false)} />
-
           </div>
         </div>
       )}

@@ -181,10 +181,10 @@ export default function PaymentPage() {
                   <span>{t('serviceFee')}</span>
                   <span className="font-medium">{formatMoney(Number(invoice.serviceFee), currency)}</span>
                 </div>
-                <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
+                {/* <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>{t('platformPercent')}</span>
-                  <span className="font-medium">{invoice.platformPercent}%</span>
-                </div>
+                  <span className="font-medium">{invoice.platformPercent} SAR</span>
+                </div> */}
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>{t('issuedAt')}</span>
                   <span className="font-medium">{new Date(invoice.issuedAt).toLocaleDateString()}</span>

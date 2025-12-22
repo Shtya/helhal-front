@@ -146,6 +146,7 @@ export const ContinueWithGoogleButton = ({ referralCode }) => {
 
   const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
   const userType = searchParams.get('type') || null;
+
   const handleGoogleLogin = async () => {
     let url = `${API_BASE_URL}auth/google`;
     const params = new URLSearchParams();
@@ -207,7 +208,7 @@ export const ContinueWithPhoneButton = ({ onClick }) => {
 /* ---------- forms (switched to api from lib/axios) ---------- */
 const LoginForm = ({ onLoggedIn }) => {
   const t = useTranslations('Auth');
-  const { login, user } = useAuth();
+  const { login } = useAuth();
 
   const { setLoading, setError, loading } = useContext(AuthFormContext);
   const {
@@ -599,7 +600,12 @@ export default function AuthPage() {
           setNeedsUserTypeSelection(true);
         } else {
           toast.success(t('success.loggedInSuccessfully'));
-          router.push(redirectUrl);
+          if (fatchedUser.role === 'seller') {
+            router.push('/jobs');
+          }
+          else {
+            router.push(redirectUrl);
+          }
         }
       } catch (e) {
         console.error('OAuth finalize failed', e);
@@ -620,7 +626,12 @@ export default function AuthPage() {
       }));
 
       toast.success(t('success.userTypeUpdatedSuccessfully'));
-      router.push(redirectUrl);
+      if (me.role === 'seller') {
+        router.push('/jobs');
+      }
+      else {
+        router.push(redirectUrl);
+      }
     } catch (e) {
       toast.error(t('errors.failedToUpdateUserType'));
     } finally {
@@ -638,8 +649,13 @@ export default function AuthPage() {
 
   useEffect(() => {
     try {
-      if (me) {
-        if (me && window.location.pathname === '/auth') router.push('/explore');
+      if (me && window.location.pathname === '/auth') {
+        if (me.role === 'seller') {
+          router.push('/jobs');
+        }
+        else {
+          router.push('/explore');
+        }
       }
     } catch { }
   }, [router, me]);
@@ -665,14 +681,23 @@ export default function AuthPage() {
     setView('email');
   };
   const handleLoggedIn = user => {
-
-    router.push('/explore');
+    if (user.role === 'seller') {
+      router.push('/jobs');
+    }
+    else {
+      router.push('/explore');
+    }
   };
 
   const handlePhoneLoggedIn = ({ accessToken, refreshToken, user }) => {
     updateTokens({ accessToken, refreshToken });
     setCurrentUser(user);
-    router.push('/explore');
+    if (user.role === 'seller') {
+      router.push('/jobs');
+    }
+    else {
+      router.push('/explore');
+    }
   };
 
 

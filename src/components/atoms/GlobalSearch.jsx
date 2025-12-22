@@ -234,7 +234,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
 
   return (
-    <div className='max-xl:ms-auto'>
+    <div className=''>
 
       <button onClick={() => setMobileOpen(p => !p)} aria-label={t('ariaLabels.goToChat')} className=' xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
         <Search className='h-5 w-5 text-slate-600' />

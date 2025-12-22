@@ -157,10 +157,10 @@ export default function Page() {
         <Link href={`/services/${services[index].category.slug}/${services[index].slug}`} className={`${baseStyle} border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-800`} >
           <Eye className='w-4 h-4' />
         </Link>
-
+        {/* 
         <Link href={`/create-gig?slug=${services[index].slug}`} className={`${baseStyle} border-green-200 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800`} >
           <Pencil className='w-4 h-4' />
-        </Link>
+        </Link> */}
 
         <button className={`${baseStyle} border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-800`} onClick={() => handleDelete(row)}>
           <Trash2 className='w-4 h-4' />

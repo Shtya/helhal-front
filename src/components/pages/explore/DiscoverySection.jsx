@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import ServiceCard from '../services/ServiceCard';
 import Tabs from '@/components/common/Tabs';
 import { useValues } from '@/context/GlobalContext';
@@ -71,15 +71,16 @@ export default function DiscoverySection() {
     };
   }, [activeTab, t]);
 
+  const locale = useLocale()
   // build tabs: 'All' + first 4 categories
   const tabs = useMemo(() => {
     const base = [{ label: t('discovery.all'), value: 'all' }];
     const extra = (categories || [])
       .slice(0, 4)
-      .map(c => ({ label: c?.name || c?.slug || t('discovery.category'), value: c?.slug || String(c?.id || '').toLowerCase() }))
+      .map(c => ({ label: locale === 'ar' ? c?.name_ar : c?.name_en || c?.slug || t('discovery.category'), value: c?.slug || String(c?.id || '').toLowerCase() }))
       .filter(Boolean);
     return [...base, ...extra];
-  }, [categories, t]);
+  }, [categories, t, locale]);
 
   const moreHref = activeTab === 'all' ? '/services' : `/services/category=${encodeURIComponent(activeTab)}`;
 

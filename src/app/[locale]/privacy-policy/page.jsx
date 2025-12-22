@@ -1,13 +1,14 @@
 'use client'
 
 import { useValues } from "@/context/GlobalContext";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { FaRegFileAlt } from "react-icons/fa"; // 👈 example icon
 
 export default function PrivacyPolicy() {
     const { settings, loadingSettings } = useValues();
+    const locale = useLocale()
     const t = useTranslations("privacy");
-    const privacyPolicy = settings?.privacyPolicy || "";
+    const privacyPolicy = locale === 'ar' ? settings?.privacyPolicy_ar || '' : settings?.privacyPolicy_en || '';
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -16,14 +17,14 @@ export default function PrivacyPolicy() {
             </h1>
 
             {loadingSettings ? (
-                <div className="space-y-4 animate-pulse">
+                <div className="space-y-4 animate-pulse mt-8">
                     <div className="h-6 bg-slate-200 rounded w-3/4" />
                     <div className="h-4 bg-slate-200 rounded w-full" />
                     <div className="h-4 bg-slate-200 rounded w-full" />
                     <div className="h-4 bg-slate-200 rounded w-5/6" />
                     <div className="h-4 bg-slate-200 rounded w-4/6" />
                 </div>
-            ) : !privacyPolicy ? (
+            ) : privacyPolicy ? (
                 <div className="prose prose-slate max-w-none whitespace-break-spaces">
                     {privacyPolicy}
                 </div>

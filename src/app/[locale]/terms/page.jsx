@@ -1,13 +1,14 @@
 'use client'
 
 import { useValues } from "@/context/GlobalContext";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { FaFileContract } from "react-icons/fa"; // 👈 nice contract icon
 
 export default function TermsPage() {
     const { settings, loadingSettings } = useValues();
+    const locale = useLocale()
     const t = useTranslations("terms"); // 👈 namespace for translations
-    const termsContent = settings?.termsOfService || "";
+    const termsContent = locale === 'ar' ? settings?.termsOfService_ar || '' : settings?.termsOfService_en || '';
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -16,7 +17,7 @@ export default function TermsPage() {
             </h1>
 
             {loadingSettings ? (
-                <div className="space-y-4 animate-pulse">
+                <div className="space-y-4 animate-pulse mt-8">
                     <div className="h-6 bg-slate-200 rounded w-3/4" />
                     <div className="h-4 bg-slate-200 rounded w-full" />
                     <div className="h-4 bg-slate-200 rounded w-full" />
