@@ -456,7 +456,7 @@ export default function MyDisputesPage() {
                         </div>
                         <div className="text-sm flex items-center justify-between">
                           <span>{t('serviceFee')}</span>
-                          <span>{Number(detail.invoice.serviceFee).toFixed(2)} SAR</span>
+                          <span>{Number(detail.invoice.platformPercent).toFixed(2)} SAR</span>
                         </div>
                         <div className="text-sm flex items-center justify-between font-semibold">
                           <span>{t('total')}</span>

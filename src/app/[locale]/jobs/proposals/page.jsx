@@ -14,7 +14,7 @@ import { Banknote, CalendarDays, Clock, FolderOpen, User2, ArrowUp } from 'lucid
 import AttachmentList from '@/components/common/AttachmentList';
 import toast from 'react-hot-toast';
 import Tabs from '@/components/common/Tabs';
-import { isErrorAbort } from '@/utils/helper';
+import { isErrorAbort, resolveUrl } from '@/utils/helper';
 
 // -------------------------------------------------
 // Service helper — GET /jobs/my-proposals
@@ -243,7 +243,7 @@ function ProposalCard({ proposal, onOpenJob }) {
               {portfolioLinks.map((url, idx) => (
                 <li key={idx}>
                   <a
-                    href={url}
+                    href={resolveUrl(url)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-emerald-600 hover:underline break-all"

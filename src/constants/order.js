@@ -11,4 +11,6 @@ export const OrderStatus = {
     CANCELLED: 'Cancelled',
     MISSING_DETAILS: "Missing Details",
     DISPUTED: 'Disputed',
+    REJECTED: 'Rejected',
+    WAITING: 'Waiting',
 };

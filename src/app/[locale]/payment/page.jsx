@@ -179,7 +179,7 @@ export default function PaymentPage() {
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>{t('serviceFee')}</span>
-                  <span className="font-medium">{formatMoney(Number(invoice.serviceFee), currency)}</span>
+                  <span className="font-medium">{formatMoney(Number(invoice.platformPercent), currency)}</span>
                 </div>
                 {/* <div className="flex items-center justify-between rounded-xl bg-white p-3 shadow-custom">
                   <span>{t('platformPercent')}</span>

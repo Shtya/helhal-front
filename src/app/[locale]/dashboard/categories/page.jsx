@@ -18,6 +18,9 @@ import toast from 'react-hot-toast';
 import { isErrorAbort, resolveUrl } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import { useTranslations } from 'next-intl';
+import { useAuth } from '@/context/AuthContext';
+import { Permissions } from '@/constants/permissions';
+import { has } from '@/utils/permissions';
 
 export default function AdminCategoriesDashboard() {
   const t = useTranslations('Dashboard.categories');
@@ -33,6 +36,9 @@ export default function AdminCategoriesDashboard() {
 
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [sort, setSort] = useState('newest');
+  const { user: currentUser } = useAuth();
+  const isAdmin = currentUser?.role === 'admin';
+  const currentPermissions = currentUser?.permissions;
 
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
@@ -216,29 +222,34 @@ export default function AdminCategoriesDashboard() {
   const Actions = ({ row }) => {
     const isTop = row.top;
 
+
+    const canEdit = isAdmin || has(currentPermissions?.['categories'], Permissions.Categories.Edit)
+    const canDelete = isAdmin || has(currentPermissions?.['categories'], Permissions.Categories.Delete)
+    const canToggleTop = isAdmin || has(currentPermissions?.['categories'], Permissions.Categories.TopToggle)
+
     return (
       <div className='flex items-center gap-2'>
         <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title={t('actions.view')}>
           <Eye size={16} />
         </button>
-        <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title={t('actions.edit')}>
+        {canEdit && <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title={t('actions.edit')}>
           <Edit size={16} />
-        </button>
-        <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>
+        </button>}
+        {canDelete && <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>
           <Trash2 size={16} />
-        </button>
-        <button
+        </button>}
+        {canToggleTop && <button
           onClick={() => openPopularModel(isTop ? 'edit-top' : 'mark-top', row)}
           className={`p-2 rounded-full ${isTop ? 'text-yellow-600 hover:bg-yellow-50' : 'text-slate-500 hover:bg-slate-100'}`}
           title={isTop ? t('actions.unmarkTop') : t('actions.markTop')}
         >
           <Star size={16} fill={isTop ? 'currentColor' : 'none'} />
-        </button>
+        </button>}
       </div>
     );
   };
 
-
+  const canAdd = isAdmin || has(currentPermissions?.['categories'], Permissions.Categories.Add)
   return (
     <div>
       <div className='p-6'>
@@ -261,7 +272,7 @@ export default function AdminCategoriesDashboard() {
                   { id: 'top', name: t('sortOptions.top') }
                 ]}
               />
-              <Button name={t('addCategory')} onClick={openCreate} className='!w-fit' leftIcon={<Plus size={16} />} />
+              {canAdd && <Button name={t('addCategory')} onClick={openCreate} className='!w-fit' leftIcon={<Plus size={16} />} />}
             </div>
           </div>
         </GlassCard>

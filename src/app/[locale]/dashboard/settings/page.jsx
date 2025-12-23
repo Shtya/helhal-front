@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Save, RefreshCw, DollarSign, Shield, Globe, Mail, Phone, Image as ImageIcon, Wallet, Info, Share2 } from 'lucide-react';
+import { Save, RefreshCw, DollarSign, Shield, Globe, Mail, Phone, Image as ImageIcon, Wallet, Info, Share2, Percent } from 'lucide-react';
 
 import api from '@/lib/axios';
 import Input from '@/components/atoms/Input';
 import Button from '@/components/atoms/Button';
 import Textarea from '@/components/atoms/Textarea';
-import { Switcher } from '@/components/atoms/Switcher';
 import z from 'zod';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { resolveImageUrl, resolveUrl } from '@/utils/helper';
@@ -24,6 +23,12 @@ const getSettingsSchema = (t) => z.object({
     .coerce
     .number()
     .min(0, t('validation.platformFeeMin')),
+  sellerPercent: z
+    .coerce
+    .number()
+    .min(0, t('validation.serviceFeeMin'))
+    .max(100, t('validation.serviceFeeMax')),
+
   siteLogo: z
     .string()
     .refine(
@@ -170,6 +175,7 @@ export default function AdminSettingsDashboard() {
     supportPhone: '',
     // Financial
     platformPercent: 10,
+    sellerServiceFee: 10,
     defaultCurrency: 1, // currency ID (int)
     platformAccountUserId: '', // kept (backend needs it); KPI card removed
     // Flags (no affiliate)
@@ -330,12 +336,31 @@ export default function AdminSettingsDashboard() {
         {successMessage && <div className='mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800'>{successMessage}</div>}
 
         {/* KPI Row (No affiliate, no platform wallet KPI) */}
-        <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2'>
-          <MetricBadge icon={<Globe className='h-4 w-4' />} label='Brand' value={settings.siteName || '—'} intent='neutral' />
-          <MetricBadge icon={<Currency style={{ fill: "#007a55" }} size={16} />} label='Platform Fee' value={<div className='flex gap-1 items-center '>
+        <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+          {/* Brand Name */}
+          <MetricBadge
+            icon={<Globe className='h-4 w-4' />}
+            label={t('brandName')}
+            value={settings.siteName || '—'}
+            intent='neutral'
+          />
+
+          {/* Platform Fee Badge */}
+          <MetricBadge icon={<Currency style={{ fill: "#007a55" }} size={16} />} label={t('platformFee')} value={<div className='flex gap-1 items-center '>
             {Number(settings.platformPercent || 0).toFixed(1)}  <Currency style={{ fill: "#007a55" }} size={14} />
           </div>} intent='success' />
-          {/* <MetricBadge icon={<DollarSign className='h-4 w-4' />} label='Default Currency ID' value={String(settings.defaultCurrency || 1)} intent='info' hint='Change in Financial Settings' /> */}
+
+          {/* Seller Fee Badge (New) */}
+          <MetricBadge
+            icon={<Percent size={16} />}
+            label={t('serviceFee')}
+            value={
+              <div className='flex gap-1 items-center'>
+                {Number(settings.sellerServiceFee || 0).toFixed(1)}%
+              </div>
+            }
+            intent='success'
+          />
         </div>
 
         {/* Top row: General + Financial */}
@@ -384,7 +409,12 @@ export default function AdminSettingsDashboard() {
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-1'>
               <div>
                 <label className='mb-1 text-sm font-medium text-slate-700 flex items-center gap-1'>{t('fields.platformFee')} (<Currency style={{ fill: "#314158" }} size={14} />)</label>
-                <Input type='number' error={formErrors?.platformPercent} value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
+                <Input type='number' error={formErrors?.platformPercent} value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' step='0.1' />
+              </div>
+
+              <div>
+                <label className='mb-1 text-sm font-medium text-slate-700 flex items-center gap-1'>{t('serviceFee')} (<Percent size={16} />)</label>
+                <Input type='number' error={formErrors?.sellerServiceFee} value={settings.sellerServiceFee} onChange={e => updateField('sellerServiceFee', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
               </div>
               {/* 
               <div>

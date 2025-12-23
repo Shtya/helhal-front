@@ -67,12 +67,15 @@ export default function Page() {
   const TABS = [
     { label: t('tabs.all'), value: 'all' },
     { label: t('tabs.active'), value: 'active' },
+    { label: t('tabs.rejected'), value: 'rejected' },
+    { label: t('tabs.waited'), value: 'waiting' },
     { label: t('tabs.delivered'), value: 'delivered' },
     { label: t('tabs.changeRequested'), value: 'change_requested' },
     { label: t('tabs.completed'), value: 'completed' },
     { label: t('tabs.disputed'), value: 'disputed' },
     { label: t('tabs.canceled'), value: 'canceled' },
   ];
+
 
 
   function onPageChange(page) {
@@ -130,7 +133,15 @@ export default function Page() {
 
       // { key: 'orderNumber', label: 'Order number' },
       { key: 'orderDate', label: t('columns.orderDate') },
-      { key: 'total', label: t('columns.total'), type: 'price' },
+      ...(isBuyer
+        ? [
+          { key: 'total', label: t('columns.total'), type: 'price' }
+        ]
+        : [
+          // { key: 'subtotal', label: t('columns.orderAmount'), type: 'price' },
+          { key: 'sellerNetPay', label: t('columns.sellerNetPay'), type: 'price' }
+        ]
+      ),
       {
         key: 'status',
         label: t('columns.status'),
@@ -143,6 +154,7 @@ export default function Page() {
           [OrderStatus.MISSING_DETAILS, 'text-orange-600'],
           [OrderStatus.DISPUTED, 'text-purple-700'], // <—
           [OrderStatus.CHANGES_REQUESTED, 'text-pink-600'],
+          [OrderStatus.REJECTED, 'text-rose-600'],
         ],
       },
     ],
@@ -163,6 +175,8 @@ export default function Page() {
     else if (activeTab === 'canceled') params.set('status', OrderStatus.CANCELLED);
     else if (activeTab === 'disputed') params.set('status', OrderStatus.DISPUTED);
     else if (activeTab === 'change_requested') params.set('status', OrderStatus.CHANGES_REQUESTED);
+    else if (activeTab === 'rejected') params.set('status', OrderStatus.REJECTED);
+    else if (activeTab === 'waiting') params.set('status', OrderStatus.WAITING);
     // 'all' -> broad fetch
 
     params.set('page', pagination.page);
@@ -190,6 +204,12 @@ export default function Page() {
       const list = data?.records;
 
       const rows = list.map(o => {
+        const invoice = o.invoices?.[0]
+
+        const subtotal = Number(invoice?.subtotal || 0);
+        const feePercent = Number(invoice?.sellerServiceFee || 0);
+        const feeAmount = subtotal * (feePercent / 100);
+
         return {
           _raw: o,
           id: o?.id,
@@ -198,7 +218,9 @@ export default function Page() {
           seller: o?.seller ? <UserMini user={o.seller} href={`profile/${o.seller.id}`} /> : '—',
           buyer: o?.buyer ? <UserMini user={o.buyer} href={`profile/${o.buyer.id}`} /> : '—',
           orderDate: fmtDate(o?.created_at),
-          total: fmtMoney(o?.totalAmount),
+          total: fmtMoney(invoice?.totalAmount),
+          subtotal: fmtMoney(subtotal),
+          sellerNetPay: fmtMoney(subtotal - feeAmount),
           status: o?.status || '',
         };
       });
@@ -320,6 +342,50 @@ export default function Page() {
     }
   };
 
+  const handleReject = async (row) => {
+    const confirmed = window.confirm(t('rejectConfirm'));
+
+    if (!confirmed) return;
+    try {
+      setRowLoading(row.id, 'reject');
+      // Assuming the endpoint is /orders/:id/reject
+      await api.post(`/orders/${row.id}/reject`);
+
+      toast(t('orderRejected'), { icon: '🚫' });
+
+      patchOrderRow(row.id, r => ({
+        ...r,
+        status: OrderStatus.REJECTED,
+        _raw: { ...r._raw, status: OrderStatus.REJECTED },
+      }));
+    } catch (err) {
+      console.error(err);
+      toast.error(t('errors.failedToReject'));
+    } finally {
+      setRowLoading(row.id);
+    }
+  };
+
+  const handleAccept = async (row) => {
+    try {
+      setRowLoading(row.id, 'accept');
+      await api.post(`/orders/${row.id}/accept`);
+
+      toast.success(t('orderAccepted'), { icon: '✅' });
+
+      patchOrderRow(row.id, r => ({
+        ...r,
+        status: OrderStatus.ACCEPTED,
+        _raw: { ...r._raw, status: OrderStatus.ACCEPTED },
+      }));
+    } catch (err) {
+      console.error(err);
+      toast.error(t('errors.failedToAccept'));
+    } finally {
+      setRowLoading(row.id);
+    }
+  };
+
   const renderActions = useCallback((row) => {
     const s = row.status;
 
@@ -408,6 +474,22 @@ export default function Page() {
         hide: !(isBuyer && [OrderStatus.PENDING, OrderStatus.ACCEPTED].includes(s)),
         danger: true,
       },
+      {
+        icon: <XCircle className="h-4 w-4" />,
+        label: loadingAction === 'reject' ? t('actions.rejecting') : t('actions.rejectOrder'),
+        onClick: () => handleReject(row),
+        disabled: isBusy || loadingAction === 'reject',
+        hide: !(isSeller && [OrderStatus.PENDING, OrderStatus.WAITING].includes(s)),
+        danger: true,
+      },
+      {
+        icon: <XCircle className="h-4 w-4" />,
+        label: loadingAction === 'accept' ? t('actions.accepting') : t('actions.acceptOrder'),
+        onClick: () => handleAccept(row),
+        disabled: isBusy || loadingAction === 'accept',
+        hide: !(isSeller && [OrderStatus.WAITING].includes(s)),
+        danger: true,
+      }
     ];
 
     return <ActionsMenu options={options} align="right" />;

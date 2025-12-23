@@ -3,24 +3,28 @@
 import { Link, usePathname } from '@/i18n/navigation';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useMemo } from 'react';
-import { LayoutDashboard, Users, FolderTree, ShoppingBag, TrendingUp, Package, Wallet, FileText, HelpCircle, Newspaper, BookOpen, Scale, Settings, MessageSquare, BarChart3, Bell } from 'lucide-react';
+import { LayoutDashboard, Users, FolderTree, ShoppingBag, Package, Wallet, FileText, Settings, MessageSquare, Bell } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
+import { Permissions } from '@/constants/permissions';
+import { useAuth } from '@/context/AuthContext';
+import { has } from '@/utils/permissions';
 
 export const getMenuItems = (t) => [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, title: t('Dashboard.sidebar.menuItems.dashboard'), desc: t('Dashboard.sidebar.descriptions.dashboard') },
-  { name: 'Users', href: '/dashboard/users', icon: Users, title: t('Dashboard.sidebar.menuItems.users'), desc: t('Dashboard.sidebar.descriptions.users') },
-  { name: 'Categories', href: '/dashboard/categories', icon: FolderTree, title: t('Dashboard.sidebar.menuItems.categories'), desc: t('Dashboard.sidebar.descriptions.categories') },
-  { name: 'Services', href: '/dashboard/services', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.services'), desc: t('Dashboard.sidebar.descriptions.services') },
-  { name: 'Jobs', href: '/dashboard/jobs', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.jobs'), desc: t('Dashboard.sidebar.descriptions.jobs') },
-  { name: 'Orders', href: '/dashboard/orders', icon: Package, title: t('Dashboard.sidebar.menuItems.orders'), desc: t('Dashboard.sidebar.descriptions.orders') },
-  { name: 'Invoices', href: '/dashboard/invoices', icon: FileText, title: t('Dashboard.sidebar.menuItems.invoices'), desc: t('Dashboard.sidebar.descriptions.invoices') },
-  { name: 'Disputes', href: '/dashboard/disputes', icon: Wallet, title: t('Dashboard.sidebar.menuItems.disputes'), desc: t('Dashboard.sidebar.descriptions.disputes') },
-  { name: 'Finance', href: '/dashboard/finance', icon: Wallet, title: t('Dashboard.sidebar.menuItems.finance'), desc: t('Dashboard.sidebar.descriptions.finance') },
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, title: t('Dashboard.sidebar.menuItems.dashboard'), desc: t('Dashboard.sidebar.descriptions.dashboard'), domain: 'statistics', view: Permissions.Statistics.View },
+  { name: 'Users', href: '/dashboard/users', icon: Users, title: t('Dashboard.sidebar.menuItems.users'), desc: t('Dashboard.sidebar.descriptions.users'), domain: 'users', view: Permissions.Users.View },
+  { name: 'Categories', href: '/dashboard/categories', icon: FolderTree, title: t('Dashboard.sidebar.menuItems.categories'), desc: t('Dashboard.sidebar.descriptions.categories'), domain: 'categories', view: Permissions.Categories.View },
+  { name: 'Services', href: '/dashboard/services', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.services'), desc: t('Dashboard.sidebar.descriptions.services'), domain: 'services', view: Permissions.Services.View },
+  { name: 'Jobs', href: '/dashboard/jobs', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.jobs'), desc: t('Dashboard.sidebar.descriptions.jobs'), domain: 'jobs', view: Permissions.Jobs.View },
+  { name: 'Orders', href: '/dashboard/orders', icon: Package, title: t('Dashboard.sidebar.menuItems.orders'), desc: t('Dashboard.sidebar.descriptions.orders'), domain: 'orders', view: Permissions.Orders.View },
+  { name: 'Invoices', href: '/dashboard/invoices', icon: FileText, title: t('Dashboard.sidebar.menuItems.invoices'), desc: t('Dashboard.sidebar.descriptions.invoices'), domain: 'invoices', view: Permissions.Invoices.View },
+  { name: 'Disputes', href: '/dashboard/disputes', icon: Wallet, title: t('Dashboard.sidebar.menuItems.disputes'), desc: t('Dashboard.sidebar.descriptions.disputes'), domain: 'disputes', view: Permissions.Disputes.View },
+  { name: 'Finance', href: '/dashboard/finance', icon: Wallet, title: t('Dashboard.sidebar.menuItems.finance'), desc: t('Dashboard.sidebar.descriptions.finance'), domain: 'finance', view: Permissions.Finance.View },
   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare, title: t('Dashboard.sidebar.menuItems.chat'), desc: t('Dashboard.sidebar.descriptions.chat') },
   { name: 'notifications', href: '/dashboard/notifications', icon: Bell, title: t('Dashboard.sidebar.menuItems.notifications'), desc: t('Dashboard.sidebar.descriptions.notifications') },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings, title: t('Dashboard.sidebar.menuItems.settings'), desc: t('Dashboard.sidebar.descriptions.settings') },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings, title: t('Dashboard.sidebar.menuItems.settings'), desc: t('Dashboard.sidebar.descriptions.settings'), domain: 'settings', view: Permissions.Settings.Update },
 ];
+
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -38,9 +42,27 @@ const itemVariants = {
 export default function Sidebar({ open, isMobile = false, setOpen }) {
   const t = useTranslations();
   const pathname = usePathname();
-  const menuItems = getMenuItems(t);
+  const { user } = useAuth();
+
+  const role = user?.role;
+  const permissions = user?.permissions || {};
+
+  const menuItems = useMemo(() => {
+    return getMenuItems(t).filter(item => {
+      // Dashboard نفسه يظهر للجميع
+      if (!item.domain) return role === 'admin';
+
+      // Admin يشوف كل شيء
+      if (role === 'admin') return true;
+
+      // تحقق من صلاحية view
+      const mask = permissions[item.domain] ?? 0;
+      return has(mask, item.view);
+    });
+  }, [t, role, permissions]);
 
   const activeHref = useMemo(() => {
+    if (!menuItems || !menuItems.length) return;
     if (!pathname) return menuItems[0].href;
     const match = [...menuItems].sort((a, b) => b.href.length - a.href.length).find(i => pathname.startsWith(i.href));
     return match?.href ?? menuItems[0].href;
@@ -53,7 +75,7 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
       {/* Brand / Toggle strip */}
       <div className='h-16 px-3 flex items-center justify-between border-b border-slate-200/80 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/65'>
         <div className={`flex  ${!open && "!w-full flex-none justify-center"} items-center gap-3 overflow-hidden`}>
-          <Link href='/' >
+          <Link href={`${role === 'seller' ? '/jobs' : '/'}`} >
             <motion.div whileHover={{ rotate: -4, scale: 1.05 }} transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.6 }}
               className='p-1'>
               <Image src='/images/helhal-logo.png' alt='Logo' width={38} height={48} priority className='rounded-xl shadow-sm' />

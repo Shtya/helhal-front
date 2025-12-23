@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl';
 import Currency from '@/components/common/Currency';
 import Tabs from '@/components/common/Tabs';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
+
 
 const getInvoiceTabs = (t) => [
   { value: 'all', label: t('tabs.all') },
@@ -20,6 +20,7 @@ const getInvoiceTabs = (t) => [
 
 export default function InvoicesManagement() {
   const t = useTranslations('Dashboard.invoices');
+
   const invoiceTabs = getInvoiceTabs(t);
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,22 +105,23 @@ export default function InvoicesManagement() {
       </div>,
     },
     {
-      key: 'serviceFee',
-      title: t('columns.serviceFee'),
-      render: v => <div className='flex gap-1 '>
-        <Currency size={14} />
-        {v}
-      </div>,
-    },
-    {
       key: 'totalAmount',
       title: t('columns.totalAmount'),
       render: (value) => `$${value}`
     },
     {
+      key: 'sellerServiceFee',
+      title: t('columns.serviceFee'),
+      render: (value) => `${value}%`
+    },
+    {
       key: 'platformPercent',
       title: t('columns.platformPercent'),
-      render: (value) => `${value}%`
+
+      render: v => <div className='flex gap-1 '>
+        <Currency size={14} />
+        {v}
+      </div>,
     },
     {
       key: 'paymentStatus',

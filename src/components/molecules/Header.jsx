@@ -18,6 +18,8 @@ import api from '@/lib/axios';
 import { useSearchParams } from 'next/navigation';
 import { useLangSwitcher } from '@/hooks/useLangSwitcher';
 import SmallLanguageSwitcher from './SmallLanguageSwitcher';
+import { has } from '@/utils/permissions';
+import { PERMISSION_DOMAINS } from '@/constants/permissions';
 
 /* =========================================================
    Animations
@@ -57,6 +59,7 @@ export default function Header() {
   const toggleMobileNav = () => setIsMobileNavOpen(s => !s);
 
   const buildNavLinks = u => {
+    const permissions = u?.permissions;
     return useMemo(() => {
       const common = [
         ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
@@ -121,6 +124,13 @@ export default function Header() {
         },
       ];
 
+      let hasAnyViewPermission = false;
+      if (permissions) {
+        hasAnyViewPermission = PERMISSION_DOMAINS.some(domain => {
+          return has(permissions?.[domain.key], domain.viewValue)
+        })
+
+      }
       // Seller-only
       const admin = [
         {
@@ -130,23 +140,35 @@ export default function Header() {
             { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
           ],
         },
-        { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
+
       ];
 
+      let dashboard = []
       // Determine if buyer already has related seller users
       const hasRelatedSeller = u?.relatedUsers?.some(r => r.role === 'seller');
 
+      if (u?.role === 'admin' || hasAnyViewPermission) {
+        dashboard = [
+          { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
+        ]
+      }
       // Conditional + common
       if (isGuest) return [...common, ...guest, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }]
+
       if (u?.role === 'buyer') {
         const links = [...common, ...buyer];
         if (!hasRelatedSeller) {
           links.push({ href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> });
         }
+
+        links.push(...dashboard)
         return links;
       }
-      if (u?.role === 'seller') return [...common, ...seller];
-      if (u?.role === 'admin') return [...common, ...admin];
+
+
+      if (u?.role === 'seller') return [...common, ...seller, ...dashboard];
+      if (u?.role === 'admin') return [...common, ...admin, ...dashboard];
+
       return [...common]; // fallback if no role
     }, [u?.role, isGuest]);
   };

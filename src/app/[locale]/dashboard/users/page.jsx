@@ -21,6 +21,11 @@ import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import { Divider } from '@/components/UI/ui';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
+import { PermissionRow } from '@/components/dashboard/PermissionRow';
+import { PERMISSION_DOMAINS, Permissions } from '@/constants/permissions';
+import { useAuth } from '@/context/AuthContext';
+import { bitmaskToArray, has } from '@/utils/permissions';
+import { PermissionMatrix } from '@/components/dashboard/PermissionMatrix';
 
 const SellerLevel = {
   LVL1: 'lvl1',
@@ -37,7 +42,7 @@ export default function AdminUsersDashboard() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [debouncedSearch, setDebouncedSearch] = useState('');
-
+  const { user: currentUser } = useAuth();
   const [filters, setFilters] = useState({ role: '', status: 'all', page: 1, limit: 10, sortBy: 'newest', sortOrder: 'DESC' });
   const [totalUsers, setTotalUsers] = useState(0);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -56,6 +61,7 @@ export default function AdminUsersDashboard() {
     { value: 'seller', label: t('tabs.seller') },
     { value: 'admin', label: t('tabs.admin') },
   ];
+
   const controllerRef = useRef();
   const fetchUsers = useCallback(async () => {
     if (controllerRef.current) controllerRef.current.abort();
@@ -113,6 +119,23 @@ export default function AdminUsersDashboard() {
     handleFilterChange("status", status.id)
   }
 
+
+  // permission states
+  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+  const [permissions, setPermissions] = useState(null);
+
+
+  useEffect(() => {
+    if (!selectedUser || !selectedUser?.permissions) {
+      setPermissions(null);
+      return;
+    }
+
+    setPermissions({ ...selectedUser?.permissions });
+  }, [selectedUser?.id]);
+
+
+  // 
   const handleStatusChange = async (userId, newStatus) => {
     const toastId = toast.loading(t('toast.changingStatus', { status: newStatus }));
 
@@ -248,9 +271,65 @@ export default function AdminUsersDashboard() {
     { key: 'lastLogin', label: t('columns.lastLogin'), type: 'date' },
   ];
 
+  // permission actions
+  const grantAll = () => {
+    const all = {};
+    PERMISSION_DOMAINS.forEach(d => {
+      const mask = d.actions.reduce((acc, a) => acc | a.value, 0);
+      all[d.key] = mask;
+    });
+    setPermissions(all);
+  };
+
+  const removeAll = () => {
+    setPermissions(null);
+  };
+
+  const openPermissionsModal = (user) => {
+    setSelectedUser(user);
+    setShowPermissionsModal(true);
+  };
+
+
+  const [updatingPermissions, setUpdatingPermissions] = useState();
+  const savePermissions = async () => {
+    let toastId;
+    try {
+      setUpdatingPermissions(true)
+      toastId = toast.loading(t('permissions.toast.changing'));
+      await api.put(
+        `/auth/${selectedUser.id}/permissions`,
+        permissions,
+      );
+      toast.success(t('permissions.toast.updated'), { id: toastId });
+      await fetchUsers(); // refresh list
+    } catch (e) {
+      toast.error(
+        e?.response?.data?.message || t('permissions.toast.error'),
+        { id: toastId }
+      );
+    }
+    finally {
+      setUpdatingPermissions(false)
+      setShowPermissionsModal(false)
+    }
+
+  };
+
+
 
   const UserActions = ({ row }) => {
     const user = row;
+
+    const isAdmin = currentUser?.role === 'admin';
+    const currentPermissions = currentUser?.permissions;
+    const canManagePermissions = currentUser?.role === 'admin';
+    const canChangeLevel = isAdmin || has(currentPermissions?.['users'], Permissions.Users.UpdateLevel)
+    const canAdd = isAdmin || has(currentPermissions?.['users'], Permissions.Users.Add)
+    const canEdit = isAdmin || has(currentPermissions?.['users'], Permissions.Users.Edit)
+    const canDelete = isAdmin || has(currentPermissions?.['users'], Permissions.Users.Delete)
+    const canChangeStatus = isAdmin || has(currentPermissions?.['users'], Permissions.Users.ChangeStatus)
+
     return (
       <div className=" flex items-center gap-2">
         <button
@@ -261,7 +340,7 @@ export default function AdminUsersDashboard() {
           <Eye size={16} />
         </button>
         {/* New Level Selector */}
-        <Select
+        {canChangeLevel && <Select
           value={user?.sellerLevel}
           onChange={(e) => {
             if (user?.sellerLevel !== e.id) {
@@ -276,18 +355,27 @@ export default function AdminUsersDashboard() {
           ]}
           className="!w-40 !text-xs"
           variant="minimal"
-        />
-        <button
+        />}
+        {canEdit && <button
           onClick={() => handleEditClick(user)}
           className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
           title={t('actions.editUser')}
         >
           <Edit size={16} />
-        </button>
-        <div className="relative">
+        </button>}
+        {(canChangeStatus || canDelete || canManagePermissions) && <div className="relative">
           <ActionMenuPortal
           >
-            {user.status !== 'active' && (
+            {/* 🔐 Manage Permissions */}
+            {canManagePermissions && (
+              <button
+                onClick={() => openPermissionsModal(user)}
+                className="flex items-center w-full px-4 py-2 text-sm text-indigo-700 hover:bg-indigo-50"
+              >
+                {t('permissions.actions.open')}
+              </button>
+            )}
+            {canChangeStatus && user.status !== 'active' && (
               <button
                 onClick={() => handleStatusChange(user.id, 'active')}
                 className="flex items-center w-full px-4 py-2 text-sm text-emerald-700 hover:bg-emerald-50"
@@ -295,7 +383,7 @@ export default function AdminUsersDashboard() {
                 {t('actions.activate')}
               </button>
             )}
-            {user.status !== 'suspended' && (
+            {canChangeStatus && user.status !== 'suspended' && (
               <button
                 onClick={() => handleStatusChange(user.id, 'suspended')}
                 className="flex items-center w-full px-4 py-2 text-sm text-amber-700 hover:bg-amber-50"
@@ -303,14 +391,14 @@ export default function AdminUsersDashboard() {
                 {t('actions.suspend')}
               </button>
             )}
-            {user.status !== 'deleted' && (<button
+            {canDelete && user.status !== 'deleted' && (<button
               onClick={() => handleDeleteUser(user.id)}
               className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
             >
               {t('actions.delete')}
             </button>)}
           </ActionMenuPortal>
-        </div>
+        </div>}
       </div>
     )
   }
@@ -375,11 +463,11 @@ export default function AdminUsersDashboard() {
         </div>
 
         {/* Modal */}
-        <Modal open={showUserModal && (selectedUser || editingUser)} title={editMode ? t('modal.editTitle', { username: editingUser?.username || '' }) : t('modal.title')} onClose={() => {
+        <Modal open={showUserModal && (selectedUser || editingUser)} title={editMode ? t('modal.editTitle', { username: editingUser?.username || '' }) : t('modal.title')} hideFooter onClose={() => {
           setShowUserModal(false);
           setEditMode(false);
           setEditingUser(null);
-        }} size='lg' hideFooter>
+        }} size='lg'>
 
 
           {editMode ? (
@@ -489,6 +577,91 @@ export default function AdminUsersDashboard() {
 
 
         </Modal>
+
+        <Modal
+          open={showPermissionsModal}
+          title={`${t('permissions.modal.title')} ${selectedUser ? "( " + selectedUser.username + " )" : ''}`}
+          size="lg"
+          hideFooter
+          onClose={() => setShowPermissionsModal(false)}
+        >
+
+
+          {/* Top actions */}
+          <div className="flex justify-between mb-4">
+            <button
+              onClick={grantAll}
+              className="text-sm text-emerald-600 hover:underline"
+            >
+              {t('permissions.modal.grantAll')}
+            </button>
+            <button
+              onClick={removeAll}
+              className="text-sm text-red-600 hover:underline"
+            >
+              {t('permissions.modal.removeAll')}
+            </button>
+          </div>
+          {/* Selected User Info */}
+          {selectedUser && (
+            <div className="flex items-center gap-4 p-4 mb-4 bg-white rounded-xl border border-gray-300">
+              {/* Avatar */}
+              <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
+
+                <Img
+                  src={selectedUser.profileImage || '/images/placeholder-avatar.png'}
+                  alt={selectedUser.username}
+                  className="w-full h-full rounded-full object-cover"
+                />
+
+              </div>
+
+              {/* User Info */}
+              <div className="flex-1">
+                <div className="font-medium text-gray-900">
+                  {selectedUser.username}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {selectedUser.email}
+                </div>
+              </div>
+
+              {/* Role Badge */}
+              <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 capitalize">
+                {selectedUser.role}
+              </span>
+            </div>
+          )}
+
+
+          {/* Permission Matrix Container */}
+          <PermissionMatrix
+            permissions={permissions}
+            setPermissions={setPermissions}
+          />
+
+
+          {/* Footer */}
+          <div className='mt-6 flex justify-end gap-3'>
+            <button
+              onClick={() => setShowPermissionsModal(false)}
+              className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'
+              disabled={updatingPermissions}
+            >
+              {t('modal.cancel')}
+            </button>
+            <button
+              onClick={savePermissions}
+              disabled={updatingPermissions}
+              className='px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50'
+            >
+              {updatingPermissions ? t('modal.saving') : t('modal.saveChanges')}
+            </button>
+          </div>
+
+        </Modal>
+
+
       </div>
     </div>
   );

@@ -9,12 +9,20 @@ import OrderDeliveryTimer from './OrderDeliveryTimer';
 import { resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
 import Currency from '@/components/common/Currency';
+import { useAuth } from '@/context/AuthContext';
+import { usePathname } from '@/i18n/navigation';
+
 
 export default function OrderDetailsModal({ open, onClose, orderId }) {
   const t = useTranslations('MyOrders.modals.orderDetails');
+  const pathname = usePathname()
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { role } = useAuth()
+  const buyerView = role === 'buyer' || pathname.startsWith("/dashboard");
+
+
 
   useEffect(() => {
     if (!orderId || !open) {
@@ -51,6 +59,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
       [OrderStatus.DELIVERED]: 'text-blue-600 bg-blue-50',
       [OrderStatus.COMPLETED]: 'text-emerald-700 bg-emerald-50',
       [OrderStatus.CANCELLED]: 'text-rose-600 bg-rose-50',
+      [OrderStatus.REJECTED]: 'text-rose-600 bg-rose-50',
       [OrderStatus.DISPUTED]: 'text-purple-700 bg-purple-50',
       [OrderStatus.CHANGES_REQUESTED]: 'text-pink-600 bg-pink-50',
     };
@@ -70,6 +79,9 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
     }
   };
 
+  const invoice = order?.invoices?.[0]
+
+  const sellerNetPay = invoice ? Number(invoice?.subtotal) - (Number(invoice?.subtotal) * (Number(invoice?.sellerServiceFee) / 100)) : 0;
 
   return (
     <Modal title={t('title')} onClose={onClose} className="!max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -130,8 +142,13 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4 text-slate-500" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">{t('totalAmount')}</p>
-                  <p className="text-lg font-semibold text-slate-900 flex gap-1"><Currency /> {Number(order.totalAmount).toFixed(2)}</p>
+                  <p className="text-sm font-medium text-slate-700">{buyerView ? t('totalPaid') : t('orderPrice')}</p>
+                  <p className="text-lg font-semibold text-slate-900 flex gap-1"><Currency />
+                    {buyerView
+                      ? Number(invoice?.totalAmount).toFixed(2)  // Buyer sees full cost
+                      : Number(invoice?.subtotal).toFixed(2)     // Seller sees gig price
+                    }
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -292,40 +309,80 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
 
 
           {/* Invoices */}
-          {order.invoices && order.invoices.length > 0 && (
+          {invoice && (
             <div className="pt-4 border-t border-slate-200">
               <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('invoice')}</h4>
               <div className="bg-slate-50 rounded-lg p-4 space-y-2">
-                {order.invoices.map((invoice, idx) => (
-                  <div key={idx} className="bg-white rounded-lg p-3 border border-slate-200">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm font-semibold text-slate-900">{t('invoice')} #{invoice.invoiceNumber}</p>
-                      <span className={`text-xs px-2 py-1 rounded-full ${invoice.paymentStatus === 'paid'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                        }`}>
-                        {invoice.paymentStatus}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div>
-                        <p className="text-slate-600">{t('subtotal')}</p>
-                        <p className="font-medium text-slate-900">${Number(invoice.subtotal).toFixed(2)}</p>
-                      </div>
-                      <div>
-                        <p className="text-slate-600">{t('serviceFee')}</p>
-                        <p className="font-medium text-slate-900">${Number(invoice.serviceFee).toFixed(2)}</p>
-                      </div>
-                      <div className="col-span-2 pt-2 border-t border-slate-200">
-                        <p className="text-slate-600">{t('totalAmount')}</p>
-                        <p className="text-lg font-semibold text-slate-900">${Number(invoice.totalAmount).toFixed(2)}</p>
-                      </div>
-                    </div>
-                    {invoice.paymentMethod && (
-                      <p className="text-xs text-slate-500 mt-2">{t('paymentMethod')} {invoice.paymentMethod}</p>
+                <div className="bg-white rounded-lg p-3 border border-slate-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-slate-900">{t('invoice')} #{invoice.invoiceNumber}</p>
+                    <span className={`text-xs px-2 py-1 rounded-full ${invoice.paymentStatus === 'paid'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-yellow-100 text-yellow-700'
+                      }`}>
+                      {invoice.paymentStatus}
+                    </span>
+                  </div>
+                  {/* 2. Detailed Breakdown Grid */}
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {buyerView ? (
+                      // Buyer View: Service Price + Buyer Fee
+                      <>
+                        <div>
+                          <p className="text-slate-600">{t('servicePrice')}</p>
+                          <p className="font-medium text-slate-900 flex gap-1">
+                            <span><Currency /></span>
+                            <span> {Number(invoice.subtotal).toFixed(2)}</span>
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">{t('platformFee')}</p>
+                          <p className="font-medium text-slate-900 flex gap-1">
+                            <span><Currency /> </span>
+                            <span>{(Number(invoice.totalAmount) - Number(invoice.subtotal)).toFixed(2)}</span>
+                          </p>
+                        </div>
+                        <div className="col-span-2 pt-2 border-t border-slate-200">
+                          <p className="text-slate-600">{t('totalAmount')}</p>
+                          <p className="text-lg font-semibold text-slate-900 flex gap-1">
+                            <span><Currency /></span>
+                            <span> {Number(invoice.totalAmount).toFixed(2)}</span>
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      // Seller View: Service Price - Selling Commission
+                      <>
+                        <div>
+                          <p className="text-slate-600">{t('subtotal')}</p>
+                          <p className="font-medium text-slate-900 flex gap-1">
+                            <span><Currency /></span>
+                            <span>{Number(invoice.subtotal).toFixed(2)}</span>
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-slate-600">{t('sellingCommission')} ({invoice.sellerServiceFee}%)</p>
+                          <p className="font-medium text-rose-600 flex gap-1">
+                            <span><Currency /> </span>
+                            <span>- {(Number(invoice.subtotal) * (Number(invoice.sellerServiceFee) / 100)).toFixed(2)}</span>
+                          </p>
+                        </div>
+                        <div className="col-span-2 pt-2 border-t border-slate-200">
+                          <p className="text-slate-600">{t('netEarnings')}</p>
+                          <p className="text-lg font-semibold text-emerald-700 flex gap-1">
+                            <span><Currency /> </span>
+                            <span>{sellerNetPay.toFixed(2)}</span>
+
+                          </p>
+                        </div>
+                      </>
                     )}
                   </div>
-                ))}
+
+                  {invoice.paymentMethod && (
+                    <p className="text-xs text-slate-500 mt-2">{t('paymentMethod')} {invoice.paymentMethod}</p>
+                  )}
+                </div>
               </div>
             </div>
           )}

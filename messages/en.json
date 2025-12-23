@@ -1699,7 +1699,7 @@
     "reason": "Reason",
     "invoice": "Invoice",
     "subtotal": "Subtotal (escrow)",
-    "serviceFee": "Service fee",
+    "serviceFee": "Platform Percent",
     "total": "Total",
     "viewResolution": "View resolution",
     "proposedResolution": "Proposed Resolution",
@@ -1879,7 +1879,7 @@
   "MyOrders": {
     "page": {
       "title": "Manage Orders",
-      "searchPlaceholder": "Search by order number or status",
+      "searchPlaceholder": "Search by order title",
       "tabs": {
         "all": "All",
         "active": "Active",
@@ -1887,7 +1887,9 @@
         "changeRequested": "Change Requested",
         "completed": "Completed",
         "disputed": "Disputed",
-        "canceled": "Canceled"
+        "canceled": "Canceled",
+        "rejected": "Rejected",
+        "waited": "Waiting"
       },
       "columns": {
         "serviceImg": "Service img",
@@ -1896,12 +1898,17 @@
         "client": "Client",
         "orderDate": "Order date",
         "total": "Total",
+        "orderAmount": "Order Amount",
+        "sellerNetPay": "Net Earnings",
         "status": "Status"
       },
       "badges": {
         "job": "Job",
         "service": "Service"
       },
+      "rejectConfirm": "Are you sure you want to reject this order?",
+      "orderRejected": "Order has been rejected.",
+      "orderAccepted": "Order has been accepted successfully!",
       "actions": {
         "viewDetails": "View Details",
         "chat": "Chat",
@@ -1916,11 +1923,17 @@
         "viewDispute": "View Dispute",
         "pay": "Pay",
         "cancelOrder": "Cancel Order",
-        "cancelling": "Cancelling…"
+        "cancelling": "Cancelling…",
+        "rejectOrder": "Reject Order",
+        "rejecting": "Rejecting...",
+        "acceptOrder": "Accept Order",
+        "accepting": "Accepting..."
       },
       "errors": {
         "failedToLoad": "Failed to load orders.",
-        "failedToCancel": "Failed to cancel order"
+        "failedToCancel": "Failed to cancel order",
+        "failedToReject": "Failed to reject the order. Please try again.",
+        "failedToAccept": "Failed to accept the order. Please try again."
       },
       "cancelConfirm": "Are you sure you want to cancel this order?",
       "paymentCanceled": "Payment canceled"
@@ -2055,7 +2068,14 @@
         "totalAmount": "Total Amount",
         "paymentMethod": "Payment Method:",
         "fromJob": "From Job",
-        "error": "Failed to load order details"
+        "error": "Failed to load order details",
+        "sellingCommission": "Selling Commission",
+        "netEarnings": "Net Earnings",
+        "deductedFromEarnings": "Deducted from sale",
+        "servicePrice": "Service Price",
+        "platformFee": "Platform Fee",
+        "totalPaid": "Total Amount Paid",
+        "orderPrice": "Order Price"
       }
     }
   },
@@ -3046,7 +3066,9 @@
         "accepted": "Accepted",
         "delivered": "Delivered",
         "completed": "Completed",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "rejected": "Rejected",
+        "waited": "Waiting"
       },
       "columns": {
         "title": "Order Title",
@@ -3063,7 +3085,9 @@
         "delivered": "Mark Delivered",
         "complete": "Complete",
         "cancel": "Cancel",
-        "disputed": "Disputed"
+        "disputed": "Disputed",
+        "rejected": "Rejected",
+        "waited": "Waiting"
       },
       "searchPlaceholder": "Search orders…",
       "sortPlaceholder": "Order by",
@@ -3230,6 +3254,9 @@
       "privacyTipAr": "Tip: write clear sections and short paragraphs in Arabic.",
       "termsTip": "Include refunds, deliveries, disputes, and governing law.",
       "termsTipAr": "Include refunds, deliveries, disputes, and governing law in Arabic.",
+      "brandName": "Brand",
+      "platformFee": "Platform Fee",
+      "serviceFee": "Service Fee (Seller)",
       "fields": {
         "facebook": "Facebook",
         "facebookPlaceholder": "Enter Facebook URL",
@@ -3280,8 +3307,10 @@
       "uploadLogo": "Upload Logo",
       "validation": {
         "emailInvalid": "Invalid email format",
-        "platformFeeMin": "Platform fee must be at least 0SAR",
-        "platformFeeMax": "Platform fee cannot exceed 100SAR",
+        "platformFeeMin": "Platform fee must be at least 0 SAR",
+        "serviceFeeMin": "Seller fee must be at least 0%",
+        "serviceFeeMax": "Seller fee cannot exceed 100%",
+        "platformFeeMax": "Platform fee cannot exceed 100 SAR",
         "logoRequired": "Logo path is required",
         "logoInvalid": "Must be a valid image URL"
       },
@@ -3376,6 +3405,46 @@
       },
       "validation": {
         "invalidPhone": "Invalid Phone"
+      },
+      "permissions": {
+        "toast": {
+          "changing": "Changing permissions...",
+          "updated": "Permissions updated successfully",
+          "error": "Failed to update permissions"
+        },
+        "actions": {
+          "open": "Manage Permissions",
+          "view": "View",
+          "add": "Add",
+          "edit": "Edit",
+          "delete": "Delete",
+          "change_status": "Change Status",
+          "update_level": "Update Level",
+          "top_toggle": "Top Toggle",
+          "popular_toggle": "Popular Toggle",
+          "chat": "Chat",
+          "propose": "Propose",
+          "update": "Update"
+        },
+        "modal": {
+          "title": "User Permissions",
+          "grantAll": "Grant all",
+          "removeAll": "Remove all",
+          "cancel": "Cancel",
+          "save": "Save"
+        },
+        "domains": {
+          "users": "Users",
+          "categories": "Categories",
+          "services": "Services",
+          "jobs": "Jobs",
+          "orders": "Orders",
+          "invoices": "Invoices",
+          "disputes": "Disputes",
+          "finance": "Finance",
+          "settings": "Settings",
+          "statistics": "Statistics"
+        }
       }
     },
     "table": {

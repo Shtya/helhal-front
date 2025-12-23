@@ -11,18 +11,21 @@ import toast from 'react-hot-toast';
 import { getDateAgo } from '@/utils/date';
 import Client from '@/components/pages/jobs/Client';
 import StatusBadge from '@/components/pages/jobs/StatusBadge';
-import { isErrorAbort } from '@/utils/helper';
+import { isErrorAbort, resolveUrl } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import { useTranslations } from 'next-intl';
 import Currency from '@/components/common/Currency';
+import { useAuth } from '@/context/AuthContext';
+import { Permissions } from '@/constants/permissions';
+import { has } from '@/utils/permissions';
 
 export default function AdminJobsDashboard() {
   const t = useTranslations('Dashboard.jobs');
   const [activeTab, setActiveTab] = useState('all');
   const [orderBy, setOrderBy] = useState({ id: 'newest', name: 'Newest' });
   const [debouncedSearch, setDebouncedSearch] = useState('');
-
+  const { user: currentUser } = useAuth();
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -138,7 +141,8 @@ export default function AdminJobsDashboard() {
       }
 
       toastId = toast.loading(t('toast.changingStatus', { status }));
-      await api.put(`/jobs/${id}`, { status });
+
+      await api.put(`/jobs/${id}/status`, null, { params: { status } });
       toast.success(t('toast.statusSet', { status }), { id: toastId });
       await fetchJobs();
     } catch (e) {
@@ -198,12 +202,18 @@ export default function AdminJobsDashboard() {
     { key: 'created_at', label: t('columns.created'), type: 'date' },
   ];
 
-  const Actions = ({ row }) => (
-    <div className='flex items-center gap-2'>
+  const Actions = ({ row }) => {
+    const isAdmin = currentUser?.role === 'admin';
+    const currentPermissions = currentUser?.permissions;
+
+    const canDelete = isAdmin || has(currentPermissions?.['jobs'], Permissions.Jobs.Delete)
+    const canChangeStatus = isAdmin || has(currentPermissions?.['jobs'], Permissions.Jobs.ChangeStatus)
+
+    return <div className='flex items-center gap-2'>
       <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title={t('actions.view')}>
         <Eye size={16} />
       </button>
-      <Select
+      {canChangeStatus && <Select
         value={row?.status}
         onChange={e => {
           if (row?.status !== e.id)
@@ -218,12 +228,13 @@ export default function AdminJobsDashboard() {
         ]}
         className='!w-40 !text-xs'
         variant='minimal'
-      />
-      <button onClick={() => deleteJob(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>
+      />}
+      {canDelete && <button onClick={() => deleteJob(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>
         <Trash2 size={16} />
-      </button>
+      </button>}
     </div>
-  );
+  }
+    ;
 
   return (
     <div>
@@ -352,7 +363,7 @@ function JobView({ value, onClose }) {
             {value.attachments.map((a, i) => (
               <div key={i} className='flex items-center justify-between py-2 border-b last:border-b-0'>
                 <span className='text-sm'>{a.name}</span>
-                <a href={a.url} target='_blank' rel='noopener noreferrer' className='text-blue-600 hover:underline text-sm'>
+                <a href={resolveUrl(a.url)} target='_blank' rel='noopener noreferrer' className='text-blue-600 hover:underline text-sm'>
                   {t('modal.download')}
                 </a>
               </div>

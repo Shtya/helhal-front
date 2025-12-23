@@ -331,7 +331,7 @@ function PortfolioEditor({ about, setAbout }) {
       <div className='mt-3 grid grid-cols-1 gap-2'>
         {(about.portfolioItems || []).map((it, i) => (
           <div key={i} className='flex items-center justify-between rounded-xl border border-[#EDEDED] p-2'>
-            <a href={it.url} className='truncate text-blue-600' target='_blank' rel='noreferrer'>
+            <a href={resolveUrl(it.url)} className='truncate text-blue-600' target='_blank' rel='noreferrer'>
               {it.url}
             </a>
             <button onClick={() => setAbout(a => ({ ...a, portfolioItems: a.portfolioItems.filter((_, idx) => idx !== i) }))} className='text-red-600'>

@@ -22,6 +22,8 @@ import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import { useTranslations } from 'next-intl';
+import { Permissions } from '@/constants/permissions';
+import { has } from '@/utils/permissions';
 
 
 function UserMini({ user }) {
@@ -106,7 +108,7 @@ export default function DisputesPage() {
     setFilters(p => ({ ...p, page: 1 }));
   };
   const [rows, setRows] = useState([]);
-
+  const { user: currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState({});
 
@@ -443,14 +445,19 @@ export default function DisputesPage() {
     const busy = !!actionLoading[row.id];
     const s = row.status;
 
-    const canPropose = [DisputeStatus.OPEN, DisputeStatus.IN_REVIEW].includes(s);
+    const isAdmin = currentUser?.role === 'admin';
+    const currentPermissions = currentUser?.permissions;
+    const canChangeStatus = isAdmin || has(currentPermissions?.['disputes'], Permissions.Disputes.ChangeStatus)
+    const canChat = isAdmin || has(currentPermissions?.['disputes'], Permissions.Disputes.Chat)
+    const hasProposePermission = isAdmin || has(currentPermissions?.['disputes'], Permissions.Disputes.Propose)
+    const canPropose = hasProposePermission && [DisputeStatus.OPEN, DisputeStatus.IN_REVIEW].includes(s);
 
     const options = [
       { icon: <Eye className='h-4 w-4' />, label: t('Dashboard.disputes.actions.view'), onClick: () => openDetails(row), disabled: busy },
-      { icon: <Activity className='h-4 w-4' />, label: t('Dashboard.disputes.actions.activity'), onClick: () => openActivity(row), disabled: busy },
+      { icon: <Activity className='h-4 w-4' />, label: t('Dashboard.disputes.actions.activity'), onClick: () => openActivity(row), disabled: busy, hide: !canChat },
       { icon: <FilePlus className='h-4 w-4' />, label: t('Dashboard.disputes.actions.propose'), onClick: () => openResolution(row), disabled: busy, hide: !canPropose },
-      { icon: <MdOutlineLockOpen className='h-4 w-4' />, label: t('Dashboard.disputes.actions.openAgain'), onClick: () => setStatus(row, DisputeStatus.OPEN), disabled: busy, hide: s === DisputeStatus.OPEN },
-      { icon: <Search className='h-4 w-4' />, label: t('Dashboard.disputes.actions.markInReview'), onClick: () => setStatus(row, DisputeStatus.IN_REVIEW), disabled: busy, hide: s === DisputeStatus.IN_REVIEW },
+      { icon: <MdOutlineLockOpen className='h-4 w-4' />, label: t('Dashboard.disputes.actions.openAgain'), onClick: () => setStatus(row, DisputeStatus.OPEN), disabled: busy, hide: s === DisputeStatus.OPEN || !canChangeStatus },
+      { icon: <Search className='h-4 w-4' />, label: t('Dashboard.disputes.actions.markInReview'), onClick: () => setStatus(row, DisputeStatus.IN_REVIEW), disabled: busy, hide: s === DisputeStatus.IN_REVIEW || !canChangeStatus },
       { icon: <CheckCircle className='h-4 w-4' />, label: busy ? t('Dashboard.disputes.actions.closing') : t('Dashboard.disputes.actions.closeOrder'), onClick: () => setStatus(row, DisputeStatus.CLOSED_NO_PAYOUT), disabled: busy, hide: !canPropose },
       { icon: <XCircle className='h-4 w-4' />, label: busy ? t('Dashboard.disputes.actions.rejecting') : t('Dashboard.disputes.actions.reject'), onClick: () => setStatus(row, DisputeStatus.REJECTED), disabled: busy, danger: true, hide: !canPropose },
     ];
@@ -461,7 +468,7 @@ export default function DisputesPage() {
 
   const inv = orderDetail?.invoices?.[0];
   const subtotal = Number(inv?.subtotal || 0);
-  const serviceFee = Number(inv?.serviceFee || 0);
+  const serviceFee = Number(inv?.platformPercent || 0);
   const total = Number(inv?.totalAmount || 0);
   const currency = 'SAR';
 
@@ -551,7 +558,7 @@ export default function DisputesPage() {
                     <span>{subtotal.toFixed(2)} {currency}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>{t('Dashboard.disputes.modals.serviceFee')}</span>
+                    <span>{t('Dashboard.disputes.modals.serviceFeePlatform')}</span>
                     <span>{serviceFee.toFixed(2)} {currency}</span>
                   </div>
                   <div className="flex justify-between font-medium">
@@ -578,7 +585,7 @@ export default function DisputesPage() {
 
             <div className='rounded-lg border border-gray-200 p-3'>
               <h4 className='font-medium mb-2'>{t('Dashboard.disputes.modals.invoice')}</h4>
-              {!orderDetail ? (
+              {orderDetailLoading ? (
                 <div className='space-y-2'>
                   <Shimmer className='h-4 w-32' />
                   <Shimmer className='h-4 w-24' />
@@ -653,7 +660,7 @@ export default function DisputesPage() {
             {resError ? <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{resError}</div> : null}
 
             <div className='flex items-center justify-end gap-2'>
-              <Button name={resSubmitting ? t('Dashboard.disputes.modals.processing') : t('Dashboard.disputes.modals.resolvePayout')} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'}`} loading={resSubmitting || !orderDetail} />
+              <Button disabled={!orderDetail} name={resSubmitting ? t('Dashboard.disputes.modals.processing') : t('Dashboard.disputes.modals.resolvePayout')} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'}`} loading={resSubmitting} />
             </div>
           </div>
         </Modal>

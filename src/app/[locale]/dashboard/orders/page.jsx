@@ -15,21 +15,16 @@ import SearchBox from '@/components/common/Filters/SearchBox';
 import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import Currency from '@/components/common/Currency';
+import { useAuth } from '@/context/AuthContext';
+import { Permissions } from '@/constants/permissions';
+import { has } from '@/utils/permissions';
+import { OrderStatus } from '@/constants/order';
 
-const OrderStatus = {
-  PENDING: 'Pending',
-  ACCEPTED: 'Accepted',
-  DELIVERED: 'Delivered',
-  COMPLETED: 'Completed',
-  CANCELLED: 'Cancelled',
-  MISSING_DETAILS: 'Missing Details',
-  DISPUTED: 'Disputed',
-}
 
 export default function AdminOrdersDashboard() {
   const t = useTranslations('Dashboard.orders'); // Add this
   const [activeTab, setActiveTab] = useState('all');
-
+  const { user: currentUser } = useAuth();
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -66,6 +61,8 @@ export default function AdminOrdersDashboard() {
     { value: 'Delivered', label: t('tabs.delivered') },
     { value: 'Completed', label: t('tabs.completed') },
     { value: 'Cancelled', label: t('tabs.cancelled') },
+    { value: 'Rejected', label: t('tabs.rejected') },
+    { value: 'Waiting', label: t('tabs.waited') },
   ];
 
   const controllerRef = useRef();
@@ -206,10 +203,16 @@ export default function AdminOrdersDashboard() {
   const Actions = ({ row }) => {
     const currentStatus = row.status;
 
+    const isAdmin = currentUser?.role === 'admin';
+    const currentPermissions = currentUser?.permissions;
+    const canChangeStatus = isAdmin || has(currentPermissions?.['orders'], Permissions.Orders.ChangeStatus)
+
     const validTransitions = {
-      [OrderStatus.PENDING]: [OrderStatus.ACCEPTED, OrderStatus.CANCELLED],
+      [OrderStatus.PENDING]: [OrderStatus.ACCEPTED, OrderStatus.CANCELLED, OrderStatus.REJECTED],
       [OrderStatus.ACCEPTED]: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
       [OrderStatus.DELIVERED]: [OrderStatus.COMPLETED, OrderStatus.CANCELLED],
+      [OrderStatus.WAITING]: [OrderStatus.ACCEPTED, OrderStatus.REJECTED],
+
     };
 
     const statusLabels = {
@@ -219,6 +222,9 @@ export default function AdminOrdersDashboard() {
       [OrderStatus.COMPLETED]: t('statusLabels.complete'),
       [OrderStatus.CANCELLED]: t('statusLabels.cancel'),
       [OrderStatus.DISPUTED]: t('statusLabels.disputed'),
+      [OrderStatus.REJECTED]: t('statusLabels.rejected'),
+      [OrderStatus.WAITING]: t('statusLabels.waited'),
+
     };
 
     const allowed = validTransitions[currentStatus] || [];
@@ -245,7 +251,7 @@ export default function AdminOrdersDashboard() {
           <Eye size={16} />
         </button>
 
-        <Select
+        {canChangeStatus && <Select
           value={currentStatus}
           onChange={opt => {
             if (opt.id === currentStatus) return;
@@ -254,7 +260,7 @@ export default function AdminOrdersDashboard() {
           options={options}
           className="!w-40 !text-xs"
           variant="minimal"
-        />
+        />}
       </div>
     );
   };

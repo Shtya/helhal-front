@@ -152,7 +152,7 @@ export default function ProfilePageClient() {
             <InfoRow icon={Calendar} label={t('deactivatedAt')} value={prettyDate(buyer?.deactivatedAt)} />
           </Card>
 
-          <Card title={t('introVideo')}>
+          {/* <Card title={t('introVideo')}>
             {buyer?.introVideoUrl ? <video src={resolveUrl(buyer?.introVideoUrl)} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />
               : (<div>
                 <div type='button' className='group flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-10 text-slate-600'>
@@ -188,7 +188,6 @@ export default function ProfilePageClient() {
 
           <Card title={t('portfolioFile')}>
 
-            {/* Preview / state */}
             <div className='mt-4'>
               {buyer?.portfolioFile ? (
                 <div className='relative flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3'>
@@ -203,7 +202,6 @@ export default function ProfilePageClient() {
                     <span className='truncate text-ellipsis flex-1 min-w-0'>{buyer.portfolioFile.filename}</span>
                   </a>
 
-                  {/* Overlay to indicate read-only */}
                   <div className='absolute inset-0 rounded-xl bg-black/5 pointer-events-none' />
                 </div>
               ) : (
@@ -212,7 +210,7 @@ export default function ProfilePageClient() {
                 </div>
               )}
             </div>
-          </Card>
+          </Card> */}
 
 
 

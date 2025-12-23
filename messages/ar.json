@@ -1142,7 +1142,7 @@
     "reason": "السبب",
     "invoice": "الفاتورة",
     "subtotal": "المجموع الفرعي (الضمان)",
-    "serviceFee": "رسوم الخدمة",
+    "serviceFee": "رسوم المنصة",
     "total": "المجموع",
     "viewResolution": "عرض الحل",
     "proposedResolution": "الحل المقترح",
@@ -1322,7 +1322,7 @@
   "MyOrders": {
     "page": {
       "title": "إدارة الطلبات",
-      "searchPlaceholder": "البحث برقم الطلب أو الحالة",
+      "searchPlaceholder": "البحث بعنوان الطلب",
       "tabs": {
         "all": "الكل",
         "active": "نشط",
@@ -1330,7 +1330,9 @@
         "changeRequested": "تم طلب التعديل",
         "completed": "مكتمل",
         "disputed": "نزاع",
-        "canceled": "ملغي"
+        "canceled": "ملغي",
+        "rejected": "مرفوض",
+        "waited": "منتظر"
       },
       "columns": {
         "serviceImg": "صورة الخدمة",
@@ -1338,6 +1340,8 @@
         "freelancer": "المستقل",
         "client": "العميل",
         "orderDate": "تاريخ الطلب",
+        "orderAmount": "قيمة الطلب",
+        "sellerNetPay": "صافي الأرباح",
         "total": "الإجمالي",
         "status": "الحالة"
       },
@@ -1345,7 +1349,12 @@
         "job": "وظيفة",
         "service": "خدمة"
       },
+      "rejectConfirm": "هل أنت متأكد أنك تريد رفض هذا الطلب؟",
+      "orderRejected": "تم رفض الطلب بنجاح.",
+      "orderAccepted": "تم قبول الطلب بنجاح!",
       "actions": {
+        "rejectOrder": "رفض الطلب",
+        "rejecting": "جاري الرفض...",
         "viewDetails": "عرض التفاصيل",
         "chat": "محادثة",
         "reviewSubmission": "مراجعة التسليم",
@@ -1359,11 +1368,15 @@
         "viewDispute": "عرض النزاع",
         "pay": "دفع",
         "cancelOrder": "إلغاء الطلب",
-        "cancelling": "جاري الإلغاء…"
+        "cancelling": "جاري الإلغاء…",
+        "acceptOrder": "قبول الطلب",
+        "accepting": "جاري القبول..."
       },
       "errors": {
         "failedToLoad": "فشل تحميل الطلبات.",
-        "failedToCancel": "فشل إلغاء الطلب"
+        "failedToCancel": "فشل إلغاء الطلب",
+        "failedToReject": "فشل رفض الطلب. يرجى المحاولة مرة أخرى.",
+        "failedToAccept": "فشل في قبول الطلب. يرجى المحاولة مرة أخرى."
       },
       "cancelConfirm": "هل أنت متأكد أنك تريد إلغاء هذا الطلب؟",
       "paymentCanceled": "تم إلغاء الدفع"
@@ -1498,7 +1511,14 @@
         "totalAmount": "المبلغ الإجمالي",
         "paymentMethod": "طريقة الدفع:",
         "fromJob": "من وظيفة",
-        "error": "فشل تحميل تفاصيل الطلب"
+        "error": "فشل تحميل تفاصيل الطلب",
+        "sellingCommission": "عمولة البيع",
+        "netEarnings": "صافي أرباحك",
+        "deductedFromEarnings": "تستقطع من قيمة البيع",
+        "servicePrice": "سعر الخدمة",
+        "platformFee": "رسوم المنصة",
+        "totalPaid": "إجمالي المبلغ المدفوع",
+        "orderPrice": "سعر الطلب"
       }
     }
   },
@@ -2556,7 +2576,9 @@
         "accepted": "مقبول",
         "delivered": "تم التسليم",
         "completed": "مكتمل",
-        "cancelled": "ملغي"
+        "cancelled": "ملغي",
+        "rejected": "مرفوض",
+        "waited": "منتظر"
       },
       "columns": {
         "title": "عنوان الطلب",
@@ -2573,7 +2595,9 @@
         "delivered": "وضع علامة على التسليم",
         "complete": "إكمال",
         "cancel": "إلغاء",
-        "disputed": "متنازع عليه"
+        "disputed": "متنازع عليه",
+        "rejected": "مرفوض",
+        "waited": "منتظر"
       },
       "searchPlaceholder": "ابحث في الطلبات…",
       "sortPlaceholder": "رتب حسب",
@@ -2740,6 +2764,9 @@
       "privacyTipAr": "نصيحة: اكتب أقسام واضحة وفقرات قصيرة بالعربية.",
       "termsTip": "تأكد من تضمين الاسترداد، التسليم، النزاعات، والقانون الحاكم.",
       "termsTipAr": "تأكد من تضمين الاسترداد، التسليم، النزاعات، والقانون الحاكم بالعربية.",
+      "brandName": "العلامة التجارية",
+      "platformFee": "رسوم المنصة",
+      "serviceFee": "نسبة الاستقطاع من البائع",
       "fields": {
         "facebook": "فيسبوك",
         "facebookPlaceholder": "أدخل رابط فيسبوك",
@@ -2791,6 +2818,8 @@
       "validation": {
         "emailInvalid": "تنسيق بريد إلكتروني غير صالح",
         "platformFeeMin": "يجب أن تكون رسوم المنصة 0 ريال على الأقل",
+        "serviceFeeMin": "يجب أن تكون عمولة البائع 0% على الأقل",
+        "serviceFeeMax": "لا يمكن أن تتجاوز عمولة البائع 100%",
         "platformFeeMax": "لا يمكن أن تتجاوز رسوم المنصة 100ريال",
         "logoRequired": "مسار الشعار مطلوب",
         "logoInvalid": "يجب أن يكون رابط صورة صالح"
@@ -2886,6 +2915,46 @@
       },
       "validation": {
         "invalidPhone": "رقم هاتف غير صالح"
+      },
+      "permissions": {
+        "toast": {
+          "changing": "جاري تغيير الصلاحيات...",
+          "updated": "تم تحديث الصلاحيات بنجاح",
+          "error": "فشل في تحديث الصلاحيات"
+        },
+        "actions": {
+          "open": "إدارة الصلاحيات",
+          "view": "عرض",
+          "add": "إضافة",
+          "edit": "تعديل",
+          "delete": "حذف",
+          "change_status": "تغيير الحالة",
+          "update_level": "تحديث المستوى",
+          "top_toggle": "تبديل الأعلى",
+          "popular_toggle": "تبديل الشائع",
+          "chat": "محادثة",
+          "propose": "اقتراح",
+          "update": "تحديث"
+        },
+        "modal": {
+          "title": "صلاحيات المستخدم",
+          "grantAll": "منح الكل",
+          "removeAll": "إزالة الكل",
+          "cancel": "إلغاء",
+          "save": "حفظ"
+        },
+        "domains": {
+          "users": "المستخدمون",
+          "categories": "الأقسام",
+          "services": "الخدمات",
+          "jobs": "الوظائف",
+          "orders": "الطلبات",
+          "invoices": "الفواتير",
+          "disputes": "النزاعات",
+          "finance": "المالية",
+          "settings": "الإعدادات",
+          "statistics": "الإحصائيات"
+        }
       }
     },
     "table": {

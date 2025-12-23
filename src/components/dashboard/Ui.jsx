@@ -133,6 +133,7 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
       const target = initialFocusRef?.current || el.querySelector(FOCUSABLE) || closeBtnRef.current || el;
       target?.focus();
     };
+
     const handleKey = e => {
       if (e.key === 'Escape') onClose();
       if (e.key !== 'Tab') return;
@@ -163,7 +164,7 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
       document.removeEventListener('keydown', handleKey);
       prevActive?.focus?.();
     };
-  }, [open, onClose, initialFocusRef]);
+  }, [open]);
 
   const accentGrad = {
     emerald: 'from-emerald-400/50 via-teal-400/40 to-sky-400/40',

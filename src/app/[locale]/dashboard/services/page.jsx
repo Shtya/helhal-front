@@ -16,6 +16,9 @@ import { Link } from '@/i18n/navigation';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import { resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
+import { Permissions } from '@/constants/permissions';
+import { useAuth } from '@/context/AuthContext';
+import { has } from '@/utils/permissions';
 
 export default function AdminServicesDashboard() {
   const t = useTranslations('Dashboard.services');
@@ -34,7 +37,7 @@ export default function AdminServicesDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(null);
-
+  const { user: currentUser } = useAuth();
   const [rows, setRows] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
 
@@ -232,12 +235,18 @@ export default function AdminServicesDashboard() {
 
   const Actions = ({ row }) => {
     const isPopular = row.popular;
+    const isAdmin = currentUser?.role === 'admin';
+    const currentPermissions = currentUser?.permissions;
+
+    const canPopulate = isAdmin || has(currentPermissions?.['services'], Permissions.Services.PopularToggle)
+    const canChangeStatus = isAdmin || has(currentPermissions?.['services'], Permissions.Services.ChangeStatus)
+
 
     return (<div className='flex items-center gap-2'>
       <Link href={`/services/category/${row.slug}`} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title={t('actions.view')}>
         <Eye size={16} />
       </Link>
-      <Select
+      {canChangeStatus && <Select
         value={row.status}
         onChange={e => {
           if (row.status !== e.id)
@@ -252,8 +261,8 @@ export default function AdminServicesDashboard() {
         ]}
         className='!w-32 !text-xs'
         variant='minimal'
-      />
-      <button
+      />}
+      {canPopulate && <button
         onClick={() => openPopularModel(isPopular ? 'edit-popular' : 'mark-popular', row)}
         className={`p-2 rounded-full ${isPopular
           ? 'text-yellow-600 hover:bg-yellow-50'
@@ -262,7 +271,7 @@ export default function AdminServicesDashboard() {
         title={isPopular ? t('actions.unmarkPopular') : t('actions.markPopular')}
       >
         <Star size={16} fill={isPopular ? 'currentColor' : 'none'} />
-      </button>
+      </button>}
     </div>)
   }
 
