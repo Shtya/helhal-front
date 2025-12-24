@@ -19,6 +19,7 @@ import { usernameSchema } from '@/utils/profile';
 import { useAuth } from '@/context/AuthContext';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import Logo from '@/components/common/Logo';
+import Image from 'next/image';
 
 
 /* ---------- schemas ----------- */
@@ -739,7 +740,7 @@ export default function AuthPage() {
           {/* left hero */}
           <div className='hidden w-full lg:flex p-12 text-white relative overflow-hidden'>
             <div className='absolute inset-0 z-[10]' style={{ background: 'linear-gradient(269.99deg, rgba(0,0,0,0) 15.21%, rgba(0,0,0,0.48) 33.9%, rgba(0,0,0,0.8) 132.88%)' }} />
-            <img src='/images/auth.jpeg' alt='' className='absolute inset-0 object-cover w-full h-full object-right' />
+            <Image priority loading='eager' fill src='/images/auth.jpeg' alt='' className='absolute inset-0 object-cover w-full h-full object-right' />
             <div className='relative z-10 max-w-2xl mx-auto my-auto'>
               <motion.h1 className='text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-3'>  {t('hero.title')}</motion.h1>
               <motion.p className='text-base lg:text-lg xl:text-2xl    font-normal mb-6'>{t('hero.subtitle')}</motion.p>

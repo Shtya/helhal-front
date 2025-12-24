@@ -30,11 +30,11 @@ body {
 
 [dir='ltr'] body {
   /* font-family: "SF UI Display"; */
-  font-family: var(--font-open-sans) !important;
+  font-family: var(--font-english), sans-serif !important;
 }
 
 [dir='rtl'] body {
-  font-family: var(--font-arabic) !important;
+  font-family: var(--font-arabic), sans-serif !important;
 }
 
 .scrollbar-custom {

@@ -1,28 +1,26 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '../../i18n/routing';
-import { IBM_Plex_Sans_Arabic, Open_Sans } from 'next/font/google';
+import { Cairo, IBM_Plex_Sans } from 'next/font/google';
 import './globals.css';
 // import '@/../public/fonts/fonts.css';
 import React from 'react';
 import Layout from '../../components/molecules/Layout';
 export const dynamic = "force-dynamic";
 
-const openSans = Open_Sans({
-  variable: '--font-open-sans',
-  subsets: ['latin'],            // أضف 'latin-ext' إذا تحتاج
-  weight: ['300', '400', '500', '600', '700', '800'],
-  display: 'swap',
-});
-
-const arabicSans = IBM_Plex_Sans_Arabic({
-  variable: '--font-arabic',
-  subsets: ['arabic'],
+const englishSans = IBM_Plex_Sans({
+  variable: '--font-english',
+  subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   display: 'swap',
 });
 
-
+const arabicSans = Cairo({
+  variable: '--font-arabic',
+  subsets: ['arabic'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+});
 export function generateStaticParams() {
   return routing.locales.map(locale => ({ locale }));
 }
@@ -67,7 +65,6 @@ export async function generateMetadata({ params }) {
   const { locale } = await params;
   const backend = (process.env.NEXT_PUBLIC_BACKEND_URL || '').replace(/\/$/, '');
   let settings = {};
-  console.log("BACKEND:", backend)
 
   try {
     const res = await fetch(`${backend}/api/v1/settings/public`, { cache: 'no-store' });
@@ -112,7 +109,7 @@ export default async function RootLayout({ children, params }) {
 
   return (
     <html lang={locale} dir={locale == 'en' ? 'ltr' : 'rtl'} suppressHydrationWarning>
-      <body className={`bg-[#fff] scroll ${arabicSans.variable} ${openSans.variable}`}>
+      <body className={`bg-[#fff] scroll ${arabicSans.variable} ${englishSans.variable}`}>
         <NextIntlClientProvider locale={locale}>
           <Layout>{children}</Layout>
         </NextIntlClientProvider>

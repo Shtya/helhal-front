@@ -218,7 +218,7 @@ function Hero() {
 
   return (
     <section className='relative h-[68vh] md:h-[76vh] w-full overflow-hidden'>
-      <Image src='/images/hero-background.jpg' alt={t('hero.alt')} fill priority className='object-cover object-center' />
+      <Image priority loading='eager' src='/images/hero-background.jpg' alt={t('hero.alt')} fill className='object-cover object-center' />
 
       {/* Green gradient overlay */}
       <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-emerald-900/35 to-black/60' />

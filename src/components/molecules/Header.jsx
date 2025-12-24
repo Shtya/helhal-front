@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransi
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useLocale, useTranslations } from 'next-intl';
-import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard, Globe2 } from 'lucide-react';
+import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard, Globe2, Wrench, Zap, Package, Layers } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
 import { localImageLoader } from '@/utils/helper';
 import { useAuth } from '@/context/AuthContext';
@@ -65,12 +65,12 @@ export default function Header() {
         ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
         {
           label: tHeader('navigation.services'),
-          icon: <Briefcase className='h-5 w-5' />,
+          icon: <Package className='h-5 w-5' />,
           children: [
             ...(u?.role !== 'seller' ? [{
               href: '/services',
               label: tHeader('navigation.services'),
-              icon: <Briefcase className='h-4 w-4' />,
+              icon: <Layers className='h-4 w-4' />,
             },
             {
               href: '/services/all',
@@ -454,7 +454,7 @@ export function DropdownItem({ label, icon, active, children }) {
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute start-0 mt-2 w-[240px] rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute start-0  w-[240px] rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         {children}
       </motion.div>
     </div>
@@ -463,7 +463,7 @@ export function DropdownItem({ label, icon, active, children }) {
 
 function DropdownPanel({ items = [] }) {
   return (
-    <ul className='py-2 '>
+    <ul className='p-2'>
       <span className='bg-red-500 opacity-0 w-full  h-[20px] top-[-20px] block absolute inset-0'></span>
       {items.map(it => (
         <li key={it.href}>
