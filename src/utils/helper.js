@@ -41,11 +41,12 @@ export function maskEmail(email) {
 }
 
 
-//pathname: string, params: URLSearchParams
-export function updateUrlParams(pathname, params) {
-    const newUrl = `${pathname}?${params.toString()}`;
+export function updateUrlParams(pathname, params, locale) {
+    const localizedPath = locale ? `/${locale}${pathname}` : pathname;
+    const newUrl = `${localizedPath}?${params.toString()}`;
     window.history.replaceState(null, '', newUrl);
 }
+
 
 
 export const fmtMoney = n => `${n?.toLocaleString()}`;

@@ -14,11 +14,12 @@ import StatusBadge from '@/components/pages/jobs/StatusBadge';
 import { isErrorAbort, resolveUrl } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Currency from '@/components/common/Currency';
 import { useAuth } from '@/context/AuthContext';
 import { Permissions } from '@/constants/permissions';
 import { has } from '@/utils/permissions';
+import CountryFlag from '@/components/common/CountryFlag';
 
 export default function AdminJobsDashboard() {
   const t = useTranslations('Dashboard.jobs');
@@ -280,6 +281,7 @@ export default function AdminJobsDashboard() {
 
 function JobView({ value, onClose }) {
   const t = useTranslations('Dashboard.jobs');
+  const locale = useLocale()
   if (!value) return null;
   const createdAt = value?.created_at;
   const formatted = createdAt
@@ -325,6 +327,34 @@ function JobView({ value, onClose }) {
         </div>
       </div>
 
+      <div>
+        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.location')}</label>
+        <div className='p-3 bg-slate-50 rounded-md whitespace-pre-wrap'>
+          <span className='flex gap-1'>
+            {(() => {
+              const JobCountry = locale === 'ar'
+                ? (value?.country?.name_ar || value?.country?.name || '—')
+                : (value?.country?.name || '—');
+
+              const JobState = locale === 'ar'
+                ? (value?.state?.name_ar || value?.state?.name || '—')
+                : (value?.state?.name || '—');
+
+              // Only show if at least one exists
+              if (JobCountry === '—' && JobState === '—') return null;
+
+              return (
+                <span className='flex gap-1'>
+                  {value?.country?.iso2 && <CountryFlag countryCode={value.country.iso2} />}
+                  {JobCountry}{JobCountry && JobState ? ' · ' : ''}{JobState}
+                </span>
+              );
+            })()}
+          </span>
+        </div>
+      </div>
+
+
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>
           <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.preferredDelivery')}</label>
@@ -356,34 +386,38 @@ function JobView({ value, onClose }) {
         </div>
       </div>
 
-      {value.attachments?.length > 0 && (
-        <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.attachments')}</label>
-          <div className='p-3 bg-slate-50 rounded-md'>
-            {value.attachments.map((a, i) => (
-              <div key={i} className='flex items-center justify-between py-2 border-b last:border-b-0'>
-                <span className='text-sm'>{a.name}</span>
-                <a href={resolveUrl(a.url)} target='_blank' rel='noopener noreferrer' className='text-blue-600 hover:underline text-sm'>
-                  {t('modal.download')}
-                </a>
-              </div>
-            ))}
+      {
+        value.attachments?.length > 0 && (
+          <div>
+            <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.attachments')}</label>
+            <div className='p-3 bg-slate-50 rounded-md'>
+              {value.attachments.map((a, i) => (
+                <div key={i} className='flex items-center justify-between py-2 border-b last:border-b-0'>
+                  <span className='text-sm'>{a.name}</span>
+                  <a href={resolveUrl(a.url)} target='_blank' rel='noopener noreferrer' className='text-blue-600 hover:underline text-sm'>
+                    {t('modal.download')}
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-      {value?.additionalInfo && (
-        <section>
-          <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('modal.additionalDetails')}</h4>
-          <p className='text-sm text-slate-700 whitespace-pre-wrap'>{value?.additionalInfo}</p>
-        </section>
-      )}
+      {
+        value?.additionalInfo && (
+          <section>
+            <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('modal.additionalDetails')}</h4>
+            <p className='text-sm text-slate-700 whitespace-pre-wrap'>{value?.additionalInfo}</p>
+          </section>
+        )
+      }
 
       <div className='flex justify-end'>
         <Button color='white' name={t('modal.close')} onClick={onClose} className='!w-fit'>
           {t('modal.close')}
         </Button>
       </div>
-    </div>
+    </div >
   );
 }

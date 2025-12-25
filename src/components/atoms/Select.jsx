@@ -6,13 +6,17 @@ import { ChevronDown } from 'lucide-react';
 import { List } from "react-virtualized";
 import InputSearch from './InputSearch';
 import FormErrorMessage from './FormErrorMessage';
+import { useTranslations } from 'next-intl';
 
 //options = [{ id: '1', name: 'Option 1' }, { id: '2', name: 'Option 2' }]
-const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder = 'Select an option', label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, selectkey, ...props }, ref) => {
+const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder, label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, selectkey, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [touched, setTouched] = useState(false);
   const [internalOptions, setOptions] = useState(options);
+  const t = useTranslations('Select');
+  const defaultLoadingText = t('loading');
+  const defaultPlaceholder = placeholder || t('selectOption');
 
   const rootRef = useRef(null);
   const buttonRef = useRef(null);
@@ -45,6 +49,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
       if (open) {
         setOptions(options);
         setOpen(false)
+        onOpenToggle?.(false)
       };
       if (!touched) {
         setTouched(true);
@@ -55,6 +60,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
       if (e.key === 'Escape') {
         setOptions(options);
         setOpen(false)
+        onOpenToggle?.(false)
       };
     };
     document.addEventListener('mousedown', onDocClick);
@@ -68,6 +74,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
   const handleSelect = option => {
     setSelected(option);
     setOpen(false);
+    onOpenToggle?.(false)
     setOptions(options);
     setTouched(true);
     onChange?.(option);
@@ -75,6 +82,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
   };
 
   const handleButtonClick = () => {
+    onOpenToggle?.(!open)
     setOpen(v => !v);
     if (!touched) {
       setTouched(true);
@@ -164,12 +172,17 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
       return
     }
 
-    const filtered = customSearch ? customSearch(term) : options.filter(opt => opt.name.toLowerCase().includes(term.toLowerCase()));
+    const filtered = customSearch ? customSearch(term, options) : options.filter(opt => opt.name.toLowerCase().includes(term.toLowerCase()));
 
     setOptions(filtered);
-
-
   }
+
+  // Sync internal options when the prop options change (e.g., after loading finishes)
+  useEffect(() => {
+    setOptions(options);
+  }, [options]);
+
+
   // The dropdown menu rendered in a portal to escape overflow clipping
   const menu = open
     ? createPortal(
@@ -197,7 +210,8 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
             </div>)
             : internalOptions.length === 0 ? (
               <div className='p-4 text-sm text-gray-500 text-center'>
-                No options available.
+
+                {t('noOptions')}
               </div>
             )
               : isVirtualized ? (
@@ -228,6 +242,7 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
 
   const formated = useMemo(() => formatSelected && selected ? formatSelected(selected) : selected?.name, [selected, formatSelected]);
 
+
   return (
     <div className={`${className || ''} w-full`} ref={rootRef}>
       {label && (
@@ -250,7 +265,9 @@ const Select = forwardRef(({ isVirtualized, VirtualizeWidth = 300, cnVirtualize,
           aria-expanded={open}
           name={name}
           {...props}>
-          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated && selectkey ? `${selectkey}: ` : ''} {formated || placeholder}</span>
+
+          {isLoading ? <span className={`truncate text-gray-900 font-medium`}>{defaultLoadingText || defaultPlaceholder}</span>
+            : <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated && selectkey ? `${selectkey}: ` : ''} {formated || defaultPlaceholder}</span>}
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
         </button>
       </div>

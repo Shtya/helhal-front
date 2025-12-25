@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -20,6 +20,7 @@ import AttachmentList from '@/components/common/AttachmentList';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import Currency from '@/components/common/Currency';
+import LocationSelect from '@/components/atoms/LocationSelect';
 
 const MIN_SKILL_LENGTH = 2;
 const MAX_SKILL_LENGTH = 50;
@@ -46,6 +47,13 @@ function createJobValidationSchema(t) {
       .required(t('validation.categoryRequired')),
 
     subcategoryId: yup
+      .string().optional().nullable(),
+
+    countryId: yup
+      .string()
+      .required(t('validation.countryRequired')),
+
+    stateId: yup
       .string().optional().nullable(),
 
     skillsRequired: yup
@@ -138,6 +146,8 @@ export default function CreateJobPage() {
       description: '',
       categoryId: '',
       subcategoryId: '',
+      countryId: '',
+      stateId: '',
       skillsRequired: [],
       attachments: [],
       additionalInfo: '',
@@ -222,6 +232,8 @@ export default function CreateJobPage() {
       description: '',
       categoryId: '',
       subcategoryId: '',
+      countryId: '',
+      stateId: '',
       skillsRequired: [],
       attachments: [],
       additionalInfo: '',
@@ -270,8 +282,10 @@ export default function CreateJobPage() {
     };
 
     // Clean UI-only fields
-    delete payload.subcategory;
     delete payload.category;
+    delete payload.subcategory;
+    delete payload.country;
+    delete payload.state;
 
     // Only send status on UPDATE; for CREATE let backend/setting decide
     if (existingJobId) {
@@ -463,7 +477,7 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
   const t = useTranslations('CreateJob.form');
 
   const handleNext = async () => {
-    const isValid = await trigger(['title', 'description', 'categoryId', 'skillsRequired', 'attachments']);
+    const isValid = await trigger(['title', 'description', 'categoryId', 'skillsRequired', 'attachments', 'countryId', 'stateId']);
     console.log(errors)
     if (isValid) {
       setCurrentStep(1);
@@ -527,6 +541,54 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
           )}
         />
       </div>
+
+      {/* Country Selection */}
+      <div className='mb-4'>
+        <Controller
+          name='countryId'
+          control={control}
+          render={({ field }) => (
+            <LocationSelect
+              type='country'
+              label={t('countryLabel')}
+              value={watch('countryId')}
+              onChange={opt => {
+                field.onChange(opt.id);
+                setValue('country', opt);
+                setValue('stateId', null);
+                setValue('state', null);
+              }}
+              error={errors?.countryId?.message}
+              placeholder={t('selectCountry')}
+            />
+          )}
+        />
+      </div>
+
+      {/* State Selection (Dependent on Country) */}
+      <div className='mb-4'>
+        <Controller
+          name='stateId'
+          control={control}
+          render={({ field }) => (
+            <LocationSelect
+              type='state'
+              parentId={watch('countryId')} // Pass selected countryId here
+              label={t('stateLabel')}
+              value={watch('stateId')}
+              onChange={opt => {
+                field.onChange(opt.id)
+                setValue('state', opt);
+              }}
+              error={errors?.stateId?.message}
+              placeholder={watch('countryId') ? t('selectState') : t('selectCountryFirst')}
+              disabled={!watch('countryId')} // Disable if no country is selected
+            />
+          )}
+        />
+      </div>
+
+
 
       <div className='mb-4'>
         <InputList label={t('skillsLabel')} value={formValues.skillsRequired || []} getValues={getValues} setValue={setValue} fieldName='skillsRequired' placeholder={t('skillsPlaceholder')} errors={errors} validationMessage={t('skillsValidation')} maxTags={MAX_SKILLS} />
@@ -613,6 +675,8 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
           <Item label={t('description')} value={data.description || '—'} className cnValue='whitespace-pre-wrap' />
           <Item label={t('category')} value={isArabic ? data.category?.name_ar || '—' : data.category?.name_en || '—'} />
           {data.subcategoryId && <Item label={t('subcategory')} value={isArabic ? data.subcategory?.name_ar || '—' : data.subcategory?.name_en || '—'} />}
+          <Item label={t('country')} value={isArabic ? data.country?.name_ar || '—' : data.country?.name || '—'} />
+          {data.stateId && <Item label={t('state')} value={isArabic ? data.state?.name_ar || '—' : data.state?.name || '—'} />}
 
           <ItemSkills label={t('skillsRequired')} value={data.skillsRequired} />
 

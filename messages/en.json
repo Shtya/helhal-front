@@ -1154,6 +1154,7 @@
       "preferredDelivery": "Preferred delivery",
       "day": "day",
       "days": "days",
+      "location": "Location",
       "skillsAndExpertise": "Skills and Expertise",
       "paymentMethodVerified": "Payment method verified",
       "attachments": "Attachments",
@@ -1178,6 +1179,11 @@
       "ago": "ago",
       "hour": "hour",
       "hours": "hours",
+      "countryLabel": "Country",
+      "stateLabel": "State/Province",
+      "selectCountry": "Select a country",
+      "selectState": "Select a state",
+      "selectCountryFirst": "Please select a country first",
       "validation": {
         "min20Chars": "Min 20 characters",
         "max3000Chars": "Max 3000 characters",
@@ -1448,6 +1454,7 @@
       "preferredDelivery": "Preferred delivery",
       "day": "day",
       "days": "days",
+      "location": "Location",
       "skillsAndExpertise": "Skills and Expertise",
       "aboutTheClient": "About the client",
       "posted": "Posted",
@@ -1521,6 +1528,7 @@
     }
   },
   "CreateJob": {
+    "selectCountryFirst": "Please select a country first",
     "steps": {
       "step1": "Project Details",
       "step2": "Budget & Delivery",
@@ -1562,7 +1570,12 @@
       "preferredDeliveryHint": "Estimated delivery time in days",
       "back": "Back",
       "next": "Next",
-      "publishJob": "Publish Job"
+      "publishJob": "Publish Job",
+      "countryLabel": "Country",
+      "selectCountry": "Select a country",
+      "stateLabel": "State / Province",
+      "selectState": "Select a state",
+      "selectCountryFirst": "Please select a country first"
     },
     "review": {
       "projectDetailsTitle": "Project Details",
@@ -1580,7 +1593,9 @@
       "noFilesAttached": "No files attached",
       "budget": "Budget",
       "deliveryDays": "Delivery Days",
-      "notSpecified": "Not specified"
+      "notSpecified": "Not specified",
+      "country": "Country",
+      "state": "State"
     },
     "validation": {
       "titleRequired": "Title is required",
@@ -1590,6 +1605,7 @@
       "descriptionMin": "Description must be at least 12 characters",
       "descriptionMax": "Description must be at most 15,000 characters",
       "categoryRequired": "Category is required",
+      "countryRequired": "Country is required",
       "skillMin": "Each skill must be at least {min} characters",
       "skillMax": "Each skill must be at most {max} characters",
       "skillsMin": "At least one skill is required",
@@ -3043,6 +3059,7 @@
         "attachments": "Attachments",
         "download": "Download",
         "additionalDetails": "Additional Details",
+        "location": "Location",
         "close": "Close"
       },
       "toast": {
@@ -3576,5 +3593,20 @@
     "title": "Terms of Service",
     "notFoundTitle": "Terms of Service Not Found",
     "notFoundDescription": "We couldn’t find the terms of service right now. Please check back later."
+  },
+  "LocationSelect": {
+    "search": "Search for a {type}...",
+    "loading": "Loading...",
+    "noFound": "No {type} found",
+    "selectOption": "Select an option",
+    "errors": {
+      "failedToLoad": "Failed to load locations. Please try again."
+    }
+  },
+  "Select": {
+    "loading": "Loading...",
+    "noOptions": "No options available",
+    "selectOption": "Select an option",
+    "placeholder": "Select an option"
   }
 }

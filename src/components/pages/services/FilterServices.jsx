@@ -181,7 +181,7 @@ export default function FilterServices({ category = 'all' }) {
         fetchAllServices();
     }, [fetchAllServices]);
 
-
+    const locale = useLocale()
     // sync formData with searchParams
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
@@ -200,7 +200,7 @@ export default function FilterServices({ category = 'all' }) {
         if (formData.fastDelivery) params.set('fastDelivery', 'true'); else params.delete('fastDelivery')
         if (formData.additionalRevision) params.set('additionalRevision', 'true'); else params.delete('additionalRevision')
 
-        updateUrlParams(pathname, params);
+        updateUrlParams(pathname, params, locale);
     }, [formData]);
 
     //sync search with searchParms
@@ -208,7 +208,7 @@ export default function FilterServices({ category = 'all' }) {
         const params = new URLSearchParams(searchParams);
 
         if (debounced?.trim()) params.set('q', debounced?.trim()); else params.delete('q');
-        updateUrlParams(pathname, params);
+        updateUrlParams(pathname, params, locale);
     }, [debounced]);
 
     //sync search with searchParms
@@ -216,7 +216,7 @@ export default function FilterServices({ category = 'all' }) {
         const params = new URLSearchParams(searchParams);
 
         if (pagination.page) params.set('page', pagination.page); else params.delete('page');
-        updateUrlParams(pathname, params);
+        updateUrlParams(pathname, params, locale);
     }, [pagination.page]);
 
 

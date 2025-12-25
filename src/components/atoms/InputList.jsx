@@ -244,7 +244,7 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
               }
             }}
             placeholder={tags.length ? '' : placeholder}
-            className='w-full border-0 outline-none focus:ring-0 text-sm text-gray-900 placeholder:text-gray-400 pr-8'
+            className='w-full border-0 outline-none focus:ring-0 text-sm text-gray-900 placeholder:text-gray-400 pr-3'
             disabled={!canAddMore}
           />
           <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute end-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md  disabled:opacity-40' disabled={!canAddMore || !inputValue.trim() || (minTagLength && inputValue?.length < minTagLength)}>

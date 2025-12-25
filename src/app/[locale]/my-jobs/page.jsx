@@ -2,7 +2,7 @@
 'use client';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { deleteJob, getMyJobs, updateJob } from '@/services/jobService';
 
 import NoResults from '@/components/common/NoResults';
@@ -20,6 +20,7 @@ import { CalendarDays, CheckCircle2, CircleX, FolderOpen, X } from 'lucide-react
 import AttachmentList from '@/components/common/AttachmentList';
 import api from '@/lib/axios';
 import Currency from '@/components/common/Currency';
+import CountryFlag from '@/components/common/CountryFlag';
 
 
 // -------------------------------------------------
@@ -76,13 +77,13 @@ export default function MyJobsPage() {
     setCurrentPage(1);
   }
 
-
+  const locale = useLocale()
   useEffect(() => {
     if (!activeTab) return;
 
     const params = new URLSearchParams();
     params.set('tab', activeTab);
-    updateUrlParams(pathname, params);
+    updateUrlParams(pathname, params, locale);
   }, [activeTab]);
 
 
@@ -212,7 +213,7 @@ export default function MyJobsPage() {
       if (selectedJobId) params.set('job', String(selectedJobId));
     } else {
       params.delete('job');
-    } updateUrlParams(pathname, params);
+    } updateUrlParams(pathname, params, locale);
   }, [selectedJobId]);
 
 
@@ -278,7 +279,7 @@ function JobDrawer({ open, onClose, job, jobId }) {
   const t = useTranslations('MyJobs.page');
   const [localJob, setLocalJob] = useState(job);
   const [jobLoading, setJobLoading] = useState(false);
-
+  const locale = useLocale()
   useEffect(() => {
 
     if (!job) return;
@@ -392,6 +393,35 @@ function JobDrawer({ open, onClose, job, jobId }) {
                       </div>
                     </section>
                   )}
+
+
+                  {/* Location */}
+                  <section className="rounded-xl border border-slate-200 p-4 mt-4">
+                    <h4 className="text-sm font-semibold text-slate-900 mb-2">{t('location')}</h4>
+                    <div className="text-slate-700 text-sm flex flex-col gap-1">
+                      {/** Determine country and state based on locale */}
+                      {(() => {
+                        const JobCountry = locale === 'ar'
+                          ? (localJob?.country?.name_ar || localJob?.country?.name || '—')
+                          : (localJob?.country?.name || '—');
+
+                        const JobState = locale === 'ar'
+                          ? (localJob?.state?.name_ar || localJob?.state?.name || '—')
+                          : (localJob?.state?.name || '—');
+
+                        // Only show if at least one exists
+                        if (JobCountry === '—' && JobState === '—') return null;
+
+                        return (
+                          <span className='flex gap-1'>
+                            {localJob?.country?.iso2 && <CountryFlag countryCode={localJob.country.iso2} />}
+                            {JobCountry}{JobCountry && JobState ? ' · ' : ''}{JobState}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  </section>
+
 
                   {/* Client */}
                   <section>

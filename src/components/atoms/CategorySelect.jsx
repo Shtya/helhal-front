@@ -225,7 +225,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
                   {filtered?.map(opt => {
                     const name = locale === 'ar' ? opt.name_ar : opt.name_en;
                     return <li key={opt.id}>
-                      <button onClick={() => handleSelect(opt)} className={`w-full text-left px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-emerald-500 to-emerald-400 hover:text-white'}`}>
+                      <button onClick={() => handleSelect(opt)} className={`w-full text-start px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-emerald-500 to-emerald-400 hover:text-white'}`}>
                         {name}
                       </button>
                     </li>

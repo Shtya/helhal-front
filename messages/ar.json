@@ -597,6 +597,7 @@
       "preferredDelivery": "وقت التسليم المفضل",
       "day": "يوم",
       "days": "أيام",
+      "location": "المكان",
       "skillsAndExpertise": "المهارات والخبرة",
       "paymentMethodVerified": "تم التحقق من طريقة الدفع",
       "attachments": "المرفقات",
@@ -621,6 +622,11 @@
       "ago": "منذ",
       "hour": "ساعة",
       "hours": "ساعات",
+      "countryLabel": "الدولة",
+      "stateLabel": "المنطقة/المحافظة",
+      "selectCountry": "اختر الدولة",
+      "selectState": "اختر المنطقة",
+      "selectCountryFirst": "يرجى اختيار الدولة أولاً",
       "validation": {
         "min20Chars": "الحد الأدنى 20 حرف",
         "max3000Chars": "الحد الأقصى 3000 حرف",
@@ -891,6 +897,7 @@
       "preferredDelivery": "وقت التسليم المفضل",
       "day": "يوم",
       "days": "أيام",
+      "location": "المكان",
       "skillsAndExpertise": "المهارات والخبرة",
       "aboutTheClient": "حول العميل",
       "posted": "نُشر",
@@ -1005,7 +1012,12 @@
       "preferredDeliveryHint": "وقت التسليم المقدر بالأيام",
       "back": "رجوع",
       "next": "التالي",
-      "publishJob": "نشر الوظيفة"
+      "publishJob": "نشر الوظيفة",
+      "countryLabel": "الدولة",
+      "selectCountry": "اختر الدولة",
+      "stateLabel": "المنطقة / المحافظة",
+      "selectState": "اختر المنطقة",
+      "selectCountryFirst": "يرجى اختيار الدولة أولاً"
     },
     "review": {
       "projectDetailsTitle": "تفاصيل المشروع",
@@ -1023,7 +1035,9 @@
       "noFilesAttached": "لا توجد ملفات مرفقة",
       "budget": "الميزانية",
       "deliveryDays": "أيام التسليم",
-      "notSpecified": "غير محدد"
+      "notSpecified": "غير محدد",
+      "country": "الدولة",
+      "state": "المنطقة"
     },
     "validation": {
       "titleRequired": "العنوان مطلوب",
@@ -1033,6 +1047,7 @@
       "descriptionMin": "يجب أن يكون الوصف 12 حرفاً على الأقل",
       "descriptionMax": "يجب ألا يتجاوز الوصف 15,000 حرف",
       "categoryRequired": "الفئة مطلوبة",
+      "countryRequired": "الدولة مطلوبة",
       "skillMin": "يجب أن تكون كل مهارة {min} أحرف على الأقل",
       "skillMax": "يجب ألا تتجاوز كل مهارة {max} حرف",
       "skillsMin": "مهارة واحدة على الأقل مطلوبة",
@@ -2553,6 +2568,7 @@
         "attachments": "المرفقات",
         "download": "تنزيل",
         "additionalDetails": "تفاصيل إضافية",
+        "location": "المكان",
         "close": "إغلاق"
       },
       "toast": {
@@ -3086,5 +3102,20 @@
     "title": "شروط الخدمة",
     "notFoundTitle": "لم يتم العثور على شروط الخدمة",
     "notFoundDescription": "لا توجد شروط خدمة متاحة حالياً. يرجى المحاولة لاحقاً."
+  },
+  "LocationSelect": {
+    "search": "البحث عن {type}...",
+    "loading": "جاري التحميل...",
+    "noFound": "لم يتم العثور على {type}",
+    "selectOption": "اختر خياراً",
+    "errors": {
+      "failedToLoad": "فشل تحميل البيانات. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "Select": {
+    "loading": "جاري التحميل...",
+    "noOptions": "لا توجد خيارات متاحة",
+    "selectOption": "اختر خياراً",
+    "placeholder": "اختر خيارًا"
   }
 }

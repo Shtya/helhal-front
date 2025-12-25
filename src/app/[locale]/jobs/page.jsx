@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import api from '@/lib/axios';
 import InputSearch from '@/components/atoms/InputSearch';
 import Select from '@/components/atoms/Select';
@@ -24,6 +24,8 @@ import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdo
 import CategorySelect from '@/components/atoms/CategorySelect';
 import Client from '@/components/pages/jobs/Client';
 import Currency from '@/components/common/Currency';
+import LocationSelect from '@/components/atoms/LocationSelect';
+import CountryFlag from '@/components/common/CountryFlag';
 
 // -------------------------------------------------
 // Services
@@ -39,6 +41,8 @@ function buildQuery({ page = 1, limit = 12, search = '', filters = {} } = {}) {
 
   // map filters to API params
   if (filters.category) out.category = String(filters.category);
+  if (filters.country) out.country = String(filters.country);
+  if (filters.state) out.state = String(filters.state);
   if (filters.budgetType) out.budgetType = String(filters.budgetType);
   if (filters.priceRange) out.priceRange = String(filters.priceRange);
   if (filters.customBudget) out.customBudget = String(filters.customBudget);
@@ -53,7 +57,7 @@ function buildQuery({ page = 1, limit = 12, search = '', filters = {} } = {}) {
   return out;
 }
 
-async function listPublishedJobs({ page = 1, limit = 12, search = '', category, budgetType, max7days, withAttachments, customBudget, priceRange, sortBy = 'created_at', sortOrder = 'DESC' } = {}, { signal }) {
+async function listPublishedJobs({ page = 1, limit = 12, search = '', category, country, state, budgetType, max7days, withAttachments, customBudget, priceRange, sortBy = 'created_at', sortOrder = 'DESC' } = {}, { signal }) {
   const res = await api.get('/jobs', {
     params: {
       page,
@@ -67,6 +71,8 @@ async function listPublishedJobs({ page = 1, limit = 12, search = '', category, 
       priceRange,
       sortBy,
       sortOrder,
+      country,
+      state,
       filters: { status: 'published' },
     },
     signal
@@ -134,6 +140,7 @@ export default function SellerJobsPage() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { role } = useAuth();
+  const locale = useLocale()
   // keep job id in sync with URL
   const jobIdFromUrl = searchParams.get('job') || null;
   // Data
@@ -187,6 +194,8 @@ export default function SellerJobsPage() {
     max7days: searchParams.get('max7days') === 'true',
     withAttachments: searchParams.get('withAttachments') === 'true',
     category: searchParams.get('category') || '',
+    country: searchParams.get('country') || '',
+    state: searchParams.get('state') || '',
   });
 
 
@@ -267,7 +276,7 @@ export default function SellerJobsPage() {
       }
     });
 
-    updateUrlParams(pathname, params);
+    updateUrlParams(pathname, params, locale);
   }, [page, limit, debouncedQ?.trim(), filters, pathname, selectedJobId]);
 
   const controllerRef = useRef();
@@ -318,6 +327,27 @@ export default function SellerJobsPage() {
             placeholder={t('page.selectCategory')}
           />
 
+          <LocationSelect
+            type='country'
+            value={filters?.country}
+            cnPlaceholder='!text-gray-900'
+            onChange={opt => {
+              setFilter('country', opt?.id ?? '');
+            }}
+            placeholder={t('page.selectCountry')}
+          />
+
+          <LocationSelect
+            type='state'
+            parentId={filters?.country} // Pass selected countryId here
+            value={filters?.state}
+            cnPlaceholder='!text-gray-900'
+            onChange={opt => {
+              setFilter('state', opt?.id ?? '');
+            }}
+            placeholder={filters?.country ? t('page.selectState') : t('page.selectCountryFirst')}
+            disabled={!filters?.country}
+          />
 
           <Select
             value={filters.budgetType}
@@ -447,12 +477,17 @@ function HeroHeader() {
 function JobCard({ job, onOpen, index }) {
   const t = useTranslations('Jobs');
   const { user } = useAuth();
+  const locale = useLocale();
 
   const posted = timeAgo?.(job?.created_at, t) || '';
   const createdDate = (job?.created_at || '').split('T')[0];
   const budgetLine = formatBudget?.(job, t) || `${job?.pricing || ''}`;
   const buyer = job?.buyer || {};
-  const country = buyer?.country || '—';
+
+  // get country and state based on locale
+  const country = locale === 'ar' ? (job?.country?.name_ar || job?.country?.name || '—') : (job?.country?.name || '—');
+  const state = locale === 'ar' ? (job?.state?.name_ar || job?.state?.name || '—') : (job?.state?.name || '—');
+
 
   // determine relation to current user
   const isRelatedToUser = Boolean(
@@ -480,6 +515,13 @@ function JobCard({ job, onOpen, index }) {
       <UserAvatar buyer={buyer} />
 
       <h2 className='text-lg sm:text-xl font-semibold text-slate-900 leading-snug'>{job.title}</h2>
+      {/* Display country and state if exist */}
+      {(country || state) && (
+        <div className='mt-1 text-sm text-slate-600 flex gap-1'>
+          {country}{country && state ? ' · ' : ''}{state}
+        </div>
+      )}
+
 
       <div className='mt-1 text-sm text-slate-600 flex gap-1'> {budgetLine || `{t('page.fixedPrice')} · Intermediate`}<Currency style={{ fill: "#45556c" }} /></div>
 
@@ -580,7 +622,7 @@ function createApplySchema(t) {
 export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
   const t = useTranslations('Jobs');
   const { role, user } = useAuth();
-
+  const locale = useLocale()
   const [localJob, setLocalJob] = useState(job);
   const [jobLoading, setJobLoading] = useState(false);
 
@@ -659,6 +701,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
   const created = (localJob?.created_at || '').split('T')[0];
 
+  // get country and state based on locale
 
 
   return (
@@ -754,6 +797,35 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                         </div>
                       </section>
                     )}
+
+                    {/* Location */}
+                    <section className="rounded-xl border border-slate-200 p-4 mt-4">
+                      <h4 className="text-sm font-semibold text-slate-900 mb-2">{t('page.location')}</h4>
+                      <div className="text-slate-700 text-sm flex flex-col gap-1">
+                        {/** Determine country and state based on locale */}
+                        {(() => {
+                          const JobCountry = locale === 'ar'
+                            ? (localJob?.country?.name_ar || localJob?.country?.name || '—')
+                            : (localJob?.country?.name || '—');
+
+                          const JobState = locale === 'ar'
+                            ? (localJob?.state?.name_ar || localJob?.state?.name || '—')
+                            : (localJob?.state?.name || '—');
+
+                          // Only show if at least one exists
+                          if (JobCountry === '—' && JobState === '—') return null;
+
+                          return (
+                            <span className='flex gap-1'>
+                              {localJob?.country?.iso2 && <CountryFlag countryCode={localJob.country.iso2} />}
+                              {JobCountry}{JobCountry && JobState ? ' · ' : ''}{JobState}
+                            </span>
+                          );
+                        })()}
+                      </div>
+                    </section>
+
+
 
                     {/* Client */}
                     <section>
@@ -926,3 +998,5 @@ function JobDrawerSkeleton({ onClose }) {
     </div>
   );
 }
+
+

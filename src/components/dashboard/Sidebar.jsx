@@ -3,7 +3,7 @@
 import { Link, usePathname } from '@/i18n/navigation';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useMemo } from 'react';
-import { LayoutDashboard, Users, FolderTree, ShoppingBag, Package, Wallet, FileText, Settings, MessageSquare, Bell } from 'lucide-react';
+import { LayoutDashboard, Users, FolderTree, ShoppingBag, Package, Wallet, FileText, Settings, MessageSquare, Bell, Layers } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Permissions } from '@/constants/permissions';
@@ -14,7 +14,7 @@ export const getMenuItems = (t) => [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, title: t('Dashboard.sidebar.menuItems.dashboard'), desc: t('Dashboard.sidebar.descriptions.dashboard'), domain: 'statistics', view: Permissions.Statistics.View },
   { name: 'Users', href: '/dashboard/users', icon: Users, title: t('Dashboard.sidebar.menuItems.users'), desc: t('Dashboard.sidebar.descriptions.users'), domain: 'users', view: Permissions.Users.View },
   { name: 'Categories', href: '/dashboard/categories', icon: FolderTree, title: t('Dashboard.sidebar.menuItems.categories'), desc: t('Dashboard.sidebar.descriptions.categories'), domain: 'categories', view: Permissions.Categories.View },
-  { name: 'Services', href: '/dashboard/services', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.services'), desc: t('Dashboard.sidebar.descriptions.services'), domain: 'services', view: Permissions.Services.View },
+  { name: 'Services', href: '/dashboard/services', icon: Layers, title: t('Dashboard.sidebar.menuItems.services'), desc: t('Dashboard.sidebar.descriptions.services'), domain: 'services', view: Permissions.Services.View },
   { name: 'Jobs', href: '/dashboard/jobs', icon: ShoppingBag, title: t('Dashboard.sidebar.menuItems.jobs'), desc: t('Dashboard.sidebar.descriptions.jobs'), domain: 'jobs', view: Permissions.Jobs.View },
   { name: 'Orders', href: '/dashboard/orders', icon: Package, title: t('Dashboard.sidebar.menuItems.orders'), desc: t('Dashboard.sidebar.descriptions.orders'), domain: 'orders', view: Permissions.Orders.View },
   { name: 'Invoices', href: '/dashboard/invoices', icon: FileText, title: t('Dashboard.sidebar.menuItems.invoices'), desc: t('Dashboard.sidebar.descriptions.invoices'), domain: 'invoices', view: Permissions.Invoices.View },

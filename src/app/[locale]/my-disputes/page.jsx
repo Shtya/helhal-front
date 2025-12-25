@@ -20,7 +20,7 @@ import { initialsFromName, isErrorAbort, updateUrlParams } from '@/utils/helper'
 import { DisputeStatus, disputeType } from '@/constants/dispute';
 import DisputeStatusPill from '@/components/pages/disputes/DisputeStatusPill';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 
 
@@ -110,11 +110,11 @@ export default function MyDisputesPage() {
     }
   }, [detail]);
 
-
+  const locale = useLocale()
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     if (selectedId) params.set('dispute', selectedId); else params.delete('dispute');
-    updateUrlParams(pathname, params);
+    updateUrlParams(pathname, params, locale);
   }, [selectedId]);
 
   const controllerRef = useRef();
