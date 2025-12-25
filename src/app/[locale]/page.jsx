@@ -11,7 +11,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users } from 'lucide-react';
+import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users, CheckCircle, ArrowLeft } from 'lucide-react';
 import ReactPlayer from 'react-player';
 import { localImageLoader, resolveUrl } from '@/utils/helper';
 import api from '@/lib/axios';
@@ -236,13 +236,26 @@ function Hero() {
 
             <SearchBar large className='mt-2' />
 
+
+
             <div className='flex flex-wrap items-center gap-4 pt-4 text-emerald-50/90'>
+              <Badge icon={<CheckCircle className='w-4 h-4' />} label={t('hero.trust.offers')} />
+              <Badge icon={<Stars className='w-4 h-4' />} label={t('hero.trust.pricing')} />
               <Badge icon={<ShieldCheck className='w-4 h-4' />} label={t('hero.trust.safepay')} />
-              <Badge icon={<Stars className='w-4 h-4' />} label={t('hero.trust.rated')} />
-              <Badge icon={<Users className='w-4 h-4' />} label={t('hero.trust.talent')} />
             </div>
 
             <p className='text-sm md:text-base text-emerald-50/80'>{t('hero.tagline')}</p>
+            <div className="flex flex-wrap items-center gap-3 mt-4">
+              <Link
+                href="/auth"
+                className=" inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-emerald-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-emerald-700 transition-all
+  "
+              >
+                {t('hero.search')}
+                <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+              </Link>
+
+            </div>
           </div>
         </div>
       </div>
@@ -636,21 +649,13 @@ export function CTAStrip() {
 
 
   const isBuyer = role === 'buyer';
-  const isSeller = role === 'seller';
 
   // Optional: hide CTA for admin
-  if (role === 'admin') return null;
+  if (role === 'admin' || role === 'seller') return null;
 
-  let primaryHref = '/auth?tab=login';
-  let primaryLabel = t('cta.loginToPost');
+  let primaryHref = isBuyer ? '/share-job-description' : '/auth?tab=login&redirect=/share-job-description';
+  let primaryLabel = t('cta.postOrder');
 
-  if (isBuyer) {
-    primaryHref = '/share-job-description';
-    primaryLabel = t('cta.postOrder');
-  } else if (isSeller) {
-    primaryHref = '/create-gig';
-    primaryLabel = t('cta.createService');
-  }
 
   return (
     <section className="container !px-4 sm:!px-6 lg:!px-8 !pb-16">
@@ -659,14 +664,10 @@ export function CTAStrip() {
         <div className="relative p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 text-white">
           <div>
             <h3 className="text-2xl md:text-3xl font-extrabold">
-              {isSeller
-                ? t('cta.sellerTitle')
-                : t('cta.title')}
+              {t('cta.title')}
             </h3>
             <p className="text-emerald-50/90 mt-1">
-              {isSeller
-                ? t('cta.sellerSubtitle')
-                : t('cta.subtitle')}
+              {t('cta.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -674,7 +675,7 @@ export function CTAStrip() {
               href={primaryHref}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 font-bold shadow-lg hover:shadow-xl transition"
             >
-              {primaryLabel} <ArrowRight className="w-5 h-5" />
+              {primaryLabel} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
             </Link>
             <Link
               href="/services/all"

@@ -612,15 +612,16 @@
   },
   "Home": {
     "hero": {
-      "alt": "Helhal Hero Background",
-      "badge": "Hire top freelancers fast",
-      "title": "Hire talent you can trust.",
-      "subtitle": "Post an order, get tailored proposals, and start in hours—not weeks.",
-      "tagline": "Secure payments, transparent pricing, and a curated marketplace that respects your time.",
+      "alt": "Helhal main background",
+      "badge": "Discover top creative talent in minutes",
+      "title": "Post your project now and receive proposals from verified professionals.",
+      "subtitle": "Stay in control of your choices and start working within hours, not weeks.",
+      "tagline": "Helhal.. your destination for finding top creative talent",
+      "search": "Search for Jop",
       "trust": {
-        "safepay": "Secure Escrow",
-        "rated": "4.9★ average",
-        "talent": "Curated talent"
+        "safepay": "Secure payments",
+        "pricing": "Transparent pricing",
+        "offers": "Trusted proposals"
       }
     },
     "categories": {
@@ -641,23 +642,23 @@
       }
     },
     "whyChoose": {
-      "title": "Why choose Helhal?",
+      "title": "Benefits of Working with Helhal",
       "items": {
         "categories": {
-          "title": "Wide Categories",
-          "description": "From development to design and marketing—everything in one marketplace."
+          "title": "All-in-one creative talent marketplace",
+          "description": "Everything you need in one place. From photography to design and digital marketing, discover professional freelancers across all creative fields with ease."
         },
         "pricing": {
-          "title": "Clear Pricing",
-          "description": "Upfront offers. No hidden fees. Pay safely when milestones are approved."
+          "title": "Clear and transparent pricing",
+          "description": "No surprises, no hidden fees. View prices upfront, choose the offer that fits your budget, and pay securely only after approving the project milestones."
         },
         "quality": {
-          "title": "Verified Quality",
-          "description": "Ratings, portfolios, and vetted profiles to help you hire confidently."
+          "title": "Trusted, verified quality",
+          "description": "Rely on proven expertise. Every freelancer has real reviews and verified portfolios to help you make confident hiring decisions."
         },
         "support": {
-          "title": "Responsive Support",
-          "description": "We've got your back with fast help and dispute resolution."
+          "title": "Fast, reliable support",
+          "description": "We’re here to support you every step of the way. Our support team is ready to help and resolve any issues to ensure a smooth experience."
         }
       }
     },
@@ -665,14 +666,10 @@
       "title": "Our Client's Experiences"
     },
     "cta": {
-      "title": "Ready to post your order?",
-      "subtitle": "Describe your project and get proposals within minutes.",
-      "postOrder": "Post an Order",
-      "loginToPost": "Login to Post an Order",
-      "browse": "Browse Services",
-      "sellerTitle": "Ready to publish your service?",
-      "sellerSubtitle": "Showcase your skills and start receiving orders.",
-      "createService": "Create a Service"
+      "title": "Are You Ready to Post Your Project? Post Your Request Now.",
+      "subtitle": "Describe your project and get offers in minutes.",
+      "postOrder": "Start Posting Your Project",
+      "browse": "Browse Available Services"
     }
   },
   "home": {

@@ -60,6 +60,7 @@ const DASHBOARD_ROUTE_PERMISSIONS = {
 
 
 export async function middleware(request) {
+
   // Disable automatic browser detection
   request.headers.set('accept-language', '');
 

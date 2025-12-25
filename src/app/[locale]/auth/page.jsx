@@ -145,7 +145,8 @@ export const ContinueWithGoogleButton = ({ referralCode }) => {
   const t = useTranslations('Auth');
   const searchParams = useSearchParams();
 
-  const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  const redirectUrl = searchParams?.get('redirect') || '/';
+
   const userType = searchParams.get('type') || null;
 
   const handleGoogleLogin = async () => {
@@ -655,7 +656,7 @@ export default function AuthPage() {
           router.push('/jobs');
         }
         else {
-          router.push('/explore');
+          router.push(redirectUrl);
         }
       }
     } catch { }
@@ -678,7 +679,9 @@ export default function AuthPage() {
     setView('reset');
   };
   const onOtpVerifiedGoToLogin = () => {
-    router.push('/auth?tab=login');
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', 'login');
+    router.replace(`/auth?${params.toString()}`, { scroll: false });
     setView('email');
   };
   const handleLoggedIn = user => {
@@ -686,7 +689,7 @@ export default function AuthPage() {
       router.push('/jobs');
     }
     else {
-      router.push('/explore');
+      router.push(redirectUrl);
     }
   };
 
@@ -697,7 +700,7 @@ export default function AuthPage() {
       router.push('/jobs');
     }
     else {
-      router.push('/explore');
+      router.push(redirectUrl);
     }
   };
 
