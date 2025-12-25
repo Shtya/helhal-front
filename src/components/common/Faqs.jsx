@@ -63,20 +63,21 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const PRIMARY = '#007a55';
 
 export default function FAQSection({ loading, className = '', faqs = [], showTitle = true, removeFaq }) {
   const [openIndex, setOpenIndex] = useState(0);
-
+  const t = useTranslations("BecomeSeller.faqs");
   const toggleFAQ = index => setOpenIndex(openIndex === index ? null : index);
 
   return (
-    <section className={`w-full mx-auto max-w-4xl px-4 ${className}`}>
+    <section className={`w-full mx-auto max-w-4xl${className}`}>
       {/* Title */}
       {showTitle && (
         <div className='mb-8 text-center'>
-          <h1 className='text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900'>FAQs</h1>
+          <h1 className='text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900'>{t('title')}</h1>
         </div>
       )}
 
@@ -166,7 +167,7 @@ export default function FAQSection({ loading, className = '', faqs = [], showTit
         {/* Optional: empty state (does not change logic) */}
         {faqs.length === 0 && (
           <div className='rounded-2xl border p-8 text-center text-slate-600' style={{ borderColor: '#e5e7eb' }}>
-            No FAQs yet.
+            {t('noFaqs')}
           </div>
         )}
       </div>

@@ -41,6 +41,16 @@ body {
   font-family: var(--font-arabic), sans-serif !important;
 }
 
+.english-font {
+  font-family: var(--font-english), sans-serif !important;
+}
+
+.arabic-font {
+  font-family: var(--font-arabic), sans-serif !important;
+}
+
+
+
 .scrollbar-custom {
   scrollbar-width: thin;
   scrollbar-color: #c7d2fe #f3f4f6;

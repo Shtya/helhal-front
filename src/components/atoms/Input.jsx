@@ -28,7 +28,7 @@ const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placehold
         <input required ref={ref} id={name} name={name} type={type} placeholder={placeholder} onChange={onChange} onBlur={onBlur} className={`${actionIcon && 'w-[calc(100%-50px)]'} w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400`} {...props} />
 
         {actionIcon && (
-          <button type='button' onClick={onAction} className='cursor-pointer flex items-center justify-center aspect-1/1 absolute rtl:left-0 ltr:right-[5px] h-[calc(100%-10px)] rounded-lg top-1/2 -translate-y-1/2 flex-none gradient p-2 text-white transition'>
+          <button type='button' onClick={onAction} className='cursor-pointer flex items-center justify-center aspect-1/1 absolute rtl:left-1 ltr:right-[5px] h-[calc(100%-10px)] rounded-lg top-1/2 -translate-y-1/2 flex-none gradient p-2 text-white transition'>
             <img src={actionIcon} alt='' className='w-[25px]' />
           </button>
         )}

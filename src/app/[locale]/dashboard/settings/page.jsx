@@ -23,7 +23,7 @@ const getSettingsSchema = (t) => z.object({
     .coerce
     .number()
     .min(0, t('validation.platformFeeMin')),
-  sellerPercent: z
+  sellerServiceFee: z
     .coerce
     .number()
     .min(0, t('validation.serviceFeeMin'))
@@ -106,7 +106,7 @@ function IdChipsEditor({ label, hint, value = [], onChange, icon }) {
 /* --------------------------- Logo Uploader --------------------------- */
 function LogoUploader({ value, onUploaded, onChangeUrl }) {
   const [uploading, setUploading] = useState(false);
-  console.log(value)
+
   const handleFile = async file => {
     if (!file) return;
     try {
@@ -185,7 +185,8 @@ export default function AdminSettingsDashboard() {
     privacyPolicy_ar: '',
     termsOfService_en: '',
     termsOfService_ar: '',
-    faqs: [], // now array of { question, answer }
+    sellerFaqs_en: [], // now array of { question, answer }
+    sellerFaqs_ar: [], // now array of { question, answer }
     // socialLinks
     facebook: '',
     twitter: '',
@@ -439,120 +440,159 @@ export default function AdminSettingsDashboard() {
 
 
 
-        {/* FAQs (Q&A text) */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <GlassCard className="p-6">
-            <div className="mb-4 flex items-center">
-              <Share2 size={20} className="mr-2 text-blue-600" />
-              <h2 className="text-lg font-semibold">{t('sections.socialMedia')}</h2>
-            </div>
+        <GlassCard className="p-6">
+          <div className="mb-4 flex items-center">
+            <Share2 size={20} className="mr-2 text-blue-600" />
+            <h2 className="text-lg font-semibold">{t('sections.socialMedia')}</h2>
+          </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">
-                  {t('fields.facebook')}
-                </label>
-                <Input
-                  value={settings.facebook || ''}
-                  onChange={e => updateField('facebook', e.target.value)}
-                  placeholder={t('fields.facebookPlaceholder')}
-                  icon={<FaFacebook size={16} />}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">
-                  {t('fields.linkedin')}
-                </label>
-                <Input
-                  value={settings.linkedin || ''}
-                  onChange={e => updateField('linkedin', e.target.value)}
-                  placeholder={t('fields.linkedinPlaceholder')}
-                  icon={<FaLinkedin size={16} />}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">
-                  {t('fields.twitter')}
-                </label>
-                <Input
-                  value={settings.twitter || ''}
-                  onChange={e => updateField('twitter', e.target.value)}
-                  placeholder={t('fields.twitterPlaceholder')}
-                  icon={<FaTwitter size={16} />}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">
-                  {t('fields.instagram')}
-                </label>
-                <Input
-                  value={settings.instagram || ''}
-                  onChange={e => updateField('instagram', e.target.value)}
-                  placeholder={t('fields.instagramPlaceholder')}
-                  icon={<FaInstagram size={16} />}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">
-                  {t('fields.pinterest')}
-                </label>
-                <Input
-                  value={settings.pinterest || ''}
-                  onChange={e => updateField('pinterest', e.target.value)}
-                  placeholder={t('fields.pinterestPlaceholder')}
-                  icon={<FaPinterest size={16} />}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-slate-700">
-                  {t('fields.tiktok')}
-                </label>
-                <Input
-                  value={settings.tiktok || ''}
-                  onChange={e => updateField('tiktok', e.target.value)}
-                  placeholder={t('fields.tiktokPlaceholder')}
-                  icon={<FaTiktok size={16} />}
-                />
-              </div>
-            </div>
-
-            <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:sm:grid-cols-3">
+            <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">
-                {t('fields.socialMediaHint')}
+                {t('fields.facebook')}
               </label>
-              <div className="mt-2 flex items-start gap-2 text-xs text-slate-600">
-                <Info className="mt-0.5 h-4 w-4 text-slate-500" />
-                <p>{t('fields.socialMediaControllerHint')}</p>
-              </div>
+              <Input
+                value={settings.facebook || ''}
+                onChange={e => updateField('facebook', e.target.value)}
+                placeholder={t('fields.facebookPlaceholder')}
+                icon={<FaFacebook size={16} />}
+              />
             </div>
-          </GlassCard>
 
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                {t('fields.linkedin')}
+              </label>
+              <Input
+                value={settings.linkedin || ''}
+                onChange={e => updateField('linkedin', e.target.value)}
+                placeholder={t('fields.linkedinPlaceholder')}
+                icon={<FaLinkedin size={16} />}
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                {t('fields.twitter')}
+              </label>
+              <Input
+                value={settings.twitter || ''}
+                onChange={e => updateField('twitter', e.target.value)}
+                placeholder={t('fields.twitterPlaceholder')}
+                icon={<FaTwitter size={16} />}
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                {t('fields.instagram')}
+              </label>
+              <Input
+                value={settings.instagram || ''}
+                onChange={e => updateField('instagram', e.target.value)}
+                placeholder={t('fields.instagramPlaceholder')}
+                icon={<FaInstagram size={16} />}
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                {t('fields.pinterest')}
+              </label>
+              <Input
+                value={settings.pinterest || ''}
+                onChange={e => updateField('pinterest', e.target.value)}
+                placeholder={t('fields.pinterestPlaceholder')}
+                icon={<FaPinterest size={16} />}
+              />
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                {t('fields.tiktok')}
+              </label>
+              <Input
+                value={settings.tiktok || ''}
+                onChange={e => updateField('tiktok', e.target.value)}
+                placeholder={t('fields.tiktokPlaceholder')}
+                icon={<FaTiktok size={16} />}
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              {t('fields.socialMediaHint')}
+            </label>
+            <div className="mt-2 flex items-start gap-2 text-xs text-slate-600">
+              <Info className="mt-0.5 h-4 w-4 text-slate-500" />
+              <p>{t('fields.socialMediaControllerHint')}</p>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/*seller FAQs (Q&A text) */}
+        <div className="my-6 grid grid-cols-1 gap-6">
           <GlassCard className="p-6">
             <div className="mb-4 flex items-center">
               <Info size={20} className="mr-2 text-teal-600" />
-              <h2 className="text-lg font-semibold">{t('fields.faqs')}</h2>
+              <h2 className="text-lg font-semibold">{t('fields.sellerFaqs')}</h2>
             </div>
 
-            <FaqsEditor
-              label={t('fields.faqs')}
-              hint={t('fields.faqsHint')}
-              value={settings.faqs}
-              onChange={(v) => updateField("faqs", v)}
-              icon={<Info size={16} className="text-slate-500" />}
-            />
-          </GlassCard>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <FaqsEditor
+                label={t('fields.sellerFaqs_en')}
+                hint={t('fields.sellerFaqsHint_en')}
+                value={settings.sellerFaqs_en}
+                onChange={(v) => updateField("sellerFaqs_en", v)}
+                icon={<Info size={16} className="text-slate-500" />}
+              />
 
+              <FaqsEditor
+                label={t('fields.sellerFaqs_ar')}
+                hint={t('fields.sellerFaqsHint_ar')}
+                value={settings.sellerFaqs_ar}
+                dir='rtl'
+                onChange={(v) => updateField("sellerFaqs_ar", v)}
+                icon={<Info size={16} className="text-slate-500" />}
+              />
+            </div>
+          </GlassCard>
+        </div>
+
+        {/*invite FAQs (Q&A text) */}
+        <div className="my-6 grid grid-cols-1 gap-6">
+          <GlassCard className="p-6">
+            <div className="mb-4 flex items-center">
+              <Info size={20} className="mr-2 text-teal-600" />
+              <h2 className="text-lg font-semibold">{t('fields.inviteFaqs')}</h2>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <FaqsEditor
+                label={t('fields.inviteFaqs_en')}
+                hint={t('fields.inviteFaqsHint_en')}
+                value={settings.inviteFaqs_en}
+                onChange={(v) => updateField("inviteFaqs_en", v)}
+                icon={<Info size={16} className="text-slate-500" />}
+              />
+
+              <FaqsEditor
+                label={t('fields.inviteFaqs_ar')}
+                hint={t('fields.inviteFaqsHint_ar')}
+                value={settings.inviteFaqs_ar}
+                dir='rtl'
+                onChange={(v) => updateField("inviteFaqs_ar", v)}
+                icon={<Info size={16} className="text-slate-500" />}
+              />
+            </div>
+          </GlassCard>
         </div>
 
 
 
         {/* Legal & Compliance – Tabs + Preview */}
-        <div className='grid grid-cols-1 gap-6'>
+        <div className='grid grid-cols-1 gap-6 mt-6'>
           <GlassCard className='p-6'>
             <div className='mb-4 flex items-center'>
               <Shield size={20} className='mr-2 text-amber-600' />
@@ -596,7 +636,7 @@ export default function AdminSettingsDashboard() {
 
             {/* Editors */}
             {activeLegalTab === 'privacy' ? (
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                 {/* English */}
                 <div>
                   <h3 className='text-sm font-medium mb-2'>{t('privacyPolicyEn')}</h3>
@@ -644,7 +684,7 @@ export default function AdminSettingsDashboard() {
                 </div>
               </div>
             ) : (
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                 {/* English */}
                 <div>
                   <h3 className='text-sm font-medium mb-2'>{t('termsOfServiceEn')}</h3>
@@ -820,7 +860,8 @@ function GlassCard({ children, className, gradient, padding = 'p-4', header, foo
     </Tag>
   );
 }
-function FaqsEditor({ label, hint, value = [], onChange, icon }) {
+
+function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
   const [draftQ, setDraftQ] = useState('');
   const [draftA, setDraftA] = useState('');
   const [editIndex, setEditIndex] = useState(null);
@@ -871,12 +912,12 @@ function FaqsEditor({ label, hint, value = [], onChange, icon }) {
       </label>
       {hint ? <div className="mb-2 text-xs text-slate-500">{hint}</div> : null}
 
-      <div className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2 ">
+      <div className={`${dir === 'rtl' ? 'arabic-font' : 'english-font'} flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2 `}>
 
         {/* List */}
         <div className='flex flex-col gap-2 max-h-64 overflow-y-auto'>
           {items.length === 0 ? (
-            <span className="text-xs text-slate-400">No FAQs yet</span>
+            <span className="text-xs text-slate-400">{dir === 'rtl' ? 'لا توجد أسئلة شائعة بعد' : 'No FAQs yet'}</span>
           ) : (
             items.map((faq, idx) => {
               const isEditing = editIndex === idx;
@@ -889,36 +930,42 @@ function FaqsEditor({ label, hint, value = [], onChange, icon }) {
 
                   {isEditing ? (
                     <>
-                      <Input
-                        value={draftQ}
-                        onChange={(e) => setDraftQ(e.target.value)}
-                        placeholder="Edit question"
-                      />
-                      <Input
-                        value={draftA}
-                        onChange={(e) => setDraftA(e.target.value)}
-                        placeholder="Edit answer"
-                      />
+                      <div className='flex flex-col gap-2 '
+                        dir={dir}>
+                        <Input
+                          value={draftQ}
+                          onChange={(e) => setDraftQ(e.target.value)}
+                          placeholder={`${dir === 'rtl' ? 'أضف سؤال' : 'Edit question'}`}
+                        />
+                        <Input
+                          value={draftA}
+                          onChange={(e) => setDraftA(e.target.value)}
+                          placeholder={`${dir === 'rtl' ? 'أضف إجابة' : 'Edit answer'}`}
+                        />
+                      </div>
 
                       <div className="flex gap-1 justify-end">
                         <button
                           onClick={cancelEdit}
                           className="rounded bg-slate-200 px-2 py-1 text-[11px]"
                         >
-                          Cancel
+                          {dir === 'rtl' ? 'إلغاء' : 'Cancel'}
                         </button>
                         <button
                           onClick={saveEdit}
                           className="rounded bg-emerald-600 px-2 py-1 text-[11px] text-white"
                         >
-                          Save
+                          {dir === 'rtl' ? 'حفظ' : 'Save'}
                         </button>
                       </div>
                     </>
                   ) : (
                     <>
-                      <div className="font-semibold">Q: {faq.question}</div>
-                      <div>A: {faq.answer}</div>
+                      <div className='flex flex-col gap-2 ' dir={dir}>
+
+                        <div className="font-semibold">Q: {faq.question}</div>
+                        <div>A: {faq.answer}</div>
+                      </div>
 
                       <div className="flex gap-1 self-end">
 
@@ -927,7 +974,7 @@ function FaqsEditor({ label, hint, value = [], onChange, icon }) {
                           className="rounded bg-white/70 px-2 text-[11px] text-blue-600 hover:bg-white"
                           title="Edit"
                         >
-                          Edit
+                          {dir === 'rtl' ? 'تعديل' : 'Edit'}
                         </button>
 
                         <button
@@ -950,18 +997,18 @@ function FaqsEditor({ label, hint, value = [], onChange, icon }) {
 
         {/* Bottom add form */}
         {editIndex === null && (
-          <div className="flex flex-col gap-2 mt-2">
+          <div className={`flex flex-col gap-2 mt-2 ${dir === 'rtl' ? 'items-end' : ''}`} dir={dir}>
             <Input
               value={draftQ}
               onChange={(e) => setDraftQ(e.target.value)}
-              placeholder="Add question"
+              placeholder={`${dir === 'rtl' ? 'أضف سؤال' : 'Add question'}`}
             />
             <Input
               value={draftA}
               onChange={(e) => setDraftA(e.target.value)}
-              placeholder="Add answer"
+              placeholder={`${dir === 'rtl' ? 'أضف إجابة' : 'Add answer'}`}
             />
-            <Button className="px-3 py-2 text-sm" onClick={add} name="Add FAQ" />
+            <Button className="px-3 py-2 text-sm" onClick={add} name={`${dir === 'rtl' ? 'أضف سؤال' : 'Add FAQ'}`} />
           </div>
         )}
 

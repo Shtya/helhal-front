@@ -6,12 +6,14 @@ import Input from '@/components/atoms/Input';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Textarea from '@/components/atoms/Textarea';
-import { Pencil, Plus, X } from 'lucide-react';
+import { Pencil, Plus, X, Users, Zap, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import z from 'zod';
 import toast from 'react-hot-toast';
 import api from '@/lib/axios';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import FAQSection from '@/components/common/Faqs';
+import { useValues } from '@/context/GlobalContext';
 
 const emailSchema = z.email();
 
@@ -28,6 +30,10 @@ export default function Invite() {
   const [copied, setCopied] = useState(false);
   const [subject, setSubject] = useState('');
   const [senderName, setSenderName] = useState(user?.username || '');
+
+  const locale = useLocale();
+  const { settings, loadingSettings } = useValues();
+  const faqs = locale === 'ar' ? settings?.inviteFaqs_ar : settings?.inviteFaqs_en;
 
   useEffect(() => {
     setSenderName(user?.username || '');
@@ -192,7 +198,7 @@ export default function Invite() {
       </section>
 
       {/* Card */}
-      <div className='rounded-[24px] shadow-inner border border-slate-200 p-6 md:p-10 mt-10 bg-white' data-aos='fade-up' data-aos-delay='150'>
+      <div className='rounded-[24px] space-y-6 md:space-y-10 lg:space-y-14 shadow-inner border border-slate-200 p-6 md:p-10 mt-10 bg-white' data-aos='fade-up' data-aos-delay='150'>
         {/* Inputs Row */}
         <div className='grid grid-cols-1 lg:grid-cols-2 max-w-[1100px] mx-auto gap-8 items-start'>
           {/* Emails */}
@@ -279,8 +285,29 @@ export default function Invite() {
           </div>
         </div>
 
+
+
+        <div data-aos='zoom-in-up' data-aos-delay='150' className="text-center rounded-3xl">
+          <div className="grid grid-cols-1 gap-6 items-center">
+            <div className='flex flex-col gap-4 items-center justify-center'>
+              <h2 className="text-3xl md:text-4xl  font-extrabold">
+                {t("referral.title")}
+              </h2>
+              <p className="text-lg text-slate-700 lg:w-[80%]  leading-relaxed">
+                {t("referral.description")}
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+
+        <section data-aos='zoom-in-up' data-aos-delay='150'>
+          <FAQSection faqs={faqs} loading={loadingSettings} />
+        </section>
+
         {/* Social */}
-        <div className='mt-12 flex flex-wrap items-center justify-center gap-6 md:gap-10' data-aos='zoom-in-up' data-aos-delay='150'>
+        <div className='flex flex-wrap items-center justify-center gap-6 md:gap-10' data-aos='zoom-in-up' data-aos-delay='150'>
           <IconLink href={shareLinks.linkedin} src='/social/linkedin.png' alt='LinkedIn' />
           <IconLink href={shareLinks.gmail} src='/social/google.png' alt='Gmail' />
           <IconLink href={shareLinks.twitter} src='/social/twitter.png' alt='twitter' />

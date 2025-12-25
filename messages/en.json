@@ -375,7 +375,7 @@
   },
   "Header": {
     "navigation": {
-      "explore": "Explore",
+      "explore": "Find Creatives",
       "services": "Services",
       "allServices": "All Services",
       "myServices": "My Services",
@@ -415,13 +415,14 @@
   },
   "Auth": {
     "hero": {
-      "title": "Start your success now!",
-      "subtitle": "Talented freelancers for any project…",
+      "title": "Start Your Success Today!",
+      "subtitle1": "Discover how easy it is to work on Helhal",
+      "subtitle2": "and stand out as a professional in your creative field",
       "features": [
-        "Fast, delightful onboarding",
-        "Secure, privacy-friendly sessions",
-        "Beautiful, accessible UI",
-        "Reliable authentication flow"
+        "Fast and seamless registration",
+        "Security and privacy you can trust",
+        "Clean and intuitive user interface",
+        "Reliable authentication system"
       ]
     },
     "userType": "User Type",
@@ -431,18 +432,19 @@
     "individualDescription": "For personal use",
     "selectUserType": "Select User Type",
     "selectUserTypeDescription": "Please choose whether you're signing up as a business or individual",
-    "continueToExplore": "Continue to Explore",
-    "chooseMethod": "Choose your sign in method",
-    "emailMethod": "Sign in with your email",
-    "phoneMethod": "Sign in with your phone",
-    "otpMethod": "Enter the verification code",
-    "createAccount": "Create your account",
-    "phoneSignUp": "Sign up with your phone",
-    "verifyEmail": "Verify your email",
-    "resetPassword": "Reset your password",
+    "continueToExplore": "Continue to Explore.",
+    "chooseMethod": "Choose the method you prefer to access your account and continue your tasks quickly.",
+    "chooseYourSignUpMethod": "Get creative with Helhal in no time.",
+    "emailMethod": "Sign in with your email.",
+    "phoneMethod": "Sign in with your phone.",
+    "otpMethod": "Enter the verification code.",
+    "createAccount": "Create your account.",
+    "phoneSignUp": "Sign up with your phone.",
+    "verifyEmail": "Verify your email.",
+    "resetPassword": "Reset your password.",
     "verifyIdentity": "Verify your identity",
     "setNewPassword": "Set new password",
-    "passwordRequirements": "Please enter your new password",
+    "passwordRequirements": "Please enter your new password.",
     "email": "Email",
     "enterEmail": "Enter your email",
     "password": "Password",
@@ -510,10 +512,11 @@
     "confirmPassword": "Confirm Password",
     "confirmNewPassword": "Confirm your new password",
     "sendCodeButton": "Send Verification Code",
-    "terms": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
-    "signIn": "Sign In",
-    "signUp": "Sign Up",
-    "forgotPassword": "Forgot?",
+    "terms": "By signing in, you agree to the Terms of Service and Privacy Policy, which explain how your personal data is used. We may occasionally send you emails related to your account or platform updates.",
+    "signIn": "Sign in to your account",
+    "signInTap": "Sign in",
+    "signUp": "Create a new account",
+    "forgotPassword": "Forgot your password?",
     "signInTitle": "Sign in to your account",
     "signInSubtitle": "Choose a method to continue",
     "signInEmailTitle": "Sign in with Email",
@@ -529,12 +532,12 @@
     "registerPhoneTitle": "Create account with Phone",
     "registerPhoneSubtitle": "We'll send you a verification code",
     "verifyEmailTitle": "Verify your email",
-    "verifyEmailSubtitle": "Enter the code to activate your account",
+    "verifyEmailSubtitle": "Enter the code to activate your account.",
     "forgotPasswordTitle": "Forgot your password",
     "forgotPasswordSubtitle": "Enter your email to receive a reset code",
     "verifyIdentityTitle": "Verify your identity",
-    "verifyIdentitySubtitle": "Enter the code we sent to reset your password",
-    "resetPasswordTitle": "Set a new password",
+    "verifyIdentitySubtitle": "Enter the code we sent to reset your password.",
+    "resetPasswordTitle": "Set a new password.",
     "resetPasswordSubtitle": "Use at least 8 characters with letters & numbers",
     "emailLabel": "Email",
     "emailPlaceholder": "Enter your email",
@@ -981,18 +984,17 @@
       "gigsYouMayLike": "Gigs you may like"
     },
     "hero": {
-      "quickActions": "Quick actions",
-      "welcomeBack": "Welcome back,",
-      "there": "there",
-      "subtitle": "Pick up where you left off, or knock out what's next.",
+      "quickActions": "Continue Your Journey or Get Started",
+      "welcomeBack": "Welcome Back!",
+      "there": "",
+      "subtitle": "You can pick up where you left off or move on to the next step with ease.",
       "cards": {
         "guest": {
-          "title": "Create your account",
+          "title": "Start Your Journey on Helhal",
           "lines": [
-            "Sign up to hire freelancers",
-            "Access personalized recommendations"
+            "Create your account easily to hire freelancers and get recommendations tailored to your needs."
           ],
-          "buttonLabel": "Join Now",
+          "buttonLabel": "Create Your Account",
           "chip": "New here?"
         },
         "buyer": {
@@ -2314,14 +2316,20 @@
     "errors": {
       "swichedFailed": "Failed to switch account"
     },
+    "categoties": {
+      "commercialPhotography": "Commercial Photography",
+      "portraitPhotography": "Portrait Photography",
+      "eventPhotography": "Event Photography",
+      "productPhotography": "Product Photography"
+    },
     "message": "Once you create, you can easily switch between them without losing data.",
     "alreadyHas": "You already have a seller account linked to your profile.",
     "not_Buyer": "Only buyers can create seller sub accounts",
     "createSeller": "Create Seller Account",
     "cancel": "Cancel",
     "hero": {
-      "title": "Freelance services",
-      "subtitle": "are just a click away!",
+      "title": "Start Your Journey as a Freelancer",
+      "subtitle": "Click here and offer your services on Helhal in a few simple steps",
       "button": "Become a Seller"
     },
     "stats": {
@@ -2330,23 +2338,25 @@
       "priceRange": "Price Range"
     },
     "howItWorks": {
-      "title": "How it Works"
+      "title": "How to Join as a Freelancer?"
     },
     "steps": {
       "createGig": {
-        "title": "Create a Gig",
-        "subtitle": "Sign up for free, set up your Gig, and offer your work to our global audience."
+        "title": "Quickly Create Your Service",
+        "subtitle": "Sign up, write an engaging description for your service, set your prices and terms, and showcase your work to thousands of clients looking for professionals like you."
       },
-      "deliverWork": {
-        "title": "Deliver great work",
-        "subtitle": "Get notified when you get an order and use our system to discuss details with customers."
+      "getOrders": {
+        "title": "Receive Work Requests",
+        "subtitle": "You’ll get notified when a request comes in, and you can discuss the details directly with the client via our secure messaging system."
       },
-      "getPaid": {
-        "title": "Get paid",
-        "subtitle": "Get paid on time, every time. Payment is available for withdrawal as soon as it clears."
+      "deliverAndGetPaid": {
+        "title": "Deliver Work and Get Paid",
+        "subtitle": "Submit your work and leave the rest to us. We’ll ensure your payment is securely processed on time and available for withdrawal as soon as it’s cleared."
       }
     },
     "faqs": {
+      "title": "FAQs",
+      "noFaqs": "No FAQs available yet.",
       "whatCanISell": {
         "question": "What can I sell?",
         "answer": "Be creative! You can offer any service you wish as long as it's legal and complies with our terms. There are over 200 categories you can browse to get ideas."
@@ -2521,8 +2531,12 @@
   "Invite": {
     "page": {
       "hero": {
-        "title": "Take the credit for referring friends to UpPhoto",
-        "subtitle": "Earn up to <strong>500 Saudi Riyal</strong> in credits — up to <strong>100 Saudi Riyal</strong> from each referral."
+        "title": "Earn Credits by Inviting Your Friends to UpPhoto",
+        "subtitle": "Invite your friends and earn up to <strong>500 SAR</strong>, plus get up to <strong>100 SAR</strong> for each friend who joins using your link."
+      },
+      "referral": {
+        "title": "Why is the Referral Program Important?",
+        "description": "The friends referral program helps you increase your earnings and expand Helhal's user network, as a recommendation from someone you know means more trust and a higher chance to join and benefit from the platform."
       },
       "inviteFriends": "Invite friends through email",
       "addEmailsPlaceholder": "Add emails (separate with commas, spaces, or new lines)",
@@ -2534,10 +2548,10 @@
       "sending": "Sending…",
       "sendInvites": "Send invites",
       "successfullySent": "Successfully sent to {count} {count, plural, one {email} other {emails}}.",
-      "uniqueLink": "Your unique invite link",
+      "uniqueLink": "Your Invitation Link",
       "copy": "Copy",
       "copied": "Copied!",
-      "shareLink": "Share your link or use social buttons below.",
+      "shareLink": "Copy your unique referral link and share it with your friends via any channel (messages, WhatsApp, X, Facebook, etc.)",
       "emailSubject": "Email subject",
       "subjectPlaceholder": "Subject…",
       "yourName": "Your name (optional)",
@@ -3300,8 +3314,16 @@
         "platformWalletHint": "Funds from paid invoices are deposited here (escrow). Ensure this maps to a valid User with a Wallet.",
         "privacyPolicy": "Privacy Policy",
         "termsOfService": "Terms of Service",
-        "faqs": "FAQs",
-        "faqsHint": "Add questions and answers to display across the site.",
+        "sellerFaqs": "Seller FAQs",
+        "sellerFaqs_ar": "Seller FAQs (Arabic)",
+        "sellerFaqsHint_ar": "Add questions and answers in Arabic to help new sellers understand how Helhal works and how to offer services.",
+        "sellerFaqs_en": "Seller FAQs (English)",
+        "sellerFaqsHint_en": "Add questions and answers in English to help new sellers understand how Helhal works and how to offer services.",
+        "inviteFaqs": "Referral FAQs",
+        "inviteFaqs_ar": "Referral FAQs (Arabic)",
+        "inviteFaqsHint_ar": "Add questions and answers in Arabic to explain how to invite friends and earn rewards on Helhal.",
+        "inviteFaqs_en": "Referral FAQs (English)",
+        "inviteFaqsHint_en": "Add questions and answers in English to explain how to invite friends and earn rewards on Helhal.",
         "socialMediaHint": "Manage your connected social media accounts here.",
         "socialMediaControllerHint": "These settings allow linking and controlling your social media presence."
       },

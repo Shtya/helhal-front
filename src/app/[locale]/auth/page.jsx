@@ -76,14 +76,14 @@ function TitleByTab({ activeTab, view }) {
       otp: { title: t('signIn'), subtitle: t('otpMethod') },
     },
     register: {
-      options: { title: t('signUp'), subtitle: t('chooseMethod') },
+      options: { title: t('signUp'), subtitle: t('chooseYourSignUpMethod') },
       email: { title: t('signUp'), subtitle: t('createAccount') },
       phone: { title: t('signUp'), subtitle: t('phoneSignUp') },
-      otp: { title: t('verifyEmail'), subtitle: t('verifyEmail') },
+      otp: { title: t('verifyEmail'), subtitle: t('verifyEmailSubtitle') },
     },
     'forgot-password': {
       email: { title: t('forgotPassword'), subtitle: t('resetPassword') },
-      otp: { title: t('verifyIdentity'), subtitle: t('verifyIdentity') },
+      otp: { title: t('verifyIdentity'), subtitle: t('verifyIdentitySubtitle') },
       reset: { title: t('setNewPassword'), subtitle: t('passwordRequirements') },
     },
   };
@@ -99,7 +99,7 @@ function TitleByTab({ activeTab, view }) {
 }
 
 const TABS = [
-  { key: 'login', label: 'signIn' },
+  { key: 'login', label: 'signInTap' },
   { key: 'register', label: 'signUp' },
   { key: 'forgot-password', label: 'forgotPassword' },
 ];
@@ -746,8 +746,8 @@ export default function AuthPage() {
             <Image priority loading='eager' fill src='/images/auth.jpeg' alt='' className='absolute inset-0 object-cover w-full h-full object-right' />
             <div className='relative z-10 max-w-2xl mx-auto my-auto'>
               <motion.h1 className='text-2xl lg:text-3xl xl:text-4xl font-extrabold mb-3'>  {t('hero.title')}</motion.h1>
-              <motion.p className='text-base lg:text-lg xl:text-2xl    font-normal mb-6'>{t('hero.subtitle')}</motion.p>
-              <div className='space-y-2 sm:text-base lg:text-lg xl:text-lg'>
+              <motion.p className='text-base lg:text-lg xl:text-2xl font-normal mb-2'>{t('hero.subtitle1')}</motion.p>
+              <motion.p className='text-base lg:text-lg xl:text-2xl font-normal mb-6'>{t('hero.subtitle2')}</motion.p>              <div className='space-y-2 sm:text-base lg:text-lg xl:text-lg'>
                 {features?.map((text, i) => (
                   <p key={i} className='flex gap-2 items-center'>
                     <span className='w-6 h-6 bg-white/20 rounded-full flex items-center justify-center'>✓</span>

@@ -1,6 +1,6 @@
 'use client';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 import FAQSection from '@/components/common/Faqs';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
@@ -18,7 +18,8 @@ const page = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false)
   const router = useRouter();
-  const faqs = settings?.faqs;
+  const locale = useLocale();
+  const faqs = locale === 'ar' ? settings?.sellerFaqs_ar : settings?.sellerFaqs_en;
   const t = useTranslations('BecomeSeller');
   const stats = [
     { value: '4 Sec', label: t('stats.gigBought') },
@@ -36,19 +37,19 @@ const page = () => {
 
   const categories = [
     {
-      title: 'Commercial Photography',
+      title: t('categoties.commercialPhotography'),
       image: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1200&auto=format&fit=crop',
     },
     {
-      title: 'Portrait Photography',
+      title: t('categoties.portraitPhotography'),
       image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1200&auto=format&fit=crop',
     },
     {
-      title: 'Event Photography',
+      title: t('categoties.eventPhotography'),
       image: 'https://images.unsplash.com/photo-1519682337058-a94d519337bc?q=80&w=1200&auto=format&fit=crop',
     },
     {
-      title: 'Product Photography',
+      title: t('categoties.productPhotography'),
       image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200&auto=format&fit=crop',
     },
   ];
@@ -60,13 +61,13 @@ const page = () => {
       icon: '/icons/gig.svg',
     },
     {
-      title: t('steps.deliverWork.title'),
-      subtitle: t('steps.deliverWork.subtitle'),
+      title: t('steps.getOrders.title'),
+      subtitle: t('steps.getOrders.subtitle'),
       icon: '/icons/box-tick.svg',
     },
     {
-      title: t('steps.getPaid.title'),
-      subtitle: t('steps.getPaid.subtitle'),
+      title: t('steps.deliverAndGetPaid.title'),
+      subtitle: t('steps.deliverAndGetPaid.subtitle'),
       icon: '/icons/timer.svg',
     },
   ];
@@ -215,7 +216,7 @@ const page = () => {
 
       {/* How It Works */}
       <section className='w-full divider' data-aos='fade-up' data-aos-duration='1000'>
-        <h2 className='text-center text-3xl font-bold text-white mb-12' data-aos='zoom-in' data-aos-delay='200'>
+        <h2 className='text-center text-3xl font-bold mb-12' data-aos='zoom-in' data-aos-delay='200'>
           {t('howItWorks.title')}
         </h2>
         <div className='flex flex-wrap items-center justify-center gap-10'>
@@ -235,12 +236,12 @@ const page = () => {
 
         <div className='grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
           {testimonials.map((t, i) => (
-            <article key={i} className='relative rounded-2xl bg-white border border-slate-100' style={{ boxShadow: '0px 0px 36px 0px #00000026' }} data-aos='zoom-in-up' data-aos-delay={i * 200}>
+            <article key={i} className='text-start rtl:text-end relative rounded-2xl bg-white border border-slate-100' style={{ boxShadow: '0px 0px 36px 0px #00000026' }} data-aos='zoom-in-up' data-aos-delay={i * 200}>
               <div className='p-8'>
-                <QuoteMark className='w-8 h-8 text-emerald-600' />
+                <QuoteMark className='w-8 h-8 text-emerald-600 ' />
                 <h3 className='mt-4 text-2xl font-semibold tracking-tight text-black'>{t.title}</h3>
                 <p className='mt-3 text-lg leading-8 text-slate-700'>{t.quote}</p>
-                <div className='mt-8 flex items-center justify-end gap-3'>
+                <div className='mt-8 flex items-center justify-end rtl:justify-start gap-3'>
                   <div className='h-10 w-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-400 ring-2 ring-white overflow-hidden flex items-center justify-center text-white text-sm font-medium'>SR</div>
                   <div className='text-right'>
                     <div className='text-base font-semibold text-black'>{t.author}</div>
@@ -254,7 +255,7 @@ const page = () => {
       </section>
 
       {/* FAQ */}
-      <section className='divider' data-aos='fade-up' data-aos-duration='1000'>
+      <section className='divider px-4 ' data-aos='fade-up' data-aos-duration='1000'>
         <FAQSection faqs={faqs} loading={loadingSettings} />
       </section>
     </div>
@@ -287,7 +288,7 @@ function CategoryCard({ title, image, index }) {
     <div className='relative rounded-2xl overflow-hidden shadow-lg group' data-aos='zoom-in-up' data-aos-delay={index * 200}>
       <img src={image} alt={title} className='w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105' />
       <div className='absolute inset-0 bg-gradient-to-t from-green-600/80 via-green-600/40 to-transparent opacity-90' />
-      <div className='absolute bottom-4 left-4 text-white font-semibold text-lg'>{title}</div>
+      <div className='absolute bottom-4 ltr:left-4 rtl:right-4 text-white font-semibold text-lg'>{title}</div>
     </div>
   );
 }
