@@ -247,7 +247,7 @@ function Hero() {
             <p className='text-sm md:text-base text-emerald-50/80'>{t('hero.tagline')}</p>
             <div className="flex flex-wrap items-center gap-3 mt-4">
               <Link
-                href="/auth"
+                href="/freelance"
                 className=" inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-emerald-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-emerald-700 transition-all
   "
               >

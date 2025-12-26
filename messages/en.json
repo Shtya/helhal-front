@@ -252,6 +252,11 @@
     "invalidResetLinkMessage": "The password reset link is invalid or has expired. Please request a new one.",
     "requestNewResetLink": "Request a New Reset Link"
   },
+  "freelance": {
+    "title": "Start Your Freelancing Journey",
+    "subTitle": "Build your career and deliver projects with confidence through Helhal, a creative platform connecting you with real clients across the Arab world.",
+    "getStarted": "Get Started Now"
+  },
   "categories": {
     "importantLinks": "important links",
     "title": "Categories",
