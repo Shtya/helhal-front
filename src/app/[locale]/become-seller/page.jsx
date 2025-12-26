@@ -19,7 +19,7 @@ const page = () => {
   const [loading, setLoading] = useState(false)
   const router = useRouter();
   const locale = useLocale();
-  const faqs = locale === 'ar' ? settings?.sellerFaqs_ar : settings?.sellerFaqs_en;
+  const faqs = locale === 'ar' ? settings?.becomeSellerFaqs_ar : settings?.becomeSellerFaqs_en;
   const t = useTranslations('BecomeSeller');
   const stats = [
     { value: '4 Sec', label: t('stats.gigBought') },

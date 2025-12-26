@@ -255,7 +255,94 @@
   "freelance": {
     "title": "Start Your Freelancing Journey",
     "subTitle": "Build your career and deliver projects with confidence through Helhal, a creative platform connecting you with real clients across the Arab world.",
-    "getStarted": "Get Started Now"
+    "getStarted": "Get Started Now",
+    "top": {
+      "title": "Top Categories for Freelancers",
+      "error": {
+        "loadFailed": "Failed to load data. Please try again later.",
+        "message": "Unable to load top freelance categories."
+      }
+    },
+    "banner": {
+      "title": "Ready to start your freelance journey?",
+      "subtitle": "Join our platform as a seller and start offering your services to millions.",
+      "cta": "Get Started"
+    },
+    "whyChoose": {
+      "title": "Why Start Working with Helhal?",
+      "items": {
+        "wideReach": {
+          "title": "Wide Market Reach",
+          "description": "Connect with clients from various industries across the Arab world, giving you countless opportunities to grow your freelance business."
+        },
+        "securePayments": {
+          "title": "Secure & Reliable Payments",
+          "description": "Enjoy peace of mind with our secure payment system, ensuring you receive your earnings on time and without hassle."
+        },
+        "flexibleWork": {
+          "title": "Flexible Work That Fits Your Schedule",
+          "description": "Choose projects that match your skills and availability, giving you full control over how and when you work."
+        },
+        "supportiveCommunity": {
+          "title": "Supportive & Collaborative Community",
+          "description": "Join a network of professional freelancers who share your ambitions and benefit from mutual support and expert guidance."
+        },
+        "growthOpportunities": {
+          "title": "Continuous Growth Opportunities",
+          "description": "Access educational resources and workshops designed to enhance your skills and keep you up to date with the latest freelancing trends."
+        },
+        "userFriendlyPlatform": {
+          "title": "Easy-to-Use Platform",
+          "description": "Enjoy a smooth user experience with a clean and intuitive interface that helps you manage projects and clients efficiently."
+        }
+      }
+    },
+    "howStart": {
+      "title": "How to Start Your Freelancing Journey on Helhal?",
+      "steps": {
+        "createProfile": {
+          "title": "Create Your Profile",
+          "description": "Set up a professional profile that highlights your skills and experience, helping clients get to know you and choose you for their projects."
+        },
+        "browseProjects": {
+          "title": "Browse Projects",
+          "description": "Explore a wide range of available projects and select the ones that best match your skills and interests."
+        },
+        "submitProposals": {
+          "title": "Submit Your Proposals",
+          "description": "Write tailored proposals for the projects you want to work on, clearly explaining how you can meet the client’s needs."
+        }
+      }
+    },
+    "customFeatures": {
+      "title": "We support you with these features",
+      "features": {
+        "qualityProjects": {
+          "title": "High-quality projects",
+          "description": "We review and maintain high project standards to ensure professional results."
+        },
+        "securePayments": {
+          "title": "Secure payments",
+          "description": "Multiple secure payout methods with protection for both parties."
+        },
+        "profileShowcase": {
+          "title": "Professional profile",
+          "description": "Create a profile that showcases your skills and experience to attract better clients."
+        },
+        "support": {
+          "title": "Ongoing support",
+          "description": "Support team available to assist you quickly when needed."
+        },
+        "growth": {
+          "title": "Growth opportunities",
+          "description": "Join opportunities that increase visibility and grow your income over time."
+        },
+        "community": {
+          "title": "Supportive community",
+          "description": "A community of professionals to share expertise and build relationships."
+        }
+      }
+    }
   },
   "categories": {
     "importantLinks": "important links",
@@ -2838,7 +2925,8 @@
         "oldest": "Oldest",
         "az": "A–Z",
         "za": "Z–A",
-        "top": "Top Categories"
+        "top": "Top Categories",
+        "freelanceTop": "Top Freelance Categories"
       },
       "addCategory": "Add Category",
       "toast": {
@@ -2852,6 +2940,8 @@
         "editTitle": "Edit Category ({name})",
         "createTitle": "Create Category",
         "editTopTitle": "Edit Top Icon",
+        "editFreelanceTopTitle": "Edit Top Freelance Category Icon",
+        "markFreelanceTopTitle": "Mark Category as Top Freelance",
         "markTopTitle": "Mark as Top",
         "type": "Type",
         "mainCategory": "Main Category",
@@ -2881,7 +2971,9 @@
         "edit": "Edit",
         "delete": "Delete",
         "markTop": "Mark as Top",
-        "unmarkTop": "Unmark as Top"
+        "unmarkTop": "Unmark as Top",
+        "markFreelanceTop": "Mark as Top Freelance Category",
+        "unmarkFreelanceTop": "Remove from Top Freelance Category"
       },
       "deleteConfirm": "Delete this category? This cannot be undone.",
       "deleting": "Deleting category…",
@@ -3290,6 +3382,7 @@
       "brandName": "Brand",
       "platformFee": "Platform Fee",
       "serviceFee": "Service Fee (Seller)",
+      "faqs": "FAQs",
       "fields": {
         "facebook": "Facebook",
         "facebookPlaceholder": "Enter Facebook URL",
@@ -3319,16 +3412,21 @@
         "platformWalletHint": "Funds from paid invoices are deposited here (escrow). Ensure this maps to a valid User with a Wallet.",
         "privacyPolicy": "Privacy Policy",
         "termsOfService": "Terms of Service",
-        "sellerFaqs": "Seller FAQs",
-        "sellerFaqs_ar": "Seller FAQs (Arabic)",
-        "sellerFaqsHint_ar": "Add questions and answers in Arabic to help new sellers understand how Helhal works and how to offer services.",
-        "sellerFaqs_en": "Seller FAQs (English)",
-        "sellerFaqsHint_en": "Add questions and answers in English to help new sellers understand how Helhal works and how to offer services.",
-        "inviteFaqs": "Referral FAQs",
-        "inviteFaqs_ar": "Referral FAQs (Arabic)",
-        "inviteFaqsHint_ar": "Add questions and answers in Arabic to explain how to invite friends and earn rewards on Helhal.",
-        "inviteFaqs_en": "Referral FAQs (English)",
-        "inviteFaqsHint_en": "Add questions and answers in English to explain how to invite friends and earn rewards on Helhal.",
+        "sellerFaqs": "Freelancer FAQs",
+        "sellerFaqs_ar": "Freelancer FAQs (Arabic)",
+        "sellerFaqsHint_ar": "Add questions and answers in Arabic to help freelancers understand how Helhal works and how to offer their services successfully.",
+        "sellerFaqs_en": "Freelancer FAQs (English)",
+        "sellerFaqsHint_en": "Add questions and answers in English to help freelancers understand how Helhal works and how to offer their services successfully.",
+        "inviteFaqs": "Referral Program FAQs",
+        "inviteFaqs_ar": "Referral Program FAQs (Arabic)",
+        "inviteFaqsHint_ar": "Add questions and answers in Arabic to explain how referrals work, how to invite friends, and how to earn rewards on Helhal.",
+        "inviteFaqs_en": "Referral Program FAQs (English)",
+        "inviteFaqsHint_en": "Add questions and answers in English to explain how referrals work, how to invite friends, and how to earn rewards on Helhal.",
+        "becomeSellerFaqs": "Becoming a Service Provider FAQs",
+        "becomeSellerFaqs_ar": "Becoming a Service Provider FAQs (Arabic)",
+        "becomeSellerFaqsHint_ar": "Add questions and answers in Arabic to explain the steps, requirements, and process of becoming a service provider on Helhal.",
+        "becomeSellerFaqs_en": "Becoming a Service Provider FAQs (English)",
+        "becomeSellerFaqsHint_en": "Add questions and answers in English to explain the steps, requirements, and process of becoming a service provider on Helhal.",
         "socialMediaHint": "Manage your connected social media accounts here.",
         "socialMediaControllerHint": "These settings allow linking and controlling your social media presence."
       },

@@ -185,8 +185,12 @@ export default function AdminSettingsDashboard() {
     privacyPolicy_ar: '',
     termsOfService_en: '',
     termsOfService_ar: '',
-    sellerFaqs_en: [], // now array of { question, answer }
-    sellerFaqs_ar: [], // now array of { question, answer }
+    sellerFaqs_en: [],
+    sellerFaqs_ar: [],
+    inviteFaqs_en: [],
+    inviteFaqs_ar: [],
+    becomeSellerFaqs_en: [],
+    becomeSellerFaqs_ar: [],
     // socialLinks
     facebook: '',
     twitter: '',
@@ -201,6 +205,8 @@ export default function AdminSettingsDashboard() {
   const [apiError, setApiError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [formErrors, setFormErrors] = useState({});
+
+  const [activeFaqTab, setActiveFaqTab] = useState('seller');
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -320,15 +326,15 @@ export default function AdminSettingsDashboard() {
 
   return (
     <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
-      <div className='p-6'>
+      <div className='p-4 sm:p-6'>
         {/* Header */}
         <GlassCard gradient='bg-emerald-500/60' className='mb-6'>
-          <div className='flex items-center justify-between'>
+          <div className='flex max-sm:flex-col items-center justify-between gap-2'>
             <div>
               <h1 className='text-2xl font-bold text-black'>{t('title')}</h1>
               <p className='text-black'> {t('subtitle')}</p>
             </div>
-            <Button icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin' /> : <Save size={16} className='mr-2' />} name={saving ? t('saving') : t('saveSettings')} onClick={handleSave} disabled={saving} className='!w-fit' />
+            <Button icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin ' /> : <Save size={16} className='mr-2' />} name={saving ? t('saving') : t('saveSettings')} onClick={handleSave} disabled={saving} className='!w-full sm:!w-fit' />
           </div>
         </GlassCard>
 
@@ -367,7 +373,7 @@ export default function AdminSettingsDashboard() {
         {/* Top row: General + Financial */}
         <div className='mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2'>
           {/* General */}
-          <GlassCard className='p-6'>
+          <GlassCard className='p-3 sm:p-6'>
             <div className='mb-4 flex items-center'>
               <Globe size={20} className='mr-2 text-blue-600' />
               <h2 className='text-lg font-semibold'>{t('sections.general')}</h2>
@@ -401,7 +407,7 @@ export default function AdminSettingsDashboard() {
           </GlassCard>
 
           {/* Financial */}
-          <GlassCard className='p-6'>
+          <GlassCard className='p-3 sm:p-6'>
             <div className='mb-4 flex items-center'>
               <Currency style={{ fill: "#00a63e" }} size={20} />
               <h2 className='text-lg font-semibold'>{t('sections.financial')}</h2>
@@ -440,7 +446,7 @@ export default function AdminSettingsDashboard() {
 
 
 
-        <GlassCard className="p-6">
+        <GlassCard className="p-3 sm:p-6">
           <div className="mb-4 flex items-center">
             <Share2 size={20} className="mr-2 text-blue-600" />
             <h2 className="text-lg font-semibold">{t('sections.socialMedia')}</h2>
@@ -531,61 +537,99 @@ export default function AdminSettingsDashboard() {
           </div>
         </GlassCard>
 
-        {/*seller FAQs (Q&A text) */}
         <div className="my-6 grid grid-cols-1 gap-6">
-          <GlassCard className="p-6">
+          <GlassCard className="p-3 sm:p-6">
+            {/* Header */}
             <div className="mb-4 flex items-center">
               <Info size={20} className="mr-2 text-teal-600" />
-              <h2 className="text-lg font-semibold">{t('fields.sellerFaqs')}</h2>
+              <h2 className="text-lg font-semibold">{t('faqs')}</h2>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <FaqsEditor
-                label={t('fields.sellerFaqs_en')}
-                hint={t('fields.sellerFaqsHint_en')}
-                value={settings.sellerFaqs_en}
-                onChange={(v) => updateField("sellerFaqs_en", v)}
-                icon={<Info size={16} className="text-slate-500" />}
-              />
-
-              <FaqsEditor
-                label={t('fields.sellerFaqs_ar')}
-                hint={t('fields.sellerFaqsHint_ar')}
-                value={settings.sellerFaqs_ar}
-                dir='rtl'
-                onChange={(v) => updateField("sellerFaqs_ar", v)}
-                icon={<Info size={16} className="text-slate-500" />}
-              />
-            </div>
-          </GlassCard>
-        </div>
-
-        {/*invite FAQs (Q&A text) */}
-        <div className="my-6 grid grid-cols-1 gap-6">
-          <GlassCard className="p-6">
-            <div className="mb-4 flex items-center">
-              <Info size={20} className="mr-2 text-teal-600" />
-              <h2 className="text-lg font-semibold">{t('fields.inviteFaqs')}</h2>
+            {/* Tabs */}
+            <div className="mb-4 inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+              {[
+                { id: 'seller', label: t('fields.sellerFaqs') },
+                { id: 'invite', label: t('fields.inviteFaqs') },
+                { id: 'becomeSeller', label: t('fields.becomeSellerFaqs') },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveFaqTab(tab.id)}
+                  className={[
+                    'px-3 py-1.5 text-sm rounded-md transition',
+                    activeFaqTab === tab.id
+                      ? 'bg-white text-slate-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900',
+                  ].join(' ')}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <FaqsEditor
-                label={t('fields.inviteFaqs_en')}
-                hint={t('fields.inviteFaqsHint_en')}
-                value={settings.inviteFaqs_en}
-                onChange={(v) => updateField("inviteFaqs_en", v)}
-                icon={<Info size={16} className="text-slate-500" />}
-              />
+            {/* Content */}
+            {activeFaqTab === 'seller' && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <FaqsEditor
+                  label={t('fields.sellerFaqs_en')}
+                  hint={t('fields.sellerFaqsHint_en')}
+                  value={settings.sellerFaqs_en}
+                  onChange={v => updateField('sellerFaqs_en', v)}
+                  icon={<Info size={16} className="text-slate-500" />}
+                />
 
-              <FaqsEditor
-                label={t('fields.inviteFaqs_ar')}
-                hint={t('fields.inviteFaqsHint_ar')}
-                value={settings.inviteFaqs_ar}
-                dir='rtl'
-                onChange={(v) => updateField("inviteFaqs_ar", v)}
-                icon={<Info size={16} className="text-slate-500" />}
-              />
-            </div>
+                <FaqsEditor
+                  label={t('fields.sellerFaqs_ar')}
+                  hint={t('fields.sellerFaqsHint_ar')}
+                  value={settings.sellerFaqs_ar}
+                  dir="rtl"
+                  onChange={v => updateField('sellerFaqs_ar', v)}
+                  icon={<Info size={16} className="text-slate-500" />}
+                />
+              </div>
+            )}
+
+            {activeFaqTab === 'invite' && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <FaqsEditor
+                  label={t('fields.inviteFaqs_en')}
+                  hint={t('fields.inviteFaqsHint_en')}
+                  value={settings.inviteFaqs_en}
+                  onChange={v => updateField('inviteFaqs_en', v)}
+                  icon={<Info size={16} className="text-slate-500" />}
+                />
+
+                <FaqsEditor
+                  label={t('fields.inviteFaqs_ar')}
+                  hint={t('fields.inviteFaqsHint_ar')}
+                  value={settings.inviteFaqs_ar}
+                  dir="rtl"
+                  onChange={v => updateField('inviteFaqs_ar', v)}
+                  icon={<Info size={16} className="text-slate-500" />}
+                />
+              </div>
+            )}
+
+            {activeFaqTab === 'becomeSeller' && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <FaqsEditor
+                  label={t('fields.becomeSellerFaqs_en')}
+                  hint={t('fields.becomeSellerFaqsHint_en')}
+                  value={settings.becomeSellerFaqs_en}
+                  onChange={v => updateField('becomeSellerFaqs_en', v)}
+                  icon={<Info size={16} className="text-slate-500" />}
+                />
+
+                <FaqsEditor
+                  label={t('fields.becomeSellerFaqs_ar')}
+                  hint={t('fields.becomeSellerFaqsHint_ar')}
+                  value={settings.becomeSellerFaqs_ar}
+                  dir="rtl"
+                  onChange={v => updateField('becomeSellerFaqs_ar', v)}
+                  icon={<Info size={16} className="text-slate-500" />}
+                />
+              </div>
+            )}
           </GlassCard>
         </div>
 
@@ -593,14 +637,14 @@ export default function AdminSettingsDashboard() {
 
         {/* Legal & Compliance – Tabs + Preview */}
         <div className='grid grid-cols-1 gap-6 mt-6'>
-          <GlassCard className='p-6'>
+          <GlassCard className='p-3 sm:p-6'>
             <div className='mb-4 flex items-center'>
               <Shield size={20} className='mr-2 text-amber-600' />
               <h2 className='text-lg font-semibold'>{t('legalCompliance')}</h2>
             </div>
 
             {/* Tabs */}
-            <div className='mb-3 flex items-center justify-between'>
+            <div className='mb-3 flex max-sm:flex-col items-center justify-between gap-2'>
               <div className='inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1'>
                 {[
                   { id: 'privacy', label: t('privacyPolicy') },

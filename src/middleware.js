@@ -227,6 +227,7 @@ function getPublicRouteMatch(path, userRole) {
       return createPathRegex(route.path, route?.strict).test(path);
     }
     if (route.strict) {
+      console.log('Checking strict match:', path, route.path, path === route.path, userRole, route.notFor);
       return path === route.path;
     }
     return path.startsWith(route.path);

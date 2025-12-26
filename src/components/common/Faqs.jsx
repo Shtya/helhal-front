@@ -72,8 +72,9 @@ export default function FAQSection({ loading, className = '', faqs = [], showTit
   const t = useTranslations("BecomeSeller.faqs");
   const toggleFAQ = index => setOpenIndex(openIndex === index ? null : index);
 
+
   return (
-    <section className={`w-full mx-auto max-w-4xl${className}`}>
+    <section className={`w-full mx-auto max-w-4xl ${className}`}>
       {/* Title */}
       {showTitle && (
         <div className='mb-8 text-center'>

@@ -21,6 +21,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { Permissions } from '@/constants/permissions';
 import { has } from '@/utils/permissions';
+import { FiStar } from 'react-icons/fi';
 
 export default function AdminCategoriesDashboard() {
   const t = useTranslations('Dashboard.categories');
@@ -121,6 +122,7 @@ export default function AdminCategoriesDashboard() {
     else if (id === 'az') { setSort(id); setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'ASC', page: 1 })) }
     else if (id === 'za') { setSort(id); setFilters(p => ({ ...p, sortBy: 'name', sortOrder: 'DESC', page: 1 })) }
     else if (id === 'top') { setSort(id); setFilters(p => ({ ...p, sortBy: 'top', sortOrder: 'DESC', page: 1 })) }
+    else if (id === 'freelanceTop') { setSort(id); setFilters(p => ({ ...p, sortBy: 'freelanceTop', sortOrder: 'DESC', page: 1 })) }
     else return;
   };
 
@@ -221,6 +223,7 @@ export default function AdminCategoriesDashboard() {
   ];
   const Actions = ({ row }) => {
     const isTop = row.top;
+    const isFreelanceTop = row.freelanceTop;
 
 
     const canEdit = isAdmin || has(currentPermissions?.['categories'], Permissions.Categories.Edit)
@@ -245,6 +248,16 @@ export default function AdminCategoriesDashboard() {
         >
           <Star size={16} fill={isTop ? 'currentColor' : 'none'} />
         </button>}
+        {/* Top خاص بالـFreelance */}
+        {/* {canToggleTop && (
+          <button
+            onClick={() => openPopularModel(isFreelanceTop ? 'edit-freelance-top' : 'mark-freelance-top', row)}
+            className={`p-2 rounded-full ${isFreelanceTop ? 'text-teal-600 hover:bg-teal-50' : 'text-slate-500 hover:bg-slate-100'}`}
+            title={isFreelanceTop ? t('actions.unmarkFreelanceTop') : t('actions.markFreelanceTop')}
+          >
+            <FiStar size={16} />
+          </button>
+        )} */}
       </div>
     );
   };
@@ -269,7 +282,8 @@ export default function AdminCategoriesDashboard() {
                   { id: 'oldest', name: t('sortOptions.oldest') },
                   { id: 'az', name: t('sortOptions.az') },
                   { id: 'za', name: t('sortOptions.za') },
-                  { id: 'top', name: t('sortOptions.top') }
+                  { id: 'top', name: t('sortOptions.top') },
+                  { id: 'freelanceTop', name: t('sortOptions.freelanceTop') }
                 ]}
               />
               {canAdd && <Button name={t('addCategory')} onClick={openCreate} className='!w-fit' leftIcon={<Plus size={16} />} />}
@@ -301,8 +315,13 @@ export default function AdminCategoriesDashboard() {
         </Modal>
 
         <Modal
-          open={modalOpen && (mode === 'edit-top' || mode === 'mark-top')}
-          title={mode === 'edit-top' ? t('modal.editTopTitle') : t('modal.markTopTitle')}
+          open={modalOpen && (mode === 'edit-top' || mode === 'mark-top' || mode === 'edit-freelance-top' || mode === 'mark-freelance-top')}
+          title={
+            mode === 'edit-top' ? t('modal.editTopTitle') :
+              mode === 'mark-top' ? t('modal.markTopTitle') :
+                mode === 'edit-freelance-top' ? t('modal.editFreelanceTopTitle') :
+                  t('modal.markFreelanceTopTitle')
+          }
           onClose={() => setModalOpen(false)}
           size='md'
           hideFooter
@@ -314,6 +333,7 @@ export default function AdminCategoriesDashboard() {
             onSaved={handleSaveTop}
           />
         </Modal>
+
 
       </div>
     </div>
@@ -378,7 +398,6 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
   });
 
   const name_en = watch('name_en');
-  const name_ar = watch('name_ar');
   const slug = watch('slug');
   const type = watch('type');
 
@@ -514,15 +533,26 @@ function slugify(v) {
 }
 
 
-function TopCategoryForm({ category, onCancel, onSaved }) {
+function TopCategoryForm({ mode, category, onCancel, onSaved }) {
   const t = useTranslations('Dashboard.categories');
   const [file, setFile] = useState(null);
-  const [iconUrl, setIconUrl] = useState(category?.topIconUrl || '');
+  const [iconUrl, setIconUrl] = useState(mode?.includes('freelance') ? category?.freelanceTopIconUrl || '' : category?.topIconUrl || '');
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
 
   const categoryId = category.id;
-  const top = category.top;
+  const top = mode?.includes('freelance') ? category.freelanceTop : category.top;
+  const apiUrl = mode?.includes('freelance')
+    ? top
+      ? `/categories/${categoryId}/freelance-top/icon`
+      : `/categories/${categoryId}/freelance-top`
+    : top
+      ? `/categories/${categoryId}/top/icon`
+      : `/categories/${categoryId}/top`;
+
+  const removeUrl = mode?.includes('freelance')
+    ? `/categories/${categoryId}/freelance-untop`
+    : `/categories/${categoryId}/untop`;
 
   const handleFileChange = f => {
     if (!f) return;
@@ -536,10 +566,6 @@ function TopCategoryForm({ category, onCancel, onSaved }) {
       setSaving(true);
       const fd = new FormData();
       fd.append('icon', file);
-
-      const apiUrl = top
-        ? `/categories/${categoryId}/top/icon`
-        : `/categories/${categoryId}/top`;
 
       const res = await api.post(apiUrl, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -559,7 +585,7 @@ function TopCategoryForm({ category, onCancel, onSaved }) {
   const removeTop = async () => {
     try {
       setRemoving(true);
-      await api.delete(`/categories/${categoryId}/untop`);
+      await api.delete(removeUrl);
       toast.success(t('toast.removedFromTop'));
       onSaved?.(null);
     } catch (e) {

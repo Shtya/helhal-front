@@ -25,6 +25,7 @@ export default function ExplorePage() {
   return (
     <main className='relative'>
       <Hero />
+
       <CategorySwiper />
       <PopularServicesSwiper />
       <WhyChoose />
@@ -689,3 +690,6 @@ export function CTAStrip() {
     </section>
   );
 }
+
+
+// ---------- /NEW COMPONENT ----------
