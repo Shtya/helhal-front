@@ -120,9 +120,9 @@ function TrustRow() {
   const t = useTranslations('Home');
   return (
     <div className='flex flex-wrap items-center gap-3'>
+      <Pill>{t('hero.trust.offers')}</Pill>
+      <Pill>{t('hero.trust.pricing')}</Pill>
       <Pill>{t('hero.trust.safepay')}</Pill>
-      <Pill>{t('hero.trust.rated')}</Pill>
-      <Pill>{t('hero.trust.talent')}</Pill>
     </div>
   );
 }
