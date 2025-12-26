@@ -26,6 +26,7 @@ const PUBLIC_ROUTES = [
   { path: '/terms', strict: true },
   { path: '/privacy-policy', strict: true },
   { path: '/profile/:id', regex: true, strict: true },
+  { path: '/freelance', strict: true, notFor: 'seller', relpace: "/jobs" },
   { path: '/', strict: true, notFor: 'seller', relpace: "/jobs" }
 ];
 
