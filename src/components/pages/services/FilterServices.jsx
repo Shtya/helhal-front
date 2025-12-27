@@ -6,7 +6,7 @@ import Select from '@/components/atoms/Select';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
 import ServiceCard from '@/components/pages/services/ServiceCard';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Pagination from '@/components/atoms/Pagination';
 import { apiService } from '@/services/GigServices';
 import CardSkeleton from '@/components/skeleton/CardSkeleton';
