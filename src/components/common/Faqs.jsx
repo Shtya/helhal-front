@@ -1,177 +1,159 @@
-// 'use client';
-// import { useState } from 'react';
-// import { motion, AnimatePresence } from 'framer-motion';
-// import { ChevronDown, Trash, Trash2 } from 'lucide-react';
+"use client";
 
-// export default function FAQSection({ className, faqs, showTitle = true, removeFaq }) {
-//   const [openIndex, setOpenIndex] = useState(0);
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Trash2, HelpCircle, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-//   const toggleFAQ = index => {
-//     setOpenIndex(openIndex === index ? null : index);
-//   };
+export default function FAQSection({
+	loading,
+	className = "",
+	faqs = [],
+	showTitle = true,
+	removeFaq
+}) {
+	const [openIndex, setOpenIndex] = useState(0);
+	const t = useTranslations("BecomeSeller.faqs");
 
-//   return (
-//     <section className={`w-full max-w-4xl divider px-4 ${className}`}>
-//       {showTitle && <h1 className='mb-12 text-4xl max-md:text-2xl font-bold text-center text-gray-900'>FAQ's</h1>}
-//       <div className='space-y-4'>
-//         {faqs.map((faq, idx) => {
-//           const isOpen = openIndex === idx;
-//           return (
-//             <motion.div
-//               key={idx}
-//               initial={false}
-//               animate={{
-//                 backgroundColor: isOpen ? '#f0fdf4' : '#ffffff',
-//                 borderColor: isOpen ? '#007a5550' : '#e5e7eb',
-//                 boxShadow: isOpen ? '' : '0px 2px 6px rgba(0,0,0,0.05)',
-//               }}
-//               transition={{ duration: 0.3 }}
-//               className={`cursor-pointer shadow-inner rounded-xl border overflow-hidden ${isOpen && 'card-glow'} `}>
-//               <button className={`cursor-pointer  duration-300 w-full flex justify-between items-center px-3 md:px-6 py-2 md:py-4 text-left text-base md:text-lg font-medium transition ${isOpen ? 'text-green-600' : 'text-gray-900'}`} onClick={() => toggleFAQ(idx)}>
-//                 <span className={`${isOpen ? 'bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent' : ''}`}>{faq.question}</span>
-//                 <div className='flex items-center gap-2'>
-//                   <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
-//                     <ChevronDown className={`w-6 h-6 transition ${isOpen ? 'text-green-600' : 'text-gray-500'}`} />
-//                   </motion.div>
-//                   {removeFaq && (
-//                     <motion.button type='button' onClick={() => removeFaq(idx)} className='text-red-500 hover:text-red-700 p-1 transition-colors'>
-//                       <Trash2 className='w-6 h-6 cursor-pointer ' />
-//                     </motion.button>
-//                   )}
-//                 </div>
-//               </button>
+	const toggleFAQ = (index) => setOpenIndex(openIndex === index ? null : index);
 
-//               {/* Answer */}
-//               <AnimatePresence initial={false}>
-//                 {isOpen && (
-//                   <motion.div key='content' initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: 'easeInOut' }} className='overflow-hidden'>
-//                     <motion.p initial={{ y: -5 }} animate={{ y: 0 }} exit={{ y: -5 }} transition={{ duration: 0.3 }} className='px-6  text-sm md:text-base pb-5 text-gray-700 leading-relaxed'>
-//                       {faq.answer}
-//                     </motion.p>
-//                   </motion.div>
-//                 )}
-//               </AnimatePresence>
-//             </motion.div>
-//           );
-//         })}
-//       </div>
-//     </section>
-//   );
-// }
+	const skeletons = useMemo(() => Array.from({ length: 5 }), []);
 
-'use client';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Trash2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+	return (
+		<section className={`w-full mx-auto max-w-4xl ${className}`}>
+			{/* Title */}
+			{showTitle && (
+				<div className="mb-8 text-center">
+					<p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200/70">
+						<Sparkles className="h-4 w-4" />
+						{t("kicker")}
+					</p>
+					<h1 className="mt-4 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+						{t("title")}
+					</h1>
+					<p className="mt-3 text-sm md:text-base text-slate-600">
+						{t("subtitle")}
+					</p>
+				</div>
+			)}
 
-const PRIMARY = '#007a55';
+			{/* list style (not boxy): thin dividers + soft hover, like Apple/Notion */}
+			<div className="rounded-[28px] overflow-hidden bg-white/40 ring-1 ring-emerald-200/50">
+				{loading ? (
+					<div className="divide-y divide-emerald-100/60">
+						{skeletons.map((_, idx) => (
+							<div key={idx} className="p-5 md:p-6 animate-pulse">
+								<div className="h-4 bg-slate-200/80 rounded w-2/3 mb-3" />
+								<div className="h-3 bg-slate-200/70 rounded w-1/2" />
+							</div>
+						))}
+					</div>
+				) : (
+					<div className="divide-y divide-emerald-100/60">
+						{faqs.map((faq, idx) => {
+							const isOpen = openIndex === idx;
 
-export default function FAQSection({ loading, className = '', faqs = [], showTitle = true, removeFaq }) {
-  const [openIndex, setOpenIndex] = useState(0);
-  const t = useTranslations("BecomeSeller.faqs");
-  const toggleFAQ = index => setOpenIndex(openIndex === index ? null : index);
+							return (
+								<div key={idx} className="relative">
+									{/* Row */}
+									<button
+										type="button"
+										onClick={() => toggleFAQ(idx)}
+										className={[
+											"w-full text-left p-5 md:p-6",
+											"flex items-start gap-4",
+											"transition",
+											isOpen ? "bg-emerald-50/60" : "hover:bg-slate-50/70"
+										].join(" ")}
+									>
+										{/* icon */}
+										<div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/70 ring-1 ring-emerald-200/60">
+											<HelpCircle className="h-5 w-5 text-emerald-700" />
+										</div>
 
+										{/* question */}
+										<div className="min-w-0 flex-1">
+											<div className="flex items-start justify-between gap-3">
+												<h3 className="text-base md:text-lg font-extrabold tracking-tight text-slate-900">
+													{faq.question}
+												</h3>
 
-  return (
-    <section className={`w-full mx-auto max-w-4xl ${className}`}>
-      {/* Title */}
-      {showTitle && (
-        <div className='mb-8 text-center'>
-          <h1 className='text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900'>{t('title')}</h1>
-        </div>
-      )}
+												<div className="flex items-center gap-2 shrink-0">
+													{typeof removeFaq === "function" && (
+														<motion.button
+															type="button"
+															onClick={(e) => {
+																e.stopPropagation();
+																removeFaq(idx);
+															}}
+															title={t("remove")}
+															className="hidden md:inline-flex items-center justify-center rounded-xl p-2 hover:bg-white/70 transition text-red-500"
+															whileTap={{ scale: 0.95 }}
+														>
+															<Trash2 className="h-5 w-5" />
+														</motion.button>
+													)}
 
-      {/* List */}
-      <div className='space-y-3'>
-        {loading ? (
-          // Skeletons while loading
-          Array.from({ length: 4 }).map((_, idx) => (
-            <div key={idx} className="animate-pulse rounded-2xl border border-gray-200 p-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-            </div>
-          ))
-        ) : (faqs.map((faq, idx) => {
-          const isOpen = openIndex === idx;
+													<motion.div
+														animate={{ rotate: isOpen ? 180 : 0 }}
+														transition={{ duration: 0.2 }}
+														className={[
+															"grid place-items-center rounded-xl p-2 ring-1 transition",
+															isOpen
+																? "bg-white/70 ring-emerald-200 text-emerald-700"
+																: "bg-white/50 ring-slate-200 text-slate-500"
+														].join(" ")}
+													>
+														<ChevronDown className="h-5 w-5" />
+													</motion.div>
+												</div>
+											</div>
 
-          return (
-            <motion.div
-              key={idx}
-              initial={false}
-              animate={{
-                backgroundColor: isOpen ? '#f8fffc' : '#ffffff',
-                borderColor: isOpen ? `${PRIMARY}55` : '#e5e7eb',
-                boxShadow: isOpen ? '0 6px 20px rgba(0,0,0,0.06)' : '0 2px 8px rgba(0,0,0,0.04)',
-              }}
-              transition={{ duration: 0.25 }}
-              className={`rounded-2xl border overflow-hidden`}>
-              {/* Header */}
-              <button
-                type='button'
-                onClick={() => toggleFAQ(idx)}
-                className={`group w-full select-none px-4 md:px-6 py-3 md:py-4 text-left flex items-start justify-between gap-3 outline-none focus-visible:ring-2 rounded-2xl`}
-                style={{
-                  // focus ring with primary color
-                  boxShadow: 'none',
-                }}>
-                <div className='min-w-0'>
-                  <div className='flex items-center gap-2'>
-                    <span className={`text-base md:text-lg font-semibold leading-6 ${isOpen ? 'text-slate-900' : 'text-slate-900'}`}>
-                      <span className={`bg-clip-text ${isOpen ? 'text-transparent' : ''}`} style={isOpen ? { backgroundImage: `linear-gradient(90deg, ${PRIMARY}, ${PRIMARY})` } : undefined}>
-                        {faq.question}
-                      </span>
-                    </span>
-                  </div>
-                </div>
+											{/* Answer */}
+											<AnimatePresence initial={false}>
+												{isOpen && (
+													<motion.div
+														key="content"
+														initial={{ height: 0, opacity: 0 }}
+														animate={{ height: "auto", opacity: 1 }}
+														exit={{ height: 0, opacity: 0 }}
+														transition={{ duration: 0.22, ease: "easeInOut" }}
+														className="overflow-hidden"
+													>
+														<div className="mt-4 pe-2">
+															{/* minimal answer surface, not a box */}
+															<p className="text-sm md:text-base leading-relaxed text-slate-600">
+																{faq.answer}
+															</p>
 
-                <div className='flex items-center gap-2 shrink-0'>
-                  {typeof removeFaq === 'function' && (
-                    <motion.button
-                      type='button'
-                      onClick={e => {
-                        e.stopPropagation();
-                        removeFaq(idx);
-                      }}
-                      title='Remove'
-                      className='hidden md:inline-flex items-center justify-center rounded-lg p-1.5 hover:bg-slate-50 transition'
-                      style={{ color: '#ef4444' }}
-                      whileTap={{ scale: 0.95 }}>
-                      <Trash2 className='h-5 w-5' />
-                    </motion.button>
-                  )}
+															{/* NEW: small hint line (translation) */}
+															<p className="mt-3 text-xs text-slate-500">
+																{t("hint")}
+															</p>
+														</div>
+													</motion.div>
+												)}
+											</AnimatePresence>
+										</div>
+									</button>
 
-                  <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className='grid place-items-center rounded-lg' style={{ color: isOpen ? PRIMARY : '#64748b' }}>
-                    <ChevronDown className='h-6 w-6' />
-                  </motion.div>
-                </div>
-              </button>
+									{/* active left indicator */}
+									{isOpen && (
+										<div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-emerald-400 to-teal-400" />
+									)}
+								</div>
+							);
+						})}
 
-              {/* Answer */}
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div key='content' initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.22, ease: 'easeInOut' }} className='overflow-hidden'>
-                    <div className='px-6 pb-5'>
-                      <div className='relative overflow-hidden rounded-xl border p-4 text-sm md:text-base leading-relaxed text-slate-700 bg-white' style={{ borderColor: `${PRIMARY}22` }}>
-                        {/* left accent */}
-                        <span aria-hidden className='absolute left-[0px] top-0 h-full w-1 rounded-l-xl' style={{ background: PRIMARY }} />
-                        {faq.answer}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          );
-        }))}
-
-        {/* Optional: empty state (does not change logic) */}
-        {faqs.length === 0 && (
-          <div className='rounded-2xl border p-8 text-center text-slate-600' style={{ borderColor: '#e5e7eb' }}>
-            {t('noFaqs')}
-          </div>
-        )}
-      </div>
-    </section>
-  );
+						{/* empty state */}
+						{faqs.length === 0 && (
+							<div className="p-8 text-center">
+								<p className="text-sm text-slate-600">{t("noFaqs")}</p>
+							</div>
+						)}
+					</div>
+				)}
+			</div>
+		</section>
+	);
 }
