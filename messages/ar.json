@@ -2987,11 +2987,16 @@
         "za": "ي-أ"
       },
       "filterBy": "تصفية حسب",
+      "filterByPermissions": "تصفية حسب الصلاحيات",
       "filterOptions": {
         "all": "الكل",
+        "allPermissions": "جميع الصلاحيات",
+        "allStatuses": "جميع الحالات",
         "active": "نشط",
         "suspended": "معلق",
-        "deleted": "محذوف"
+        "deleted": "محذوف",
+        "noPermissions": "بدون صلاحيات",
+        "withPermissions": "مع صلاحيات"
       },
       "columns": {
         "avatar": "الصورة الرمزية",

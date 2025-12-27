@@ -3478,11 +3478,16 @@
         "za": "Z–A"
       },
       "filterBy": "filter by",
+      "filterByPermissions": "filter by permissions",
       "filterOptions": {
         "all": "All",
+        "allPermissions": "All Permissions",
+        "allStatuses": "All Statuses",
         "active": "Active",
         "suspended": "Suspended",
-        "deleted": "Deleted"
+        "deleted": "Deleted",
+        "noPermissions": "No Permissions",
+        "withPermissions": "With Permissions"
       },
       "columns": {
         "avatar": "Avatar",

@@ -214,7 +214,6 @@ export default function PaymentPage() {
           {/* Amount */}
           <div className='mb-6 text-center'>
             <div className='mx-auto inline-flex items-baseline gap-2 rounded-2xl border border-emerald-200/60 bg-emerald-50 px-5 py-3'>
-              <DollarSign className='h-5 w-5' />
               <span className='text-2xl font-bold text-emerald-800'>{formatMoney(Number(invoice.totalAmount), currency)}</span>
             </div>
             <p className='mt-2 text-xs text-slate-500'>{t('includesTaxes')}</p>

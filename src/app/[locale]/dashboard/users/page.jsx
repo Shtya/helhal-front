@@ -43,7 +43,7 @@ export default function AdminUsersDashboard() {
   const router = useRouter();
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const { user: currentUser } = useAuth();
-  const [filters, setFilters] = useState({ role: '', status: 'all', page: 1, limit: 10, sortBy: 'newest', sortOrder: 'DESC' });
+  const [filters, setFilters] = useState({ role: '', status: 'all', page: 1, limit: 10, sortBy: 'newest', sortOrder: 'DESC', hasPermissions: 'all' });
   const [totalUsers, setTotalUsers] = useState(0);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserModal, setShowUserModal] = useState(false);
@@ -63,19 +63,20 @@ export default function AdminUsersDashboard() {
   ];
 
   const controllerRef = useRef();
+  const isAdmin = currentUser?.role === 'admin';
   const fetchUsers = useCallback(async () => {
     if (controllerRef.current) controllerRef.current.abort();
     const controller = new AbortController();
     controllerRef.current = controller;
-
     try {
       setLoading(true);
 
       const sortConfig = SORT_CONFIGS[filters.sortBy] || SORT_CONFIGS.newest;
 
-
       const params = {
-        ...filters, status: filters.status === 'all' ? '' : filters.status,
+        ...filters,
+        status: filters.status === 'all' ? '' : filters.status,
+        hasPermissions: isAdmin ? filters.hasPermissions : '',
         filter: activeTab === 'all' ? '' : activeTab,
         search: debouncedSearch?.trim() || undefined,
         sortBy: sortConfig.field,
@@ -94,7 +95,7 @@ export default function AdminUsersDashboard() {
       if (controllerRef.current === controller)
         setLoading(false);
     }
-  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder, filters.status, filters.role]);
+  }, [activeTab, debouncedSearch?.trim(), filters.page, filters.limit, filters.sortBy, filters.sortOrder, filters.status, filters.role, filters.hasPermissions, isAdmin]);
 
   useEffect(() => {
     fetchUsers();
@@ -119,6 +120,10 @@ export default function AdminUsersDashboard() {
     handleFilterChange("status", status.id)
   }
 
+
+  function applyHasPermissionsPreset(hasPermissions) {
+    handleFilterChange("hasPermissions", hasPermissions.id)
+  }
 
   // permission states
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
@@ -271,6 +276,7 @@ export default function AdminUsersDashboard() {
     { key: 'lastLogin', label: t('columns.lastLogin'), type: 'date' },
   ];
 
+
   // permission actions
   const grantAll = () => {
     const all = {};
@@ -321,9 +327,8 @@ export default function AdminUsersDashboard() {
   const UserActions = ({ row }) => {
     const user = row;
 
-    const isAdmin = currentUser?.role === 'admin';
     const currentPermissions = currentUser?.permissions;
-    const canManagePermissions = currentUser?.role === 'admin';
+    const canManagePermissions = currentUser?.role === 'admin' && user.role !== 'admin';
     const canChangeLevel = isAdmin || has(currentPermissions?.['users'], Permissions.Users.UpdateLevel)
     const canAdd = isAdmin || has(currentPermissions?.['users'], Permissions.Users.Add)
     const canEdit = isAdmin || has(currentPermissions?.['users'], Permissions.Users.Edit)
@@ -436,12 +441,22 @@ export default function AdminUsersDashboard() {
                 onChange={e => applyStatusPreset(e)}
                 placeholder={t('filterBy')}
                 options={[
-                  { id: 'all', name: t('filterOptions.all') },
+                  { id: 'all', name: t('filterOptions.allStatuses') },
                   { id: 'active', name: t('filterOptions.active') },
                   { id: 'suspended', name: t('filterOptions.suspended') },
                   { id: 'deleted', name: t('filterOptions.deleted') },
                 ]}
               />
+
+              {isAdmin && (
+                <Select className='!w-fit' value={filters?.hasPermissions} onChange={e => applyHasPermissionsPreset(e)}
+                  placeholder={t('filterByPermissions')}
+                  options={[
+                    { id: 'all', name: t('filterOptions.allPermissions') },
+                    { id: 'true', name: t('filterOptions.withPermissions') },
+                    { id: 'false', name: t('filterOptions.noPermissions') },
+                  ]}
+                />)}
             </div>
           </div>
         </GlassCard>
