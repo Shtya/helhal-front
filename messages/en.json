@@ -73,12 +73,7 @@
   "auth": {
     "heroTitle": "Start your success now!",
     "heroSubtitle": "Talented freelancers for any project…",
-    "features": [
-      "Fast, delightful onboarding",
-      "Secure, privacy-friendly sessions",
-      "Beautiful, accessible UI",
-      "Reliable authentication flow"
-    ],
+    "features": ["Fast, delightful onboarding", "Secure, privacy-friendly sessions", "Beautiful, accessible UI", "Reliable authentication flow"],
     "userType": "User Type",
     "business": "Business",
     "individual": "Individual",
@@ -215,11 +210,7 @@
     "errorInvalidOtp": "Invalid verification code. Please try again.",
     "errorGeneral": "Something went wrong. Please try again.",
     "title": "Start your success now!",
-    "taglines": [
-      "Talented freelancers for any project",
-      "Best freelancers for every project High-quality services for every budget",
-      "Trusted by 4+ million clients worldwide"
-    ],
+    "taglines": ["Talented freelancers for any project", "Best freelancers for every project High-quality services for every budget", "Trusted by 4+ million clients worldwide"],
     "signInToYourAccount": "Sign in to your account",
     "dontHaveAnAccount": "Don't have an account?",
     "authConsentNotice": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
@@ -254,46 +245,123 @@
   },
   "freelance": {
     "title": "Start Your Freelancing Journey",
-    "subTitle": "Build your career and deliver projects with confidence through Helhal, a creative platform connecting you with real clients across the Arab world.",
-    "getStarted": "Get Started Now",
+    "subTitle": "Develop your career and deliver your projects with confidence through Helhal, your creative platform to reach real clients in the Arab world.",
+    "getStarted": "Get Started",
+    "banner": {
+      "title": "Ready to start your freelancing career?",
+      "subtitle": "Join our platform as a seller and start showcasing your services to millions.",
+      "cta": "Get Started",
+      "badge": "Start in minutes",
+      "secondaryCta": "Browse Projects",
+      "foot1": "No registration fees",
+      "foot2": "24/7 technical support",
+      "foot3": "Secure payments"
+    },
+    "statsStrip": {
+      "badge": "Platform Momentum",
+      "title": "Numbers That Prove We Deliver",
+      "description": "Trust indicators that help decision-making — with modern design and scroll animations.",
+      "meta": "Live snapshot of the numbers",
+      "verified": "Trusted",
+      "micro": "Data is continuously updated across the platform.",
+      "items": {
+        "freelancers": { "label": "Freelancers" },
+        "projects": { "label": "Completed Projects" },
+        "rating": { "label": "Average Rating" },
+        "support": { "label": "Live Support" }
+      }
+    },
     "top": {
       "title": "Top Categories for Freelancers",
       "error": {
         "loadFailed": "Failed to load data. Please try again later.",
-        "message": "Unable to load top freelance categories."
+        "message": "Unable to load featured freelancer categories."
       }
     },
-    "banner": {
-      "title": "Ready to start your freelance journey?",
-      "subtitle": "Join our platform as a seller and start offering your services to millions.",
-      "cta": "Get Started"
-    },
-    "whyChoose": {
-      "title": "Why Start Working with Helhal?",
-      "items": {
-        "wideReach": {
-          "title": "Wide Market Reach",
-          "description": "Connect with clients from various industries across the Arab world, giving you countless opportunities to grow your freelance business."
+    "customFeatures": {
+      "eyebrow": "Platform Features",
+      "title": "Everything You Need to Succeed as a Freelancer",
+      "subtitle": "Smart tools and an integrated experience that help you work confidently and achieve sustainable income.",
+      "badge": "Core Feature",
+      "rail": {
+        "active": "Active",
+        "helper": "Hover over or click the items to view details."
+      },
+      "orbit": {
+        "label": "Featured Feature",
+        "pill1": "Easy to use",
+        "pill2": "Reliable",
+        "cta": "Discover More"
+      },
+      "side": {
+        "kicker": "A Different Experience",
+        "title": "Every Feature in the Right Place",
+        "desc": "Select any point on the circle to see how the platform helps you get work done faster, with confidence and better results.",
+        "helper": "Tip: Hover over or click the points to switch between features."
+      },
+      "preview": {
+        "pill1": "Smooth Experience",
+        "pill2": "Higher Trust",
+        "pill3": "Faster Results",
+        "hint": "This feature helps you work efficiently in less time.",
+        "cta": "Get Started"
+      },
+      "features": {
+        "qualityProjects": {
+          "title": "High-Quality Projects",
+          "description": "We connect you with serious clients and well-planned projects that match your expertise and help you build a strong reputation."
         },
         "securePayments": {
-          "title": "Secure & Reliable Payments",
-          "description": "Enjoy peace of mind with our secure payment system, ensuring you receive your earnings on time and without hassle."
+          "title": "Secure and Guaranteed Payments",
+          "description": "A comprehensive protection system that safeguards your earnings and makes receiving payments easy and reliable."
+        },
+        "profileShowcase": {
+          "title": "Professional Profile Showcase",
+          "description": "Create a standout profile that highlights your skills and past work to attract the right clients."
+        },
+        "support": {
+          "title": "Continuous Technical Support",
+          "description": "A support team ready to assist you at any time to ensure a smooth, hassle-free experience."
+        },
+        "growth": {
+          "title": "Growth and Development Opportunities",
+          "description": "Improve your skills, earn better ratings, and move on to larger, more profitable projects."
+        },
+        "community": {
+          "title": "Supportive Professional Community",
+          "description": "Join a community of professional freelancers to exchange knowledge and build valuable connections."
+        }
+      }
+    },
+    "whyChoose": {
+      "eyebrow": "Why Choose Our Platform?",
+      "title": "Why Choose Our Platform?",
+      "description": "Features designed to help you achieve more and build real trust with clients.",
+      "badge": "Trusted & Secure",
+      "items": {
+        "wideReach": {
+          "title": "Wider Client Reach",
+          "description": "Showcase your services to more clients and increase your chances of landing the right projects."
+        },
+        "securePayments": {
+          "title": "Secure and Guaranteed Payments",
+          "description": "A payment system that protects both parties and ensures your earnings are delivered easily and transparently."
         },
         "flexibleWork": {
-          "title": "Flexible Work That Fits Your Schedule",
-          "description": "Choose projects that match your skills and availability, giving you full control over how and when you work."
+          "title": "Complete Work Flexibility",
+          "description": "Choose projects that fit your time and expertise, and work from anywhere in the way you prefer."
         },
         "supportiveCommunity": {
-          "title": "Supportive & Collaborative Community",
-          "description": "Join a network of professional freelancers who share your ambitions and benefit from mutual support and expert guidance."
+          "title": "Supportive Professional Community",
+          "description": "Connect with professional freelancers and exchange experience and advice to grow with confidence."
         },
         "growthOpportunities": {
           "title": "Continuous Growth Opportunities",
-          "description": "Access educational resources and workshops designed to enhance your skills and keep you up to date with the latest freelancing trends."
+          "description": "Build a strong profile and develop your skills to reach better clients and higher income."
         },
         "userFriendlyPlatform": {
-          "title": "Easy-to-Use Platform",
-          "description": "Enjoy a smooth user experience with a clean and intuitive interface that helps you manage projects and clients efficiently."
+          "title": "User-Friendly Platform",
+          "description": "A clear interface and simple steps to manage projects, communication, and deliveries."
         }
       }
     },
@@ -302,44 +370,15 @@
       "steps": {
         "createProfile": {
           "title": "Create Your Profile",
-          "description": "Set up a professional profile that highlights your skills and experience, helping clients get to know you and choose you for their projects."
+          "description": "Set up a profile that reflects your skills and experience, helping clients get to know you and choose you for their projects."
         },
         "browseProjects": {
           "title": "Browse Projects",
-          "description": "Explore a wide range of available projects and select the ones that best match your skills and interests."
+          "description": "Explore a wide range of available projects and select those that match your skills and interests."
         },
         "submitProposals": {
           "title": "Submit Your Proposals",
-          "description": "Write tailored proposals for the projects you want to work on, clearly explaining how you can meet the client’s needs."
-        }
-      }
-    },
-    "customFeatures": {
-      "title": "We support you with these features",
-      "features": {
-        "qualityProjects": {
-          "title": "High-quality projects",
-          "description": "We review and maintain high project standards to ensure professional results."
-        },
-        "securePayments": {
-          "title": "Secure payments",
-          "description": "Multiple secure payout methods with protection for both parties."
-        },
-        "profileShowcase": {
-          "title": "Professional profile",
-          "description": "Create a profile that showcases your skills and experience to attract better clients."
-        },
-        "support": {
-          "title": "Ongoing support",
-          "description": "Support team available to assist you quickly when needed."
-        },
-        "growth": {
-          "title": "Growth opportunities",
-          "description": "Join opportunities that increase visibility and grow your income over time."
-        },
-        "community": {
-          "title": "Supportive community",
-          "description": "A community of professionals to share expertise and build relationships."
+          "description": "Write tailored proposals for each project you want to work on, explaining how you can meet the client’s needs."
         }
       }
     }
@@ -510,12 +549,7 @@
       "title": "Start Your Success Today!",
       "subtitle1": "Discover how easy it is to work on Helhal",
       "subtitle2": "and stand out as a professional in your creative field",
-      "features": [
-        "Fast and seamless registration",
-        "Security and privacy you can trust",
-        "Clean and intuitive user interface",
-        "Reliable authentication system"
-      ]
+      "features": ["Fast and seamless registration", "Security and privacy you can trust", "Clean and intuitive user interface", "Reliable authentication system"]
     },
     "userType": "User Type",
     "business": "Business",
@@ -668,11 +702,7 @@
     "errorInvalidOtp": "Invalid verification code. Please try again.",
     "errorGeneral": "Something went wrong. Please try again.",
     "title": "Start your success now!",
-    "taglines": [
-      "Talented freelancers for any project",
-      "Best freelancers for every project High-quality services for every budget",
-      "Trusted by 4+ million clients worldwide"
-    ],
+    "taglines": ["Talented freelancers for any project", "Best freelancers for every project High-quality services for every budget", "Trusted by 4+ million clients worldwide"],
     "signInToYourAccount": "Sign in to your account",
     "dontHaveAnAccount": "Don't have an account?",
     "authConsentNotice": "By joining, you agree to the UpPhoto Terms of Service and to occasionally receive emails from us. Please read our Privacy Policy to learn how we use your personal data.",
@@ -1083,36 +1113,25 @@
       "cards": {
         "guest": {
           "title": "Start Your Journey on Helhal",
-          "lines": [
-            "Create your account easily to hire freelancers and get recommendations tailored to your needs."
-          ],
+          "lines": ["Create your account easily to hire freelancers and get recommendations tailored to your needs."],
           "buttonLabel": "Create Your Account",
           "chip": "New here?"
         },
         "buyer": {
           "title": "Recommended for you",
-          "lines": [
-            "Get matched with freelancers",
-            "Create a job and get custom offers"
-          ],
+          "lines": ["Get matched with freelancers", "Create a job and get custom offers"],
           "buttonLabel": "Start a Project",
           "chip": "Get started"
         },
         "seller": {
           "title": "Create your service",
-          "lines": [
-            "Showcase your skills",
-            "Start receiving client requests"
-          ],
+          "lines": ["Showcase your skills", "Start receiving client requests"],
           "buttonLabel": "Add a Service",
           "chip": "Boost visibility"
         },
         "completeProfile": {
           "title": "Complete your account",
-          "lines": [
-            "Your profile is missing details.",
-            "Add your info to unlock all features."
-          ],
+          "lines": ["Your profile is missing details.", "Add your info to unlock all features."],
           "buttonLabel": "Complete Your Profile",
           "chip": "Action needed"
         }
@@ -2447,8 +2466,13 @@
       }
     },
     "faqs": {
-      "title": "FAQs",
-      "noFaqs": "No FAQs available yet.",
+      "eyebrow": "Frequently Asked Questions",
+      "kicker": "Quick Answers",
+      "title": "Frequently Asked Questions",
+      "subtitle": "Everything you need to know before you get started.",
+      "hint": "If you have another question, contact us and we’ll help you right away.",
+      "remove": "Remove",
+      "noFaqs": "There are no FAQs available at the moment.",
       "whatCanISell": {
         "question": "What can I sell?",
         "answer": "Be creative! You can offer any service you wish as long as it's legal and complies with our terms. There are over 200 categories you can browse to get ideas."
