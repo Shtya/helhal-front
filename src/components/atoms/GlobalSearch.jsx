@@ -8,12 +8,14 @@ import api from '@/lib/axios';
 import { apiService } from '@/services/GigServices';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useRouter } from '@/i18n/navigation';
+import { useValues } from '@/context/GlobalContext';
 
 export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   const t = useTranslations('GlobalSearch');
   const BRAND = '#108A0090';
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user } = useValues();
   // ---------- UI state
   const [q, setQ] = useState('');
   const { debouncedValue: debouncedQ } = useDebounce({ value: q })
@@ -239,9 +241,9 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
       <button onClick={() => setMobileOpen(p => !p)} aria-label={t('ariaLabels.goToChat')} className=' xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
         <Search className='h-5 w-5 text-slate-600' />
       </button>
-      <div ref={rootRef} className={`relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"}  top-16 md:top-[88px] left-0 right-0 max-xl:bg-white  xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
-        <div className='relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
-          <div className='flex items-center gap-2 xl:rounded-md  xl:border bg-white/20 backdrop-blur-3xl px-2 py-1 text-sm  transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
+      <div ref={rootRef} className={`w-full xl:w-xs relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"}  top-16 md:top-[88px] left-0 right-0 max-xl:bg-white  xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
+        <div className='w-full relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
+          <div className=' flex min-h-[40px] items-center gap-2 xl:rounded-md  xl:border bg-white/20 backdrop-blur-3xl px-2 py-1 text-sm  transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
 
             <button
               ref={scopeBtnRef}

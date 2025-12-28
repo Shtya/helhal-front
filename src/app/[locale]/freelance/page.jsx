@@ -140,7 +140,7 @@ export function Hero() {
 
 	return (
 		<section className="relative overflow-hidden">
-			<div className="relative h-[calc(100vh-64px)] md:h-[calc(100vh-88px)] w-full">
+			<div className="relative min-h-[calc(100vh-64px)] md:min-h-[calc(100vh-88px)] w-full flex items-center">
 				<Image
 					loading="eager"
 					src="/images/hero-background.jpg"
@@ -153,7 +153,7 @@ export function Hero() {
 				<div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/70" />
 				<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.30),transparent_55%)]" />
 
-				<div className="relative z-10 flex h-full items-center">
+				<div className="flex-1 relative z-10 flex h-full items-center">
 					<div className="container !px-4 sm:!px-6 lg:!px-8">
 						<div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
 							{/* Left content */}
@@ -506,7 +506,7 @@ export function WhyChoose() {
 }
 
 /* ------------------------------ CustomFeatures ------------------------------ */
- 
+
 function getTooltipPlacement(pos) {
 	// pos.top/left are strings like "25%" -> parse number
 	const top = parseFloat(pos.top);
