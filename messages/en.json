@@ -1048,7 +1048,8 @@
       "repeatBuyers": "Repeat Buyers",
       "uniqueCustomers": "Unique customers",
       "responseTimeAverage": "Average time",
-      "responseTimeNotCalculated": "Not yet calculated"
+      "responseTimeNotCalculated": "Not yet calculated",
+      "addImagesSubtitle": "Add up to 6 images."
     },
     "public": {
       "ordersCount": "Orders Count",
