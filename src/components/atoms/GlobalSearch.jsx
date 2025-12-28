@@ -1,21 +1,23 @@
 // components/Search/GlobalSearch.jsx — Inline Select INSIDE input + Typeahead (Light mode, JS)
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { use, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Search, Clock, ChevronDown, ExternalLink, Loader2, X } from 'lucide-react';
 import api from '@/lib/axios';
 import { apiService } from '@/services/GigServices';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useRouter } from '@/i18n/navigation';
-import { useValues } from '@/context/GlobalContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   const t = useTranslations('GlobalSearch');
   const BRAND = '#108A0090';
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user } = useValues();
+  const { role } = useAuth();
+  const isBuyer = role === 'buyer';
+  const isSeller = role === 'seller';
   // ---------- UI state
   const [q, setQ] = useState('');
   const { debouncedValue: debouncedQ } = useDebounce({ value: q })
@@ -41,6 +43,11 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   ];
   const [scopeIndex, setScopeIndex] = useState(0);
   const scope = scopes[scopeIndex];
+
+  useEffect(() => {
+    if (isSeller) setScopeIndex(1);
+    if (isBuyer) setScopeIndex(0);
+  }, [isSeller, isBuyer]);
 
   const cycleScope = dir => setScopeIndex(i => (i + dir + scopes.length) % scopes.length);
 
@@ -245,7 +252,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
         <div className='w-full relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
           <div className=' flex min-h-[40px] items-center gap-2 xl:rounded-md  xl:border bg-white/20 backdrop-blur-3xl px-2 py-1 text-sm  transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
 
-            <button
+            {(!isSeller && !isBuyer) && <button
               ref={scopeBtnRef}
               onClick={() => {
                 setScopeOpen(prev => {
@@ -258,11 +265,11 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
               aria-expanded={scopeOpen}>
               <span className='font-semibold'>{scope.label}</span>
               <ChevronDown className={`h-4 w-4 transition ${scopeOpen ? 'rotate-180' : ''}`} />
-            </button>
+            </button>}
 
-            <span className='hidden xl:block h-5 w-px bg-slate-200 mx-1' />
+            {(!isSeller && !isBuyer) && <span className='hidden xl:block h-5 w-px bg-slate-200 mx-1' />}
 
-            <div className='max-xl:flex-1 flex items-center gap-2 max-xl:border max-xl:bg-white/20 max-xl:rounded-md max-xl:border-[#cbd5e1] max-xl:p-[10px]'>
+            <div className='flex-1 max-xl:flex-1 flex items-center gap-2 max-xl:border max-xl:bg-white/20 max-xl:rounded-md max-xl:border-[#cbd5e1] max-xl:p-[10px]'>
               <Search className='h-5 w-5 xl:h-4 xl:w-4 text-slate-500 shrink-0' />
               <input
                 ref={inputRef}
@@ -292,11 +299,12 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                   }
                   const mod = e.ctrlKey || e.metaKey;
                   if (mod && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+                    if (isBuyer || isSeller) return;
                     e.preventDefault();
                     cycleScope(e.key === 'ArrowRight' ? +1 : -1);
                   }
                 }}
-                placeholder={t('placeholder')}
+                placeholder={isBuyer ? t('buyerPlaceholder') : isSeller ? t('sellerPlaceholder') : t('placeholder')}
                 className='peer w-full bg-transparent outline-none placeholder:text-slate-400'
               />
 
@@ -311,7 +319,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
           </div>
 
           {/* Scope menu anchored to input (left) */}
-          {scopeOpen && (
+          {scopeOpen && !isBuyer && !isSeller && (
             <div className='absolute start-2 xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
               {scopes.map((opt, i) => (
                 <button

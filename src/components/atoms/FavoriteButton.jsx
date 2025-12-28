@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Loader2 } from 'lucide-react';
+import { Loader2, ShoppingCart } from 'lucide-react';
 import api from '@/lib/axios';
 import { useValues } from '@/context/GlobalContext';
 import { useTranslations } from 'next-intl';
@@ -29,8 +29,10 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
   }, [cart, serviceId, syncWithCart]);
 
   const toggleFavorite = async () => {
+
     if (!user) {
       router.push('/auth?tab=login');
+      return;
     }
 
     if (!serviceId) {
@@ -109,7 +111,7 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
               transition={{ type: 'spring', stiffness: 900, damping: 50 }}
               className="flex"
             >
-              <Heart className="w-5 h-5 text-green-600 fill-green-600" />
+              <ShoppingCart className="w-5 h-5 text-green-600 fill-green-600" />
             </motion.div>
           ) : (
             <motion.div
@@ -120,7 +122,7 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
               transition={{ type: ' spring', stiffness: 900, damping: 50 }}
               className="flex"
             >
-              <Heart className="w-5 h-5 text-slate-600" />
+              <ShoppingCart className="w-5 h-5 text-slate-600" />
             </motion.div>
           )}
         </AnimatePresence>
