@@ -52,7 +52,7 @@ export default function Invite() {
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://helhal.page.link';
 
     if (user?.referralCode) {
-      setLink(`${origin}/en/auth?tab=register&ref=${user.referralCode}`);
+      setLink(`${origin}/ar/auth?tab=register&ref=${user.referralCode}`);
     } else {
       setLink(origin); // fallback to main domain
     }
