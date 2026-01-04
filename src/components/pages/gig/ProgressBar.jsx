@@ -78,11 +78,19 @@ export default function ProgressBar({
       <div className='mb-6  '>
         <h1 className='text-2xl font-bold text-slate-900 sm:text-3xl'>{steps[clampedStep - 1]?.title}</h1>
         <p className='mt-1 text-slate-600'>{steps[clampedStep - 1]?.description}</p>
-        {/* Note about platform fee */}
         {settings?.sellerServiceFee && (
-          <p className="mt-2 text-sm text-amber-700 font-medium bg-amber-50 border-l-4 border-amber-300 p-2 rounded">
-            {t("noteServiceFee", { fee: settings.sellerServiceFee })}
-          </p>
+          <div role="status" className="mt-3 rounded-lg bg-white border border-slate-200 p-3">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="w-5 h-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M18 10A8 8 0 11 2 10a8 8 0 0116 0zm-8-4a1 1 0 10-2 0v4a1 1 0 001 1h1a1 1 0 100-2h-1V6zM9 14a1 1 0 112 0 1 1 0 01-2 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="text-sm leading-tight text-slate-700">
+                <span className="block font-medium text-slate-900">{t('noteServiceFee', { fee: settings.sellerServiceFee })}</span>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

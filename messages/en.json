@@ -1858,7 +1858,7 @@
       "publish": "Finalize and publish your project."
     },
     "step1": {
-      "noteServiceFee": "A {fee}% platform fee will be deducted from each order created from this service upon completion",
+      "noteServiceFee": "A {fee}% platform fee will be deducted from each order created from this service",
       "title": "Basic Details",
       "subtitle": "Set a compelling foundation for your gig.",
       "gigTitle": "Gig title",
@@ -1904,7 +1904,7 @@
         "briefMax": "Service brief cannot exceed 500 characters",
         "briefMin": "Brief must be at least 10 characters",
         "categoryRequired": "Category is required",
-        "countryRequired": "country is required",
+        "countryRequired": "Country is required",
         "tagMax": "Tag must be 50 characters or less",
         "tagPattern": "Tags can contain letters and numbers only",
         "tagRequired": "Tag is required",

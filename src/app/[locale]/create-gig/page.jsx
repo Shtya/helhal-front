@@ -660,6 +660,7 @@ function Step1({ formData, setFormData, nextStep }) {
           <h2 className="text-2xl font-semibold text-slate-900">{t("title")}</h2>
           <p className="mt-1 text-sm text-slate-500">{t("subtitle")}</p>
         </div>
+        {/* Note about platform fee (improved UI) */}
 
 
       </div>
