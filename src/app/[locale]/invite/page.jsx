@@ -189,7 +189,7 @@ export default function Invite() {
             {t('hero.title')}
           </h1>
 
-          <p className='text-left text-lg md:text-2xl text-white/90'>
+          <p className='text-start text-lg md:text-2xl text-white/90'>
             {t.rich('hero.subtitle', {
               strong: (chunk) => <strong className='text-white font-semibold'>{chunk}</strong>
             })}
@@ -263,7 +263,7 @@ export default function Invite() {
           <div className='flex flex-col gap-5' data-aos='fade-left' data-aos-delay='200'>
             <Input cnInput='!h-[52px] !rounded-xl' label={t('uniqueLink')} cnLabel='text-base md:text-lg' placeholder='https://…' actionIcon='/icons/copy.svg' onAction={handleCopy} value={link} onChange={setLink} className='h-[56px]' />
             <div className='flex items-center gap-3 mt-5 '>
-              <button onClick={handleCopy} className='h-9 px-4 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition'>
+              <button onClick={handleCopy} className='h-9 text-nowrap px-4 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition'>
                 {t('copy')}
               </button>
               <span className={`text-sm ${copied ? 'text-emerald-700' : 'text-slate-500'}`}>{copied ? t('copied') : t('shareLink')}</span>
@@ -287,15 +287,30 @@ export default function Invite() {
 
 
 
-        <div data-aos='zoom-in-up' data-aos-delay='150' className="text-center rounded-3xl">
+        <div data-aos="zoom-in-up" data-aos-delay="150" className="text-center rounded-3xl">
           <div className="grid grid-cols-1 gap-6 items-center">
-            <div className='flex flex-col gap-4 items-center justify-center'>
-              <h2 className="text-3xl md:text-4xl  font-extrabold">
+            <div className="flex flex-col gap-4 items-center justify-center">
+              <h2 className="text-3xl md:text-4xl font-extrabold">
                 {t("referral.title")}
               </h2>
-              <p className="text-lg text-slate-700 lg:w-[80%]  leading-relaxed">
-                {t("referral.description")}
-              </p>
+
+
+              <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {t.raw('referral.description').map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
+                   hover:shadow-md transition-all"
+                    data-aos="fade-up"
+                    data-aos-delay={idx * 150}
+                  >
+                    <span className="mt-2 h-2 w-2 flex-none rounded-full bg-emerald-600" />
+                    <p className="text-slate-700 text-base leading-relaxed">
+                      {item}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

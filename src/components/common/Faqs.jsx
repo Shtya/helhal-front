@@ -122,12 +122,12 @@ export default function FAQSection({
 													>
 														<div className="mt-4 pe-2">
 															{/* minimal answer surface, not a box */}
-															<p className="text-sm md:text-base leading-relaxed text-slate-600">
+															<p className="text-sm text-start md:text-base leading-relaxed text-slate-600">
 																{faq.answer}
 															</p>
 
 															{/* NEW: small hint line (translation) */}
-															<p className="mt-3 text-xs text-slate-500">
+															<p className="mt-3 text-start text-xs text-slate-500">
 																{t("hint")}
 															</p>
 														</div>

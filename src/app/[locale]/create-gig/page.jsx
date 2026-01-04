@@ -25,6 +25,7 @@ import CategorySelect from '@/components/atoms/CategorySelect';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { useDebounce } from '@/hooks/useDebounce';
 import LocationSelect from '@/components/atoms/LocationSelect';
+import { useValues } from '@/context/GlobalContext';
 
 const normalizeFile = (file) => ({
   ...file,
@@ -495,6 +496,7 @@ const Field = ({ title, desc, required, error, hint, className = '', children })
 
 // ---------- Step 1 (refreshed UI) ----------
 function Step1({ formData, setFormData, nextStep }) {
+
   const t = useTranslations('CreateGig.step1');
   const {
     register,
@@ -650,16 +652,16 @@ function Step1({ formData, setFormData, nextStep }) {
       return { ...prev, tags: updatedTags };
     });
   };
-
-
   return (
     <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 bg-white/60 p-6 md:p-10'>
       {/* Header */}
-      <div className='mb-8 flex items-start justify-between gap-6'>
+      <div className="mb-8 flex flex-col gap-2">
         <div>
-          <h2 className='text-2xl font-semibold text-slate-900'>{t('title')}</h2>
-          <p className='mt-1 text-sm text-slate-500'>{t('subtitle')}</p>
+          <h2 className="text-2xl font-semibold text-slate-900">{t("title")}</h2>
+          <p className="mt-1 text-sm text-slate-500">{t("subtitle")}</p>
         </div>
+
+
       </div>
 
       <div className='mx-auto max-w-5xl space-y-8'>

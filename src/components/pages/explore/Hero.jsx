@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Button from '@/components/atoms/Button';
 import { MailPlus, UserRoundCog, ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { Link } from '@/i18n/navigation';
 
 const container = {
 	hidden: { opacity: 0, y: 10 },
@@ -38,8 +39,10 @@ export default function Hero() {
 				icon: UserRoundCog,
 				title: cardData.title,
 				lines: cardData.lines,
-				buttonLabel: cardData.buttonLabel,
+				mainButtonLabel: cardData.mainButtonLabel,
+				secondaryButtonLabel: cardData.secondaryButtonLabel,
 				href: '/auth?tab=register',
+				secondaryHref: '/auth?tab=login',
 				chip: cardData.chip,
 				tone: 'emerald',
 			});
@@ -50,8 +53,10 @@ export default function Hero() {
 				icon: MailPlus,
 				title: cardData.title,
 				lines: cardData.lines,
-				buttonLabel: cardData.buttonLabel,
+				mainButtonLabel: cardData.mainButtonLabel,
+				secondaryButtonLabel: cardData.secondaryButtonLabel,
 				href: '/share-job-description',
+				secondaryHref: '/services/all',
 				chip: cardData.chip,
 				tone: 'emerald',
 			});
@@ -62,30 +67,33 @@ export default function Hero() {
 				icon: MailPlus,
 				title: cardData.title,
 				lines: cardData.lines,
-				buttonLabel: cardData.buttonLabel,
+				mainButtonLabel: cardData.mainButtonLabel,
 				href: '/create-gig',
+
 				chip: cardData.chip,
 				tone: 'emerald',
 			});
 		}
 
-		if (role !== 'guest') {
-			const cardData = t.raw('hero.cards.completeProfile');
-			out.push({
-				id: 'complete-profile',
-				icon: UserRoundCog,
-				title: cardData.title,
-				lines: cardData.lines,
-				buttonLabel: cardData.buttonLabel,
-				href: '/profile',
-				chip: cardData.chip,
-				tone: 'slate',
-			});
-		}
+		// if (role !== 'guest') {
+		// 	const cardData = t.raw('hero.cards.completeProfile');
+		// 	out.push({
+		// 		id: 'complete-profile',
+		// 		icon: UserRoundCog,
+		// 		title: cardData.title,
+		// 		lines: cardData.lines,
+		// 		mainButtonLabel: cardData.mainButtonLabel,
+		// 		secondaryButtonLabel: cardData.secondaryButtonLabel,
+		// 		href: '/profile',
+		// 		chip: cardData.chip,
+		// 		tone: 'slate',
+		// 	});
+		// }
 
 		return out;
 	}, [role, t]);
 
+	console.log(cards)
 	return (
 		<section
 			className={[
@@ -133,7 +141,7 @@ export default function Hero() {
 					>
 						{t('hero.welcomeBack')}{' '}
 						<span className="bg-gradient-to-r from-emerald-800 via-emerald-600 to-emerald-500 bg-clip-text text-transparent  ">
-							{user?.username || t('hero.there')}
+							{user?.username}
 						</span>
 					</motion.h1>
 
@@ -148,7 +156,7 @@ export default function Hero() {
 					{/* Cards */}
 					<motion.div
 						variants={item}
-						className="mt-8 grid w-full max-w-[1100px] gap-5 md:grid-cols-2"
+						className="mt-8 flex flex-row gap-5  flex-wrap w-full "
 					>
 						{cards.map((c, idx) => (
 							<ActionCard
@@ -170,8 +178,10 @@ function ActionCard({
 	icon: Icon,
 	title,
 	lines,
-	buttonLabel,
+	mainButtonLabel,
+	secondaryButtonLabel,
 	href,
+	secondaryHref,
 	chip,
 	tone = 'emerald',
 	isArabic,
@@ -181,6 +191,8 @@ function ActionCard({
 	const t = useTranslations('Explore');
 	const displayChip = chip || t('hero.defaultChip');
 	const Arrow = isArabic ? ArrowLeft : ArrowRight;
+
+	console.log(mainButtonLabel, href)
 
 	const toneStyles =
 		tone === 'emerald'
@@ -204,7 +216,7 @@ function ActionCard({
 			transition={{ duration: 0.5, ease: 'easeOut', delay }}
 			whileHover={reduceMotion ? undefined : { y: -3 }}
 			className={[
-				'group relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-5',
+				'w-full md:max-w-[540px] group relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-5',
 				'shadow-sm transition-all',
 				'hover:shadow-md hover:border-slate-200',
 				'focus-within:ring-2 focus-within:ring-emerald-500/30',
@@ -264,24 +276,47 @@ function ActionCard({
 				))}
 			</ul>
 
-			<div className="relative mt-6">
-				<Button
-					name={buttonLabel}
-					href={href}
-					color="green"
-					className={[
-						'w-full justify-center !h-[44px] !rounded-xl shadow-sm',
-						'transition-transform group-hover:scale-[1.01]',
-						'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
-						' ',
-					].join(' ')}
-					icon={
-						<span className="inline-flex h-6 w-6 items-center justify-center rounded-lg border border-white/0">
-							<Arrow className="h-4 w-4" />
-						</span>
-					}
-				/>
+			<div className="relative mt-6 flex flex-col sm:flex-row gap-3">
+				{/* Primary CTA */}
+				{mainButtonLabel && href && (
+					<Link
+						href={href}
+						className="
+        w-full sm:flex-1
+        inline-flex items-center justify-center gap-1
+        h-12 px-6 rounded-xl
+        bg-emerald-600 text-white
+        text-sm md:text-base font-medium
+        hover:shadow-lg hover:bg-emerald-700
+        transition-all
+      "
+					>
+						{mainButtonLabel}
+						<Arrow className="h-4 w-4 " />
+					</Link>
+				)}
+
+				{/* Secondary CTA */}
+				{secondaryButtonLabel && secondaryHref && (
+					<Link
+						href={secondaryHref}
+						className="
+        w-full sm:flex-1
+        inline-flex items-center justify-center
+        h-12 px-6 rounded-xl
+        border border-emerald-700
+        text-emerald-700
+        text-sm md:text-base font-medium
+        bg-emerald-50 hover:bg-emerald-100
+        transition-all
+      "
+					>
+						{secondaryButtonLabel}
+					</Link>
+				)}
 			</div>
+
+
 		</motion.article>
 	);
 }

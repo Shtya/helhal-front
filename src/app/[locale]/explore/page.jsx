@@ -16,6 +16,9 @@ const page = () => {
   return (
     <div className='explore container'>
       <HeaderCategoriesSwiper />
+      <div className="mb-6 ">
+        <p className="ps-10 text-sm md:text-base text-slate-600">{t('topDescription')}</p>
+      </div>
       <Hero />
       <DiscoverySection />
 

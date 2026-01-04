@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
 import { useValues } from '@/context/GlobalContext';
 import Currency from '@/components/common/Currency';
+import { Link } from '@/i18n/navigation';
 
 const page = () => {
   const { settings, loadingSettings } = useValues();
@@ -56,18 +57,18 @@ const page = () => {
 
   const steps = [
     {
-      title: t('steps.createGig.title'),
-      subtitle: t('steps.createGig.subtitle'),
+      title: t('steps.step1.title'),
+      subtitle: t('steps.step1.subtitle'),
       icon: '/icons/gig.svg',
     },
     {
-      title: t('steps.getOrders.title'),
-      subtitle: t('steps.getOrders.subtitle'),
+      title: t('steps.step2.title'),
+      subtitle: t('steps.step2.subtitle'),
       icon: '/icons/box-tick.svg',
     },
     {
-      title: t('steps.deliverAndGetPaid.title'),
-      subtitle: t('steps.deliverAndGetPaid.subtitle'),
+      title: t('steps.step3.title'),
+      subtitle: t('steps.step3.subtitle'),
       icon: '/icons/timer.svg',
     },
   ];
@@ -150,14 +151,28 @@ const page = () => {
         <div className='relative z-10 px-6 max-w-3xl mx-auto text-white' data-aos='zoom-in' data-aos-delay='200'>
           <h1 className='text-3xl md:text-5xl font-extrabold mb-4'>{t('hero.title')}</h1>
           <p className='text-xl opacity-90 md:text-4xl mb-8'>{t('hero.subtitle')}</p>
-          <Button
-            name={t('hero.button')}
-            href={role === 'guest' ? '/auth?tab=register&type=seller' : undefined}
-            onClick={() => setIsModalOpen(true)}
-            disabled={loading}
-            color='green'
-            className={'!max-w-[300px] w-full'}
-          />
+          <div className="flex flex-wrap justify-center gap-4">
+            {/* Primary CTA */}
+            <Button
+              name={t('hero.button')}
+              href={role === 'guest' ? '/auth?tab=register&type=seller' : undefined}
+              onClick={() => setIsModalOpen(true)}
+              disabled={loading}
+              color="green"
+              className="!max-w-[260px] w-full !h-12"
+            />
+
+            {/* Secondary CTA – How it works */}
+            <Link
+              href="/freelance"
+              className="inline-flex items-center justify-center h-12 px-6 rounded-xl
+                   bordertext-sm md:text-base font-medium border-emerald-700  bg-emerald-50 hover:bg-emerald-100
+        text-emerald-700
+                   transition-all w-full max-w-[260px]"
+            >
+              {t('hero.HowButton')}
+            </Link>
+          </div>
         </div>
       </section>
       {/* Add Education */}
@@ -229,6 +244,39 @@ const page = () => {
           ))}
         </div>
       </section>
+      {/* Why Helhal for Freelancers */}
+      {/* Why Helhal for Freelancers */}
+      <section
+        className="w-full divider py-16"
+        data-aos="fade-up"
+        data-aos-duration="1000"
+      >
+        <h2
+          className="text-center text-3xl md:text-4xl font-bold mb-12"
+          data-aos="zoom-in"
+          data-aos-delay="150"
+        >
+          {t('whyFreelancer.title')}
+        </h2>
+
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {t.raw('whyFreelancer.points').map((item, idx) => (
+            <div
+              key={idx}
+              className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
+                   hover:shadow-md transition-all"
+              data-aos="fade-up"
+              data-aos-delay={idx * 150}
+            >
+              <span className="mt-2 h-2 w-2 flex-none rounded-full bg-emerald-600" />
+              <p className="text-slate-700 text-base leading-relaxed">
+                {item}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       {/* Testimonials */}
       <section className='relative flex items-center divider' data-aos='fade-up' data-aos-duration='1000'>

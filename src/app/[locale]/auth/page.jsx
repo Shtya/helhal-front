@@ -76,7 +76,7 @@ function TitleByTab({ activeTab, view }) {
       otp: { title: t('signIn'), subtitle: t('otpMethod') },
     },
     register: {
-      options: { title: t('signUp'), subtitle: t('chooseYourSignUpMethod') },
+      options: { title: t('signUp'), subtitle: t('chooseYourSignUpMethod'), values: [t('signUpMethod1'), t('signUpMethod2')] },
       email: { title: t('signUp'), subtitle: t('createAccount') },
       phone: { title: t('signUp'), subtitle: t('phoneSignUp') },
       otp: { title: t('verifyEmail'), subtitle: t('verifyEmailSubtitle') },
@@ -88,12 +88,28 @@ function TitleByTab({ activeTab, view }) {
     },
   };
   const tabData = TITLES[activeTab] || TITLES.login;
-  const content = tabData[view] || tabData.options || { title: '', subtitle: '' };
+  const content = tabData[view] || tabData.options || { title: '', subtitle: '', values: [] };
+
 
   return (
-    <motion.div key={`${activeTab}-${view}`} className='mb-6 text-center md:text-left'>
-      <h1 className='text-center mt-2 text-xl md:text-2xl font-extrabold'>{content.title}</h1>
-      {content.subtitle && <p className='text-center mt-1 text-base text-gray-600'>{content.subtitle}</p>}
+    <motion.div key={`${activeTab}-${view}`} className="mb-6 text-center md:text-left">
+      <h1 className="text-center mt-2 text-xl md:text-2xl font-extrabold">{content.title}</h1>
+
+      {content.subtitle && (
+        <p className="text-center mt-1 text-base text-gray-600">{content.subtitle}</p>
+      )}
+
+      {/* عرض القيم إذا موجودة */}
+      {content.values && content.values.length > 0 && (
+        <ul className="mt-3 flex flex-col gap-2 text-gray-600">
+          {content.values.map((val, idx) => (
+            <li key={idx} className="flex items-start gap-2">
+              <span className="mt-1 h-2 w-2 flex-none rounded-full bg-emerald-600" />
+              <span>{val}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </motion.div>
   );
 }
@@ -764,6 +780,10 @@ export default function AuthPage() {
               <Logo textHideMobile={false} />
             </div>
             <motion.div className='w-full max-lg:p-8 lg:py-8'>
+              <div className='mb-4 w-full text-center md:text-start'>
+                <h4 className='text-sm font-semibold text-emerald-700'>{t('brandingTitle')}</h4>
+                <p className='text-xs text-slate-500 mt-1'>{t('brandingSubtitle')}</p>
+              </div>
               <TitleByTab view={view} activeTab={activeTab} />
               <AuthTabs setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} />
               <AnimatePresence mode='wait'>

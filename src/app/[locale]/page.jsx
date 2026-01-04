@@ -215,16 +215,20 @@ function SearchBar({ className = '', large = false }) {
 
 function Hero() {
   const t = useTranslations('Home');
-  const locale = useLocale();
+  const { role } = useAuth();
+
+
+  const isBuyer = role === 'buyer';
+  let primaryHref = isBuyer ? '/share-job-description' : '/auth?tab=login&redirect=/share-job-description';
 
   return (
-    <section className='relative h-[68vh] md:h-[76vh] w-full overflow-hidden'>
+    <section className='relative min-h-[71vh] md:min-h-[76vh] w-full overflow-hidden'>
       <Image priority loading='eager' src='/images/hero-background.jpg' alt={t('hero.alt')} fill className='object-cover object-center' />
 
       {/* Green gradient overlay */}
       <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-emerald-900/35 to-black/60' />
 
-      <div className='relative z-10 h-full flex items-center'>
+      <div className='min-h-[71vh] md:min-h-[76vh] relative z-10 h-full flex items-center pt-4'>
         <div className='container !px-4 sm:!px-6 lg:!px-8'>
           <div className='max-w-3xl text-white space-y-6'>
             <span className='inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 border border-white/20 rounded-full px-3 py-1 backdrop-blur'>
@@ -246,16 +250,23 @@ function Hero() {
             </div>
 
             <p className='text-sm md:text-base text-emerald-50/80'>{t('hero.tagline')}</p>
+
             <div className="flex flex-wrap items-center gap-3 mt-4">
+              {/* Primary CTA: Post Your Request */}
               <Link
-                href="/freelance"
-                className=" inline-flex items-center gap-2 h-12 px-6 rounded-xl bg-emerald-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-emerald-700 transition-all
-  "
+                href={primaryHref}
+                className="inline-flex items-center justify-center h-12 px-6 rounded-xl bg-emerald-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-emerald-700 transition-all"
               >
-                {t('hero.search')}
-                <ArrowLeft className="w-4 h-4 ltr:rotate-180" />
+                {t('hero.postOrder')}
               </Link>
 
+              {/* Secondary CTA: Browse Services */}
+              <Link
+                href="/freelance"
+                className="inline-flex items-center justify-center h-12 px-6 rounded-xl border border-emerald-700 text-emerald-700 text-sm md:text-base font-medium bg-emerald-50 hover:bg-emerald-100 transition-all"
+              >
+                {t('hero.search')}
+              </Link>
             </div>
           </div>
         </div>
@@ -514,6 +525,10 @@ export function WhyChoose() {
     <section className='container !px-4 sm:!px-6 lg:!px-8 !py-12'>
       <div className='rounded-3xl bg-gradient-to-r from-emerald-50 to-white border border-emerald-100/70 p-6 md:p-10'>
         <h2 className='text-3xl md:text-4xl font-extrabold mb-8'>{t('whyChoose.title')}</h2>
+        {/* Subtitle */}
+        <p className="text-lg text-slate-700 mb-8">
+          {t('whyChoose.subtitle')}
+        </p>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
           {WHY_CHOOSE_ITEMS.map(item => (
             <div key={item.key} className={['flex flex-col rounded-2xl bg-white border border-emerald-100/70', 'px-6 py-8 shadow-sm hover:shadow-emerald-200/50 hover:shadow-lg', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>

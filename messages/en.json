@@ -337,6 +337,8 @@
         "Reliable authentication system"
       ]
     },
+    "brandingTitle": "Join the Helhal creative community",
+    "brandingSubtitle": "A platform connecting media professionals with serious clients inside and outside Saudi Arabia.",
     "userType": "User Type",
     "business": "Business",
     "individual": "Individual",
@@ -345,8 +347,10 @@
     "selectUserType": "Select User Type",
     "selectUserTypeDescription": "Please choose whether you're signing up as a business or individual",
     "continueToExplore": "Continue to Explore.",
-    "chooseMethod": "Choose the method you prefer to access your account and continue your tasks quickly.",
-    "chooseYourSignUpMethod": "Get creative with Helhal in no time.",
+    "chooseMethod": "Enter your details to access your orders, messages, and projects on Helhal.",
+    "chooseYourSignUpMethod": "Sign up in a minute and get started:",
+    "signUpMethod1": "As a client: Post your request and receive offers.",
+    "signUpMethod2": "As a freelancer: Showcase your services and receive orders.",
     "emailMethod": "Sign in with your email.",
     "phoneMethod": "Sign in with your phone.",
     "otpMethod": "Enter the verification code.",
@@ -424,7 +428,7 @@
     "confirmPassword": "Confirm Password",
     "confirmNewPassword": "Confirm your new password",
     "sendCodeButton": "Send Verification Code",
-    "terms": "By signing in, you agree to the Terms of Service and Privacy Policy, which explain how your personal data is used. We may occasionally send you emails related to your account or platform updates.",
+    "terms": "By logging in, you agree to the Terms of Service and Privacy Policy.",
     "signIn": "Sign in to your account",
     "signInTap": "Sign in",
     "signUp": "Create a new account",
@@ -528,9 +532,10 @@
   "Home": {
     "hero": {
       "alt": "Helhal main background",
-      "badge": "Discover top creative talent in minutes",
-      "title": "Post your project now and receive proposals from verified professionals.",
-      "subtitle": "Stay in control of your choices and start working within hours, not weeks.",
+      "postOrder": "Post Your Request",
+      "badge": "Find top media professionals in minutes",
+      "title": "Post your request and receive offers from trusted freelancers",
+      "subtitle": "Compare proposals, review portfolios and ratings, and start your project seamlessly on Helhal.",
       "tagline": "Helhal.. your destination for finding top creative talent",
       "search": "Search for Jop",
       "trust": {
@@ -558,22 +563,23 @@
     },
     "whyChoose": {
       "title": "Benefits of Working with Helhal",
+      "subtitle": "A single platform bringing you media services from professional freelancers—clearly, reliably, and with an easy experience.",
       "items": {
         "categories": {
-          "title": "All-in-one creative talent marketplace",
-          "description": "Everything you need in one place. From photography to design and digital marketing, discover professional freelancers across all creative fields with ease."
+          "title": "All media services in one place",
+          "description": "Request everything you need for your project: photography, video, editing, motion, content writing, social media management, voice-over, acting… and more."
         },
         "pricing": {
-          "title": "Clear and transparent pricing",
-          "description": "No surprises, no hidden fees. View prices upfront, choose the offer that fits your budget, and pay securely only after approving the project milestones."
+          "title": "Transparent pricing from the start",
+          "description": "Receive multiple offers and choose the one that fits your budget—no surprises, no hassle."
         },
         "quality": {
-          "title": "Trusted, verified quality",
-          "description": "Rely on proven expertise. Every freelancer has real reviews and verified portfolios to help you make confident hiring decisions."
+          "title": "Choose with confidence",
+          "description": "Real ratings and portfolios help you quickly select the right professional for your project."
         },
         "support": {
-          "title": "Fast, reliable support",
-          "description": "We’re here to support you every step of the way. Our support team is ready to help and resolve any issues to ensure a smooth experience."
+          "title": "Support with you every step",
+          "description": "Our support team is ready to assist with any question to ensure a smooth experience until the order is completed."
         }
       }
     },
@@ -581,10 +587,10 @@
       "title": "Our Client's Experiences"
     },
     "cta": {
-      "title": "Are You Ready to Post Your Project? Post Your Request Now.",
-      "subtitle": "Describe your project and get offers in minutes.",
-      "postOrder": "Start Posting Your Project",
-      "browse": "Browse Available Services"
+      "title": "Ready to get started?",
+      "subtitle": "Briefly describe your need and receive suitable offers within minutes.",
+      "postOrder": "Post Your Request",
+      "browse": "Browse Services"
     }
   },
   "layout": {
@@ -595,7 +601,7 @@
     "messagesButtonAriaLabel": "Messages",
     "notificationsButtonAriaLabel": "Notifications",
     "userAvatarAlt": "User Avatar",
-    "searchPlaceholder": "Explore services and categories...",
+    "searchPlaceholder": "Search for a service or category (Photography, Videography, Editing, Motion, Content Writing, Account Management…)",
     "searchButtonAriaLabel": "Search",
     "profileLink": "Profile",
     "settingsLink": "Settings",
@@ -689,6 +695,7 @@
     }
   },
   "Explore": {
+    "topDescription": "Find professionals in photography, video, editing, motion, and content writing… and start your project with confidence.",
     "cart": {
       "addedToCart": "Added to cart",
       "removedFromCart": "Removed from cart",
@@ -705,27 +712,29 @@
       "gigsYouMayLike": "Gigs you may like"
     },
     "hero": {
-      "quickActions": "Continue Your Journey or Get Started",
+      "quickActions": "Continue where you left off",
       "welcomeBack": "Welcome Back!",
       "there": "",
-      "subtitle": "You can pick up where you left off or move on to the next step with ease.",
+      "subtitle": "Track your orders, messages, and offers easily—all in one place.",
       "cards": {
         "guest": {
-          "title": "Start Your Journey on Helhal",
+          "title": "New to Helhal?",
           "lines": [
-            "Create your account easily to hire freelancers and get recommendations tailored to your needs."
+            "Create your account in a minute and start hiring professionals for your project."
           ],
-          "buttonLabel": "Create Your Account",
+          "mainButtonLabel": "Sign Up",
+          "secondaryButtonLabel": "Log In",
           "chip": "New here?"
         },
         "buyer": {
           "title": "Recommended for you",
           "lines": [
             "Get matched with freelancers",
-            "Create a job and get custom offers"
+            "Create a job and receive tailored offers"
           ],
-          "buttonLabel": "Start a Project",
-          "chip": "Get started"
+          "mainButtonLabel": "Continue Work",
+          "secondaryButtonLabel": "Browse Services",
+          "chip": "Get Started"
         },
         "seller": {
           "title": "Create your service",
@@ -733,7 +742,7 @@
             "Showcase your skills",
             "Start receiving client requests"
           ],
-          "buttonLabel": "Add a Service",
+          "mainButtonLabel": "Add a Service",
           "chip": "Boost visibility"
         },
         "completeProfile": {
@@ -742,7 +751,7 @@
             "Your profile is missing details.",
             "Add your info to unlock all features."
           ],
-          "buttonLabel": "Complete Your Profile",
+          "mainButtonLabel": "Complete Your Profile",
           "chip": "Action needed"
         }
       },
@@ -850,12 +859,12 @@
     "showLess": "Show less",
     "description": "A trusted services marketplace with clear pricing & secure escrow."
   },
-  "copyright": "© {{year}} Helhal. All rights reserved.",
+  "copyright": "© {year} Helhal. All rights reserved.",
   "Pagination": {
     "previous": "Previous page",
     "next": "Next page",
-    "jumpBack": "Jump back {{count}} pages",
-    "jumpForward": "Jump forward {{count}} pages"
+    "jumpBack": "Jump back {count} pages",
+    "jumpForward": "Jump forward {count} pages"
   },
   "Jobs": {
     "page": {
@@ -1508,7 +1517,7 @@
         "verifiedSuccess": "Phone number verified successfully!",
         "didNotReceive": "Didn't receive the code?",
         "resendOtp": "Resend OTP",
-        "resendIn": "Resend in {{seconds}}s",
+        "resendIn": "Resend in {seconds}  s",
         "otpResentSuccess": "OTP has been resent successfully!",
         "failedToResend": "Failed to resend OTP. Please try again."
       }
@@ -1849,6 +1858,7 @@
       "publish": "Finalize and publish your project."
     },
     "step1": {
+      "noteServiceFee": "A {fee}% platform fee will be deducted from each order created from this service upon completion",
       "title": "Basic Details",
       "subtitle": "Set a compelling foundation for your gig.",
       "gigTitle": "Gig title",
@@ -2063,9 +2073,10 @@
     "createSeller": "Create Seller Account",
     "cancel": "Cancel",
     "hero": {
-      "title": "Start Your Journey as a Freelancer",
-      "subtitle": "Click here and offer your services on Helhal in a few simple steps",
-      "button": "Become a Seller"
+      "title": "Showcase Your Services on Helhal",
+      "subtitle": "Receive orders and work your way—part-time or full-time.",
+      "button": "Get Started",
+      "HowButton": "Learn How It Works"
     },
     "stats": {
       "gigBought": "A Gig is Bought Every",
@@ -2076,18 +2087,27 @@
       "title": "How to Join as a Freelancer?"
     },
     "steps": {
-      "createGig": {
-        "title": "Quickly Create Your Service",
-        "subtitle": "Sign up, write an engaging description for your service, set your prices and terms, and showcase your work to thousands of clients looking for professionals like you."
+      "step1": {
+        "title": "Create Your Service Quickly",
+        "subtitle": "Write a clear description, set the price and duration, and add samples of your work."
       },
-      "getOrders": {
-        "title": "Receive Work Requests",
-        "subtitle": "You’ll get notified when a request comes in, and you can discuss the details directly with the client via our secure messaging system."
+      "step2": {
+        "title": "Receive Orders",
+        "subtitle": "Communicate with the client inside the platform, agree on the details, and start working."
       },
-      "deliverAndGetPaid": {
-        "title": "Deliver Work and Get Paid",
-        "subtitle": "Submit your work and leave the rest to us. We’ll ensure your payment is securely processed on time and available for withdrawal as soon as it’s cleared."
+      "step3": {
+        "title": "Deliver & Get Paid",
+        "subtitle": "Once delivery is approved, your earnings are transferred securely according to platform policies."
       }
+    },
+    "whyFreelancer": {
+      "title": "Why Work with Helhal?",
+      "points": [
+        "Access to serious clients looking for media services.",
+        "Showcase your work and reviews to increase your chances of getting orders.",
+        "An organized experience for communication and delivery.",
+        "Technical support whenever you need it."
+      ]
     },
     "faqs": {
       "eyebrow": "Frequently Asked Questions",
@@ -2277,16 +2297,20 @@
   "Invite": {
     "page": {
       "hero": {
-        "title": "Earn Credits by Inviting Your Friends to UpPhoto",
-        "subtitle": "Invite your friends and earn up to <strong>500 SAR</strong>, plus get up to <strong>100 SAR</strong> for each friend who joins using your link."
+        "title": "Earn credit by inviting your friends to Helhal",
+        "subtitle": "Share your referral link, and whenever a friend joins through your link—you’ll receive a reward according to the referral program."
       },
       "referral": {
-        "title": "Why is the Referral Program Important?",
-        "description": "The friends referral program helps you increase your earnings and expand Helhal's user network, as a recommendation from someone you know means more trust and a higher chance to join and benefit from the platform."
+        "title": "Why is the referral program important?",
+        "description": [
+          "Helps you increase your chances of earning rewards and credits.",
+          "Lets your friends benefit from trusted services.",
+          "Expands the Helhal community and increases options for clients and freelancers."
+        ]
       },
-      "inviteFriends": "Invite friends through email",
-      "addEmailsPlaceholder": "Add emails (separate with commas, spaces, or new lines)",
-      "separateEmails": "Separate emails with commas, spaces, or new lines.",
+      "inviteFriends": "Invite your friends",
+      "addEmailsPlaceholder": "Add email addresses (separate with commas, spaces, or new lines)",
+      "separateEmails": "Enter email addresses (separate with commas or put each email on a new line), and we’ll send them an invitation to join Helhal.",
       "previewEmail": "Preview Email",
       "clear": "Clear",
       "valid": "valid",
@@ -2295,9 +2319,9 @@
       "sendInvites": "Send invites",
       "successfullySent": "Successfully sent to {count} {count, plural, one {email} other {emails}}.",
       "uniqueLink": "Your Invitation Link",
-      "copy": "Copy",
+      "copy": "Copy Link",
       "copied": "Copied!",
-      "shareLink": "Copy your unique referral link and share it with your friends via any channel (messages, WhatsApp, X, Facebook, etc.)",
+      "shareLink": "Copy the link and share it via WhatsApp or any platform—let your invites earn rewards.",
       "emailSubject": "Email subject",
       "subjectPlaceholder": "Subject…",
       "yourName": "Your name (optional)",

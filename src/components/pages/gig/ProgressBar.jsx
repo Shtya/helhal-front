@@ -1,5 +1,7 @@
 'use client';
 
+import { useValues } from '@/context/GlobalContext';
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 export default function ProgressBar({
@@ -14,6 +16,8 @@ export default function ProgressBar({
     { label: 'Publish', title: 'Publish', description: 'Finalize and publish your project.' },
   ],
 }) {
+  const { settings } = useValues()
+  const t = useTranslations('CreateGig.step1');
   const total = steps.length;
   const clampedStep = Math.min(Math.max(step, 1), total);
   const progressPct = useMemo(() => ((clampedStep - 1) / (total - 1 || 1)) * 100, [clampedStep, total]);
@@ -74,6 +78,12 @@ export default function ProgressBar({
       <div className='mb-6  '>
         <h1 className='text-2xl font-bold text-slate-900 sm:text-3xl'>{steps[clampedStep - 1]?.title}</h1>
         <p className='mt-1 text-slate-600'>{steps[clampedStep - 1]?.description}</p>
+        {/* Note about platform fee */}
+        {settings?.sellerServiceFee && (
+          <p className="mt-2 text-sm text-amber-700 font-medium bg-amber-50 border-l-4 border-amber-300 p-2 rounded">
+            {t("noteServiceFee", { fee: settings.sellerServiceFee })}
+          </p>
+        )}
       </div>
     </div>
   );
