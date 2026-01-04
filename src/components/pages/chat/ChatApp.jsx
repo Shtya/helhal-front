@@ -643,7 +643,7 @@ const useChat = () => {
       }
       markAsRead(id); // mark read on open
 
-      if (targetUserId) router.replace('/en/chat', { scroll: false });
+      if (targetUserId) router.replace('/chat', { scroll: false });
     },
     [targetUserId, router, fetchMessages],
   );
