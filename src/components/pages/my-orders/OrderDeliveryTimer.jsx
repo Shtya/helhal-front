@@ -78,8 +78,8 @@ export default function OrderDeliveryTimer({ order }) {
                         <div className="flex items-center justify-center w-full gap-6 count-down-main">
                             {/* Days */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max before:contents-[''] before:absolute before:h-full before:w-0.5 before:top-0 before:left-1/2 before:-translate-x-1/2 before:bg-white before:z-10">
-                                    <h3 className="countdown-element days font-manrope font-semibold text-2xl text-emerald-600 tracking-[15.36px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max ">
+                                    <h3 className="countdown-element days font-manrope font-semibold text-2xl text-emerald-600 tracking-[6px] max-w-[44px] text-center relative z-20">
                                         {remaining.days}
                                     </h3>
                                 </div>
@@ -88,8 +88,8 @@ export default function OrderDeliveryTimer({ order }) {
 
                             {/* Hours */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max before:contents-[''] before:absolute before:h-full before:w-0.5 before:top-0 before:left-1/2 before:-translate-x-1/2 before:bg-white before:z-10">
-                                    <h3 className="countdown-element hours font-manrope font-semibold text-2xl text-emerald-600 tracking-[15.36px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max ">
+                                    <h3 className="countdown-element hours font-manrope font-semibold text-2xl text-emerald-600 tracking-[6px] max-w-[44px] text-center relative z-20">
                                         {remaining.hours}
                                     </h3>
                                 </div>
@@ -98,8 +98,8 @@ export default function OrderDeliveryTimer({ order }) {
 
                             {/* Minutes */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max before:contents-[''] before:absolute before:h-full before:w-0.5 before:top-0 before:left-1/2 before:-translate-x-1/2 before:bg-white before:z-10">
-                                    <h3 className="countdown-element minutes font-manrope font-semibold text-2xl text-emerald-600 tracking-[15.36px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max ">
+                                    <h3 className="countdown-element minutes font-manrope font-semibold text-2xl text-emerald-600 tracking-[6px] max-w-[44px] text-center relative z-20">
                                         {remaining.minutes}
                                     </h3>
                                 </div>
@@ -108,8 +108,8 @@ export default function OrderDeliveryTimer({ order }) {
 
                             {/* Seconds */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max before:contents-[''] before:absolute before:h-full before:w-0.5 before:top-0 before:left-1/2 before:-translate-x-1/2 before:bg-white before:z-10">
-                                    <h3 className="countdown-element seconds font-manrope font-semibold text-2xl text-emerald-600 tracking-[15.36px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-emerald-50 w-max ">
+                                    <h3 className="countdown-element seconds font-manrope font-semibold text-2xl text-emerald-600 tracking-[6px] max-w-[44px] text-center relative z-20">
                                         {remaining.seconds}
                                     </h3>
                                 </div>
