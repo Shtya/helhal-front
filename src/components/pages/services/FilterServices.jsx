@@ -20,6 +20,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { isErrorAbort, updateUrlParams } from '@/utils/helper';
 import toast from 'react-hot-toast';
+import LocationSelect from '@/components/atoms/LocationSelect';
 
 const defaultFilters = {
 
@@ -36,6 +37,8 @@ const defaultFilters = {
     revisions: '',
     fastDelivery: false,
     additionalRevision: false,
+    country: '',
+    state: '',
 };
 
 function buildQuery(formData, pagination) {
@@ -57,6 +60,8 @@ function buildQuery(formData, pagination) {
         ...(formData.revisions && { revisions: formData.revisions.id }),
         ...(formData.fastDelivery && { fastDelivery: formData.fastDelivery }),
         ...(formData.additionalRevision && { additionalRevision: formData.additionalRevision }),
+        ...(formData.country && { country: formData.country }),
+        ...(formData.state && { state: formData.state }),
     };
 }
 
@@ -66,6 +71,7 @@ export default function FilterServices({ category = 'all' }) {
     const pathname = usePathname()
     const isAllActive = category == 'all';
     const t = useTranslations('CategoryPage'); // reuse same keys
+
     const [services, setServices] = useState([]);
     const [filterOptions, setFilterOptions] = useState();
 
@@ -109,6 +115,8 @@ export default function FilterServices({ category = 'all' }) {
             revisions: params.revisions ? revisionsOptions?.find(r => r.id == params.revisions) : '',
             fastDelivery: params.fastDelivery === 'true',
             additionalRevision: params.additionalRevision === 'true',
+            country: params.country || '',
+            state: params.country ? params.state || '' : '',
         };
     });
 
@@ -199,6 +207,8 @@ export default function FilterServices({ category = 'all' }) {
         if (formData.revisions) params.set('revisions', formData.revisions?.id); else params.delete('revisions')
         if (formData.fastDelivery) params.set('fastDelivery', 'true'); else params.delete('fastDelivery')
         if (formData.additionalRevision) params.set('additionalRevision', 'true'); else params.delete('additionalRevision')
+        if (formData.country) params.set('country', formData.country); else params.delete('country')
+        if (formData.state) params.set('state', formData.state); else params.delete('state')
 
         updateUrlParams(pathname, params, locale);
     }, [formData]);
@@ -301,6 +311,30 @@ export default function FilterServices({ category = 'all' }) {
                     </div>
 
                     <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6'>
+
+                        <LocationSelect
+                            type='country'
+                            value={formData?.country}
+                            cnPlaceholder='!text-gray-900'
+                            onChange={opt => {
+                                handleSelectChange('country', opt?.id ?? '');
+                            }}
+                            placeholder={tServices('filters.selectCountry')}
+                        />
+
+                        <LocationSelect
+                            type='state'
+                            parentId={formData?.country} // Pass selected countryId here
+                            value={formData?.state}
+                            cnPlaceholder='!text-gray-900'
+                            onChange={opt => {
+                                handleSelectChange('state', opt?.id ?? '');
+                            }}
+
+                            placeholder={formData?.country ? tServices('filters.selectState') : tServices('filters.selectCountryFirst')}
+                            disabled={!formData?.country}
+                        />
+
                         <SellerDetailsDropdown filterOptions={filterOptions} onFilterChange={handleSellerDetailsChange} selectedValues={formData} />
 
                         <SellerBudgetDropdown onBudgetChange={handleBudgetChange} selectedPriceRange={formData.priceRange} customBudget={formData.customBudget} />

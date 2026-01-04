@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
+import NativeLink from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from 'react-hot-toast';
@@ -223,13 +224,13 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
 
             {/* Contact + Meta */}
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-600">
-              <Link
+              <NativeLink
                 href={`mailto:${seller.email}`}
                 className="inline-flex items-center gap-1 hover:underline"
               >
                 <Mail className="h-3.5 w-3.5" />
                 {seller.email}
-              </Link>
+              </NativeLink>
               {seller.country && <span>• {seller.country}</span>}
               {seller.memberSince && (
                 <span>• {t('memberSince')} {new Date(seller.memberSince).toLocaleDateString()}</span>

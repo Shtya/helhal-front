@@ -1,3 +1,4 @@
+import { routing } from "@/i18n/routing";
 import { baseImg } from "@/lib/axios";
 
 
@@ -41,12 +42,28 @@ export function maskEmail(email) {
 }
 
 
-export function updateUrlParams(pathname, params, locale) {
-    const localizedPath = locale ? `/${locale}${pathname}` : pathname;
-    const newUrl = `${localizedPath}?${params.toString()}`;
+
+export function updateUrlParams(
+    pathname,
+    params,
+    locale
+) {
+    // Remove existing locale from pathname
+    const normalizedPath = pathname.replace(
+        new RegExp(`^/(${routing.locales.join('|')})(?=/|$)`),
+        ''
+    );
+
+    const localizedPath = locale
+        ? `/${locale}${normalizedPath}`
+        : normalizedPath;
+
+    const newUrl = params.toString()
+        ? `${localizedPath}?${params.toString()}`
+        : localizedPath;
+
     window.history.replaceState(null, '', newUrl);
 }
-
 
 
 export const fmtMoney = n => `${n?.toLocaleString()}`;

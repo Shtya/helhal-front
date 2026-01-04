@@ -24,6 +24,7 @@ import FavoriteButton from '@/components/atoms/FavoriteButton';
 import { useLocale, useTranslations } from 'next-intl'; // Add this import
 import { resolveUrl } from '@/utils/helper';
 import toast from 'react-hot-toast';
+import CountryFlag from '@/components/common/CountryFlag';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -328,7 +329,23 @@ function HeaderPanel({ serviceData = {}, Img }) {
   const ratingFmt = rating.toFixed(1);
   const reviewsCount = serviceData?.reviews?.length ?? 0;
   const ordersCount = serviceData?.ordersCount ?? 0;
+  const serviceCountry = serviceData?.country ?? 0;
+  const state = serviceData?.state ?? 0;
   const country = seller?.country;
+
+  const serviceCountryName =
+    locale === 'ar'
+      ? serviceData?.country?.name_ar || serviceData?.country?.name || '—'
+      : serviceData?.country?.name || '—';
+
+  const serviceStateName =
+    locale === 'ar'
+      ? serviceData?.state?.name_ar || serviceData?.state?.name || '—'
+      : serviceData?.state?.name || '—';
+
+  const hasLocation =
+    serviceCountryName !== '—' || serviceStateName !== '—';
+
 
   const chips = useMemo(
     () =>
@@ -403,17 +420,28 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
             <Stat icon={ShieldCheck} value={ordersCount} label={t('ordersCompleted')} title={t('ordersCompleted')} />
 
-            {country ? (
+            {hasLocation && (
               <>
                 <Separator />
-                <span className='inline-flex items-center gap-2' title={`Seller location: ${country}`}>
-                  <span aria-hidden className='text-base leading-none'>
-                    {countryFlag(country)}
+                <span
+                  className="inline-flex items-center gap-2 text-slate-600"
+                  title={`${serviceCountryName}${serviceStateName ? ` · ${serviceStateName}` : ''}`}
+                >
+                  {/* Flag */}
+                  {serviceData?.country?.iso2 && (
+                    <CountryFlag countryCode={serviceData.country.iso2} />
+                  )}
+
+                  {/* Location text */}
+                  <span className="truncate max-w-[14rem]">
+                    {serviceCountryName}
+                    {serviceCountryName && serviceStateName ? ' · ' : ''}
+                    {serviceStateName}
                   </span>
-                  <span className='truncate max-w-[10rem] text-slate-600'>From {country}</span>
                 </span>
               </>
-            ) : null}
+            )}
+
           </div>
         </div>
       </div>

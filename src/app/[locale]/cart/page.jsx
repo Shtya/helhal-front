@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+
 import { Trash2, Loader2 } from 'lucide-react';
 import api from '@/lib/axios';
 import NoResults from '@/components/common/NoResults';
@@ -9,6 +9,7 @@ import Img from '@/components/atoms/Img';
 import Button from '@/components/atoms/Button';
 import { useValues } from '@/context/GlobalContext';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 export default function CartPage() {
   const t = useTranslations('Cart.page');

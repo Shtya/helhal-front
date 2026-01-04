@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
 import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video } from 'lucide-react';
 import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
@@ -11,6 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 import { resolveUrl } from '@/utils/helper';
 import { formatResponseTime } from '@/utils/profile';
 import { FiClipboard } from 'react-icons/fi';
+import { Link } from '@/i18n/navigation';
 
 export default function ProfilePageClient() {
   const t = useTranslations('Profile.public');

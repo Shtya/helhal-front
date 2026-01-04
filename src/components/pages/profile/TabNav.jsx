@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -29,7 +29,7 @@ export default function TabNav({ tabs = [], active, subActive, onChange, onSubCh
           );
 
           const baseClasses = `group relative cursor-pointer rounded-full px-5 py-2 text-sm font-medium transition-all flex items-center gap-2`;
- 
+
           return (
             <button key={t.value || idx} type='button' onClick={() => onChange?.(t.value)} className={`${baseClasses} ${isActive ? 'text-white' : 'text-slate-600 hover:text-emerald-600'}`}>
               {isActive && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-lg' transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}

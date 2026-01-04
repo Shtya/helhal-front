@@ -7,6 +7,8 @@ import { toast } from 'react-hot-toast';
 import api from '@/lib/axios';
 import Button from '@/components/atoms/Button';
 import { CreditCard, User, DollarSign, FileText, Loader2, AlertCircle } from 'lucide-react';
+import { Modal } from '@/components/common/Modal';
+import Link from 'next/link';
 
 export async function getOrder(orderId) {
   const res = await api.get(`/orders/${orderId}`);
@@ -55,6 +57,9 @@ export default function PaymentPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const orderId = searchParams.get('orderId');
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
 
   const [order, setOrder] = useState(null);
   const payable = order?.status === 'Pending';
@@ -221,7 +226,15 @@ export default function PaymentPage() {
 
           {/* Actions */}
           <div className='flex items-center justify-end gap-4 '>
-            <Button name={paying ? t('processing') : t('payNow')} disabled={!payable} color='green' onClick={handleSuccess} loading={paying} className=' !w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Confirm payment'>
+            <Button
+              name={paying ? t('processing') : t('payNow')}
+              disabled={!payable}
+              color='green'
+              onClick={() => setIsTermsModalOpen(true)}
+              loading={paying}
+              className='!w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400'
+              aria-label='Confirm payment'
+            >
               {paying ? <Loader2 className='mr-2 inline h-4 w-4 animate-spin' /> : <CreditCard className='mr-2 inline h-4 w-4' />}
             </Button>
 
@@ -236,6 +249,60 @@ export default function PaymentPage() {
           <p className='text-slate-600'>{t('noOrderFound')}</p>
         </div>
       )}
+      {isTermsModalOpen && (
+        <Modal
+          title={t('termsTitle')} // you can localize this key
+          open={isTermsModalOpen}
+          onClose={() => setIsTermsModalOpen(false)}
+        >
+          <div className="space-y-4">
+            <p className="text-gray-700 leading-relaxed">
+              {t('termsMessage')}
+            </p>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="acceptTerms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="h-4 w-4 text-emerald-600 border-gray-300 rounded"
+              />
+              <label htmlFor="acceptTerms" className="text-sm text-gray-700 flex gap-1">
+                {t('acceptTerms')}
+                <Link href='/terms' target="_blank" className='text-emerald-600 underline hover:text-emerald-800'>
+                  {t("terms")}
+                </Link>
+              </label>
+            </div>
+
+            <div className="flex gap-3 mt-4">
+              <Button
+                name={t('confirmPayment')}
+                onClick={() => {
+                  if (acceptedTerms) {
+                    setIsTermsModalOpen(false);
+                    handleSuccess();
+                  } else {
+                    toast.error(t('toast.mustAcceptTerms'));
+                  }
+                }}
+                disabled={!acceptedTerms || paying}
+                loading={paying}
+                color="green"
+                className="flex-1"
+              />
+              <Button
+                name={t('cancel')}
+                onClick={() => setIsTermsModalOpen(false)}
+                color="secondary"
+                className="flex-1"
+              />
+            </div>
+          </div>
+        </Modal>
+      )}
+
     </div>
   );
 }

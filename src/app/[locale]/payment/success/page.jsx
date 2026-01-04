@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { toast } from 'react-hot-toast';
 import api from '@/lib/axios';
 import Button from '@/components/atoms/Button';

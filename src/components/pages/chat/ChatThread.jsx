@@ -6,7 +6,7 @@ import api, { baseImg } from '@/lib/axios';
 import { AttachFilesButton } from './AttachFilesButton';
 import { FaSpinner } from 'react-icons/fa';
 import { HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { MessageSkeletonBubble } from './ChatApp';
 import { useTranslations } from 'next-intl';
 

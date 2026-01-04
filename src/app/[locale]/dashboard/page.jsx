@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import { Users, ShoppingBag, Wallet, BarChart3, ArrowUpRight, ArrowDownRight, RefreshCw, Calendar, Download } from 'lucide-react';
 import api from '@/lib/axios';
 import { BarChart } from '@/components/dashboard/charts/BarChart';

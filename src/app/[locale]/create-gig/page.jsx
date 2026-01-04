@@ -24,6 +24,7 @@ import { useSearchParams } from 'next/navigation';
 import CategorySelect from '@/components/atoms/CategorySelect';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { useDebounce } from '@/hooks/useDebounce';
+import LocationSelect from '@/components/atoms/LocationSelect';
 
 const normalizeFile = (file) => ({
   ...file,
@@ -54,6 +55,8 @@ export const useGigCreation = () => {
     images: [],
     video: [],
     documents: [],
+    country: null,
+    state: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -92,6 +95,8 @@ export const useGigCreation = () => {
           id: res.id,
           slug: res.slug,
           category: res.category,
+          country: res.country || null,
+          state: res.state || null,
           subcategory: res.subcategory,
           tags: res.searchTags,
           title: res.title,
@@ -178,6 +183,8 @@ export const useGigCreation = () => {
           ...formData.video.map(vid => ({ type: 'video', url: vid.url, fileName: vid.filename, assetId: vid.id })),
           ...formData.documents.map(doc => ({ type: 'document', url: doc.url, fileName: doc.filename, assetId: doc.id }))],
         requirements: formData.questions,
+        countryId: formData.country || null,
+        stateId: formData.state || null,
         // fastDelivery: formData.extraFastDelivery,
         // additionalRevision: formData.additionalRevision,
       };
@@ -226,6 +233,8 @@ const getStep1Schema = (t) => yup.object({
   brief: yup.string().trim().required(t('validation.briefRequired')).min(10, t('validation.briefMin')).max(500, t('validation.briefMax')),
   category: yup.object().required(t('validation.categoryRequired')),
   subcategory: yup.object().nullable().notRequired(),
+  country: yup.string().required(t('validation.countryRequired')),
+  state: yup.string().nullable().notRequired(),
   tags: yup.array()
     .of(
       yup.string()
@@ -504,6 +513,8 @@ function Step1({ formData, setFormData, nextStep }) {
       brief: formData.brief || '',
       category: formData.category || null,
       subcategory: formData.subcategory || null,
+      country: formData.country || null,
+      state: formData.state || null,
       tags: formData.tags || [],
     }
   });
@@ -581,6 +592,8 @@ function Step1({ formData, setFormData, nextStep }) {
       brief: formData.brief || '',
       category: formData.category || null,
       subcategory: formData.subcategory || null,
+      country: formData.country || null,
+      state: formData.state || null,
       tags: formData.tags || [],
     });
   }, [formData, reset]);
@@ -617,6 +630,17 @@ function Step1({ formData, setFormData, nextStep }) {
   const handleSubcategoryChange = value => {
     setValue('subcategory', value);
     setFormData({ ...formData, title: titleVal, brief: briefVal, subcategory: value });
+  };
+
+  const handleCountryChange = value => {
+    setValue('country', value);
+
+    setFormData({ ...formData, title: titleVal, brief: briefVal, country: value, state: null }); // clear sub when main changes
+  };
+
+  const handleStateChange = value => {
+    setValue('state', value);
+    setFormData({ ...formData, title: titleVal, brief: briefVal, state: value });
   };
 
   const handleRemoveInputList = value => {
@@ -682,6 +706,41 @@ function Step1({ formData, setFormData, nextStep }) {
                 <CategorySelect type='subcategory' parentId={watch('category')?.id} label={t('subcategory')} value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? t('placeholders.selectSubcategory') : t('placeholders.selectCategoryFirst')} />
               )} />
             </div>
+
+            {/* <Select label='Category' options={categories} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} required />
+            <Select label='Subcategory'  value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} disabled={!watch('category')} /> */}
+          </div>
+        </Field>
+
+        {/* country / state */}
+        <Field className='pt-8 border-t border-slate-200' title={t('country')} desc={t('countryDesc')} required >
+          <div className='grid gap-4 md:grid-cols-2'>
+            <LocationSelect
+              type='country'
+              value={formData?.country}
+              // cnPlaceholder='!text-gray-900'
+              error={errors?.country?.message}
+              label={t('country')}
+              onChange={opt => {
+                handleCountryChange(opt?.id ?? '');
+              }}
+              placeholder={t('selectCountry')}
+            />
+
+            <LocationSelect
+              type='state'
+              parentId={watch('country')} // Pass selected countryId here
+              value={formData?.state}
+              error={errors?.state?.message}
+              // cnPlaceholder='!text-gray-900'
+              label={t('state')}
+              onChange={opt => {
+                handleStateChange(opt?.id ?? '');
+              }}
+              placeholder={formData?.country ? t('selectState') : t('selectCountryFirst')}
+              disabled={!formData?.country}
+            />
+
 
             {/* <Select label='Category' options={categories} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} required />
             <Select label='Subcategory'  value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} disabled={!watch('category')} /> */}

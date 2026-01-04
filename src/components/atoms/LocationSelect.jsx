@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import { useTranslations, useLocale } from "next-intl";
 import { useState, useMemo, forwardRef, useEffect, useRef } from "react";
 import Select from "./Select";
-import { promise } from "zod";
 
 const LocationSelect = forwardRef(({
     type = 'country',
@@ -15,7 +14,9 @@ const LocationSelect = forwardRef(({
     cnPlaceholder,
     label,
     error,
-    disabled
+    disabled,
+    cnLabel,
+    required
 }, ref) => {
     const t = useTranslations('LocationSelect');
     const locale = useLocale();
@@ -25,8 +26,8 @@ const LocationSelect = forwardRef(({
 
 
     // track which (type,parentId) combos were fetched already
-    const fetchedKeysRef = useRef(new Set());
     const scopeKey = useMemo(() => `${type}:${parentId || 'root'}`, [type, parentId]);
+    const cacheRef = useRef(new Map());
 
 
     const fetchLocations = async () => {
@@ -35,7 +36,10 @@ const LocationSelect = forwardRef(({
             return;
         }
 
-        if (fetchedKeysRef.current.has(scopeKey)) return; // already fetched for this scope
+        if (cacheRef.current.has(scopeKey)) {
+            setItems(cacheRef.current.get(scopeKey));
+            return;
+        }
 
         let fetchUrl = ''
         if (type === 'state') fetchUrl = `/states/by-country/${parentId}`;
@@ -47,7 +51,7 @@ const LocationSelect = forwardRef(({
             // Ensure we handle different possible API response shapes
             const records = Array.isArray(res?.data) ? res.data : (res?.data?.records || []);
             setItems(records);
-            fetchedKeysRef.current.add(scopeKey);
+            cacheRef.current.set(scopeKey, records);
         } catch (e) {
             setItems([]);
             toast.error(t('errors.failedToLoad'));
@@ -82,21 +86,30 @@ const LocationSelect = forwardRef(({
     }
 
     return (
-        <Select
-            ref={ref}
-            label={label}
-            options={options}
-            cnPlaceholder={cnPlaceholder}
-            onOpenToggle={(val) => setOpen(val)}
-            customSearch={customSearch}
-            value={value} // Pass the ID or the object based on your Select implementation
-            onChange={onChange}
-            placeholder={placeholder}
-            isLoading={loading}
-            showSearch={true}
-            disabled={disabled || (type === 'state' && !parentId)}
-            error={error}
-        />)
+        <div className="w-full relative">
+
+            {label && (
+                <label className={`${cnLabel || ''} mb-1 block text-sm font-medium text-gray-600`}>
+                    {label}
+                    {required && <span className='text-red-500 ml-1'>*</span>}
+                </label>
+            )}
+            <Select
+                ref={ref}
+                options={options}
+                cnPlaceholder={cnPlaceholder}
+                onOpenToggle={(val) => setOpen(val)}
+                customSearch={customSearch}
+                value={value} // Pass the ID or the object based on your Select implementation
+                onChange={onChange}
+                placeholder={placeholder}
+                isLoading={loading}
+                showSearch={true}
+                disabled={disabled || (type === 'state' && !parentId)}
+                error={error}
+            />
+        </div>
+    )
 });
 
 export default LocationSelect;

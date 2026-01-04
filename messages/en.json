@@ -783,6 +783,11 @@
       "subtitle": "Refine your search with custom options.",
       "result": "result",
       "results": "results",
+      "countryLabel": "Country",
+      "stateLabel": "State/Province",
+      "selectCountry": "Select a country",
+      "selectState": "Select a state",
+      "selectCountryFirst": "Please select a country first",
       "ratings": {
         "rating5": "⭐⭐⭐⭐⭐ 5",
         "rating4": "⭐⭐⭐⭐ 4+",
@@ -1052,6 +1057,7 @@
       "addImagesSubtitle": "Add up to 6 images."
     },
     "public": {
+      "referralCode": "Referral Code",
       "ordersCount": "Orders Count",
       "failedToLoad": "Failed to load user. Try again.",
       "unknown": "Unknown",
@@ -1851,6 +1857,9 @@
       "gigBriefDesc": "Short value proposition. What problem do you solve and how?",
       "category": "Category",
       "categoryDesc": "Pick the most accurate category and subcategory.",
+      "country": "Country",
+      "state": "State",
+      "countryDesc": "Pick the most accurate country and state.",
       "subcategory": "SubCategory",
       "searchTags": "Search tags",
       "searchTagsDesc": "Use up to 5 tags that buyers would actually search.",
@@ -1861,6 +1870,9 @@
       "titleAvailable": "This title is available",
       "titleUsedByYou": "You already have a service with this title",
       "titleUsedByOther": "This title is already used by another seller",
+      "selectCountry": "Select a country",
+      "selectState": "Select a state",
+      "selectCountryFirst": "Please select a country first",
       "placeholders": {
         "titleExample": "e.g., I will design a responsive landing page in Next.js",
         "briefExample": "Briefly describe the outcome, approach, and what sets you apart.",
@@ -1882,6 +1894,7 @@
         "briefMax": "Service brief cannot exceed 500 characters",
         "briefMin": "Brief must be at least 10 characters",
         "categoryRequired": "Category is required",
+        "countryRequired": "country is required",
         "tagMax": "Tag must be 50 characters or less",
         "tagPattern": "Tags can contain letters and numbers only",
         "tagRequired": "Tag is required",
@@ -2230,6 +2243,11 @@
       "failedToLoad": "Failed to load order details"
     },
     "page": {
+      "termsTitle": "Terms of Service",
+      "acceptTerms": "I agree to",
+      "terms": "the terms and conditions",
+      "confirmPayment": "Confirm Payment",
+      "termsMessage": "By continuing, you agree under the terms and conditions that you have already contacted the service provider and agreed on the order details before completing payment.",
       "title": "Checkout Simulation",
       "subtitle": "Review your order and complete payment securely.",
       "buyer": "Buyer",
@@ -2247,6 +2265,7 @@
       "cancel": "Cancel",
       "noOrderFound": "No order found.",
       "toast": {
+        "mustAcceptTerms": "You must accept the terms before payment",
         "paymentSuccessful": "Payment successful!",
         "failedToMarkPaid": "Failed to mark order paid",
         "paymentCanceled": "Payment canceled",
