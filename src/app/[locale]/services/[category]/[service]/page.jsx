@@ -103,7 +103,7 @@ export default function ServiceDetailsPage({ params }) {
   const [validationErrors, setValidationErrors] = useState({});
 
   const canOrder = user?.id != serviceData?.seller?.id && role === 'buyer' && serviceData?.status === 'Active';
-  console.log(user?.id, serviceData?.seller?.id, role, serviceData?.status)
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
 

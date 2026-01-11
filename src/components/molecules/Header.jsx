@@ -294,11 +294,11 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-emerald-700 transition-colors rounded-xl'>
-                {tHeader('auth.signIn')}
-              </Link>
-              <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors'>
+              <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-emerald-700 transition-colors rounded-xl'>
                 {tHeader('auth.signUp')}
+              </Link>
+              <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors'>
+                {tHeader('auth.signIn')}
               </Link>
               <div className='order-2 max-lg:hidden s'>
                 <SmallLanguageSwitcher />
