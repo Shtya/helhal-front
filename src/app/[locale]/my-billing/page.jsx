@@ -663,7 +663,7 @@ const PaymentMethods = () => {
 
 const PhoneVerification = ({ phone, countryCode, onVerified }) => {
   const t = useTranslations('MyBilling.availableBalances');
-  const [otpSent, setOtpSent] = useState(true);
+  const [otpSent, setOtpSent] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [resending, setResending] = useState(false);
   const [otp, setOtp] = useState('');
@@ -681,9 +681,18 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
   // ✅ If phone already verified
   if (!loadingUser && user?.isPhoneVerified) {
     return (
-      <div className="flex items-center gap-2 text-blue-600">
-        <FaCheckCircle className="text-blue-600 w-5 h-5" />
-        <span>{t('phoneVerification.alreadyVerified')}</span>
+      <div className='flex flex-col gap-4 justify-between h-full'>
+
+        <div className="flex items-center gap-2 text-blue-600">
+          <FaCheckCircle className="text-blue-600 w-5 h-5" />
+          <span>{t('phoneVerification.alreadyVerified')}</span>
+        </div>
+        <Input
+          label={t('phoneVerification.phoneLabel')}
+          value={`\u200E${countryCode} ${phone}`}
+          disabled
+          cnInput="cursor-not-allowed"
+        />
       </div>
     );
   }
