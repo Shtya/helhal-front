@@ -663,7 +663,7 @@ const PaymentMethods = () => {
 
 const PhoneVerification = ({ phone, countryCode, onVerified }) => {
   const t = useTranslations('MyBilling.availableBalances');
-  const [otpSent, setOtpSent] = useState(false);
+  const [otpSent, setOtpSent] = useState(true);
   const [seconds, setSeconds] = useState(0);
   const [resending, setResending] = useState(false);
   const [otp, setOtp] = useState('');
@@ -772,7 +772,7 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
         <div>
           <Input
             label={t('phoneVerification.phoneLabel')}
-            value={`${countryCode} ${phone}`}
+            value={`\u200E${countryCode} ${phone}`}
             disabled
             cnInput="cursor-not-allowed"
           />
