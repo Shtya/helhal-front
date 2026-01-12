@@ -65,7 +65,7 @@ export const GlobalProvider = ({ children }) => {
 
   const fetchCart = async () => {
     const access = localStorage.getItem('accessToken');
-    if (!access) return;
+    if (!access) { setLoadingCart(false); return; }
 
     try {
       setLoadingCart(true);

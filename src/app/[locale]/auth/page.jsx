@@ -467,7 +467,6 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
         const data = res.data;
         toast.success(t('success.phoneVerified'));
         onVerified?.(data);
-
       } else {
         onVerified?.(otp); // for reset or other custom flows
       }
@@ -505,9 +504,9 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
       <Input
         label={purpose === 'verify-phone' ? t('phoneNumber') : t('email')}
         type='text'
-        value={purpose === 'verify-phone' ? `${value.countryCode.dial_code} ${value.phone}` : value}
+        value={purpose === 'verify-phone' ? `\u200E${value.countryCode.dial_code} ${value.phone}` : value}
         disabled
-        cnInput='cursor-not-allowed'
+        cnInput='cursor-not-allowed '
       />
       <form onSubmit={onSubmit}>
         <div className='mb-6'>
@@ -535,7 +534,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
         <ContinueWithEmailButton onClick={onEmailClick} />
         <ContinueWithGoogleButton referralCode={referralCode} />
         {/* <ContinueWithAppleButton referralCode={referralCode} /> */}
-        {/* <ContinueWithPhoneButton onClick={onPhoneClick} /> */}
+        <ContinueWithPhoneButton onClick={onPhoneClick} />
       </div>
       <p className='text-sm text-gray-500 border-t border-slate-200 mt-6 pt-6'>{t('terms')}</p>
     </motion.div>

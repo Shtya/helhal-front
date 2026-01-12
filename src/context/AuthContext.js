@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
 
   const fetchUser = async () => {
     const access = localStorage.getItem('accessToken');
-    if (!access) return;
+    if (!access) { setLoadingUser(false); return; }
 
     try {
       setLoadingUser(true);
