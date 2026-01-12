@@ -1504,6 +1504,9 @@
         "description": "Earn Upphoto Credits."
       },
       "phoneVerification": {
+        "alreadyVerified": "Your phone number is already verified.",
+        "missingPhoneData": "To verify your phone, please add your phone number and country code first.",
+        "goToProfile": "Go to your profile",
         "verified": "Phone number verified",
         "description": "Verify your phone number to secure your account.",
         "sendOtp": "Send OTP",

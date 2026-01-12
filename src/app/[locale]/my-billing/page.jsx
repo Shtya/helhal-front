@@ -18,6 +18,8 @@ import { useValues } from '@/context/GlobalContext';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import OTPInput from 'react-otp-input';
+import { Link } from '@/i18n/navigation';
+import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
@@ -324,7 +326,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
         })}
 
         {/* Phone Verification Card */}
-        {/* <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
+        <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
           {!phoneVerified ? (
             <PhoneVerification
               phone={user?.phone}
@@ -337,7 +339,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
               <ShieldCheck className='mx-auto mt-2 w-6 h-6 text-green-600' />
             </div>
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   );
@@ -666,6 +668,7 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
   const [resending, setResending] = useState(false);
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
+  const { user, loadingUser } = useAuth();
 
   // Countdown timer for resend
   useEffect(() => {
@@ -674,11 +677,41 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
     return () => clearTimeout(timer);
   }, [seconds]);
 
+
+  // ✅ If phone already verified
+  if (!loadingUser && user?.isPhoneVerified) {
+    return (
+      <div className="flex items-center gap-2 text-blue-600">
+        <FaCheckCircle className="text-blue-600 w-5 h-5" />
+        <span>{t('phoneVerification.alreadyVerified')}</span>
+      </div>
+    );
+  }
+
+  // ✅ If phone/country code not set
+  if (
+    !loadingUser &&
+    (!user?.phone || !user?.countryCode?.dial_code || !user?.countryCode?.code)
+  ) {
+    return (
+      <div className="flex items-center gap-2 text-red-600">
+        <FaExclamationTriangle className="text-red-600 w-5 h-5" />
+        <span>
+          {t('phoneVerification.missingPhoneData')}{' '}
+          <Link href="/profile" className="text-blue-600 hover:underline">
+            {t('phoneVerification.goToProfile')}
+          </Link>
+        </span>
+      </div>
+    );
+  }
+
+
   // Send OTP
   const sendOtp = async () => {
     try {
       setLoading(true);
-      await api.post('/auth/send-phone-otp');
+      await api.post('/auth/send-phone-verification-otp');
       toast.success(t('phoneVerification.otpSentSuccess'));
       setOtpSent(true);
       setSeconds(30); // disable resend for 30 seconds
@@ -696,7 +729,7 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
     if (otp.length !== 6) return toast.error(t('phoneVerification.invalidOtpLength'));
     try {
       setLoading(true);
-      const res = await api.post('/auth/verify-phone', { code: otp });
+      const res = await api.post('/auth/verify-phone-otp', { otpCode: otp });
       toast.success(t('phoneVerification.verifiedSuccess'));
       onVerified?.(res.data);
     } catch (err) {
@@ -707,11 +740,12 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
     }
   };
 
+  // Resend OTP
   const resendOtp = async () => {
     if (seconds > 0) return;
     try {
       setResending(true);
-      await api.post('/auth/send-phone-otp');
+      await api.post('/auth/send-phone-verification-otp');
       toast.success(t('phoneVerification.otpResentSuccess'));
       setSeconds(30);
     } catch (err) {
@@ -726,8 +760,7 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
       {!otpSent ? (
         <>
           <p className="mt-1 mb-4 text-lg text-gray-500">{t('phoneVerification.description')}</p>
-          <div className='mt-auto'>
-
+          <div className="mt-auto">
             <Button
               onClick={sendOtp}
               disabled={loading}
@@ -760,7 +793,12 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
               )}
               containerStyle="flex justify-center flex-wrap gap-y-2"
             />
-            <Button type="submit" name={t('phoneVerification.verify')} className="mt-4" isLoading={loading} />
+            <Button
+              type="submit"
+              name={t('phoneVerification.verify')}
+              className="mt-4"
+              isLoading={loading}
+            />
           </form>
 
           <p className="text-center text-gray-600 mt-4">
@@ -772,7 +810,9 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
               className={`text-blue-600 hover:underline disabled:opacity-50 ${seconds > 0 ? 'cursor-not-allowed' : ''
                 }`}
             >
-              {seconds > 0 ? t('phoneVerification.resendIn', { seconds }) : t('phoneVerification.resendOtp')}
+              {seconds > 0
+                ? t('phoneVerification.resendIn', { seconds })
+                : t('phoneVerification.resendOtp')}
             </button>
           </p>
         </div>
