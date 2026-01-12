@@ -162,7 +162,6 @@ export const ContinueWithGoogleButton = ({ referralCode }) => {
   const searchParams = useSearchParams();
 
   const redirectUrl = searchParams?.get('redirect') || '/';
-
   const userType = searchParams.get('type') || null;
 
   const handleGoogleLogin = async () => {
@@ -445,6 +444,9 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
   const [otp, setOtp] = useState('');
   const [resending, setResending] = useState(false);
   const [seconds, setSeconds] = useState(30);
+  const searchParams = useSearchParams()
+  const referralCode = searchParams.get('ref') || '';
+  const userType = searchParams.get('type') || 'buyer';
 
   useEffect(() => {
     if (seconds <= 0) return;
@@ -463,7 +465,7 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
         toast.success(t('success.emailVerified'));
         onVerified?.();
       } else if (purpose === 'verify-phone') {
-        const res = await api.post('/auth/verify-phone', { phone: value, code: otp });
+        const res = await api.post('/auth/verify-phone', { ...value, code: otp });
         const data = res.data;
         toast.success(t('success.phoneVerified'));
         onVerified?.(data);
@@ -485,7 +487,12 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
       if (purpose === 'verify-email') {
         await api.post('/auth/resend-verification-email', { email: value });
       } else if (purpose === 'verify-phone') {
-        await api.post('/auth/resend-verification-sms', { phone: value });
+        await api.post('/auth/phone', {
+          ...value,
+          ref: referralCode,
+          role: userType
+        });
+
       } else {
         await api.post('/auth/forgot-password', { email: value });
       }
@@ -832,6 +839,9 @@ const UserTypeSelection = ({ onSelect, loading }) => {
 const PhoneLoginForm = ({ onOtp }) => {
   const t = useTranslations('Auth');
   const { setLoading, setError, loading } = useContext(AuthFormContext);
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get('ref') || '';
+  const userType = searchParams.get('type') || 'buyer';
 
   const [state, setState] = useState({
     countryCode: { code: 'SA', dial_code: '+966' },
@@ -854,9 +864,11 @@ const PhoneLoginForm = ({ onOtp }) => {
     }
 
     try {
-      const res = await api.post('/auth/phone', {
+      await api.post('/auth/phone', {
         countryCode: state.countryCode,
         phone: trimmedPhone,
+        ref: referralCode,
+        role: userType
       });
 
 

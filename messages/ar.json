@@ -2,7 +2,8 @@
   "phoneInput": {
     "countryCodeLabel": "رمز الدولة",
     "chooseCountry": "اختر الدولة",
-    "phoneLabel": "رقم الهاتف"
+    "phoneLabel": "رقم الهاتف",
+    "phoneLabelPlaceholder": "ادخل رقم هاتفك"
   },
   "toast": {
     "failedToUploadFiles": "فشل في رفع الملفات. يرجى المحاولة مرة أخرى.",

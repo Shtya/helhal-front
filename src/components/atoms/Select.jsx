@@ -9,7 +9,7 @@ import FormErrorMessage from './FormErrorMessage';
 import { useTranslations } from 'next-intl';
 
 //options = [{ id: '1', name: 'Option 1' }, { id: '2', name: 'Option 2' }]
-const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder, label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, selectkey, ...props }, ref) => {
+const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder, label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, selectkey, hideIcon = false, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [touched, setTouched] = useState(false);
@@ -268,7 +268,7 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
 
           {isLoading ? <span className={`truncate text-gray-900 font-medium`}>{defaultLoadingText || defaultPlaceholder}</span>
             : <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated && selectkey ? `${selectkey}: ` : ''} {formated || defaultPlaceholder}</span>}
-          <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
+          {!hideIcon && <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />}
         </button>
       </div>
 

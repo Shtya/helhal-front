@@ -39,7 +39,7 @@ export default function PhoneInputWithCountry({
     value = { countryCode, phone: '' },
     onChange,
 }) {
-    const t = useTranslations();
+    const t = useTranslations("phoneInput");
     const [internalPhone, setInternalPhone] = useState(value.phone || '');
     const [internalCountry, setInternalCountry] = useState(value.countryCode);
 
@@ -91,16 +91,18 @@ export default function PhoneInputWithCountry({
     return (
         <div className="grid gap-2 items-center grid-cols-1 sm:grid-cols-[auto_1fr]">
             <Select
-                label={t('phoneInput.countryCodeLabel')}
+                label={t('countryCodeLabel')}
                 options={formattedOptions}
                 value={value.countryCode?.code}
                 onChange={handleCodeChange}
-                placeholder={t('phoneInput.chooseCountry')}
+                placeholder={t('chooseCountry')}
                 cnSelect="w-full sm:!w-[120px]"
                 cnMenu="sm:!min-w-[302px]"
                 VirtualizeWidth={300}
                 cnVirtualize='select-virtualized-container'
                 showSearch={true}
+                disabled={true} //because now we only support SA
+                hideIcon={true} //because now we only support SA
                 isVirtualized
                 customSearch={(term) => {
                     return formattedOptions.filter(opt => {
@@ -116,7 +118,8 @@ export default function PhoneInputWithCountry({
                 }}
             />
             <Input
-                label={t('phoneInput.phoneLabel')}
+                label={t('phoneLabel')}
+                placeholder={t('phoneLabelPlaceholder')}
                 value={internalPhone}
                 onChange={handlePhoneChange}
                 onBlur={handleBlur}

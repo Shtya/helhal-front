@@ -2,7 +2,8 @@
   "phoneInput": {
     "countryCodeLabel": "Country Code",
     "chooseCountry": "Choose country",
-    "phoneLabel": "Phone"
+    "phoneLabel": "Phone",
+    "phoneLabelPlaceholder": "Enter your phone"
   },
   "toast": {
     "failedToUploadFiles": "Failed to upload files. Please try again.",
