@@ -230,7 +230,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
   const { user } = useAuth();
   const [balances, setBalances] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [phoneVerified, setPhoneVerified] = useState(user?.phoneVerified);
+  // const [phoneVerified, setPhoneVerified] = useState(user?.phoneVerified);
 
   const fetchBalances = async () => {
     try {
@@ -327,18 +327,11 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
 
         {/* Phone Verification Card */}
         <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
-          {!phoneVerified ? (
-            <PhoneVerification
-              phone={user?.phone}
-              countryCode={user?.countryCode?.dial_code}
-              onVerified={() => setPhoneVerified(true)}
-            />
-          ) : (
-            <div className='text-center'>
-              <p className='text-green-600 font-semibold'>{t('phoneVerification.verified')}</p>
-              <ShieldCheck className='mx-auto mt-2 w-6 h-6 text-green-600' />
-            </div>
-          )}
+          <PhoneVerification
+            phone={user?.phone}
+            countryCode={user?.countryCode?.dial_code}
+          // onVerified={() => setPhoneVerified(true)}
+          />
         </div>
       </div>
     </div>
@@ -668,7 +661,7 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
   const [resending, setResending] = useState(false);
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
-  const { user, loadingUser } = useAuth();
+  const { user, loadingUser, setCurrentUser } = useAuth();
 
   // Countdown timer for resend
   useEffect(() => {
@@ -725,7 +718,7 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
       setOtpSent(true);
       setSeconds(30); // disable resend for 30 seconds
     } catch (err) {
-      toast.error(t('phoneVerification.failedToSend'));
+      toast.error(err?.response?.data?.message || t('phoneVerification.failedToSend'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -739,10 +732,15 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
     try {
       setLoading(true);
       const res = await api.post('/auth/verify-phone-otp', { otpCode: otp });
+      setCurrentUser(prev => ({
+        ...prev,
+        isPhoneVerified: true
+      }));
+
       toast.success(t('phoneVerification.verifiedSuccess'));
       onVerified?.(res.data);
     } catch (err) {
-      toast.error(t('phoneVerification.invalidOtp'));
+      toast.error(err?.response?.data?.message || t('phoneVerification.invalidOtp'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -758,7 +756,7 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
       toast.success(t('phoneVerification.otpResentSuccess'));
       setSeconds(30);
     } catch (err) {
-      toast.error(t('phoneVerification.failedToResend'));
+      toast.error(err?.response?.data?.message || t('phoneVerification.failedToResend'));
     } finally {
       setResending(false);
     }

@@ -32,7 +32,7 @@ const letterFromName = s => (s && String(s).trim() ? String(s).trim()[0].toUpper
 /* -------------------------------- Profile Card ------------------------------ */
 function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCopyReferral, onError }) {
   const t = useTranslations('Profile.page');
-  const tAuth = useTranslations('auth');
+  const tAuth = useTranslations('Auth');
   const [usernameError, setUsernameError] = useState('');
 
   const handleChangeUsername = (value) => {

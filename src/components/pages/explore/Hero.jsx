@@ -93,7 +93,6 @@ export default function Hero() {
 		return out;
 	}, [role, t]);
 
-	console.log(cards)
 	return (
 		<section
 			className={[

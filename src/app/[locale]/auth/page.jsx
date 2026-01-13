@@ -715,9 +715,14 @@ export default function AuthPage() {
     }
   };
 
-  const handlePhoneLoggedIn = ({ accessToken, refreshToken, user }) => {
+  async function handlePhoneLoggedIn({ accessToken, refreshToken, user }) {
     updateTokens({ accessToken, refreshToken });
     setCurrentUser(user);
+    await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accessToken, refreshToken, user: user }),
+    });
     if (user.role === 'seller') {
       router.push('/jobs');
     }
@@ -877,8 +882,8 @@ const PhoneLoginForm = ({ onOtp }) => {
         phone: trimmedPhone,
       });
       toast.success(t('success.codeSent'));
-    } catch {
-      const msg = t('errors.codeSendFailed');
+    } catch (err) {
+      const msg = err?.response?.data?.message || t('errors.codeSendFailed');
       setError(msg);
       toast.error(msg);
     } finally {
