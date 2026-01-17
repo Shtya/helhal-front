@@ -1082,6 +1082,7 @@
       "about": "About",
       "noDescription": "No description provided.",
       "verified": "Verified",
+      "notVerified": "Not Verified",
       "proMember": "Pro Member",
       "contact": "Contact",
       "email": "Email",
@@ -1166,6 +1167,31 @@
       "selectType": "Select type",
       "errors": {
         "failedToLoadCountries": "Failed to load countries"
+      }
+    },
+    "accountVerification": {
+      "title": "Account Verification",
+      "subtitle": "Verify your information below.",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "nafaz": "NAFAZ",
+      "verified": "Verified",
+      "notVerified": "Not Verified",
+      "edit": "Edit",
+      "editEmail": "Edit Email",
+      "editPhone": "Edit Phone",
+      "editNafaz": "Edit NAFAZ",
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "nationalId": "National ID",
+      "nationalIdPlaceholder": "Enter your national ID",
+      "nationalIdHint": "National ID must be 10 digits starting with 1 or 2",
+      "editPhoneAgain": "Edit phone again",
+      "failedToUpdatePhone": "Failed to update phone number",
+      "nafazUpdated": "NAFAZ information updated successfully",
+      "failedToUpdateNafaz": "Failed to update NAFAZ information",
+      "errors": {
+        "inValidOptionalPhone": "Invalid phone number"
       }
     }
   },
@@ -2211,6 +2237,18 @@
       "toast": {
         "passwordUpdated": "✅ Your password has been updated successfully.",
         "failedToUpdate": "Failed to update password"
+      },
+      "placeholders": {
+        "currentPassword": "Enter your current password",
+        "newPassword": "Enter a new password",
+        "confirmPassword": "Confirm your new password"
+      },
+      "errors": {
+        "currentPasswordRequired": "Current password is required",
+        "passwordMin": "Password must be at least 8 characters",
+        "passwordMax": "Password must not exceed 20 characters",
+        "passwordWeak": "Password can only contain letters, numbers, and special characters _ @ $ ! % * ? &.",
+        "passwordsMismatch": "Passwords do not match"
       }
     },
     "notifications": {

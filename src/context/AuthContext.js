@@ -73,6 +73,46 @@ export function AuthProvider({ children }) {
   };
 
   const role = user?.role || 'guest';
+
+  //sync shared data between accounts
+  useEffect(() => {
+    if (!user || !user.relatedUsers?.length) return;
+
+    const personFields = [
+      'username', 'email', 'pendingEmail', 'pendingEmailCode',
+      'lastEmailChangeSentAt', 'password', 'type', 'phone',
+      'countryCode', 'isPhoneVerified', 'lastLogin', 'devices',
+      'googleId', 'appleId', 'resetPasswordToken', 'lastResetPasswordSentAt',
+      'resetPasswordExpires', 'otpCode', 'otpLastSentAt', 'otpExpiresAt',
+      'referralCode', 'languages', 'country', 'countryId',
+      'permissions', 'status', 'deactivatedAt'
+    ];
+
+    setUser(prev => {
+      const sharedData = {};
+      personFields.forEach(field => {
+        sharedData[field] = prev[field];
+      });
+
+      return {
+        ...prev,
+        relatedUsers: prev.relatedUsers.map(related => ({
+          ...related,
+          ...sharedData
+        }))
+      };
+    });
+
+  }, [
+    user?.username, user?.email, user?.pendingEmail, user?.pendingEmailCode,
+    user?.lastEmailChangeSentAt, user?.password, user?.type, user?.phone,
+    user?.countryCode, user?.isPhoneVerified, user?.lastLogin, user?.devices,
+    user?.googleId, user?.appleId, user?.resetPasswordToken, user?.lastResetPasswordSentAt,
+    user?.resetPasswordExpires, user?.otpCode, user?.otpLastSentAt, user?.otpExpiresAt,
+    user?.referralCode, user?.languages, user?.countryId,
+    user?.permissions, user?.status, user?.deactivatedAt
+  ]);
+
   return (
     <AuthContext.Provider
       value={{

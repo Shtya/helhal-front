@@ -2,7 +2,7 @@
 import { Link } from '@/i18n/navigation';
 import React from 'react';
 
-export default function Button({ name, disabled, icon, srcImg, onClick, href, className = '', color = 'green', loading = false }) {
+export default function Button({ name, disabled, icon, srcImg, onClick, href, className = '', color = 'green', type = "button", loading = false }) {
   const colorClasses = {
     // default: 'gradient',
     // red: 'bg-red-600 hover:bg-red-700',
@@ -54,7 +54,7 @@ export default function Button({ name, disabled, icon, srcImg, onClick, href, cl
   }
 
   return (
-    <button disabled={disabled || loading} onClick={onClick} className={finalClass}>
+    <button type={type} disabled={disabled || loading} onClick={onClick} className={finalClass}>
       {content}
     </button>
   );

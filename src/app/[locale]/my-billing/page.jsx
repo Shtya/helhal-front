@@ -326,13 +326,13 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
         })}
 
         {/* Phone Verification Card */}
-        <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
+        {/* <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
           <PhoneVerification
             phone={user?.phone}
             countryCode={user?.countryCode?.dial_code}
           // onVerified={() => setPhoneVerified(true)}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );
@@ -652,6 +652,7 @@ const PaymentMethods = () => {
     </div>
   );
 };
+
 
 
 const PhoneVerification = ({ phone, countryCode, onVerified }) => {

@@ -1082,6 +1082,7 @@
       "about": "حول",
       "noDescription": "لا يوجد وصف.",
       "verified": "متحقق",
+      "notVerified": "غير متحقق",
       "proMember": "عضو محترف",
       "contact": "اتصل",
       "email": "البريد الإلكتروني",
@@ -1166,6 +1167,31 @@
       "selectType": "اختر النوع",
       "errors": {
         "failedToLoadCountries": "فشل تحميل البلدان"
+      }
+    },
+    "accountVerification": {
+      "title": "التحقق من الحساب",
+      "subtitle": "تحقق من معلوماتك أدناه.",
+      "email": "البريد الإلكتروني",
+      "phoneNumber": "رقم الهاتف",
+      "nafaz": "نفاذ",
+      "verified": "متحقق",
+      "notVerified": "غير متحقق",
+      "edit": "تعديل",
+      "editEmail": "تعديل البريد الإلكتروني",
+      "editPhone": "تعديل رقم الهاتف",
+      "editNafaz": "تعديل نفاذ",
+      "cancel": "إلغاء",
+      "saveChanges": "حفظ التغييرات",
+      "nationalId": "الهوية الوطنية",
+      "nationalIdPlaceholder": "أدخل رقم الهوية الوطنية",
+      "nationalIdHint": "يجب أن يكون رقم الهوية الوطنية 10 أرقام تبدأ بـ 1 أو 2",
+      "editPhoneAgain": "تعديل رقم الهاتف مرة أخرى",
+      "failedToUpdatePhone": "فشل تحديث رقم الهاتف",
+      "nafazUpdated": "تم تحديث معلومات نفاذ بنجاح",
+      "failedToUpdateNafaz": "فشل تحديث معلومات نفاذ",
+      "errors": {
+        "inValidOptionalPhone": "رقم هاتف غير صالح"
       }
     }
   },
@@ -2211,6 +2237,18 @@
       "toast": {
         "passwordUpdated": "✅ تم تحديث كلمة المرور بنجاح.",
         "failedToUpdate": "فشل تحديث كلمة المرور"
+      },
+      "placeholders": {
+        "currentPassword": "أدخل كلمة المرور الحالية",
+        "newPassword": "أدخل كلمة المرور الجديدة",
+        "confirmPassword": "أعد إدخال كلمة المرور الجديدة"
+      },
+      "errors": {
+        "currentPasswordRequired": "كلمة المرور الحالية مطلوبة",
+        "passwordMin": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+        "passwordMax": "يجب ألا تتجاوز كلمة المرور 20 حرفًا",
+        "passwordWeak": "كلمة المرور يمكن أن تحتوي فقط على أحرف، أرقام، والرموز المسموح بها: _ @ $ ! % * ? &.",
+        "passwordsMismatch": "كلمتا المرور غير متطابقتين"
       }
     },
     "notifications": {

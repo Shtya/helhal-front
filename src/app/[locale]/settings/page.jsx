@@ -46,7 +46,7 @@ export default function Page() {
 
 const formSchema = z.object({
   username: usernameSchema,
-  email: z.string().email('Invalid email address'),
+  // email: z..email('Invalid email address'),
 });
 
 
@@ -68,7 +68,7 @@ function AccountSettings() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: '',
-      email: '',
+      // email: '',
     },
   });
 
@@ -78,34 +78,33 @@ function AccountSettings() {
   const [reason, setReason] = useState(null);
   const [customReason, setCustomReason] = useState('');
 
-  const [pendingEmail, setPendingEmail] = useState(me?.pendingEmail);
-
+  // const [pendingEmail, setPendingEmail] = useState(me?.pendingEmail);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
 
-  const [resendCooldown, setResendCooldown] = useState(0);
+  // const [resendCooldown, setResendCooldown] = useState(0);
 
-  function startResendCooldown() {
-    setResendCooldown(30);
-    const interval = setInterval(() => {
-      setResendCooldown(prev => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  }
+  // function startResendCooldown() {
+  //   setResendCooldown(30);
+  //   const interval = setInterval(() => {
+  //     setResendCooldown(prev => {
+  //       if (prev <= 1) {
+  //         clearInterval(interval);
+  //         return 0;
+  //       }
+  //       return prev - 1;
+  //     });
+  //   }, 1000);
+  // }
 
-  useEffect(() => {
-    setPendingEmail(me?.pendingEmail);
-  }, [me?.pendingEmail]);
+  // useEffect(() => {
+  //   setPendingEmail(me?.pendingEmail);
+  // }, [me?.pendingEmail]);
 
 
   useEffect(() => {
     setValue('username', me?.username || '');
-    setValue('email', me?.email || '');
+    // setValue('email', me?.email || '');
   }, [me]);
 
   const saveProfile = handleSubmit(async ({ username, email }) => {
@@ -127,15 +126,15 @@ function AccountSettings() {
         );
       }
 
-      if (email && email !== me?.email && resendCooldown <= 0) {
-        updates.push(
-          api.post('/auth/request-email-change', { newEmail: email }).then(() => {
-            startResendCooldown(); // trigger cooldown
-            setPendingEmail(email);
-            setCurrentUser(prev => ({ ...prev, pendingEmail: email }));
-          })
-        );
-      }
+      // if (email && email !== me?.email && resendCooldown <= 0) {
+      //   updates.push(
+      //     api.post('/auth/request-email-change', { newEmail: email }).then(() => {
+      //       startResendCooldown(); // trigger cooldown
+      //       setPendingEmail(email);
+      //       setCurrentUser(prev => ({ ...prev, pendingEmail: email }));
+      //     })
+      //   );
+      // }
 
 
       if (updates.length === 0) return;
@@ -152,32 +151,32 @@ function AccountSettings() {
   const [resendLoading, setResendLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
 
-  async function resendEmail() {
-    try {
-      setResendLoading(true);
-      await api.post('/auth/resend-email-confirmation');
-      toast.success(t('toast.emailResent'));
-      startResendCooldown(); // trigger cooldown
-    } catch (err) {
-      toast.error(err?.response?.data?.message || t('toast.failedToResend'));
-    } finally {
-      setResendLoading(false);
-    }
-  }
+  // async function resendEmail() {
+  //   try {
+  //     setResendLoading(true);
+  //     await api.post('/auth/resend-email-confirmation');
+  //     toast.success(t('toast.emailResent'));
+  //     startResendCooldown(); // trigger cooldown
+  //   } catch (err) {
+  //     toast.error(err?.response?.data?.message || t('toast.failedToResend'));
+  //   } finally {
+  //     setResendLoading(false);
+  //   }
+  // }
 
-  async function cancelEmailChange() {
-    try {
-      setCancelLoading(true);
-      await api.post('/auth/cancel-email-change');
-      setPendingEmail(null);
-      setCurrentUser(prev => ({ ...prev, pendingEmail: null }));
-      toast.success(t('toast.changeCanceled'));
-    } catch (err) {
-      toast.error(t('toast.failedToCancel'));
-    } finally {
-      setCancelLoading(false);
-    }
-  }
+  // async function cancelEmailChange() {
+  //   try {
+  //     setCancelLoading(true);
+  //     await api.post('/auth/cancel-email-change');
+  //     setPendingEmail(null);
+  //     setCurrentUser(prev => ({ ...prev, pendingEmail: null }));
+  //     toast.success(t('toast.changeCanceled'));
+  //   } catch (err) {
+  //     toast.error(t('toast.failedToCancel'));
+  //   } finally {
+  //     setCancelLoading(false);
+  //   }
+  // }
 
   async function deactivate() {
     const finalReason = reason === 'other' ? customReason : reason;
@@ -195,7 +194,7 @@ function AccountSettings() {
 
   return (
     <div>
-      {pendingEmail && (
+      {/* {pendingEmail && (
         <div className=' max-w-[450px] mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>
           <p>
             {t.rich('pendingEmail', {
@@ -228,7 +227,7 @@ function AccountSettings() {
             )}
           </div>
         </div>
-      )}
+      )} */}
 
       <h2 className='text-xl font-semibold text-gray-800'>{t('updateProfile')}</h2>
 
@@ -241,7 +240,7 @@ function AccountSettings() {
       />
 
 
-      <Input
+      {/* <Input
         label={t('email')}
         placeholder='you@example.com'
         type='email'
@@ -249,7 +248,7 @@ function AccountSettings() {
         error={errors.email?.message}
         {...register('email')}
       />
-
+ */}
 
 
       <Button name={saving ? '' : t('saveChanges')} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md ' onClick={saveProfile} />
@@ -307,15 +306,24 @@ function AccountSettings() {
   );
 }
 
+const passwordSchema = z
+  .string()
+  .min(8, 'passwordMin')        // localized key
+  .max(20, 'passwordMax')      // optional upper bound
+  .regex(/^[A-Za-z0-9_@$!%*?&]+$/, 'passwordWeak') // example: must contain letters & numbers
+  .transform(val => val.trim());
 
 const securitySchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
-  confirmPassword: z.string().min(8, 'Please confirm your new password'),
+  currentPassword: z.string().min(1, 'currentPasswordRequired'),
+  newPassword: passwordSchema,
+  confirmPassword: passwordSchema,
 }).refine(data => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
+  message: 'passwordsMismatch',
   path: ['confirmPassword'],
 });
+
+
+
 
 
 function SecuritySettings() {
@@ -434,31 +442,34 @@ function SecuritySettings() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input
           label={t('currentPassword')}
-          type='password'
-          className='mt-6 max-w-[450px] w-full'
+          type="password"
+          placeholder={t('placeholders.currentPassword')}
+          className="mt-6 max-w-[450px] w-full"
           {...register('currentPassword')}
-          error={errors.currentPassword?.message}
+          error={errors.currentPassword?.message ? t(`errors.${errors.currentPassword?.message}`) : null}
         />
         <Input
           label={t('newPassword')}
-          type='password'
-          className='mt-3 max-w-[450px] w-full'
+          type="password"
+          placeholder={t('placeholders.newPassword')}
+          className="mt-3 max-w-[450px] w-full"
           {...register('newPassword')}
-          error={errors.newPassword?.message}
+          error={errors.newPassword?.message ? t(`errors.${errors.newPassword?.message}`) : null}
         />
         <Input
           label={t('confirmPassword')}
-          type='password'
-          className='mt-3 max-w-[450px] w-full'
+          type="password"
+          placeholder={t('placeholders.confirmPassword')}
+          className="mt-3 max-w-[450px] w-full"
           {...register('confirmPassword')}
-          error={errors.confirmPassword?.message}
+          error={errors.confirmPassword?.message ? t(`errors.${errors.confirmPassword?.message}`) : null}
         />
         <Button
           name={t('saveChanges')}
           loading={isSubmitting}
-          className='mt-6 max-w-[450px] w-full !rounded-md'
-          color='green'
-          type='submit'
+          className="mt-6 max-w-[450px] w-full !rounded-md"
+          color="green"
+          type="submit"
         />
       </form>
 

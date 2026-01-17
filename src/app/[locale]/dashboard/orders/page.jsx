@@ -251,7 +251,7 @@ export default function AdminOrdersDashboard() {
           <Eye size={16} />
         </button>
 
-        {canChangeStatus && <Select
+        {/* {canChangeStatus && <Select
           value={currentStatus}
           onChange={opt => {
             if (opt.id === currentStatus) return;
@@ -260,7 +260,7 @@ export default function AdminOrdersDashboard() {
           options={options}
           className="!w-40 !text-xs"
           variant="minimal"
-        />}
+        />} */}
       </div>
     );
   };

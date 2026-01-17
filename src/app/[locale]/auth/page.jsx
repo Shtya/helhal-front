@@ -533,7 +533,7 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
   );
 };
 
-const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
+const AuthOptions = ({ activeTab, onEmailClick, onPhoneClick, referralCode }) => {
   const t = useTranslations('Auth');
   return (
     <motion.div className='w-full h-full flex flex-col'>
@@ -541,7 +541,7 @@ const AuthOptions = ({ onEmailClick, onPhoneClick, referralCode }) => {
         <ContinueWithEmailButton onClick={onEmailClick} />
         <ContinueWithGoogleButton referralCode={referralCode} />
         {/* <ContinueWithAppleButton referralCode={referralCode} /> */}
-        <ContinueWithPhoneButton onClick={onPhoneClick} />
+        {activeTab === 'login' && <ContinueWithPhoneButton onClick={onPhoneClick} />}
       </div>
       <p className='text-sm text-gray-500 border-t border-slate-200 mt-6 pt-6'>{t('terms')}</p>
     </motion.div>
@@ -756,7 +756,7 @@ export default function AuthPage() {
       case 'otp-phone':
         return <OTPForm value={OTPValue} onVerified={handlePhoneLoggedIn} purpose='verify-phone' />
       default:
-        return <AuthOptions onEmailClick={handleEmailClick} onPhoneClick={handlePhoneClick} referralCode={referralCode} />;
+        return <AuthOptions activeTab={activeTab} onEmailClick={handleEmailClick} onPhoneClick={handlePhoneClick} referralCode={referralCode} />;
     }
   };
   const rawFeatures = t.raw('hero.features');

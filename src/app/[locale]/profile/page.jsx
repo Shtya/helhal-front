@@ -19,6 +19,7 @@ import { formatResponseTime, validateUsername, validatPhone } from '@/utils/prof
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import InfoCard from '@/components/pages/profile/InfoCard';
+import AccountVerificationCard from '@/components/pages/profile/AccountVerificationCard';
 import { resolveUrl } from '@/utils/helper';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 
@@ -31,8 +32,8 @@ const letterFromName = s => (s && String(s).trim() ? String(s).trim()[0].toUpper
 
 /* -------------------------------- Profile Card ------------------------------ */
 function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCopyReferral, onError }) {
-  const t = useTranslations('Profile.page');
   const tAuth = useTranslations('Auth');
+  const t = useTranslations('Profile.page');
   const [usernameError, setUsernameError] = useState('');
 
   const handleChangeUsername = (value) => {
@@ -43,20 +44,20 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
     onError?.(!!msg);
   };
 
-  const [phoneError, setPhoneError] = useState('');
+  // const [phoneError, setPhoneError] = useState('');
 
-  const handleChangePhone = (val) => {
-    const trimmed = val.phone.trim();
-    const isInvalid = validatPhone(trimmed);
+  // const handleChangePhone = (val) => {
+  //   const trimmed = val.phone.trim();
+  //   const isInvalid = validatPhone(trimmed);
 
-    setPhoneError(isInvalid ? 'inValidOptionalPhone' : '');
-    onError?.(isInvalid);
-    setState(s => ({ ...s, ...val }));
-  };
+  //   setPhoneError(isInvalid ? 'inValidOptionalPhone' : '');
+  //   onError?.(isInvalid);
+  //   setState(s => ({ ...s, ...val }));
+  // };
 
 
   return (
-    <Card className='lg:sticky lg:top-30 '>
+    <Card className=''>
       <div className='rounded-t-2xl px-6 py-7' style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0) 100%)' }}>
         <div className='flex items-center justify-between'>
           <div className='flex flex-wrap items-center gap-2'>
@@ -127,11 +128,11 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
               />
               {usernameError && <FormErrorMessage message={tAuth(`errors.${usernameError}`)} />}
               {/* <Input label='Email' value={state.email} onChange={e => setState(s => ({ ...s, email: e.target.value }))} /> */}
-              <PhoneInputWithCountry
+              {/* <PhoneInputWithCountry
                 value={{ countryCode: state.countryCode, phone: state.phone }}
                 onChange={handleChangePhone}
               />
-              {phoneError && <FormErrorMessage message={tAuth(`errors.${phoneError}`)} />}
+              {phoneError && <FormErrorMessage message={tAuth(`errors.${phoneError}`)} />} */}
 
 
             </div>
@@ -1089,7 +1090,7 @@ export default function Overview() {
   return (
     <div className='container !py-8'>
       <div className='gap-6 flex flex-col lg:flex-row'>
-        <div className='space-y-6 w-full lg:w-[350px] xl:w-[400px]'>
+        <div className='lg:sticky lg:top-30  space-y-6 w-full lg:w-[350px] xl:w-[400px]'>
           <ProfileCard
             loading={loading}
             editing={editing}
@@ -1118,7 +1119,10 @@ export default function Overview() {
             }}
           />
 
-
+          <AccountVerificationCard
+            loading={loading}
+            user={user}
+          />
 
           {/* {!loading && (
             <div className='flex items-center justify-end gap-3'>
