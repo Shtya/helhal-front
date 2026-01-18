@@ -250,15 +250,16 @@
     }
   },
   "common": {
-    "loading": "Loading...",
-    "back": "Back",
-    "invalidEmail": "Please enter a valid email address.",
-    "errorFetchingData": "Failed to fetch data. Please try again.",
-    "errorSendingInvitation": "Failed to send invitation. Please try again.",
-    "loadingReferralData": "Loading referral data...",
-    "notAuthenticated": "You must be logged in to view this content.",
-    "copyFailed": "Failed to copy. Please try manually.",
-    "unknownError": "An unknown error occurred."
+    "loading": "جاري التحميل...",
+    "search": "ابحث...",
+    "back": "رجوع",
+    "invalidEmail": "يرجى إدخال عنوان بريد إلكتروني صحيح.",
+    "errorFetchingData": "فشل جلب البيانات. يرجى المحاولة مرة أخرى.",
+    "errorSendingInvitation": "فشل إرسال الدعوة. يرجى المحاولة مرة أخرى.",
+    "loadingReferralData": "جاري تحميل بيانات الإحالة...",
+    "notAuthenticated": "يجب عليك تسجيل الدخول لعرض هذا المحتوى.",
+    "copyFailed": "فشلت عملية النسخ. يرجى المحاولة يدوياً.",
+    "unknownError": "حدث خطأ غير معروف."
   },
   "GlobalSearch": {
     "scopes": {
@@ -696,6 +697,7 @@
     }
   },
   "Explore": {
+    "from": "من ",
     "topDescription": "ابحث عن محترفين في التصوير، الفيديو، المونتاج، الموشن، وكتابة المحتوى… وابدأ مشروعك بثقة.",
     "cart": {
       "addedToCart": "تمت الإضافة إلى السلة",
@@ -1003,6 +1005,11 @@
   },
   "Profile": {
     "page": {
+      "accountTypes": {
+        "business": "عمل تجاري (بيزنس)",
+        "individual": "فردي"
+      },
+      "search": "ابحث...",
       "level": "المستوى {level}",
       "topRated": "مميز",
       "username": "اسم المستخدم",

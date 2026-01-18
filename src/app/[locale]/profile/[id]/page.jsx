@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video } from 'lucide-react';
+import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video, CheckCircle2, AlertCircle } from 'lucide-react';
 import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
 import { useAuth } from '@/context/AuthContext';
@@ -43,7 +43,7 @@ export default function ProfilePageClient() {
     };
   }, [id, t]);
 
-  const name = buyer?.username || buyer?.email || t('unknown');
+  const name = buyer?.username || t('unknown');
   const initials = useMemo(() => getInitials(name), [name]);
   const role = buyer?.role || 'buyer';
 
@@ -57,6 +57,8 @@ export default function ProfilePageClient() {
   }
   if (!buyer) return null;
 
+  const emailVerified = !!buyer?.email || false;
+  const phoneVerified = buyer?.isPhoneVerified || false;
 
   return (
     <main className='container !my-10'>
@@ -77,9 +79,9 @@ export default function ProfilePageClient() {
               </div>
 
               <div className='mt-2 text-sm/6 flex flex-wrap items-center gap-x-4 gap-y-1 text-white/90'>
-                <span className='inline-flex items-center gap-1.5'>
+                {user?.role !== 'seller' && <span className='inline-flex items-center gap-1.5'>
                   <Mail className='h-4 w-4' /> {buyer?.email || '—'}
-                </span>
+                </span>}
                 <span className='inline-flex items-center gap-1.5'>
                   <Calendar className='h-4 w-4' /> {t('memberSince')} {prettyDate(buyer?.memberSince || buyer?.created_at)}
                 </span>
@@ -129,8 +131,8 @@ export default function ProfilePageClient() {
             </Card>
 
             <Card title={t('contact')}>
-              <InfoRow icon={Mail} label={t('email')} value={buyer?.email || '—'} copyable />
-              <InfoRow icon={Smartphone} label={t('phone')} value={buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—'} />
+              <VerificationStatusRow icon={Mail} label={t('email')} value={user?.role !== 'seller' ? buyer?.email || '—' : ''} copyable={true} verified={emailVerified} />
+              <VerificationStatusRow icon={Smartphone} label={t('phone')} value={user?.role !== 'seller' ? buyer?.phone ? [buyer?.countryCode?.dial_code, buyer?.phone].join(" ") : '—' : ''} verified={phoneVerified} />
               <InfoRow icon={Globe} label={t('country')} value={buyer?.country?.name || '—'} />
             </Card>
 
@@ -298,6 +300,58 @@ function InfoRow({ icon: Icon, label, value, copyable }) {
           <button type='button' onClick={() => navigator.clipboard.writeText(String(val))} className='inline-flex items-center justify-center rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 active:scale-95'>
             {t('copy')}
           </button>
+        )}
+      </div>
+    </div>
+  );
+}
+function VerificationStatusRow({ icon: Icon, value, copyable, label, verified }) {
+  const t = useTranslations('Profile.accountVerification');
+  // Use translations for common copy feedback if needed
+  const tc = useTranslations('Profile.public');
+
+  return (
+    <div className='flex items-center justify-between gap-3 py-2'>
+      {/* Label Section */}
+      <div className='flex items-center gap-2 min-w-0'>
+        {Icon && <Icon className='h-4 w-4 text-slate-500' />}
+        <span className='text-sm text-slate-500'>{label}</span>
+      </div>
+
+      {/* Value & Status Section */}
+      <div className='flex items-center gap-2 min-w-0'>
+        {/* 1. Show Value and Copy Button if value exists */}
+        {value && (
+          <div className="flex items-center gap-2">
+            <span
+              className='text-sm font-medium text-slate-900 truncate max-w-[150px]'
+              title={String(value)}
+            >
+              {String(value).trim()}
+            </span>
+            {copyable && (
+              <button
+                type='button'
+                onClick={() => navigator.clipboard.writeText(String(value).trim())}
+                className='inline-flex items-center justify-center rounded-md border border-slate-200 px-2 py-0.5 text-[10px] text-slate-700 hover:bg-slate-50 active:scale-95'
+              >
+                {tc('copy')}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* 2. Verification Badge */}
+        {verified ? (
+          <div className="flex items-center gap-1.5 text-emerald-600">
+            <CheckCircle2 className="h-4 w-4" />
+            <span className='text-sm font-medium'>{t('verified')}</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 text-red-600">
+            <AlertCircle className="h-4 w-4" />
+            <span className='text-sm font-medium'>{t('notVerified')}</span>
+          </div>
         )}
       </div>
     </div>

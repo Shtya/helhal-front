@@ -251,6 +251,7 @@
   },
   "common": {
     "loading": "Loading...",
+    "search": "Search...",
     "back": "Back",
     "invalidEmail": "Please enter a valid email address.",
     "errorFetchingData": "Failed to fetch data. Please try again.",
@@ -696,6 +697,7 @@
     }
   },
   "Explore": {
+    "from": "From",
     "topDescription": "Find professionals in photography, video, editing, motion, and content writing… and start your project with confidence.",
     "cart": {
       "addedToCart": "Added to cart",
@@ -1003,6 +1005,11 @@
   },
   "Profile": {
     "page": {
+      "accountTypes": {
+        "business": "Business",
+        "individual": "Individual"
+      },
+      "search": "Search...",
       "level": "Level {level}",
       "topRated": "Top Rated",
       "username": "Username",

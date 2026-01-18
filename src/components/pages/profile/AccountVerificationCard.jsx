@@ -51,9 +51,9 @@ function AccountVerificationCard({ loading, user }) {
 
                 {loading ? (
                     <div className='space-y-4'>
-                        <div className='h-16 bg-gray-200 animate-pulse rounded-lg' />
-                        <div className='h-16 bg-gray-200 animate-pulse rounded-lg' />
-                        <div className='h-16 bg-gray-200 animate-pulse rounded-lg' />
+                        <div className='h-16 bg-slate-200/70 animate-pulse rounded-lg' />
+                        <div className='h-16 bg-slate-200/70 animate-pulse rounded-lg' />
+                        <div className='h-16 bg-slate-200/70 animate-pulse rounded-lg' />
                     </div>
                 ) : (
                     <div className='space-y-0'>

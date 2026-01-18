@@ -20,7 +20,107 @@ import { useAuth } from '@/context/AuthContext';
 import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import Logo from '@/components/common/Logo';
 import Image from 'next/image';
+import { CheckCircle2 } from 'lucide-react';
 
+
+/* ---------- Login Success Animation Component ----------- */
+const LoginSuccessAnimation = ({ message, onComplete }) => {
+  const t = useTranslations('Auth');
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     onComplete?.();
+  //   }, 20000); // Show for 2 seconds
+
+  //   return () => clearTimeout(timer);
+  // }, [onComplete]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 h-screen w-screen z-[9999] flex items-center justify-center bg-white"
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="flex flex-col items-center justify-center"
+      >
+        {/* Animated Check Circle */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{
+            type: 'spring',
+            stiffness: 500,
+            damping: 15,
+            delay: 0.1
+          }}
+          className="mb-6"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: [0, 1.2, 1] }}
+            transition={{
+              duration: 0.6,
+              times: [0, 0.6, 1],
+              delay: 0.2
+            }}
+            className="relative"
+          >
+            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 flex items-center justify-center shadow-2xl">
+              <CheckCircle2 className="w-14 h-14 text-white" strokeWidth={2.5} />
+            </div>
+            {/* Ripple effect */}
+            <motion.div
+              className="absolute inset-0 rounded-full bg-emerald-400"
+              initial={{ scale: 1, opacity: 0.6 }}
+              animate={{ scale: 2, opacity: 0 }}
+              transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.5 }}
+            />
+          </motion.div>
+        </motion.div>
+
+        {/* Success Message */}
+        <motion.h2
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="text-3xl font-bold text-gray-800 mb-2"
+        >
+          {message || t('success.signedIn')}
+        </motion.h2>
+
+        {/* Loading dots */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="flex gap-2 mt-4"
+        >
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={i}
+              className="w-2 h-2 rounded-full bg-emerald-500"
+              animate={{
+                y: [0, -8, 0],
+                opacity: [0.5, 1, 0.5],
+              }}
+              transition={{
+                duration: 0.8,
+                repeat: Infinity,
+                delay: i * 0.2,
+              }}
+            />
+          ))}
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 /* ---------- schemas ----------- */
 const loginSchema = z.object({
@@ -227,7 +327,7 @@ const LoginForm = ({ onLoggedIn }) => {
   const t = useTranslations('Auth');
   const { login } = useAuth();
 
-  const { setLoading, setError, loading } = useContext(AuthFormContext);
+  const { setLoading, setError, loading, setShowSuccessAnimation, setSuccessMessage } = useContext(AuthFormContext);
   const {
     register,
     handleSubmit,
@@ -242,7 +342,6 @@ const LoginForm = ({ onLoggedIn }) => {
     setError(null);
     try {
       const { accessToken, refreshToken, user: fatchedUser } = await login(data);
-      toast.success(t('success.signedIn'));
 
       //set login data at cookie
       await fetch('/api/auth/login', {
@@ -251,13 +350,18 @@ const LoginForm = ({ onLoggedIn }) => {
         body: JSON.stringify({ accessToken, refreshToken, user: fatchedUser }),
       });
 
+      // Show success animation instead of toast
+      setSuccessMessage(t('success.signedIn'));
+      setShowSuccessAnimation(true);
+
+      // Wait for animation to complete before calling onLoggedIn
+      setLoading(false);
       onLoggedIn?.(fatchedUser);
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.loginFailed');
       const errorMsg = msg === 'Refresh token not provided in the request body' ? t('errors.incorrectEmailOrPassword') : msg;
       setError(errorMsg);
       toast.error(errorMsg);
-    } finally {
       setLoading(false);
     }
   };
@@ -467,7 +571,8 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
       } else if (purpose === 'verify-phone') {
         const res = await api.post('/auth/verify-phone', { ...value, code: otp });
         const data = res.data;
-        toast.success(t('success.phoneVerified'));
+
+        // Show success animation instead of toast - handled at parent level
         onVerified?.(data);
       } else {
         onVerified?.(otp); // for reset or other custom flows
@@ -572,6 +677,8 @@ export default function AuthPage() {
   const [otpForReset, setOtpForReset] = useState('');
 
   const [needsUserTypeSelection, setNeedsUserTypeSelection] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (loginError === 'oauth_failed') {
@@ -623,13 +730,18 @@ export default function AuthPage() {
         if (!fatchedUser?.type) {
           setNeedsUserTypeSelection(true);
         } else {
-          toast.success(t('success.loggedInSuccessfully'));
+          // Show success animation instead of toast
+          setSuccessMessage(t('success.loggedInSuccessfully'));
+          setShowSuccessAnimation(true);
+
+
           if (fatchedUser.role === 'seller') {
             router.push('/jobs');
           }
           else {
             router.push(redirectUrl);
           }
+
         }
       } catch (e) {
         console.error('OAuth finalize failed', e);
@@ -723,12 +835,19 @@ export default function AuthPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accessToken, refreshToken, user: user }),
     });
+
+    // Show success animation instead of toast
+    setSuccessMessage(t('success.phoneVerified'));
+    setShowSuccessAnimation(true);
+
+
     if (user.role === 'seller') {
       router.push('/jobs');
     }
     else {
       router.push(redirectUrl);
     }
+
   };
 
 
@@ -762,7 +881,15 @@ export default function AuthPage() {
   const rawFeatures = t.raw('hero.features');
   const features = Array.isArray(rawFeatures) ? rawFeatures : [];
   return (
-    <AuthFormContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess }}>
+    <AuthFormContext.Provider value={{ loading, setLoading, error, setError, success, setSuccess, setShowSuccessAnimation, setSuccessMessage }}>
+      <AnimatePresence>
+        {showSuccessAnimation && (
+          <LoginSuccessAnimation
+            message={successMessage}
+            onComplete={() => setShowSuccessAnimation(false)}
+          />
+        )}
+      </AnimatePresence>
       <div className='min-h-screen !px-0 flex justify-center  bg-gray-100 '>
         <div className='relative max-w-screen-2xl m-0 sm:m-10   sm:rounded-lg flex justify-center flex-1 overflow-hidden bg-white'>
 

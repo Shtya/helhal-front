@@ -1472,7 +1472,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
 
               <div className='mb-4 flex flex-wrap items-center gap-2 text-xs text-slate-500'>
                 <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>{valueMeta.count} {t('sidebar.features')}</span>
-                <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>~ {valueMeta.perFeature} / {t('sidebar.feature')}</span>
+                {/* <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>~ {valueMeta.perFeature} / {t('sidebar.feature')}</span> */}
                 {selectedPackage.test && <span className='flex gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5'>
                   <Beaker className="h-3.5 w-3.5" /> {t('sidebar.test')}</span>
                 }

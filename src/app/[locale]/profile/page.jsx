@@ -876,12 +876,17 @@ export default function Overview() {
 
   const accountTypeOptions = useMemo(
     () => [
-      { id: 'Business', name: 'Business' },
-      { id: 'Individual', name: 'Individual' },
+      {
+        id: 'Business',
+        name: t('accountTypes.business').trim()
+      },
+      {
+        id: 'Individual',
+        name: t('accountTypes.individual').trim()
+      },
     ],
-    [],
+    [t], // Re-run when the translation function changes (language switch)
   );
-
   /* ------------------------------- Load data -------------------------------- */
   useEffect(() => {
     let ignore = false;

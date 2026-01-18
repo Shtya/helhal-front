@@ -1,10 +1,12 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
-const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, showAction = true, actionIcon, onSearch, value, onChange }) => {
+const InputSearch = ({ className, placeholder, iconLeft, showAction = true, actionIcon, onSearch, value, onChange }) => {
   const [searchTerm, setSearchTerm] = useState(value || '');
-
+  const t = useTranslations('common');
+  const defaultPlace = placeholder || t('search')
   // Sync internal state with external value changes
   useEffect(() => {
     if (value !== searchTerm)
@@ -36,7 +38,7 @@ const InputSearch = ({ className, placeholder = 'Search here...', iconLeft, show
         )}
 
         {/* Input field */}
-        <input type='text' placeholder={placeholder} value={searchTerm} onChange={handleChange} onKeyDown={e => {
+        <input type='text' placeholder={defaultPlace} value={searchTerm} onChange={handleChange} onKeyDown={e => {
           if (e.key === 'Enter') handleSearch(e);
         }} className={`w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400 ${actionIcon && 'w-[calc(100%-50px)]'}`} />
 

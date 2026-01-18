@@ -20,9 +20,8 @@ const PUBLIC_ROUTES = [
   { path: '/explore', strict: true, notFor: 'seller', relpace: "/jobs" },
   { path: '/services/:categoryId/:serviceId', regex: true, strict: true },
   { path: '/services', strict: false, notFor: 'seller', relpace: "/jobs" },
-  { path: '/become-seller' },
   { path: '/invite' },
-  { path: '/jobs', strict: true, notFor: 'buyer', relpace: "/services" },
+  // { path: '/jobs', strict: true, notFor: 'buyer', relpace: "/services" },
   { path: '/terms', strict: true },
   { path: '/privacy-policy', strict: true },
   { path: '/profile/:id', regex: true, strict: true },
@@ -35,6 +34,7 @@ const PUBLIC_ROUTES = [
 const BUYER_ROUTES = [
   '/share-job-description',
   '/my-jobs',
+  '/become-seller',
 ];
 
 // Only sellers
@@ -43,6 +43,10 @@ const SELLER_ROUTES = [
   '/my-gigs',
   '/jobs/proposals',
 ];
+
+const SHARED_ROUTES = [
+  { route: '/jobs', for: ['seller', 'admin'] }
+]
 
 
 const DASHBOARD_ROUTE_PERMISSIONS = {
@@ -119,6 +123,14 @@ export async function middleware(request) {
     return NextResponse.redirect(url);
   }
 
+  const sharedRoute = SHARED_ROUTES.find((r) => pathWithoutLocale === r.route);
+
+  if (sharedRoute) {
+    // If the user's role is NOT in the allowed list for this shared route
+    if (!sharedRoute.for.includes(role)) {
+      return NextResponse.redirect(new URL(`/${locale}/auth`, request.url));
+    }
+  }
 
   // -----------------------------
   // 3) Role-specific protection
@@ -134,7 +146,6 @@ export async function middleware(request) {
       return NextResponse.redirect(new URL(`/${locale}/auth`, request.url));
     }
   }
-
   // -----------------------------
   // 3) Dashboard-specific protection
   // -----------------------------

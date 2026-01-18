@@ -91,13 +91,13 @@ export default function Header() {
 
       //guest
       const guest = [
-        {
-          label: tHeader('navigation.jobs'),
-          icon: <Briefcase className='h-5 w-5' />,
-          children: [
-            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-          ],
-        },
+        // {
+        //   label: tHeader('navigation.jobs'),
+        //   icon: <Briefcase className='h-5 w-5' />,
+        //   children: [
+        //     { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+        //   ],
+        // },
       ]
       // Buyer-only
       const buyer = [
@@ -153,7 +153,7 @@ export default function Header() {
         ]
       }
       // Conditional + common
-      if (isGuest) return [...common, ...guest, { href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> }]
+      if (isGuest) return [...common, ...guest]
 
       if (u?.role === 'buyer') {
         const links = [...common, ...buyer];

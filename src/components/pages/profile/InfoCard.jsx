@@ -4,7 +4,7 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import Textarea from "@/components/atoms/Textarea";
 import { Modal } from '@/components/common/Modal';
 import Select from "@/components/atoms/Select";
@@ -265,6 +265,17 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
     const t = useTranslations('Profile.infoCard');
     const [internalDesc, setInternalDesc] = useState(about?.description || '');
     const { countries: countriesOptions, countryLoading, } = useValues();
+    const locale = useLocale()
+    const countrySelectOptions = useMemo(() => {
+        if (!countriesOptions) return [];
+
+        return countriesOptions.map((country) => ({
+            id: country.id,
+            // Use name_ar if locale is 'ar', otherwise use name
+            name: locale === 'ar' ? country.name_ar : country.name,
+        }));
+    }, [countriesOptions, locale]);
+
     useEffect(() => {
         setInternalDesc(about?.description || '');
     }, [about?.description]);
@@ -462,7 +473,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider />
             {/* Top selects row */}
             <div className=' mt-4 grid grid-cols-1 gap-3 md:grid-cols-2'>
-                <Select key={`${countryLoading} ${countriesOptions?.length}`} label={t('country')} options={countriesOptions} value={about?.countryId} onChange={opt => onCountryChange?.(opt?.id)} placeholder={t('selectCountry')} isLoading={countryLoading} showSearch={true} />
+                <Select key={`${countryLoading} ${countrySelectOptions?.length}`} label={t('country')} options={countrySelectOptions} value={about?.countryId} onChange={opt => onCountryChange?.(opt?.id)} placeholder={t('selectCountry')} isLoading={countryLoading} showSearch={true} />
                 <Select label={t('accountType')} options={accountTypeOptions} value={about?.type} onChange={opt => onTypeChange?.(opt?.id)} placeholder={t('selectType')} />
             </div>
         </Card>
