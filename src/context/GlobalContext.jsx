@@ -14,6 +14,9 @@ export const GlobalProvider = ({ children }) => {
   const [loadingCategory, setLoadingCategory] = useState(true);
   const [loadingCart, setLoadingCart] = useState(true);
 
+  const [topCategories, SetTopCategories] = useState([]);
+  const [loadingTopCategories, setLoadingTopCategories] = useState(true);;
+
   const [settings, setSettings] = useState(); // ← added
   const [loadingSettings, setLoadingSettings] = useState(true); // ← added
 
@@ -63,6 +66,18 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  const fetchTopCategories = async () => {
+    try {
+      setLoadingTopCategories(true);
+      const res = await api.get('categories/top');
+      SetTopCategories(res?.data || []);
+    } catch {
+      SetTopCategories([]);
+    } finally {
+      setLoadingTopCategories(false);
+    }
+  };
+
   const fetchCart = async () => {
     const access = localStorage.getItem('accessToken');
     if (!access) { setLoadingCart(false); return; }
@@ -87,6 +102,7 @@ export const GlobalProvider = ({ children }) => {
 
   useEffect(() => {
     fetchCategories();
+    fetchTopCategories();
     fetchSettings();
     fetchCountries();
   }, []);
@@ -101,6 +117,8 @@ export const GlobalProvider = ({ children }) => {
     loadingSettings,
     loadingCategory,
     loadingCart,
+    topCategories,
+    loadingTopCategories
   }}>{children}</GlobalContext.Provider>;
 };
 

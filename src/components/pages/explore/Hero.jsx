@@ -96,66 +96,59 @@ export default function Hero() {
 	return (
 		<section
 			className={[
-				'relative my-10 overflow-hidden rounded-2xl border',
+				'relative my-6 overflow-hidden rounded-2xl border', // Reduced vertical margin (my-10 to my-6)
 				'border-slate-200/70 bg-white',
 				'shadow-[0_1px_0_rgba(15,23,42,0.04)]',
-				' ',
 			].join(' ')}
 			dir={isArabic ? 'rtl' : 'ltr'}
 		>
-			{/* Decorative background */}
 			<div className="pointer-events-none absolute inset-0">
-				{/* Soft glow blobs */}
-				<div className="absolute -top-28 -left-24 h-80 w-80 rounded-full bg-emerald-400/20 blur-3xl  " />
-				<div className="absolute -bottom-28 -right-24 h-96 w-96 rounded-full bg-emerald-400/15 blur-3xl  " />
-
-				{/* Subtle grid pattern */}
+				<div className="absolute -top-28 -left-24 h-60 w-60 rounded-full bg-emerald-400/15 blur-3xl" />
+				<div className="absolute -bottom-28 -right-24 h-60 w-60 rounded-full bg-emerald-400/10 blur-3xl" />
 				<div
-					className="absolute inset-0 opacity-[0.10]  "
+					className="absolute inset-0 opacity-[0.07]" // Reduced opacity of grid
 					style={{
 						backgroundImage:
 							'linear-gradient(to right, rgba(15,23,42,0.14) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.14) 1px, transparent 1px)',
-						backgroundSize: '28px 28px',
+						backgroundSize: '24px 24px', // Smaller grid size
 						maskImage: 'radial-gradient(circle at 35% 20%, black 0%, transparent 60%)',
 						WebkitMaskImage: 'radial-gradient(circle at 35% 20%, black 0%, transparent 60%)',
 					}}
 				/>
-
-				{/* Gradient border sheen */}
-				<div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-emerald-500/10  " />
 			</div>
 
-			<div className="relative z-10 px-6 py-10 md:px-10 md:py-14">
+			{/* Reduced Padding: from py-10/14 to py-6/8 */}
+			<div className="relative z-10 px-6 py-6 md:px-8 md:py-8">
 				<motion.div variants={container} initial="hidden" animate="show">
 					{/* Top label */}
-					<motion.div variants={item} className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-3 py-1 text-xs text-slate-600 backdrop-blur  /50 ">
-						<Sparkles className="h-4 w-4 text-emerald-600  " />
+					<motion.div variants={item} className="mb-2 inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-2.5 py-0.5 text-[11px] text-slate-600 backdrop-blur/50">
+						<Sparkles className="h-3.5 w-3.5 text-emerald-600" />
 						<span>{t('hero.quickActions')}</span>
 					</motion.div>
 
-					{/* Headline */}
+					{/* Smaller Headline: from text-3xl/5xl to text-2xl/3xl */}
 					<motion.h1
 						variants={item}
-						className="text-balance text-3xl font-extrabold tracking-tight text-slate-900 md:text-5xl "
+						className="text-balance text-2xl font-bold tracking-tight text-slate-900 md:text-3xl"
 					>
 						{t('hero.welcomeBack')}{' '}
-						<span className="bg-gradient-to-r from-emerald-800 via-emerald-600 to-emerald-500 bg-clip-text text-transparent  ">
-							{user?.username}
+						<span className="bg-gradient-to-r from-emerald-800 via-emerald-600 to-emerald-500 bg-clip-text text-transparent">
+							{user?.username?.trim()}
 						</span>
 					</motion.h1>
 
-					{/* Subtitle */}
+					{/* Smaller Subtitle: text-sm md:text-base to text-xs md:text-sm */}
 					<motion.p
 						variants={item}
-						className="mt-3 max-w-2xl text-pretty text-sm leading-6 text-slate-600 md:text-base "
+						className="mt-2 max-w-xl text-pretty text-xs leading-5 text-slate-600 md:text-sm"
 					>
 						{t('hero.subtitle')}
 					</motion.p>
 
-					{/* Cards */}
+					{/* Cards Container: Reduced margin mt-8 to mt-5 */}
 					<motion.div
 						variants={item}
-						className="mt-8 flex flex-row gap-5  flex-wrap w-full "
+						className="mt-5 flex flex-row gap-4 flex-wrap w-full"
 					>
 						{cards.map((c, idx) => (
 							<ActionCard

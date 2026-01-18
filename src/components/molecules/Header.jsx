@@ -47,10 +47,11 @@ export default function Header() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const { user, logout, role } = useAuth();
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
-  const { cart } = useValues();
+  const { cart, topCategories, loadingTopCategories } = useValues();
   const { unreadChatCount } = useSocket()
 
   const cartTotal = cart?.total || 0;
+  const hasTopCategories = topCategories?.length > 0;
   const isGuest = role === 'guest';
   useEffect(() => {
     setIsMobileNavOpen(false);
@@ -66,26 +67,8 @@ export default function Header() {
         {
           label: tHeader('navigation.services'),
           icon: <Package className='h-5 w-5' />,
-          children: [
-            ...(u?.role !== 'seller' ? [{
-              href: '/services',
-              label: tHeader('navigation.services'),
-              icon: <Layers className='h-4 w-4' />,
-            },
-            {
-              href: '/services/all',
-              label: tHeader('navigation.allServices'),
-              icon: <ListChecks className='h-4 w-4' />,
-            }] : []),
-            ,
-            u?.role === 'seller'
-              ? {
-                href: '/my-gigs',
-                label: tHeader('navigation.myServices'),
-                icon: <LayoutGrid size={18} className="h-4 w-4" />,
-              }
-              : null,
-          ].filter(Boolean),
+          href: '/services', // fallback href
+          useMegaMenu: true, // flag to use mega menu instead of dropdown
         },
       ];
 
@@ -253,7 +236,7 @@ export default function Header() {
         {/* Left: Logo + nav */}
         <div className='flex items-center gap-1 md:gap-3 shrink-0'>
           <Logo />
-          <NavLinks links={navLinks} />
+          <NavLinks links={navLinks} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
         </div>
 
         {/* Middle: Search */}
@@ -312,7 +295,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation Drawer */}
-      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} />
+      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
     </header>
   );
 }
@@ -396,9 +379,144 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 };
 
 /* =========================================================
+   Services Mega Menu
+   ========================================================= */
+function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCategories }) {
+  const t = useTranslations('Header');
+  const locale = useLocale();
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const onDoc = e => !rootRef.current?.contains(e.target) && setOpen(false);
+    const onKey = e => e.key === 'Escape' && setOpen(false);
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, []);
+
+  // Get localized name helper
+  const getCategoryName = (category) => {
+    return locale === 'ar' ? (category?.name_ar || category?.name_en || '') : (category?.name_en || category?.name_ar || '');
+  };
+
+  const getSubcategoryName = (subcategory) => {
+    return locale === 'ar' ? (subcategory?.name_ar || subcategory?.name_en || '') : (subcategory?.name_en || subcategory?.name_ar || '');
+  };
+
+  // Distribute categories into columns (up to 4 columns)
+  const categoriesToShow = topCategories || [];
+  const columns = Math.min(Math.ceil(categoriesToShow.length / Math.ceil(categoriesToShow.length / 4)), 4) || 1;
+  const itemsPerColumn = Math.ceil(categoriesToShow.length / columns);
+
+
+
+  const columnData = useMemo(() => {
+    const data = [];
+
+    // Safety check to prevent infinite loops if itemsPerColumn is 0
+    if (itemsPerColumn <= 0 || !categoriesToShow) return [];
+
+    for (let i = 0; i < columns; i++) {
+      data.push(
+        categoriesToShow.slice(i * itemsPerColumn, (i + 1) * itemsPerColumn)
+      );
+    }
+
+    return data;
+  }, [categoriesToShow, columns, itemsPerColumn]);
+
+  return (
+    <div ref={rootRef} className='relative' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
+        {icon} {label}
+        <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+        <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.2 }}
+            className={`z-[100] absolute start-0 mt-1 w-[max(800px,90vw)] max-w-screen-xl border border-slate-200 bg-white shadow-xl rounded-xl overflow-hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
+          >
+            <div className='px-4 py-5'>
+              {loadingTopCategories ? (
+                <div className='grid grid-cols-4 gap-4'>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className='space-y-3'>
+                      <div className='h-6 bg-slate-200 rounded animate-pulse' />
+                      {Array.from({ length: 5 }).map((_, j) => (
+                        <div key={j} className='h-4 bg-slate-100 rounded animate-pulse' />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ) : !categoriesToShow || categoriesToShow.length === 0 ? (
+                <div className='py-8 text-center text-slate-500'>
+                  <Package className='h-12 w-12 mx-auto mb-2 text-slate-300' />
+                  <p>{t('navigation.noCategories')}</p>
+                </div>
+              ) : (
+                <div className={`grid gap-6 ${columnData.length === 1 ? 'grid-cols-1' : columnData.length === 2 ? 'grid-cols-2' : columnData.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+                  {columnData.map((columnCategories, colIndex) => (
+                    <ul key={colIndex} className='space-y-4'>
+                      {columnCategories.map(category => {
+                        const categoryName = getCategoryName(category);
+                        const children = category?.children || [];
+                        const hasChildren = children.length > 0;
+
+                        return (
+                          <li key={category?.id || category?.slug}>
+                            <Link
+                              href={`/services/${encodeURIComponent(category?.slug || '')}`}
+                              className={`block mb-2 text-sm font-semibold text-slate-900 hover:text-emerald-700 transition-colors ${pathname === `/services/${category?.slug}` || pathname.startsWith(`/services/${category?.slug}/`) ? 'text-emerald-700' : ''}`}
+                            >
+                              {categoryName || 'Unnamed Category'}
+                            </Link>
+                            {hasChildren && (
+                              <ul className='space-y-2 ml-0'>
+                                {children.map(subcategory => {
+                                  const subcategoryName = getSubcategoryName(subcategory);
+                                  return (
+                                    <li key={subcategory?.id || subcategory?.slug}>
+                                      <Link
+                                        href={`/services/${encodeURIComponent(subcategory?.slug || '')}`}
+                                        className='block text-sm text-slate-600 hover:text-emerald-600 hover:underline transition-colors'
+                                      >
+                                        {subcategoryName || 'Unnamed Subcategory'}
+                                      </Link>
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* =========================================================
    Top Navbar (Desktop)
    ========================================================= */
-function NavLinks({ links }) {
+function NavLinks({ links, topCategories, loadingTopCategories }) {
   const pathname = usePathname();
 
   return (
@@ -408,7 +526,9 @@ function NavLinks({ links }) {
 
         return (
           <motion.li key={link.label + (link.href || '')} variants={fadeDown} className='relative'>
-            {link.children?.length ? (
+            {link.useMegaMenu ? (
+              <ServicesMegaMenu label={link.label} icon={link.icon} active={isActive} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
+            ) : link.children?.length ? (
               <DropdownItem label={link.label} icon={link.icon} active={isActive}>
                 <DropdownPanel items={link.children} />
               </DropdownItem>
@@ -480,12 +600,13 @@ function DropdownPanel({ items = [] }) {
 /* =========================================================
    Mobile Drawer
    ========================================================= */
-function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLogout, isLogoutLoading }) {
+function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLogout, isLogoutLoading, topCategories, loadingTopCategories }) {
   const tHeader = useTranslations('Header');
   const role = (user?.role || 'member').toLowerCase();
   const { chip } = roleStyles[role] || roleStyles.member;
+  const locale = useLocale();
 
-  const { isPending, toggleLocale, locale } = useLangSwitcher()
+  const { isPending, toggleLocale } = useLangSwitcher()
 
   return (
     <AnimatePresence>
@@ -535,7 +656,9 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                   const active = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
                   return (
                     <motion.div key={link.label + (link.href || '')} variants={fadeIn}>
-                      {link.children?.length ? (
+                      {link.useMegaMenu ? (
+                        <MobileServicesMenu label={link.label} icon={link.icon} topCategories={topCategories} loadingTopCategories={loadingTopCategories} locale={locale} onClose={onClose} pathname={pathname} />
+                      ) : link.children?.length ? (
                         <MobileCollapsible label={link.label} icon={link.icon}>
                           <div className='py-1'>
                             {link.children.map(c => (
@@ -628,6 +751,120 @@ function MobileCollapsible({ label, icon, children }) {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, locale, onClose, pathname }) {
+  const [open, setOpen] = useState(false);
+
+  const getCategoryName = (category) => {
+    return locale === 'ar' ? (category?.name_ar || category?.name_en || '') : (category?.name_en || category?.name_ar || '');
+  };
+
+  const getSubcategoryName = (subcategory) => {
+    return locale === 'ar' ? (subcategory?.name_ar || subcategory?.name_en || '') : (subcategory?.name_en || subcategory?.name_ar || '');
+  };
+
+  const categoriesToShow = topCategories || [];
+
+  return (
+    <div className='px-1'>
+      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+        <span className='inline-flex items-center gap-2'>
+          {icon}
+          {label}
+        </span>
+        <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className='overflow-hidden px-1'>
+            <div className='py-1 space-y-1'>
+              {loadingTopCategories ? (
+                <div className='space-y-2 px-3'>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className='h-4 bg-slate-200 rounded animate-pulse' />
+                  ))}
+                </div>
+              ) : !categoriesToShow || categoriesToShow.length === 0 ? (
+                <div className='px-3 py-2 text-sm text-slate-500'>No categories available</div>
+              ) : (
+                categoriesToShow.map(category => {
+                  const categoryName = getCategoryName(category);
+                  const children = category?.children || [];
+                  const hasChildren = children.length > 0;
+
+                  return (
+                    <MobileCategoryItem
+                      key={category?.id || category?.slug}
+                      category={category}
+                      categoryName={categoryName}
+                      children={children}
+                      hasChildren={hasChildren}
+                      getSubcategoryName={getSubcategoryName}
+                      onClose={onClose}
+                      pathname={pathname}
+                    />
+                  );
+                })
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MobileCategoryItem({ category, categoryName, children, hasChildren, getSubcategoryName, onClose, pathname }) {
+  const [open, setOpen] = useState(false);
+  const isActive = pathname === `/services/${category?.slug}` || pathname.startsWith(`/services/${category?.slug}/`);
+
+  return (
+    <div>
+      <div className='flex items-center justify-between gap-2'>
+        <Link
+          href={`/services/${encodeURIComponent(category?.slug || '')}`}
+          onClick={onClose}
+          className={`flex-1 px-3 py-2 rounded-lg text-[15px] transition ${isActive ? 'bg-emerald-50 text-emerald-700 font-medium' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'}`}
+        >
+          {categoryName || 'Unnamed Category'}
+        </Link>
+        {hasChildren && (
+          <button
+            onClick={() => setOpen(o => !o)}
+            className='px-2 py-2 text-slate-600 hover:text-emerald-700'
+          >
+            <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+          </button>
+        )}
+      </div>
+      {hasChildren && (
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className='overflow-hidden'>
+              <ul className='pl-4 space-y-1'>
+                {children.map(subcategory => {
+                  const subcategoryName = getSubcategoryName(subcategory);
+                  const isSubActive = pathname === `/services/${subcategory?.slug}` || pathname.startsWith(`/services/${subcategory?.slug}/`);
+                  return (
+                    <li key={subcategory?.id || subcategory?.slug}>
+                      <Link
+                        href={`/services/${encodeURIComponent(subcategory?.slug || '')}`}
+                        onClick={onClose}
+                        className={`block px-3 py-2 rounded-lg text-[14px] transition ${isSubActive ? 'bg-emerald-50 text-emerald-700 font-medium' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
+                      >
+                        {subcategoryName || 'Unnamed Subcategory'}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
     </div>
   );
 }

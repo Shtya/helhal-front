@@ -289,6 +289,7 @@
   },
   "Header": {
     "navigation": {
+      "noCategories": "لا توجد أقسام متاحة",
       "explore": "ابحث عن مبدعين",
       "services": "الخدمات",
       "allServices": "جميع الخدمات",
@@ -1187,7 +1188,7 @@
       "edit": "تعديل",
       "editEmail": "تعديل البريد الإلكتروني",
       "editPhone": "تعديل رقم الهاتف",
-      "editNafaz": "تعديل نفاذ",
+      "editNationalID": "تعديل الهوية الوطنية",
       "cancel": "إلغاء",
       "saveChanges": "حفظ التغييرات",
       "nationalId": "الهوية الوطنية",
@@ -1195,8 +1196,8 @@
       "nationalIdHint": "يجب أن يكون رقم الهوية الوطنية 10 أرقام تبدأ بـ 1 أو 2",
       "editPhoneAgain": "تعديل رقم الهاتف مرة أخرى",
       "failedToUpdatePhone": "فشل تحديث رقم الهاتف",
-      "nafazUpdated": "تم تحديث معلومات نفاذ بنجاح",
-      "failedToUpdateNafaz": "فشل تحديث معلومات نفاذ",
+      "nationalIdUpdated": "تم تحديث معلومات الهوية الوطنية بنجاح",
+      "failedToUpdateNationalId": "فشل تحديث معلومات الهوية الوطنية",
       "errors": {
         "inValidOptionalPhone": "رقم هاتف غير صالح"
       }
@@ -1992,7 +1993,7 @@
         "testRequired": "حقل الاختبار مطلوب",
         "featureRequired": "الميزة مطلوبة",
         "featureMax": "يجب أن تكون الميزة 50 حرفاً أو أقل",
-        "featuresMin": "3 ميزات على الأقل",
+        "featuresMin": "علي الأقل ميزة واحدة",
         "featuresMax": "5 ميزات كحد أقصى",
         "atLeastOnePackage": "حزمة واحدة على الأقل مطلوبة"
       }
@@ -3386,7 +3387,10 @@
       "features": "الميزات",
       "selected": "محدد",
       "select": "اختر",
-      "selectPackage": "اختر حزمة"
+      "selectPackage": "اختر حزمة",
+      "basic": "الباقة الأساسية",
+      "standard": "الباقة القياسية",
+      "premium": "الباقة المميزة"
     },
     "requirements": {
       "title": "المتطلبات",

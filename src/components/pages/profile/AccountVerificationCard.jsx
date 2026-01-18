@@ -86,7 +86,7 @@ function AccountVerificationCard({ loading, user }) {
                                 </svg>
 
                             }
-                            label={t('nafaz')}
+                            label={t('nationalId')}
                             verified={nafazVerified}
                             onEdit={() => setNafazOpen(true)}
                         />
@@ -563,17 +563,17 @@ function NafazEditModal({ onClose }) {
         try {
             // Mock API call - replace with actual endpoint
             await new Promise(resolve => setTimeout(resolve, 1000));
-            toast.success(t('nafazUpdated'));
+            toast.success(t('nationalIdUpdated'));
             onClose();
         } catch (err) {
-            toast.error(t('failedToUpdateNafaz'));
+            toast.error(t('failedToUpdateNationalId'));
         } finally {
             setSaving(false);
         }
     });
 
     return (
-        <Modal title={t('editNafaz')} onClose={onClose}>
+        <Modal title={t('editNationalID')} onClose={onClose}>
             <form onSubmit={onSubmit} className='space-y-4'>
                 <div>
                     <Input

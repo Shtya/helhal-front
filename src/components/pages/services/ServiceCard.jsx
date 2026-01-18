@@ -8,7 +8,7 @@ import Img from '@/components/atoms/Img';
 import PriceTag from '@/components/atoms/priceTag';
 import { Clock, CheckCircle2, Zap, Star, CircleArrowOutUpRight } from 'lucide-react';
 import { memo, useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export const Stars = ({ value = 0, size = 12, stroke = 'stroke-white', dim = 'stroke-slate-400' }) => {
   const full = Math.floor(Math.min(Math.max(value, 0), 5));
@@ -47,6 +47,7 @@ export default memo(function AmazingServiceCard({
   loading = false, // <-- NEW
 }) {
   const t = useTranslations('Explore');
+  const locale = useLocale();
   const cover = service?.cover || service?.gallery?.[0]?.url || service?.category?.image || '/icons/file.png';
 
   const sellerAvatar = service?.seller?.avatar || service?.seller?.profileImage || '/icons/file.png';
@@ -61,7 +62,7 @@ export default memo(function AmazingServiceCard({
   const rating = typeof service?.rating === 'number' && Number.isFinite(service.rating) ? service.rating : 0;
   const ratingText = typeof service?.rating === 'number' ? service.rating.toFixed(1) : '—';
   const ratingCount = service?.ratingCount ?? service?.ordersCount ?? 0;
-  const categoryName = service?.category?.name || '—';
+  const categoryName = locale === 'ar' ? service?.category?.name_ar : service?.category?.name_en;
   const to = href || `/services/${service?.category?.slug}/${service?.slug}`;
 
   const featureBullets = useMemo(() => {
@@ -192,7 +193,7 @@ export default memo(function AmazingServiceCard({
           {serviceBrief ? <p className='text-[13px] text-slate-600 line-clamp-2'>{serviceBrief}</p> : null}
 
           <div className='flex items-center justify-between'>
-            <div className='text-[14px] text-slate-700'>{categoryName}</div>
+            <div className='text-[14px] text-slate-700'>{categoryName || '—'}</div>
             <div className='text-[14px] font-semibold'>
               {t('from')} <PriceTag price={minPrice ?? 0} />
             </div>

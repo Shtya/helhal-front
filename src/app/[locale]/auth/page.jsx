@@ -354,9 +354,11 @@ const LoginForm = ({ onLoggedIn }) => {
       setSuccessMessage(t('success.signedIn'));
       setShowSuccessAnimation(true);
 
-      // Wait for animation to complete before calling onLoggedIn
       setLoading(false);
-      onLoggedIn?.(fatchedUser);
+      setTimeout(() => {
+        // setShowSuccessAnimation(false);
+        onLoggedIn?.(fatchedUser);
+      }, 1000);
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.loginFailed');
       const errorMsg = msg === 'Refresh token not provided in the request body' ? t('errors.incorrectEmailOrPassword') : msg;
@@ -665,7 +667,7 @@ export default function AuthPage() {
   const errorMessage = searchParams?.get('error_message');
   const accessTokenFromUrl = searchParams?.get('accessToken');
   const refreshTokenFromUrl = searchParams?.get('refreshToken');
-  const redirectUrl = searchParams?.get('redirect') || '/services';
+  const redirectUrl = searchParams?.get('redirect') || '/explore';
   const referralCode = searchParams?.get('ref');
 
   const [activeTab, setActiveTab] = useState(tabParam);
@@ -734,13 +736,14 @@ export default function AuthPage() {
           setSuccessMessage(t('success.loggedInSuccessfully'));
           setShowSuccessAnimation(true);
 
-
-          if (fatchedUser.role === 'seller') {
-            router.push('/jobs');
-          }
-          else {
-            router.push(redirectUrl);
-          }
+          setTimeout(() => {
+            // setShowSuccessAnimation(false);
+            if (fatchedUser.role === 'seller') {
+              router.push('/jobs');
+            } else {
+              router.push(redirectUrl);
+            }
+          }, 1000);
 
         }
       } catch (e) {
@@ -840,13 +843,15 @@ export default function AuthPage() {
     setSuccessMessage(t('success.phoneVerified'));
     setShowSuccessAnimation(true);
 
-
-    if (user.role === 'seller') {
-      router.push('/jobs');
-    }
-    else {
-      router.push(redirectUrl);
-    }
+    setTimeout(() => {
+      // setShowSuccessAnimation(false);
+      if (user.role === 'seller') {
+        router.push('/jobs');
+      }
+      else {
+        router.push(redirectUrl);
+      }
+    }, 1000);
 
   };
 

@@ -880,31 +880,32 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
               {list.map((pkg, index) => {
                 const active = selectedName === pkg.type;
                 const recommended = index === recommendedIndex;
+
                 return (
                   <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-emerald-300 bg-emerald-50/30 ring-1 ring-emerald-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
                     <div className='mb-2 flex flex-wrap w-full items-start justify-between gap-1'>
                       <div className='flex items-center flex-wrap gap-2'>
-                        <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type}</h3>
+                        <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type ? t(`packages.${pkg.type.toLowerCase()}`) : ''}</h3>
                         {recommended && (
                           <span className='inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800'>
                             <Crown className='h-3.5 w-3.5' /> {t('packages.recommended')}
                           </span>
                         )}
                         {/* ✅ Show Test flag if pkg.test is true */}
-                        {pkg.test && (
+                        {/* {pkg.test && (
                           <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[11px] font-medium text-indigo-800">
                             <Beaker className="h-3.5 w-3.5" /> {t('packages.test')}
                           </span>
-                        )}
+                        )} */}
                       </div>
                       <PriceTag price={pkg.price} className='!text-lg !font-bold !text-slate-900' />
                     </div>
                     {/* Second title */}
-                    {pkg.title && (
+                    {/* {pkg.title && (
                       <h4 className="mb-2 text-base font-semibold text-slate-800">
                         {pkg.title}
                       </h4>
-                    )}
+                    )} */}
                     {/* Description */}
                     {pkg.description && <p className='mb-4 line-clamp-2 text-sm leading-6 text-slate-600'>{pkg.description}</p>}
 

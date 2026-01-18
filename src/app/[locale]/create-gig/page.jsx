@@ -252,13 +252,13 @@ const getStep2Schema = (t) => yup.object({
     .of(
       yup.object({
         type: yup.string().oneOf(['basic', 'standard', 'premium']).required(),
-        title: yup.string().trim().required(t('validation.packageTitleRequired')).max(60, t('validation.packageTitleMax')),
+        // title: yup.string().trim().required(t('validation.packageTitleRequired')).max(60, t('validation.packageTitleMax')),
         description: yup.string().trim().required(t('validation.packageDescriptionRequired')).max(220, t('validation.packageDescriptionMax')),
         deliveryTime: yup.number().typeError(t('validation.deliveryTimeRequired')).required().min(1, t('validation.deliveryTimeMin')).max(1200, t('validation.deliveryTimeMax')),
         revisions: yup.number().typeError(t('validation.revisionsRequired')).required().min(0, t('validation.revisionsMin')).max(20, t('validation.revisionsMax')),
         price: yup.number().typeError(t('validation.priceRequired')).required().min(1, t('validation.priceMin')).max(100000, t('validation.priceMax')),
-        test: yup.boolean().required(t('validation.testRequired')),
-        features: yup.array().of(yup.string().trim().required(t('validation.featureRequired')).max(50, t('validation.featureMax'))).min(3, t('validation.featuresMin')).max(5, t('validation.featuresMax')),
+        // test: yup.boolean().required(t('validation.testRequired')),
+        features: yup.array().of(yup.string().trim().required(t('validation.featureRequired')).max(50, t('validation.featureMax'))).min(1, t('validation.featuresMin')).max(5, t('validation.featuresMax')),
       }),
     )
     .min(1, t('validation.atLeastOnePackage')),
@@ -830,12 +830,12 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
         {/* Rows */}
         <div className='grid grid-cols-1 sm:grid-cols-4'>
           {/* Title */}
-          <FieldLabel>{t('title')}</FieldLabel>
+          {/* <FieldLabel>{t('title')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`title-${i}`}>
               <Input placeholder={t('placeholders.title')} {...register(`packages.${i}.title`)} error={pkgErrors?.[i]?.title?.message} />
             </Cell>
-          ))}
+          ))} */}
 
           {/* Description */}
           <FieldLabel>{t('description')}</FieldLabel>
@@ -870,7 +870,7 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
           ))}
 
           {/* Test (boolean) */}
-          <FieldLabel>{t('test')}</FieldLabel>
+          {/* <FieldLabel>{t('test')}</FieldLabel>
           {TYPES.map((_, i) => (
             <Cell key={`test-${i}`} className='flex items-center'>
               <AnimatedCheckbox
@@ -882,7 +882,7 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
               />
               {pkgErrors?.[i]?.test?.message && <span className='ml-2 text-xs text-rose-600'>{pkgErrors?.[i]?.test?.message}</span>}
             </Cell>
-          ))}
+          ))} */}
 
           {/* Features editor */}
           <FieldLabel>{t('features')}</FieldLabel>
@@ -983,7 +983,8 @@ function normalizeDefaults(formData) {
       revisions: 1,
       price: 50,
       test: false,
-      features: ['1 Concept', '1 Revision', 'PNG/JPG format'],
+      // features: ['1 Concept', '1 Revision', 'PNG/JPG format'],
+      features: ['1 Concept'],
     },
     {
       type: 'standard',
@@ -993,7 +994,8 @@ function normalizeDefaults(formData) {
       revisions: 3,
       price: 120,
       test: false,
-      features: ['3 Concepts', '2 Revisions', 'Vector Files Included'],
+      // features: ['3 Concepts', '2 Revisions', 'Vector Files Included'],
+      features: ['3 Concepts'],
     },
     {
       type: 'premium',
@@ -1003,7 +1005,8 @@ function normalizeDefaults(formData) {
       revisions: 10,
       price: 250,
       test: false,
-      features: ['5 Concepts', '3 Revisions', 'Brand Guide'],
+      // features: ['5 Concepts', '3 Revisions', 'Brand Guide'],
+      features: ['5 Concepts'],
     },
   ];
 

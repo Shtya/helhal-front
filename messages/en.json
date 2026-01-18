@@ -289,6 +289,7 @@
   },
   "Header": {
     "navigation": {
+      "noCategories": "No categories available",
       "explore": "Find Creatives",
       "services": "Services",
       "allServices": "All Services",
@@ -1187,7 +1188,7 @@
       "edit": "Edit",
       "editEmail": "Edit Email",
       "editPhone": "Edit Phone",
-      "editNafaz": "Edit NAFAZ",
+      "editNationalID": "Edit National ID",
       "cancel": "Cancel",
       "saveChanges": "Save Changes",
       "nationalId": "National ID",
@@ -1195,8 +1196,8 @@
       "nationalIdHint": "National ID must be 10 digits starting with 1 or 2",
       "editPhoneAgain": "Edit phone again",
       "failedToUpdatePhone": "Failed to update phone number",
-      "nafazUpdated": "NAFAZ information updated successfully",
-      "failedToUpdateNafaz": "Failed to update NAFAZ information",
+      "nationalIdUpdated": "National ID information updated successfully",
+      "failedToUpdateNationalId": "Failed to update national ID information",
       "errors": {
         "inValidOptionalPhone": "Invalid phone number"
       }
@@ -1992,7 +1993,7 @@
         "testRequired": "Test field is required",
         "featureRequired": "Feature is required",
         "featureMax": "Feature must be 50 characters or less",
-        "featuresMin": "At least 3 features required",
+        "featuresMin": "At least 1 feature required",
         "featuresMax": "Maximum of 5 features allowed",
         "atLeastOnePackage": "At least one package is required"
       }
@@ -3386,7 +3387,10 @@
       "features": "Features",
       "selected": "Selected",
       "select": "Select",
-      "selectPackage": "Select Package"
+      "selectPackage": "Select Package",
+      "basic": "Basic",
+      "standard": "Standard",
+      "premium": "Premium"
     },
     "requirements": {
       "title": "Requirements",
