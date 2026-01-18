@@ -164,7 +164,7 @@ export function Footer() {
         { key: 'navigation_sections.forClients.yourAccount', href: '/profile' },
         { key: 'navigation_sections.forClients.shareYourJob', href: '/share-job-description' },
         { key: 'navigation_sections.forClients.becomeSeller', href: '/become-seller' },
-        { key: 'navigation_sections.forClients.topServices', href: '/explore' },
+        // { key: 'navigation_sections.forClients.topServices', href: '/services' },
         // { key: 'navigation_sections.forClients.careers', href: '/' },
         // { key: 'navigation_sections.forClients.pressNews', href: '/' },
         // { key: 'navigation_sections.forClients.partnerships', href: '/' },

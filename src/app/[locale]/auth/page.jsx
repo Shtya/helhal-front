@@ -665,7 +665,7 @@ export default function AuthPage() {
   const errorMessage = searchParams?.get('error_message');
   const accessTokenFromUrl = searchParams?.get('accessToken');
   const refreshTokenFromUrl = searchParams?.get('refreshToken');
-  const redirectUrl = searchParams?.get('redirect') || '/explore';
+  const redirectUrl = searchParams?.get('redirect') || '/services';
   const referralCode = searchParams?.get('ref');
 
   const [activeTab, setActiveTab] = useState(tabParam);

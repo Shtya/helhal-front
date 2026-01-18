@@ -17,7 +17,7 @@ const intlMiddleware = createMiddleware({
 // 2) Public (unprotected) routes
 const PUBLIC_ROUTES = [
   { path: '/auth', strict: true },
-  { path: '/explore', strict: true, notFor: 'seller', relpace: "/jobs" },
+  // { path: '/explore', strict: true, notFor: 'seller', relpace: "/jobs" },
   { path: '/services/:categoryId/:serviceId', regex: true, strict: true },
   { path: '/services', strict: false, notFor: 'seller', relpace: "/jobs" },
   { path: '/invite' },

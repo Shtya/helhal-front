@@ -62,7 +62,7 @@ export default function Header() {
     const permissions = u?.permissions;
     return useMemo(() => {
       const common = [
-        ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
+        // ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
         {
           label: tHeader('navigation.services'),
           icon: <Package className='h-5 w-5' />,
@@ -728,8 +728,9 @@ function RelatedUsers({ user, onClose }) {
       updateTokens({ accessToken, refreshToken });
 
       // Close dropdown and navigate
+      const loginUserRole = res.data?.user?.role
       onClose();
-      router.push('/explore');
+      router.push(loginUserRole === 'seller' ? '/jobs' : '/services');
     } catch (err) {
       const msg = err?.response?.data?.message || 'Failed to switch user';
       toast.error(msg);
