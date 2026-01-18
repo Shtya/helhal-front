@@ -565,7 +565,7 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
     setLoading(true);
     setError(null);
     try {
-      if (otp.length !== 6) throw new Error('errors.otpLength');
+      if (otp.length !== 4) throw new Error('errors.otpLength');
       if (purpose === 'verify-email') {
         await api.post('/auth/verify-email', { email: value, code: otp });
         toast.success(t('success.emailVerified'));
@@ -625,7 +625,7 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
       <form onSubmit={onSubmit}>
         <div className='mb-6'>
           <label className='block text-sm font-medium text-gray-700 mb-2'>{t('otpCode')}</label>
-          <OtpInput value={otp} onChange={setOtp} numInputs={6} renderSeparator={<span className='mx-1'>-</span>} renderInput={props => <input {...props} className='!w-10 h-10 border rounded-lg text-center text-xl' />} containerStyle='flex justify-center flex-wrap gap-y-2' />
+          <OtpInput value={otp} onChange={setOtp} numInputs={4} renderSeparator={<span className='mx-1'>-</span>} renderInput={props => <input {...props} className='!w-10 h-10 border rounded-lg text-center text-xl' />} containerStyle='flex justify-center flex-wrap gap-y-2' />
         </div>
         <SubmitButton isLoading={loading}>{t('verifyCodeButton')}</SubmitButton>
       </form>

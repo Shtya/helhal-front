@@ -402,7 +402,7 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
 
     const verifyOtp = async (e) => {
         e.preventDefault();
-        if (otp.length !== 6) {
+        if (otp.length !== 4) {
             toast.error(tBilling('phoneVerification.invalidOtpLength'));
             return;
         }
@@ -486,7 +486,7 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
                                 <OTPInput
                                     value={otp}
                                     onChange={setOtp}
-                                    numInputs={6}
+                                    numInputs={4}
                                     renderSeparator={<span className="mx-1">-</span>}
                                     renderInput={props => (
                                         <input
