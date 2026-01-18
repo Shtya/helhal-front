@@ -184,8 +184,6 @@ function ActionCard({
 	const displayChip = chip || t('hero.defaultChip');
 	const Arrow = isArabic ? ArrowLeft : ArrowRight;
 
-	console.log(mainButtonLabel, href)
-
 	const toneStyles =
 		tone === 'emerald'
 			? {
