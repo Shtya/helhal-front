@@ -21,10 +21,10 @@ export default function CategoryCarousel({ items = [] }) {
           <Link
             key={c.id}
             href={`/services?category=${c.id}`}
-            className="flex-none w-[280px] rounded-xl bg-white text-black border border-white/10 hover:border-emerald-500/60 transition card-shadow overflow-hidden"
+            className="flex-none w-[280px] rounded-xl bg-white text-black border border-white/10 hover:border-main-500/60 transition card-shadow overflow-hidden"
           >
             <div className="h-32 bg-gradient-to-br from-gray-900 to-gray-800 flex items-end p-4">
-              <div className="text-sm text-emerald-300">{c.title}</div>
+              <div className="text-sm text-main-300">{c.title}</div>
             </div>
             <div className="px-4 py-3 text-lg font-semibold">
               Website Development

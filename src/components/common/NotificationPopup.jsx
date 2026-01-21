@@ -146,9 +146,9 @@ const NotificationPopup = ({ admin = false }) => {
 
   return (
     <div className='' ref={btnRef}>
-      <motion.button onClick={() => setOpen(v => !v)} className='relative  inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
+      <motion.button onClick={() => setOpen(v => !v)} className='relative  inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
         <Bell className='h-5 w-5 text-slate-700' />
-        {unreadNotificationCount > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-emerald-600 px-1 text-[11px] text-white font-semibold'>{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}</span>}
+        {unreadNotificationCount > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-main-600 px-1 text-[11px] text-white font-semibold'>{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}</span>}
       </motion.button>
 
       <AnimatePresence>
@@ -185,12 +185,12 @@ const NotificationPopup = ({ admin = false }) => {
                   <div
                     key={n.id}
                     data-notification-id={`${n.id}`}
-                    className={`px-4 py-3 hover:bg-slate-50 transition ${!n.isRead ? 'bg-emerald-50/30' : ''}`}
+                    className={`px-4 py-3 hover:bg-slate-50 transition ${!n.isRead ? 'bg-main-50/30' : ''}`}
                   >
                     <div className="flex items-start gap-3">
 
                       {/* icon */}
-                      <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50">
+                      <div className="grid h-8 w-8 place-items-center rounded-lg bg-main-50">
                         <TypeIcon type={n.type} />
                       </div>
 
@@ -221,7 +221,7 @@ const NotificationPopup = ({ admin = false }) => {
                         {/* Bottom actions */}
                         <div className="mt-2 flex items-center gap-2">
                           {!n.isRead && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-main-100 px-2 py-0.5 text-[11px] font-medium text-main-800">
                               {t('new')} <ChevronRight className="h-3 w-3" />
                             </span>
                           )}
@@ -245,7 +245,7 @@ const NotificationPopup = ({ admin = false }) => {
 
             {/* Footer */}
             <div className='border-t border-slate-200 px-4 py-2 text-center'>
-              <Link href={admin ? `/dashboard/notifications` : `/notifications`} className='text-sm text-emerald-700 hover:underline' onClick={() => setOpen(false)}>
+              <Link href={admin ? `/dashboard/notifications` : `/notifications`} className='text-sm text-main-700 hover:underline' onClick={() => setOpen(false)}>
                 {t('viewAll')}
               </Link>
             </div>

@@ -166,8 +166,8 @@ const page = () => {
             <Link
               href="/freelance"
               className="inline-flex items-center justify-center h-12 px-6 rounded-xl
-                   bordertext-sm md:text-base font-medium border-emerald-700  bg-emerald-50 hover:bg-emerald-100
-        text-emerald-700
+                   bordertext-sm md:text-base font-medium border-main-700  bg-main-50 hover:bg-main-100
+        text-main-700
                    transition-all w-full max-w-[260px]"
             >
               {t('hero.HowButton')}
@@ -212,7 +212,7 @@ const page = () => {
         <div className='grid grid-cols-1 sm:grid-cols-3 gap-6'>
           {stats.map((stat, index) => (
             <div key={index} className='bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-md border border-gray-100 p-8 flex flex-col items-center justify-center text-center hover:shadow-lg transition' data-aos='zoom-in' data-aos-delay={index * 200}>
-              <div className='w-16 h-16 flex items-center justify-center rounded-full bg-green-100 text-green-600 text-xl font-bold shadow-inner mb-4'>{index + 1}</div>
+              <div className='w-16 h-16 flex items-center justify-center rounded-full bg-main-100 text-main-600 text-xl font-bold shadow-inner mb-4'>{index + 1}</div>
               <span className='text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight'>{stat.value}</span>
               <span className='mt-2 text-base md:text-lg text-gray-600'>{stat.label}</span>
             </div>
@@ -268,7 +268,7 @@ const page = () => {
               data-aos="fade-up"
               data-aos-delay={idx * 150}
             >
-              <span className="mt-2 h-2 w-2 flex-none rounded-full bg-emerald-600" />
+              <span className="mt-2 h-2 w-2 flex-none rounded-full bg-main-600" />
               <p className="text-slate-700 text-base leading-relaxed">
                 {item}
               </p>
@@ -286,7 +286,7 @@ const page = () => {
           {testimonials.map((t, i) => (
             <article key={i} className='text-start rtl:text-end relative rounded-2xl bg-white border border-slate-100' style={{ boxShadow: '0px 0px 36px 0px #00000026' }} data-aos='zoom-in-up' data-aos-delay={i * 200}>
               <div className='p-8'>
-                <QuoteMark className='w-8 h-8 text-emerald-600 ' />
+                <QuoteMark className='w-8 h-8 text-main-600 ' />
                 <h3 className='mt-4 text-2xl font-semibold tracking-tight text-black'>{t.title}</h3>
                 <p className='mt-3 text-lg leading-8 text-slate-700'>{t.quote}</p>
                 <div className='mt-8 flex items-center justify-end rtl:justify-start gap-3'>
@@ -335,7 +335,7 @@ function CategoryCard({ title, image, index }) {
   return (
     <div className='relative rounded-2xl overflow-hidden shadow-lg group' data-aos='zoom-in-up' data-aos-delay={index * 200}>
       <img src={image} alt={title} className='w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105' />
-      <div className='absolute inset-0 bg-gradient-to-t from-green-600/80 via-green-600/40 to-transparent opacity-90' />
+      <div className='absolute inset-0 bg-gradient-to-t from-main-600/80 via-main-600/40 to-transparent opacity-90' />
       <div className='absolute bottom-4 ltr:left-4 rtl:right-4 text-white font-semibold text-lg'>{title}</div>
     </div>
   );
@@ -345,7 +345,7 @@ function CategoryCard({ title, image, index }) {
 function QuoteMark({ className = '' }) {
   return (
     <svg viewBox='0 0 48 48' className={className} aria-hidden='true' fill='currentColor'>
-      <path d='M13.6666 22.1688V18.1643C13.6666 17.6209 14.107 17.1809 14.65 17.1809C16.5877 17.1809 17.6418 15.1936 17.7881 11.2708H14.65C14.1071 11.2708 13.6666 10.8301 13.6666 10.2874V1.83171C13.6666 1.28857 14.107 0.848481 14.65 0.848481H23.0165C23.5594 0.848481 24 1.28905 24 1.83171V10.2874C24 12.1678 23.8102 13.8932 23.4375 15.4171C23.0547 16.9793 22.4671 18.3451 21.6914 19.4769C20.8936 20.64 19.8947 21.5527 18.7243 22.1883C17.5451 22.828 16.1743 23.1526 14.6496 23.1526C14.1071 23.1522 13.6666 22.7117 13.6666 22.1688ZM0.98323 17.1805C0.440291 17.1805 0 17.6209 0 18.1635V22.1688C0 22.7117 0.440291 23.1519 0.98323 23.1519C2.5072 23.1519 3.87867 22.8272 5.05716 22.1876C6.22816 21.552 7.22685 20.6401 8.02459 19.4762C8.80081 18.3444 9.38837 16.9785 9.77118 15.4156C10.144 13.8917 10.3334 12.1661 10.3334 10.2866V1.83089C10.3334 1.28774 9.89273 0.847656 9.35 0.847656H0.98323C0.440291 0.847656 0 1.28815 0 1.83089V10.2866C0 10.8297 0.440291 11.2701 0.98323 11.2701H4.07723C3.93271 15.1932 2.89379 17.1805 0.98323 17.1805Z' fill='#108A00' />
+      <path d='M13.6666 22.1688V18.1643C13.6666 17.6209 14.107 17.1809 14.65 17.1809C16.5877 17.1809 17.6418 15.1936 17.7881 11.2708H14.65C14.1071 11.2708 13.6666 10.8301 13.6666 10.2874V1.83171C13.6666 1.28857 14.107 0.848481 14.65 0.848481H23.0165C23.5594 0.848481 24 1.28905 24 1.83171V10.2874C24 12.1678 23.8102 13.8932 23.4375 15.4171C23.0547 16.9793 22.4671 18.3451 21.6914 19.4769C20.8936 20.64 19.8947 21.5527 18.7243 22.1883C17.5451 22.828 16.1743 23.1526 14.6496 23.1526C14.1071 23.1522 13.6666 22.7117 13.6666 22.1688ZM0.98323 17.1805C0.440291 17.1805 0 17.6209 0 18.1635V22.1688C0 22.7117 0.440291 23.1519 0.98323 23.1519C2.5072 23.1519 3.87867 22.8272 5.05716 22.1876C6.22816 21.552 7.22685 20.6401 8.02459 19.4762C8.80081 18.3444 9.38837 16.9785 9.77118 15.4156C10.144 13.8917 10.3334 12.1661 10.3334 10.2866V1.83089C10.3334 1.28774 9.89273 0.847656 9.35 0.847656H0.98323C0.440291 0.847656 0 1.28815 0 1.83089V10.2866C0 10.8297 0.440291 11.2701 0.98323 11.2701H4.07723C3.93271 15.1932 2.89379 17.1805 0.98323 17.1805Z' fill='var(--color-main-600)' />
     </svg>
   );
 }

@@ -677,7 +677,7 @@ function Step1({ formData, setFormData, nextStep }) {
           )}
 
           {!titleStatus.loading && titleStatus.valid === true && (
-            <p className="mt-1 text-xs text-emerald-600">
+            <p className="mt-1 text-xs text-main-600">
               {titleStatus.message || t('titleAvailable')}
             </p>
           )}
@@ -1163,7 +1163,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
           </div>
           <div className='relative'>
             <Search className='pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder={t('searchPlaceholder')} className='w-56 rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30' />
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder={t('searchPlaceholder')} className='w-56 rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-main-500/30' />
           </div>
         </div>
 
@@ -1190,7 +1190,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
                     <div className="shrink-0 sm:w-32">
                       {isEditing ? (
                         <div className='flex items-center gap-1'>
-                          <button type='button' onClick={() => saveEdit(realIndex)} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-emerald-50'>
+                          <button type='button' onClick={() => saveEdit(realIndex)} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-main-50'>
                             <Check className='h-4 w-4' />
                           </button>
                           <button type='button' onClick={cancelEdit} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50'>
@@ -1374,7 +1374,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
                   <h4 className='font-medium text-slate-900 break-words'>{q.question}</h4>
 
                   <div className='mt-2 flex flex-wrap items-center gap-2 text-xs'>
-                    <span className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700'>{q.requirementType?.replace('_', ' ') || 'text'}</span>
+                    <span className='inline-flex items-center gap-1 rounded-full border border-main-200 bg-main-50 px-2.5 py-1 text-main-700'>{q.requirementType?.replace('_', ' ') || 'text'}</span>
                     <span className={q.isRequired ? 'inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-rose-700' : 'inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600'}>{q.isRequired ? t('required') : t('optional')}</span>
                   </div>
 
@@ -1405,10 +1405,10 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
       </div>
 
       {/* Add new question */}
-      <div className='rounded-2xl border border-emerald-200 bg-white shadow-[0_1px_0_0_rgba(16,138,0,0.08)]'>
-        <div className='px-5 py-4 border-b border-emerald-100 flex items-center justify-between'>
-          <h4 className='font-semibold text-emerald-900'>{t('addNewQuestion')}</h4>
-          <div className='text-xs text-emerald-700/70'>{t('textMultipleFile')}</div>
+      <div className='rounded-2xl border border-main-200 bg-white shadow-[0_1px_0_0_rgba(16,138,0,0.08)]'>
+        <div className='px-5 py-4 border-b border-main-100 flex items-center justify-between'>
+          <h4 className='font-semibold text-main-900'>{t('addNewQuestion')}</h4>
+          <div className='text-xs text-main-700/70'>{t('textMultipleFile')}</div>
         </div>
 
         <div className='p-5'>
@@ -1472,9 +1472,9 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
 
               <div className='mt-3 flex flex-wrap gap-2'>
                 {newQuestion.options.map((opt, i) => (
-                  <span key={i} className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[12px] text-emerald-800'>
+                  <span key={i} className='inline-flex items-center gap-1 rounded-full border border-main-200 bg-main-50 px-2.5 py-1 text-[12px] text-main-800'>
                     {opt}
-                    <button type='button' onClick={() => removeOption(opt)} className='ml-1 rounded p-0.5 hover:bg-emerald-100' aria-label={`Remove option ${opt}`}>
+                    <button type='button' onClick={() => removeOption(opt)} className='ml-1 rounded p-0.5 hover:bg-main-100' aria-label={`Remove option ${opt}`}>
                       <X size={14} />
                     </button>
                   </span>
@@ -1494,7 +1494,7 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
       {/* Navigation */}
       <div className='flex justify-end gap-2 pt-4'>
         <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8 py-2 rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 shadow-[0_8px_24px_-8px_rgba(16,138,0,0.55)]' />
+        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8 py-2 rounded-xl text-white bg-main-600 hover:bg-main-700 shadow-[0_8px_24px_-8px_rgba(16,138,0,0.55)]' />
       </div>
     </form>
   );
@@ -1610,7 +1610,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-              <div className=''><span className='text-[#108A00] font-[500]'>{t('browseImages')}</span></div>
+              <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseImages')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} maxSelection={3} />
             </div>
           </div>
@@ -1638,7 +1638,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-              <div className=''><span className='text-[#108A00] font-[500]'>{t('browseVideo')}</span></div>
+              <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseVideo')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} maxSelection={1} />
             </div>
           </div>
@@ -1665,7 +1665,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
               <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
-              <div className=''><span className='text-[#108A00] font-[500]'>{t('browseDocuments')}</span></div>
+              <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseDocuments')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} maxSelection={2} />
             </div>
           </div>
@@ -1675,7 +1675,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
 
       <div className='flex justify-end gap-2 pt-6'>
         <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors' />
+        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8 py-2 text-white bg-main-600 hover:bg-main-700 rounded-lg transition-colors' />
       </div>
     </form>
   );
@@ -1692,7 +1692,7 @@ function Step6({ formData, handleSubmit, prevStep, loading }) {
   return (
     <div className='text-center space-y-8 py-8'>
       <div>
-        <div className='w-[200px] h-fit bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+        <div className='w-[200px] h-fit bg-main-100 rounded-full flex items-center justify-center mx-auto mb-4'>
           <img src='/icons/congratlation.png' alt='' className='w-[300px]' />
         </div>
         <h1 className='text-3xl font-bold text-gray-900 mb-2'>{t('congratulations')}</h1>
@@ -1706,8 +1706,8 @@ function Step6({ formData, handleSubmit, prevStep, loading }) {
       </div>
 
       <div className='flex flex-col xs:flex-row justify-center gap-4 pt-4'>
-        <Button type='button' icon={isArabic ? <ChevronRight className='ltr:scale-x-[-1]' /> : <ChevronLeft className='' />} name={t('backToEdit')} color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
-        <Button type='button' name={isUpdate ? t('updateGig') : t('publishGig')} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors max-xs:!w-full' />
+        <Button type='button' icon={isArabic ? <ChevronRight className='ltr:scale-x-[-1]' /> : <ChevronLeft className='' />} name={t('backToEdit')} color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-main-600 hover:bg-main-700 rounded-lg transition-colors max-xs:!w-full' />
+        <Button type='button' name={isUpdate ? t('updateGig') : t('publishGig')} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-main-600 hover:bg-main-700 rounded-lg transition-colors max-xs:!w-full' />
       </div>
     </div>
   );
@@ -1720,21 +1720,21 @@ function SkeletonLoading() {
       <div className='absolute w-full h-full inset-0 bg-gray-100 rounded-lg z-[-1]'></div>
       {/* Animated spinner with smooth green gradient */}
       <div className='relative'>
-        <div className='w-16 h-16 border-6 border-green-200 rounded-full'></div>
-        <div className='absolute top-0 left-0 w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin'></div>
+        <div className='w-16 h-16 border-6 border-main-200 rounded-full'></div>
+        <div className='absolute top-0 left-0 w-16 h-16 border-4 border-main-600 border-t-transparent rounded-full animate-spin'></div>
       </div>
 
       {/* Loading text with smooth fading animation */}
       <div className='text-center space-y-4'>
-        <p className='text-xl font-semibold text-green-800'>{t('loadingGigCreator')}</p>
-        <p className='text-sm text-green-600 animate-pulse'>{t('gettingReady')}</p>
+        <p className='text-xl font-semibold text-main-800'>{t('loadingGigCreator')}</p>
+        <p className='text-sm text-main-600 animate-pulse'>{t('gettingReady')}</p>
       </div>
 
       {/* Progress dots with a pulsating effect and subtle delay */}
       <div className='flex space-x-3'>
-        <div className='w-3 h-3 bg-gradient-to-r from-green-400 to-green-500 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
-        <div className='w-3 h-3 bg-gradient-to-r from-green-500 to-green-600 rounded-full animate-bounce' style={{ animationDelay: '200ms' }}></div>
-        <div className='w-3 h-3 bg-gradient-to-r from-green-600 to-green-700 rounded-full animate-bounce' style={{ animationDelay: '400ms' }}></div>
+        <div className='w-3 h-3 bg-gradient-to-r from-main-400 to-main-500 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
+        <div className='w-3 h-3 bg-gradient-to-r from-main-500 to-main-600 rounded-full animate-bounce' style={{ animationDelay: '200ms' }}></div>
+        <div className='w-3 h-3 bg-gradient-to-r from-main-600 to-main-700 rounded-full animate-bounce' style={{ animationDelay: '400ms' }}></div>
       </div>
     </div>
   );

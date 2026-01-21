@@ -86,7 +86,7 @@ export default function Table({
 
           <tbody>
             {displayRows.map((row, idx) => (
-              <tr key={row.__skeleton ?? idx} className='odd:bg-emerald-50/20 hover:bg-slate-50'>
+              <tr key={row.__skeleton ?? idx} className='odd:bg-main-50/20 hover:bg-slate-50'>
                 {columns.map(column => {
                   const isSkeleton = loading || row.__skeleton !== undefined;
                   if (isSkeleton) {

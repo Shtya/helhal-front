@@ -142,7 +142,7 @@ export default function PaymentPage() {
             <h2 className='text-xl font-semibold text-slate-900'>{order.title}</h2>
             <div className='flex items-center gap-2'>
               {!isFromJob && order.packageType ? <span className='rounded-full bg-slate-100 px-3 py-1 text-xs font-medium capitalize text-slate-700'>{order.packageType}</span> : null}
-              {order.status ? <span className='rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800'>{order.status}</span> : null}
+              {order.status ? <span className='rounded-full bg-main-100 px-3 py-1 text-xs font-medium text-main-800'>{order.status}</span> : null}
             </div>
           </div>
 
@@ -200,7 +200,7 @@ export default function PaymentPage() {
                     className={`font-medium capitalize ${invoice.paymentStatus === 'pending'
                       ? 'text-amber-600'
                       : invoice.paymentStatus === 'paid'
-                        ? 'text-emerald-600'
+                        ? 'text-main-600'
                         : 'text-slate-600'
                       }`}
                   >
@@ -218,8 +218,8 @@ export default function PaymentPage() {
 
           {/* Amount */}
           <div className='mb-6 text-center'>
-            <div className='mx-auto inline-flex items-baseline gap-2 rounded-2xl border border-emerald-200/60 bg-emerald-50 px-5 py-3'>
-              <span className='text-2xl font-bold text-emerald-800'>{formatMoney(Number(invoice.totalAmount), currency)}</span>
+            <div className='mx-auto inline-flex items-baseline gap-2 rounded-2xl border border-main-200/60 bg-main-50 px-5 py-3'>
+              <span className='text-2xl font-bold text-main-800'>{formatMoney(Number(invoice.totalAmount), currency)}</span>
             </div>
             <p className='mt-2 text-xs text-slate-500'>{t('includesTaxes')}</p>
           </div>
@@ -232,7 +232,7 @@ export default function PaymentPage() {
               color='green'
               onClick={() => setIsTermsModalOpen(true)}
               loading={paying}
-              className='!w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400'
+              className='!w-fit !px-6 h-11 rounded-xl text-base shadow-custom transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-400'
               aria-label='Confirm payment'
             >
               {paying ? <Loader2 className='mr-2 inline h-4 w-4 animate-spin' /> : <CreditCard className='mr-2 inline h-4 w-4' />}
@@ -266,11 +266,11 @@ export default function PaymentPage() {
                 id="acceptTerms"
                 checked={acceptedTerms}
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
-                className="h-4 w-4 text-emerald-600 border-gray-300 rounded"
+                className="h-4 w-4 text-main-600 border-gray-300 rounded"
               />
               <label htmlFor="acceptTerms" className="text-sm text-gray-700 flex gap-1">
                 {t('acceptTerms')}
-                <Link href='/terms' target="_blank" className='text-emerald-600 underline hover:text-emerald-800'>
+                <Link href='/terms' target="_blank" className='text-main-600 underline hover:text-main-800'>
                   {t("terms")}
                 </Link>
               </label>

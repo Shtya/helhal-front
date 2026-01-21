@@ -44,7 +44,7 @@ export default function Hero() {
 				href: '/auth?tab=register',
 				secondaryHref: '/auth?tab=login',
 				chip: cardData.chip,
-				tone: 'emerald',
+				tone: 'main',
 			});
 		} else if (role === 'buyer') {
 			const cardData = t.raw('hero.cards.buyer');
@@ -58,7 +58,7 @@ export default function Hero() {
 				href: '/share-job-description',
 				secondaryHref: '/services/all',
 				chip: cardData.chip,
-				tone: 'emerald',
+				tone: 'main',
 			});
 		} else if (role === 'seller') {
 			const cardData = t.raw('hero.cards.seller');
@@ -71,7 +71,7 @@ export default function Hero() {
 				href: '/create-gig',
 
 				chip: cardData.chip,
-				tone: 'emerald',
+				tone: 'main',
 			});
 		}
 
@@ -103,8 +103,8 @@ export default function Hero() {
 			dir={isArabic ? 'rtl' : 'ltr'}
 		>
 			<div className="pointer-events-none absolute inset-0">
-				<div className="absolute -top-28 -left-24 h-60 w-60 rounded-full bg-emerald-400/15 blur-3xl" />
-				<div className="absolute -bottom-28 -right-24 h-60 w-60 rounded-full bg-emerald-400/10 blur-3xl" />
+				<div className="absolute -top-28 -left-24 h-60 w-60 rounded-full bg-main-400/15 blur-3xl" />
+				<div className="absolute -bottom-28 -right-24 h-60 w-60 rounded-full bg-main-400/10 blur-3xl" />
 				<div
 					className="absolute inset-0 opacity-[0.07]" // Reduced opacity of grid
 					style={{
@@ -122,7 +122,7 @@ export default function Hero() {
 				<motion.div variants={container} initial="hidden" animate="show">
 					{/* Top label */}
 					<motion.div variants={item} className="mb-2 inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-2.5 py-0.5 text-[11px] text-slate-600 backdrop-blur/50">
-						<Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+						<Sparkles className="h-3.5 w-3.5 text-main-600" />
 						<span>{t('hero.quickActions')}</span>
 					</motion.div>
 
@@ -132,7 +132,7 @@ export default function Hero() {
 						className="text-balance text-2xl font-bold tracking-tight text-slate-900 md:text-3xl"
 					>
 						{t('hero.welcomeBack')}{' '}
-						<span className="bg-gradient-to-r from-emerald-800 via-emerald-600 to-emerald-500 bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-main-800 via-main-600 to-main-500 bg-clip-text text-transparent">
 							{user?.username?.trim()}
 						</span>
 					</motion.h1>
@@ -175,7 +175,7 @@ function ActionCard({
 	href,
 	secondaryHref,
 	chip,
-	tone = 'emerald',
+	tone = 'main',
 	isArabic,
 	reduceMotion,
 	delay = 0,
@@ -185,12 +185,12 @@ function ActionCard({
 	const Arrow = isArabic ? ArrowLeft : ArrowRight;
 
 	const toneStyles =
-		tone === 'emerald'
+		tone === 'main'
 			? {
-				ring: 'ring-emerald-500/15  ',
-				iconBg: 'bg-emerald-50 text-emerald-700 ring-emerald-200/70  ',
-				chip: 'border-emerald-200/70 bg-emerald-50 text-emerald-700  ',
-				glow: 'bg-emerald-400/20',
+				ring: 'ring-main-500/15  ',
+				iconBg: 'bg-main-50 text-main-700 ring-main-200/70  ',
+				chip: 'border-main-200/70 bg-main-50 text-main-700  ',
+				glow: 'bg-main-400/20',
 			}
 			: {
 				ring: 'ring-slate-500/10 ',
@@ -209,7 +209,7 @@ function ActionCard({
 				'w-full md:max-w-[540px] group relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-5',
 				'shadow-sm transition-all',
 				'hover:shadow-md hover:border-slate-200',
-				'focus-within:ring-2 focus-within:ring-emerald-500/30',
+				'focus-within:ring-2 focus-within:ring-main-500/30',
 				' ',
 				' ',
 			].join(' ')}
@@ -275,9 +275,9 @@ function ActionCard({
         w-full sm:flex-1
         inline-flex items-center justify-center gap-1
         h-12 px-6 rounded-xl
-        bg-emerald-600 text-white
+        bg-main-600 text-white
         text-sm md:text-base font-medium
-        hover:shadow-lg hover:bg-emerald-700
+        hover:shadow-lg hover:bg-main-700
         transition-all
       "
 					>
@@ -294,10 +294,10 @@ function ActionCard({
         w-full sm:flex-1
         inline-flex items-center justify-center
         h-12 px-6 rounded-xl
-        border border-emerald-700
-        text-emerald-700
+        border border-main-700
+        text-main-700
         text-sm md:text-base font-medium
-        bg-emerald-50 hover:bg-emerald-100
+        bg-main-50 hover:bg-main-100
         transition-all
       "
 					>

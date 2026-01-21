@@ -24,7 +24,7 @@ export default function FAQSection({
 			{/* Title */}
 			{showTitle && (
 				<div className="mb-8 text-center">
-					<p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200/70">
+					<p className="inline-flex items-center gap-2 rounded-full bg-main-50 px-3 py-1 text-xs font-semibold text-main-800 ring-1 ring-main-200/70">
 						<Sparkles className="h-4 w-4" />
 						{t("kicker")}
 					</p>
@@ -38,9 +38,9 @@ export default function FAQSection({
 			)}
 
 			{/* list style (not boxy): thin dividers + soft hover, like Apple/Notion */}
-			<div className="rounded-[28px] overflow-hidden bg-white/40 ring-1 ring-emerald-200/50">
+			<div className="rounded-[28px] overflow-hidden bg-white/40 ring-1 ring-main-200/50">
 				{loading ? (
-					<div className="divide-y divide-emerald-100/60">
+					<div className="divide-y divide-main-100/60">
 						{skeletons.map((_, idx) => (
 							<div key={idx} className="p-5 md:p-6 animate-pulse">
 								<div className="h-4 bg-slate-200/80 rounded w-2/3 mb-3" />
@@ -49,7 +49,7 @@ export default function FAQSection({
 						))}
 					</div>
 				) : (
-					<div className="divide-y divide-emerald-100/60">
+					<div className="divide-y divide-main-100/60">
 						{faqs.map((faq, idx) => {
 							const isOpen = openIndex === idx;
 
@@ -63,12 +63,12 @@ export default function FAQSection({
 											"w-full text-left p-5 md:p-6",
 											"flex items-start gap-4",
 											"transition",
-											isOpen ? "bg-emerald-50/60" : "hover:bg-slate-50/70"
+											isOpen ? "bg-main-50/60" : "hover:bg-slate-50/70"
 										].join(" ")}
 									>
 										{/* icon */}
-										<div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/70 ring-1 ring-emerald-200/60">
-											<HelpCircle className="h-5 w-5 text-emerald-700" />
+										<div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/70 ring-1 ring-main-200/60">
+											<HelpCircle className="h-5 w-5 text-main-700" />
 										</div>
 
 										{/* question */}
@@ -100,7 +100,7 @@ export default function FAQSection({
 														className={[
 															"grid place-items-center rounded-xl p-2 ring-1 transition",
 															isOpen
-																? "bg-white/70 ring-emerald-200 text-emerald-700"
+																? "bg-white/70 ring-main-200 text-main-700"
 																: "bg-white/50 ring-slate-200 text-slate-500"
 														].join(" ")}
 													>
@@ -139,7 +139,7 @@ export default function FAQSection({
 
 									{/* active left indicator */}
 									{isOpen && (
-										<div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-emerald-400 to-teal-400" />
+										<div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-main-400 to-teal-400" />
 									)}
 								</div>
 							);

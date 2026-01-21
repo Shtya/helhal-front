@@ -47,9 +47,9 @@ export default function AdminManagementDashboard() {
       </GlassCard>
 
       <GlassCard className='p-6 text-center'>
-        <FileText size={32} className='text-green-600 mx-auto mb-3' />
+        <FileText size={32} className='text-main-600 mx-auto mb-3' />
         <h3 className='text-lg font-semibold mb-2'>Blogs</h3>
-        <p className='text-3xl font-bold text-green-600'>{stats.blogs.total}</p>
+        <p className='text-3xl font-bold text-main-600'>{stats.blogs.total}</p>
         <div className='flex justify-center gap-2 mt-2'>
           <MetricBadge tone='success'>{stats.blogs.published} published</MetricBadge>
           <MetricBadge tone='neutral'>{stats.blogs.draft} draft</MetricBadge>

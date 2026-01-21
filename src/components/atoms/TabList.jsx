@@ -18,7 +18,7 @@ export default function TabList({ allTabs, activeTab, setActiveTab }) {
             className={`relative inline-flex border-slate-200/70 border bg-slate-50 items-center gap-2 rounded-full px-3 py-2 text-sm md:text-base font-semibold cursor-pointer shadow-inner transition-colors duration-300 
               ${isActive ? ' text-white' : '  hover:text-white'}`}>
             {/* Active pill animation */}
-            {isHovered && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-lg' transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
+            {isHovered && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-full bg-gradient-to-r from-main-500 to-main-400 shadow-lg' transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
             <span className={`relative capitalize z-10 transition-colors ${isHovered ? 'text-white drop-shadow-sm' : 'text-gray-700'}`}>{tab}</span>
           </motion.button>
         );

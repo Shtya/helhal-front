@@ -36,7 +36,7 @@ export const CATEGORY_LINKS = [
 /* ===================== SMALL UI ===================== */
 function Pill({ children, className = '' }) {
   return (
-    <span className={['inline-flex items-center gap-2 rounded-full', 'bg-emerald-600 text-white text-xs font-semibold', 'px-3 py-1 shadow shadow-emerald-600/20', className].join(' ')}>
+    <span className={['inline-flex items-center gap-2 rounded-full', 'bg-main-600 text-white text-xs font-semibold', 'px-3 py-1 shadow shadow-main-600/20', className].join(' ')}>
       <BadgeCheck className='w-3.5 h-3.5' />
       {children}
     </span>
@@ -55,7 +55,7 @@ function LinksSection({ titleKey, links, directTexts = false }) {
     <div className='w-full md:w-auto flex-1 min-w-[200px]'>
       {/* Header */}
       <button type='button' onClick={() => setExpanded(p => !p)} className='w-full py-4 md:py-2 flex items-center justify-between text-start md:cursor-default group' aria-expanded={expanded}>
-        <h3 className='font-extrabold text-lg md:text-xl text-gray-900 group-hover:text-emerald-700 transition'>{t(titleKey)}</h3>
+        <h3 className='font-extrabold text-lg md:text-xl text-gray-900 group-hover:text-main-700 transition'>{t(titleKey)}</h3>
         <span className='md:hidden text-gray-500'>{expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</span>
       </button>
 
@@ -65,13 +65,13 @@ function LinksSection({ titleKey, links, directTexts = false }) {
           <motion.ul key='mobile-list' initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className='space-y-1 overflow-hidden md:hidden'>
             {visibleLinks.map(item => (
               <li key={item.key}>
-                <Link href={item.href} className='text-[15px] py-2 text-gray-700 hover:text-emerald-700 hover:ps-1 transition block'>
+                <Link href={item.href} className='text-[15px] py-2 text-gray-700 hover:text-main-700 hover:ps-1 transition block'>
                   {directTexts ? item.key : t(item.key)}
                 </Link>
               </li>
             ))}
             {links.length > 5 && (
-              <button onClick={() => setShowMore(!showMore)} className='text-sm  text-emerald-700 hover:text-emerald-800 mt-2 w-fullfont-semibold'>
+              <button onClick={() => setShowMore(!showMore)} className='text-sm  text-main-700 hover:text-main-800 mt-2 w-fullfont-semibold'>
                 {showMore ? t('footer.showLess') : t('footer.showMore')}
               </button>
             )}
@@ -83,13 +83,13 @@ function LinksSection({ titleKey, links, directTexts = false }) {
       <ul className='hidden md:block space-y-1'>
         {visibleLinks.map(item => (
           <li key={item.key}>
-            <Link href={item.href} className='text-[15px] py-1.5 text-gray-700 hover:text-emerald-700 hover:ps-1 transition block'>
+            <Link href={item.href} className='text-[15px] py-1.5 text-gray-700 hover:text-main-700 hover:ps-1 transition block'>
               {directTexts ? item.key : t(item.key)}
             </Link>
           </li>
         ))}
         {links.length > 5 && (
-          <button onClick={() => setShowMore(!showMore)} className='text-sm text-emerald-700 hover:text-emerald-800 mt-2 w-fullfont-semibold'>
+          <button onClick={() => setShowMore(!showMore)} className='text-sm text-main-700 hover:text-main-800 mt-2 w-fullfont-semibold'>
             {showMore ? t('footer.showLess') : t('footer.showMore')}
           </button>
         )}
@@ -104,9 +104,9 @@ function LanguageSwitcher() {
 
   return (
     <div className='w-[180px]'>
-      <div className='flex justify-between text-sm font-bold rounded-xl border border-emerald-200 overflow-hidden'>
+      <div className='flex justify-between text-sm font-bold rounded-xl border border-main-200 overflow-hidden'>
         {languages.map(({ code, label }) => (
-          <button key={code} disabled={isPending} onClick={() => toggleLocale(code)} className={['w-1/2 text-center py-2 transition-colors cursor-pointer', locale === code ? 'bg-emerald-600 text-white' : 'text-emerald-700 hover:bg-emerald-50'].join(' ')} aria-label={`Switch to ${label}`}>
+          <button key={code} disabled={isPending} onClick={() => toggleLocale(code)} className={['w-1/2 text-center py-2 transition-colors cursor-pointer', locale === code ? 'bg-main-600 text-white' : 'text-main-700 hover:bg-main-50'].join(' ')} aria-label={`Switch to ${label}`}>
             {label}
           </button>
         ))}
@@ -198,12 +198,12 @@ export function Footer() {
     <footer className='relative mt-22'>
       {/* Top gradient band */}
       <div className='absolute inset-x-0 -top-8 h-24 pointer-events-none'>
-        <div className='mx-auto max-w-6xl h-full blur-2xl opacity-10 bg-gradient-to-r from-emerald-300 via-emerald-500 to-emerald-300 rounded-full' />
+        <div className='mx-auto max-w-6xl h-full blur-2xl opacity-10 bg-gradient-to-r from-main-300 via-main-500 to-main-300 rounded-full' />
       </div>
 
       {/* Main card */}
       <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className={['rounded-3xl border border-emerald-100/70 bg-white', 'shadow-[0_20px_60px_rgba(16,185,129,0.10)]'].join(' ')}>
+        <div className={['rounded-3xl border border-main-100/70 bg-white', 'shadow-[0_20px_60px_rgba(16,185,129,0.10)]'].join(' ')}>
           {/* Brand + Social + Language */}
           <div className='px-6 md:px-10 pt-8 pb-6 flex flex-col lg:flex-row gap-8 lg:gap-10 items-start lg:items-center justify-between'>
             <div className='flex items-center gap-4'>
@@ -250,7 +250,7 @@ export function Footer() {
 
           {/* Divider */}
           <div className='px-6 md:px-10'>
-            <div className='h-px w-full bg-gradient-to-r from-transparent via-emerald-100 to-transparent' />
+            <div className='h-px w-full bg-gradient-to-r from-transparent via-main-100 to-transparent' />
           </div>
 
           {/* Links grid */}
@@ -270,7 +270,7 @@ export function Footer() {
 
           {/* Bottom bar */}
           <div className='px-6 md:px-10'>
-            <div className='h-px w-full bg-gradient-to-r from-transparent via-emerald-100 to-transparent' />
+            <div className='h-px w-full bg-gradient-to-r from-transparent via-main-100 to-transparent' />
           </div>
         </div>
       </div>

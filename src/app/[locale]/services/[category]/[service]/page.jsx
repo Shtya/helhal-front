@@ -358,7 +358,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
         // serviceData?.fastDelivery && {
         //   icon: <Zap className='h-3.5 w-3.5' />,
         //   text: 'Fast delivery',
-        //   classes: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+        //   classes: 'border-main-200 bg-main-50 text-main-700',
         // },
         // serviceData?.additionalRevision && {
         //   icon: <Repeat className='h-3.5 w-3.5' />,
@@ -450,7 +450,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
       <div className='mt-6 grid grid-cols-[auto,1fr] items-center gap-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4 backdrop-blur'>
         <div className='flex items-center gap-3'>
           <div className='relative'>
-            <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30' />
+            <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-main-400 via-sky-400 to-violet-400 blur opacity-30' />
             <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(seller?.username)}</span>}</div>
           </div>
 
@@ -461,7 +461,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
               </Link>
               {!!seller?.sellerLevel && (
                 <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
-                  <BadgeCheck className='h-3 w-3 text-emerald-600' />
+                  <BadgeCheck className='h-3 w-3 text-main-600' />
                   {String(seller.sellerLevel).toUpperCase()}
                 </span>
               )}
@@ -637,10 +637,10 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
           {/* controls */}
           {safeImages.length > 1 && (
             <>
-              <button type='button' aria-label='Previous image' onClick={prev} className=' cursor-pointer absolute flex-none left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+              <button type='button' aria-label='Previous image' onClick={prev} className=' cursor-pointer absolute flex-none left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500'>
                 <ChevronLeft className='h-[25px] w-[21px] cursor-pointer flex-none ' />
               </button>
-              <button type='button' aria-label='Next image' onClick={next} className=' cursor-pointer absolute flex-none right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+              <button type='button' aria-label='Next image' onClick={next} className=' cursor-pointer absolute flex-none right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500'>
                 <ChevronRight className='h-[25px] w-[21px] cursor-pointer flex-none ' />
               </button>
             </>
@@ -677,7 +677,7 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
                 aria-label={`Show image ${i + 1}`}
                 onClick={() => setActive(i)}
                 className={` hover:scale-[.95] duration-300 cursor-pointer relative h-20 w-28 flex-shrink-0 snap-start overflow-hidden rounded-xl border transition 
-                 ${activeState ? 'border-emerald-500 ring-2 ring-emerald-100' : 'border-slate-200 hover:border-slate-300'}`}>
+                 ${activeState ? 'border-main-500 ring-2 ring-main-100' : 'border-slate-200 hover:border-slate-300'}`}>
                 <Img src={img.url} alt={img.alt || `Thumbnail ${i + 1}`} className='h-full w-full object-cover' loading='lazy' decoding='async' />
               </button>
             );
@@ -689,7 +689,7 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
       <AnimatePresence>
         {lightbox && (
           <motion.div className='fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <button aria-label='Close' onClick={() => setLightbox(false)} className=' z-[10] absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+            <button aria-label='Close' onClick={() => setLightbox(false)} className=' z-[10] absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500'>
               <X className='h-5 w-5' />
             </button>
 
@@ -741,7 +741,7 @@ function AboutService({ serviceData = {}, onTagClick }) {
       {/* Header */}
       <div className='flex items-center justify-between px-6 pt-6'>
         <div className='flex items-center gap-2'>
-          <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700'>
+          <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-main-50 text-main-700'>
             <Info className='h-4 w-4' />
           </span>
           <h2 id='about-title' className='text-xl font-semibold text-slate-900'>
@@ -758,7 +758,7 @@ function AboutService({ serviceData = {}, onTagClick }) {
         </div>
 
         {longBrief && (
-          <button onClick={() => setExpanded(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800' aria-expanded={expanded}>
+          <button onClick={() => setExpanded(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-main-700 hover:text-main-800' aria-expanded={expanded}>
             {expanded ? t('about.showLess') : t('about.readMore')}
             <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} aria-hidden='true' />
           </button>
@@ -777,9 +777,9 @@ function AboutService({ serviceData = {}, onTagClick }) {
           <AnimatePresence initial={false}>
             <motion.div layout className='flex flex-wrap gap-2' transition={{ layout: { duration: 0.2 } }}>
               {tags.slice(0, expanded ? tags.length : 10).map((t, i) => (
-                <motion.button key={t.label + i} layout onClick={() => onTagClick?.(t.label)} className='group inline-flex items-center gap-1 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-sm text-emerald-800 hover:bg-emerald-100' title={t.count > 1 ? `${t.label} (${t.count})` : t.label}>
+                <motion.button key={t.label + i} layout onClick={() => onTagClick?.(t.label)} className='group inline-flex items-center gap-1 rounded-xl border border-main-100 bg-main-50 px-3 py-1.5 text-sm text-main-800 hover:bg-main-100' title={t.count > 1 ? `${t.label} (${t.count})` : t.label}>
                   <span>#{t.label}</span>
-                  {t.count > 1 && <span className='rounded-xl bg-white/70 px-1.5 text-xs text-emerald-700 group-hover:bg-white'>×{t.count}</span>}
+                  {t.count > 1 && <span className='rounded-xl bg-white/70 px-1.5 text-xs text-main-700 group-hover:bg-white'>×{t.count}</span>}
                 </motion.button>
               ))}
               {!expanded && tags.length > 10 && (
@@ -882,7 +882,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                 const recommended = index === recommendedIndex;
 
                 return (
-                  <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-emerald-300 bg-emerald-50/30 ring-1 ring-emerald-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
+                  <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-main-300 bg-main-50/30 ring-1 ring-main-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
                     <div className='mb-2 flex flex-wrap w-full items-start justify-between gap-1'>
                       <div className='flex items-center flex-wrap gap-2'>
                         <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type ? t(`packages.${pkg.type.toLowerCase()}`) : ''}</h3>
@@ -927,7 +927,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                     <ul className='mb-4 w-full space-y-2 pb-12'>
                       {(pkg.features || []).slice(0, 4).map((feature, i) => (
                         <li key={i} className='flex items-start text-sm'>
-                          <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600' />
+                          <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-main-600' />
                           <span className='text-slate-700'>{feature}</span>
                         </li>
                       ))}
@@ -938,7 +938,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                     <Button
                       name={active ? t('packages.selected') : t('packages.select')}
                       className={`absolute left-[10px] !w-[calc(100%-20px)] bottom-[10px] h-10 transition
-                        ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`}
+                        ${active ? 'bg-main-600 hover:bg-main-700 focus-visible:ring-2 focus-visible:ring-main-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`}
                       onClick={e => {
                         e.stopPropagation();
                         setSelectedPackage(pkg);
@@ -960,7 +960,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                       <div
                         key={'h' + i}
                         className={`rounded-xl px-4 py-3 text-center text-sm font-semibold uppercase tracking-wide
-                          ${active ? 'border border-emerald-500 bg-emerald-50 text-emerald-900' : 'border border-slate-200 bg-white text-slate-900'}`}>
+                          ${active ? 'border border-main-500 bg-main-50 text-main-900' : 'border border-slate-200 bg-white text-slate-900'}`}>
                         {p.type}
                         {p.title && (
                           <div className="mt-1 text-xs font-medium text-slate-600 normal-case">
@@ -1028,7 +1028,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                     return (
                       <div key={'cta' + i} className='px-2 py-2 text-center'>
                         <Button name={active ? t('packages.selected') : t('packages.select')} className={`w-full transition  
-                          ${active ? 'bg-emerald-600 hover:bg-emerald-700 focus-visible:ring-2 focus-visible:ring-emerald-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`} onClick={() => setSelectedPackage(p)} />
+                          ${active ? 'bg-main-600 hover:bg-main-700 focus-visible:ring-2 focus-visible:ring-main-300' : 'bg-slate-900 hover:bg-slate-950 focus-visible:ring-2 focus-visible:ring-slate-300'}`} onClick={() => setSelectedPackage(p)} />
                       </div>
                     );
                   })}
@@ -1070,7 +1070,7 @@ function RequirementsSection({ triedSubmit, requirements, answers, onChange, val
           <p className='mt-1 text-sm text-slate-600'>{t('requirements.subtitle')}</p>
         </div>
         {total > 0 && (
-          <div className='shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-800'>
+          <div className='shrink-0 rounded-full border border-main-200 bg-main-50 px-3 py-1 text-xs font-medium text-main-800'>
             {answered}/{total} {t('requirements.complete')}
           </div>
         )}
@@ -1078,7 +1078,7 @@ function RequirementsSection({ triedSubmit, requirements, answers, onChange, val
 
       {/* progress */}
       <div className='mx-6 mt-4 h-2 rounded-full bg-slate-100'>
-        <div className='h-2 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600' style={{ width: `${progress}%` }} />
+        <div className='h-2 rounded-full bg-gradient-to-r from-main-400 to-main-600' style={{ width: `${progress}%` }} />
       </div>
 
       {/* list */}
@@ -1205,7 +1205,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
 
           {!!val && (
             <div className='mt-2 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700'>
-              <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+              <CheckCircle2 className='h-4 w-4 text-main-600' />
               {t('requirements.selected')}: <span className='font-medium'>{val?.name || val?.filename || String(val)}</span>
             </div>
           )}
@@ -1291,7 +1291,7 @@ function AboutSeller({ serviceData }) {
       <div className='p-6'>
         <div className='flex items-center gap-3'>
           <div className='relative'>
-            <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30' />
+            <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-main-400 via-sky-400 to-violet-400 blur opacity-30' />
             <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(seller?.username)}</span>}</div>
           </div>
 
@@ -1302,7 +1302,7 @@ function AboutSeller({ serviceData }) {
               </Link>
               {!!seller?.sellerLevel && (
                 <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
-                  <BadgeCheck className='h-3 w-3 text-emerald-600' />
+                  <BadgeCheck className='h-3 w-3 text-main-600' />
                   {String(seller.sellerLevel).toUpperCase()}
                 </span>
               )}
@@ -1361,7 +1361,7 @@ function AboutSeller({ serviceData }) {
             {!descOpen && (seller?.description || serviceData?.brief || '').length > 160 && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent' />}
           </div>
           {(seller?.description || serviceData?.brief || '').length > 160 && (
-            <button onClick={() => setDescOpen(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-800'>
+            <button onClick={() => setDescOpen(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-main-700 hover:text-main-800'>
               {descOpen ? t('seller.showLess') : t('seller.readMore')}
               <ChevronDown className={`h-4 w-4 transition ${descOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -1375,7 +1375,7 @@ function AboutSeller({ serviceData }) {
             <div className='mb-1 text-sm font-medium text-slate-900'>{t('seller.keySkills')}</div>
             <div className='flex flex-wrap gap-1.5'>
               {skills.slice(0, 6).map((s, i) => (
-                <span key={i} className='rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs text-emerald-800'>
+                <span key={i} className='rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs text-main-800'>
                   {s}
                 </span>
               ))}
@@ -1387,7 +1387,7 @@ function AboutSeller({ serviceData }) {
         {!!certifications.length && (
           <div>
             <div className='mb-1 flex items-center gap-2 text-sm font-medium text-slate-900'>
-              <ShieldCheck className='h-4 w-4 text-emerald-600' /> {t('seller.certifications')}
+              <ShieldCheck className='h-4 w-4 text-main-600' /> {t('seller.certifications')}
             </div>
             <ul className='space-y-1 text-sm text-slate-700'>
               {certifications.slice(0, 3).map((c, i) => (
@@ -1478,7 +1478,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
                   <Beaker className="h-3.5 w-3.5" /> {t('sidebar.test')}</span>
                 }
                 {serviceData?.fastDelivery && (
-                  <span className='inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-emerald-800'>
+                  <span className='inline-flex items-center gap-1 rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-main-800'>
                     <Zap className='h-3.5 w-3.5' /> {t('sidebar.fastDelivery')}
                   </span>
                 )}
@@ -1503,12 +1503,12 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
               <ul className='mb-4 space-y-2'>
                 {featuresPreview.map((f, i) => (
                   <li key={i} className='flex items-start text-sm'>
-                    <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600' />
+                    <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-main-600' />
                     <span className='text-slate-700'>{f}</span>
                   </li>
                 ))}
                 {hasMore && (
-                  <button onClick={() => setShowAllFeatures(true)} className='pl-6 text-left text-xs font-medium text-emerald-700 hover:text-emerald-800'>
+                  <button onClick={() => setShowAllFeatures(true)} className='pl-6 text-left text-xs font-medium text-main-700 hover:text-main-800'>
                     + {features.length - featuresPreview.length} {t('sidebar.more')}
                   </button>
                 )}
@@ -1517,7 +1517,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
                 <Button name={t('sidebar.continue')} className='flex-1' disabled={!canOrder} onClick={onTryOpenOrderOptions} />
-                {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500'>
+                {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-main-500'>
                   <MessageCircle size={18} />
                 </Link>}
               </div>
@@ -1737,15 +1737,15 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
               whileHover={{ y: 0 }}
               whileTap={{ scale: 0.98 }}
               className={`group cursor-pointer relative text-left rounded-xl border px-3.5 py-3 transition
-                ${active ? 'border-emerald-500 bg-gradient-to-b from-emerald-50 to-white ring-2 ring-emerald-100 shadow-custom ' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
+                ${active ? 'border-main-500 bg-gradient-to-b from-main-50 to-white ring-2 ring-main-100 shadow-custom ' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
               {/* decorative halo */}
-              <div className='  pointer-events-none absolute -inset-px rounded-xl opacity-0 transition group-hover:opacity-100 bg-gradient-to-r from-emerald-200/20 via-transparent to-sky-200/20' />
+              <div className='  pointer-events-none absolute -inset-px rounded-xl opacity-0 transition group-hover:opacity-100 bg-gradient-to-r from-main-200/20 via-transparent to-sky-200/20' />
 
               <div className='flex items-start gap-3'>
                 {/* bullet / check */}
                 <span
                   className={`mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border transition
-                  ${active ? 'border-emerald-500 bg-emerald-500 text-white' : 'border-slate-300 bg-white text-transparent'}`}>
+                  ${active ? 'border-main-500 bg-main-500 text-white' : 'border-slate-300 bg-white text-transparent'}`}>
                   <svg viewBox='0 0 20 20' className='h-3.5 w-3.5 fill-current'>
                     <path d='M7.629 13.233 4.4 10.004l1.2-1.2 2.029 2.029 6.771-6.771 1.2 1.2z' />
                   </svg>
@@ -1755,10 +1755,10 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
                   <div className='flex items-center gap-2'>
                     <span className='ml-auto text-[10px] text-slate-400'>[{i + 1}]</span>
 
-                    <span className={`text-sm font-medium ${active ? 'text-emerald-800' : 'text-slate-800'}`}>{opt.label}</span>
+                    <span className={`text-sm font-medium ${active ? 'text-main-800' : 'text-slate-800'}`}>{opt.label}</span>
                   </div>
 
-                  {opt.hint && <p className={`mt-1 text-xs leading-5 ${active ? 'text-emerald-700' : 'text-slate-600'}`}>{opt.hint}</p>}
+                  {opt.hint && <p className={`mt-1 text-xs leading-5 ${active ? 'text-main-700' : 'text-slate-600'}`}>{opt.hint}</p>}
                 </div>
               </div>
             </motion.button>
@@ -1777,7 +1777,7 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
             onChange={e => setOtherText(e.target.value.slice(0, 500))} // enforce max length
             onBlur={() => UpdateOtherText(otherText)}
             maxLength={500} // browser-level enforcement
-            className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100'
+            className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-main-500 focus:ring-2 focus:ring-main-100'
           />
           <div className="mt-1 text-[11px] text-slate-500">
             {otherText.length}/500 • {t('requirements.includeWithSelection')}
@@ -1836,7 +1836,7 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
 
       {/* Drawer */}
       <aside ref={drawerRef} role='dialog' aria-modal='true' aria-labelledby='order-options-title' className={`overflow-y-auto !h-screen fixed right-0 top-0 z-[100] w-[360px] max-w-full sm:w-[420px] bg-white border-l shadow-2xl transition-transform duration-300 ease-out will-change-transform ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className='pointer-events-none absolute left-0 top-0 h-full w-2 bg-gradient-to-b from-emerald-200/50 via-transparent to-emerald-200/50' />
+        <div className='pointer-events-none absolute left-0 top-0 h-full w-2 bg-gradient-to-b from-main-200/50 via-transparent to-main-200/50' />
 
         {/* Header */}
         <div className='overflow-y-auto h-[calc(100dvh-140px)]'>
@@ -1869,12 +1869,12 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
               <textarea rows={4} value={notes} onChange={e => {
                 if (e.target.value.length <= 750) setNotes(e.target.value);
               }}
-                maxLength={750} placeholder={t('orderOptions.sellerShouldKnow')} className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100' />
+                maxLength={750} placeholder={t('orderOptions.sellerShouldKnow')} className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-main-500 focus:ring-2 focus:ring-main-100' />
               <div className='mt-1 text-right text-xs text-slate-500'> {notes.length}/750 {t('orderOptions.chars')}</div>
             </div>
 
             {/* Summary card */}
-            <div className='rounded-xl border border-emerald-200 bg-emerald-50/50 p-4'>
+            <div className='rounded-xl border border-main-200 bg-main-50/50 p-4'>
               <div className='text-slate-800'>
                 <PriceTag price={selectedPackage?.price ?? 0} />
                 <div className='mt-4 space-y-2 text-slate-700'>

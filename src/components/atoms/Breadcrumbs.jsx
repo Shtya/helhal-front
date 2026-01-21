@@ -12,7 +12,7 @@ export default function Breadcrumbs({
   className = '',
   homeHref = '/',
   maxVisible = 4, // collapse when more than this (keeps first + last 2)
-  brand = '#108A00', // accent
+  brand = 'var(--color-main-600)', // accent
 }) {
   const lastIndex = items.length - 1;
   const needsCollapse = items.length > maxVisible;
@@ -137,7 +137,7 @@ function CrumbItem({ item, isLast, brand }) {
   if (isLast || !item.href) {
     return (
       <Crumb>
-        <span aria-current='page' title={item.label} className='group inline-flex items-center gap-2 max-w-[220px] md:max-w-[280px] truncate rounded-xl px-2 py-1 text-sm font-semibold text-emerald-700' style={{ color: brand }}>
+        <span aria-current='page' title={item.label} className='group inline-flex items-center gap-2 max-w-[220px] md:max-w-[280px] truncate rounded-xl px-2 py-1 text-sm font-semibold text-main-700' style={{ color: brand }}>
           {item.icon && <span className='opacity-80'>{item.icon}</span>}
           <span className='truncate'>{item.label}</span>
           <span className='pointer-events-none absolute h-0.5 w-[calc(100%-16px)] translate-y-4 rounded-full' style={{ backgroundColor: `${brand}66` }} />
@@ -148,10 +148,10 @@ function CrumbItem({ item, isLast, brand }) {
 
   return (
     <Crumb>
-      <Link href={item.href} className='group relative inline-flex items-center gap-2 max-w-[220px] md:max-w-[280px] truncate rounded-xl px-2 py-1 text-sm font-medium text-slate-700 hover:text-emerald-700 hover:bg-slate-50' title={item.label}>
+      <Link href={item.href} className='group relative inline-flex items-center gap-2 max-w-[220px] md:max-w-[280px] truncate rounded-xl px-2 py-1 text-sm font-medium text-slate-700 hover:text-main-700 hover:bg-slate-50' title={item.label}>
         {item.icon && <span className='opacity-80'>{item.icon}</span>}
         <span className='truncate'>{item.label}</span>
-        <span className='absolute left-2 right-2 -bottom-0.5 h-0.5 rounded-full bg-transparent transition group-hover:bg-emerald-200' />
+        <span className='absolute left-2 right-2 -bottom-0.5 h-0.5 rounded-full bg-transparent transition group-hover:bg-main-200' />
       </Link>
     </Crumb>
   );

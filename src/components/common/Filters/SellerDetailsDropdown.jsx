@@ -8,7 +8,7 @@ import Button from '@/components/atoms/Button';
 
 export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChange, selectedValues }) {
   const t = useTranslations('Services.filters.sellerDetails');
-  const BRAND = '#007a55';
+  const BRAND = 'var(--color-main-700)';
   const rootRef = useRef(null);
 
   // -------- Utils
@@ -171,7 +171,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
       disabled={disabled}
       className={`w-full px-2 py-1 mx-1 rounded-md flex items-center justify-between text-left transition
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        ${active ? 'gradient text-white' : 'hover:bg-emerald-50 text-slate-800'}`}>
+        ${active ? 'gradient text-white' : 'hover:bg-main-50 text-slate-800'}`}>
       <span className='flex items-center gap-2'>
         <span
           className={`w-5 h-5 rounded-md border flex items-center justify-center
@@ -180,7 +180,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
         </span>
         <div>
           <span className={`whitespace-nowrap truncate text-sm ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
-          <span className={`mx-1 ${active ? 'text-emerald-50' : 'text-slate-400'} text-[10px]`}>{count}</span>
+          <span className={`mx-1 ${active ? 'text-main-50' : 'text-slate-400'} text-[10px]`}>{count}</span>
         </div>
       </span>
     </button>
@@ -192,7 +192,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
       type='button'
       onClick={onClick}
       className={`w-full px-2 py-1 mx-1 rounded-md flex items-center justify-between text-left transition cursor-pointer
-        ${active ? 'gradient text-white' : 'hover:bg-emerald-50 text-slate-800'}`}>
+        ${active ? 'gradient text-white' : 'hover:bg-main-50 text-slate-800'}`}>
       <span className='flex items-center gap-3'>
         <span className={`w-5 h-5 rounded-md border flex items-center justify-center ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513]'}`}>
           {active && <Check className='w-3 h-3 text-white' />}
@@ -201,7 +201,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
           <span className={`whitespace-nowrap truncate text-sm ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
         </div>
       </span>
-      <span className={`mx-1 ${active ? 'text-emerald-50' : 'text-slate-400'} text-[10px]`}>{count}</span>
+      <span className={`mx-1 ${active ? 'text-main-50' : 'text-slate-400'} text-[10px]`}>{count}</span>
     </button>
   );
 
@@ -228,20 +228,18 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
           aria-haspopup='listbox'
           aria-expanded={open}
           onClick={() => setOpen(o => !o)}
-          className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition ${open ? 'ring-2' : ''}`}
-          style={{
-            borderColor: open ? `${BRAND}90` : '#cbd5e1',
-            boxShadow: open ? `0 0 0 3px ${BRAND}66 inset` : undefined,
-          }}>
+          className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition 
+            ${open ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]' : 'border-slate-300'}`}
+        >
           <span className='truncate'>{totalSelected > 0 ? `${totalSelected} ${totalSelected > 1 ? t('filters') : t('filter')} ${t('applied')}` : t('title')}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
         </button>
 
         {/* Panel */}
         <div
-          className={`absolute start-0 mt-2 w-[350px] rounded-xl border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
+          className={` border border-main-700/40  absolute start-0 mt-2 w-[350px] rounded-xl bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
           ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
-          style={{ border: `1px solid ${BRAND}60` }}>
+        >
           <div className='py-4 max-h-[70vh] overflow-auto'>
             {/* Seller level */}
             {levelOptions.length > 0 && (

@@ -7,7 +7,7 @@ const NotFound = () => {
   const t = useTranslations('NotFound');
   return (
     <main className='relative w-full h-auto lg:h-[680px]  !py-[40px] overflow-hidden'>
-      <div className='absolute inset-0 bg-[#108A00]' aria-hidden='true' />
+      <div className='absolute inset-0 bg-[var(--color-main-600)]' aria-hidden='true' />
 
       <img src='/images/not-found/bg.png' alt='' className='absolute inset-0 h-full w-full object-cover opacity-60' loading='lazy' aria-hidden='true' />
       <div className='absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/30' aria-hidden='true' />
@@ -17,12 +17,12 @@ const NotFound = () => {
         <div className=' h-full grid grid-cols-1 max-lg:justify-center lg:grid-cols-2 gap-10 items-center'>
           {/* text column */}
           <div className='text-white max-lg:text-center  '>
-            <p className='mb-3 text-xl font-semibold uppercase tracking-wider text-emerald-100/90'>{t('error404')}</p>
+            <p className='mb-3 text-xl font-semibold uppercase tracking-wider text-main-100/90'>{t('error404')}</p>
             <h1 className='text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight'>{t('pageNotFound')}</h1>
-            <p className='mt-4 text-emerald-50/90 text-base sm:text-lg max-lg:mx-auto max-w-xl'>{t('description')}</p>
+            <p className='mt-4 text-main-50/90 text-base sm:text-lg max-lg:mx-auto max-w-xl'>{t('description')}</p>
 
             <div className='mt-8 flex max-lg:mx-auto max-lg:w-fit flex-wrap gap-3'>
-              <Link href='/' className='inline-flex items-center rounded-xl bg-white text-emerald-700 px-5 py-2.5 font-semibold shadow-sm hover:shadow-md transition'>{t('backToHome')}</Link>
+              <Link href='/' className='inline-flex items-center rounded-xl bg-white text-main-700 px-5 py-2.5 font-semibold shadow-sm hover:shadow-md transition'>{t('backToHome')}</Link>
               <button onClick={() => history.back()} className='inline-flex items-center rounded-xl border border-white/70 bg-transparent px-5 py-2.5 font-semibold text-white hover:bg-white/10 transition'>{t('goBack')}</button>
             </div>
           </div>

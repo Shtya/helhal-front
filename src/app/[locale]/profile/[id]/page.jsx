@@ -63,8 +63,8 @@ export default function ProfilePageClient() {
   return (
     <main className='container !my-10'>
       {/* ===== Hero / Header ===== */}
-      <section className='relative overflow-hidden rounded-3xl border border-emerald-200 bg-white shadow-lg'>
-        <div className='absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-95' />
+      <section className='relative overflow-hidden rounded-3xl border border-main-200 bg-white shadow-lg'>
+        <div className='absolute inset-0 bg-gradient-to-r from-main-500 to-main-400 opacity-95' />
         <div className='relative p-6 sm:p-8 text-white'>
           <div className='flex flex-col sm:flex-row items-start sm:items-center gap-5'>
             {/* Avatar */}
@@ -92,7 +92,7 @@ export default function ProfilePageClient() {
             </div>
 
             <div className='flex items-center gap-2'>
-              {!isSameUser && <Link href={`/chat?userId=${buyer?.id || ''}`} className='px-4 py-2 text-sm font-semibold rounded-xl bg-white text-emerald-700 hover:bg-emerald-50 active:scale-95 transition shadow'>
+              {!isSameUser && <Link href={`/chat?userId=${buyer?.id || ''}`} className='px-4 py-2 text-sm font-semibold rounded-xl bg-white text-main-700 hover:bg-main-50 active:scale-95 transition shadow'>
                 {t('message')}
               </Link>}
             </div>
@@ -100,9 +100,9 @@ export default function ProfilePageClient() {
 
           {/* KPIs */}
           <div className='mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3'>
-            {/* <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' /> */}
+            {/* <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-main-500 via-teal-500 to-cyan-400' /> */}
 
-            <StatCard gradient='from-emerald-500 via-teal-500 to-cyan-400' icon={Star} title={t('orders')} value={buyer?.ordersCompleted ?? 0} />
+            <StatCard gradient='from-main-500 via-teal-500 to-cyan-400' icon={Star} title={t('orders')} value={buyer?.ordersCompleted ?? 0} />
             <StatCard gradient='from-amber-400 via-orange-500 to-rose-500' icon={Repeat} title={t('repeatBuyers')} value={buyer?.repeatBuyers ?? 0} />
             <StatCard
               gradient="from-sky-500 via-indigo-500 to-violet-500"
@@ -343,7 +343,7 @@ function VerificationStatusRow({ icon: Icon, value, copyable, label, verified })
 
         {/* 2. Verification Badge */}
         {verified ? (
-          <div className="flex items-center gap-1.5 text-emerald-600">
+          <div className="flex items-center gap-1.5 text-main-600">
             <CheckCircle2 className="h-4 w-4" />
             <span className='text-sm font-medium'>{t('verified')}</span>
           </div>
@@ -360,7 +360,7 @@ function VerificationStatusRow({ icon: Icon, value, copyable, label, verified })
 
 function Badge({ icon: Icon, text }) {
   return (
-    <span className='inline-flex items-center gap-1.5 rounded-full bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 px-2.5 py-1 text-xs font-semibold'>
+    <span className='inline-flex items-center gap-1.5 rounded-full bg-main-50 text-main-700 ring-1 ring-main-200 px-2.5 py-1 text-xs font-semibold'>
       <Icon className='h-3.5 w-3.5' /> {text}
     </span>
   );
@@ -378,9 +378,9 @@ function ServiceCard({ service }) {
     <div className='group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300'>
       {/* Top row */}
       <div className='flex items-center gap-3'>
-        <div className=' flex-none h-11 w-11 grid place-items-center rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-white font-semibold shadow'>{initials}</div>
+        <div className=' flex-none h-11 w-11 grid place-items-center rounded-xl bg-gradient-to-r from-main-500 to-main-400 text-white font-semibold shadow'>{initials}</div>
         <div className='min-w-0 truncate whitespace-nowrap'>
-          <Link href={`/services/category/${service?.slug || service?.id || ''}`} className='  font-semibold text-slate-900 group-hover:text-emerald-600 ' title={service?.title || t('untitledService')}>
+          <Link href={`/services/category/${service?.slug || service?.id || ''}`} className='  font-semibold text-slate-900 group-hover:text-main-600 ' title={service?.title || t('untitledService')}>
             {service?.title || t('untitledService')}
           </Link>
           {service?.category && <div className='mt-0.5 text-xs text-slate-500 truncate'>{service.category}</div>}
@@ -453,7 +453,7 @@ function Metric({ icon: Icon, label, value }) {
   return (
     <div className='rounded-lg border border-slate-200 bg-slate-50/60 px-2.5 py-2'>
       <div className='flex items-center gap-1.5 text-slate-600 text-xs'>
-        <Icon className='h-3.5 w-3.5 text-emerald-500' />
+        <Icon className='h-3.5 w-3.5 text-main-500' />
         <span>{label}</span>
       </div>
       <div className='mt-0.5 text-sm font-semibold text-slate-900'>{value}</div>
@@ -466,7 +466,7 @@ function EmptyState({ text, actionHref, actionText }) {
     <div className='rounded-xl border border-dashed border-slate-300 p-8 text-center bg-slate-50/60'>
       <div className='text-slate-600 text-sm'>{text}</div>
       {actionHref && (
-        <Link href={actionHref} className='mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 text-white text-sm font-semibold shadow-lg transition-all duration-300 hover:brightness-110 active:scale-95'>
+        <Link href={actionHref} className='mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-main-500 to-main-400 text-white text-sm font-semibold shadow-lg transition-all duration-300 hover:brightness-110 active:scale-95'>
           <Sparkles className='h-4 w-4' />
           {actionText || 'Create'}
         </Link>

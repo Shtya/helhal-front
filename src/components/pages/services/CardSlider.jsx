@@ -135,7 +135,7 @@ export function CardSlider({ title = 'Categories' }) {
           transition: width 0.25s ease, height 0.25s ease, background 0.25s ease;
         }
         .cards-bullet-active {
-          background: #10b981 !important;
+          background: var(--color-main-500 !important;
           transform: scale(1.1);
           box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15), 0 0 8px rgba(16, 185, 129, 0.45);
         }
@@ -177,7 +177,7 @@ export function CardSlider({ title = 'Categories' }) {
 function NavButton({ dir }) {
   const isPrev = dir === 'prev';
   const label = isPrev ? 'Previous' : 'Next';
-  const cls = 'inline-flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm hover:bg-slate-50 active:scale-[0.98] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500';
+  const cls = 'inline-flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm hover:bg-slate-50 active:scale-[0.98] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500';
   return (
     <button className={`${cls} cards-${dir}`} aria-label={label} title={label} type='button'>
       {isPrev ? (

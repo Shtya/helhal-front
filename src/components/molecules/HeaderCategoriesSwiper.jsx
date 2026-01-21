@@ -25,12 +25,12 @@ export default function HeaderCategoriesSwiper({ category }) {
   return (
     <div className='relative mb-6 border-y border-y-slate-200 '>
       {/* Prev/Next */}
-      <button id='cat-prev' disabled={isBeginning || loadingCategory} className={`absolute left-0 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white shadow p-1 transition ${isBeginning || loadingCategory ? 'opacity-0 pointer-events-none' : 'hover:bg-emerald-50'}`} aria-label='Previous'>
-        <ChevronLeft className='w-7 h-7 text-emerald-700' />
+      <button id='cat-prev' disabled={isBeginning || loadingCategory} className={`absolute left-0 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white shadow p-1 transition ${isBeginning || loadingCategory ? 'opacity-0 pointer-events-none' : 'hover:bg-main-50'}`} aria-label='Previous'>
+        <ChevronLeft className='w-7 h-7 text-main-700' />
       </button>
 
-      <button id='cat-next' disabled={isEnd || loadingCategory} className={`absolute right-0 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white shadow p-1 transition ${isEnd || loadingCategory ? 'opacity-0 pointer-events-none' : 'hover:bg-emerald-50'}`} aria-label='Next'>
-        <ChevronRight className='w-7 h-7 text-emerald-700' />
+      <button id='cat-next' disabled={isEnd || loadingCategory} className={`absolute right-0 top-1/2 z-20 -translate-y-1/2 rounded-full bg-white shadow p-1 transition ${isEnd || loadingCategory ? 'opacity-0 pointer-events-none' : 'hover:bg-main-50'}`} aria-label='Next'>
+        <ChevronRight className='w-7 h-7 text-main-700' />
       </button>
 
       {!isBeginning && !loadingCategory && <div className='pointer-events-none absolute left-0 top-0 z-10 h-full w-10 bg-gradient-to-r from-white to-transparent' />}
@@ -86,7 +86,7 @@ export default function HeaderCategoriesSwiper({ category }) {
           }}
           className='!px-2'>
           <SwiperSlide className='!w-auto py-2 '>
-            <Link href='/services/all' aria-current={isAllActive ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ' + (isAllActive ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-emerald-500 from-emerald-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-emerald-400/60 hover:text-emerald-700')} title={t('categories.allServices')}>
+            <Link href='/services/all' aria-current={isAllActive ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ' + (isAllActive ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-main-500 from-main-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-main-400/60 hover:text-main-700')} title={t('categories.allServices')}>
               {t('categories.all')}
             </Link>
           </SwiperSlide>
@@ -95,7 +95,7 @@ export default function HeaderCategoriesSwiper({ category }) {
             const active = c.slug === category;
             return (
               <SwiperSlide key={c.slug} className='!w-auto py-2 '>
-                <Link href={`/services/${c.slug}`} aria-current={active ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ease-out ' + (active ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-emerald-500 from-emerald-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-emerald-400/60 hover:text-emerald-700')}>
+                <Link href={`/services/${c.slug}`} aria-current={active ? 'page' : undefined} className={'inline-flex items-center rounded-full px-5 py-2 text-sm font-medium transition duration-300 ease-out ' + (active ? ' gradient text-white ' : 'hover:text-white hover:bg-gradient-to-r to-main-500 from-main-600 text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-main-400/60 hover:text-main-700')}>
                   {locale === 'ar' ? c.name_ar : c.name_en}
                 </Link>
               </SwiperSlide>

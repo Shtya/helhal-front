@@ -86,7 +86,7 @@ const statusPill = status => {
     case 'submitted':
       return 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200';
     case 'accepted':
-      return 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200';
+      return 'bg-main-50 text-main-700 ring-1 ring-inset ring-main-200';
     case 'rejected':
       return 'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200';
     default:
@@ -243,7 +243,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
                 {seller.skills.slice(0, 6).map(s => (
                   <span
                     key={s}
-                    className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200"
+                    className="rounded-md bg-main-50 px-2 py-0.5 text-[11px] font-medium text-main-700 ring-1 ring-inset ring-main-200"
                   >
                     {s}
                   </span>
@@ -255,8 +255,8 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
 
         <div className='flex gap-1 items-center'>
           <div className='inline-flex items-end gap-1'>
-            <DollarSign className='mb-0.5 h-5 w-5 text-emerald-600' />
-            <p className='text-2xl font-bold text-emerald-700'>{formatMoney(proposal.bidAmount)}</p>
+            <DollarSign className='mb-0.5 h-5 w-5 text-main-600' />
+            <p className='text-2xl font-bold text-main-700'>{formatMoney(proposal.bidAmount)}</p>
             <span className='text-sm text-slate-500'>/{proposal.bidType === 'hourly' ? t('bidType.hourly') : proposal.bidType === 'fixed' ? t('bidType.fixed') : t('bidType.bid')}</span>
           </div>
           <p className='mt-1 inline-flex items-center gap-1 text-sm text-slate-600'>
@@ -473,7 +473,7 @@ export default function JobProposalsPage() {
           <div className='flex flex-wrap items-center gap-2'>
             {job?.budget && <MetaChip icon={<DollarSign className='h-3.5 w-3.5' />} text={`${formatMoney(job.budget)} • ${job.budgetType || 'budget'}`} title={t('jobBudget')} />}
             {job?.preferredDeliveryDays != null && <MetaChip icon={<Clock className='h-3.5 w-3.5' />} text={t('daysPreferred', { days: job.preferredDeliveryDays })} title={t('preferredDeliveryTime')} />}
-            <Link href='/my-jobs' className='text-sm text-emerald-700 underline underline-offset-2'>
+            <Link href='/my-jobs' className='text-sm text-main-700 underline underline-offset-2'>
               {t('viewMyJobs')}
             </Link>
           </div>

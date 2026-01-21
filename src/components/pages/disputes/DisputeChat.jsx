@@ -142,9 +142,9 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
         }
         // Temporary subtle highlight with smooth fade-out
         el.classList.add('transition-colors', 'duration-700');
-        el.classList.add('bg-emerald-50');
+        el.classList.add('bg-main-50');
         setTimeout(() => {
-            el.classList.remove('bg-emerald-50');
+            el.classList.remove('bg-main-50');
         }, 800);
     }, []);
 
@@ -224,12 +224,12 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                     {detail?.hasMore && (
                         <div className='text-center'>
                             {loadingOlder ? (
-                                <FaSpinner className='mx-auto h-5 w-5 animate-spin text-emerald-500' />
+                                <FaSpinner className='mx-auto h-5 w-5 animate-spin text-main-500' />
                             ) : (
                                 <button
                                     type='button'
                                     onClick={onLoadOlder}
-                                    className='text-emerald-600 text-sm hover:underline'
+                                    className='text-main-600 text-sm hover:underline'
                                 >
                                     {t('loadOlderMessages')}
                                 </button>
@@ -329,7 +329,7 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
 
                 {/* Bubble */}
                 <div className={`max-w-[88%] sm:max-w-[80%] `}>
-                    <div className={`rounded-2xl px-3 py-2 ring-1 shadow-sm ${node.system ? 'bg-slate-50 ring-slate-200' : isMine ? 'bg-emerald-50 ring-emerald-100' : 'bg-white ring-slate-200'}`}>
+                    <div className={`rounded-2xl px-3 py-2 ring-1 shadow-sm ${node.system ? 'bg-slate-50 ring-slate-200' : isMine ? 'bg-main-50 ring-main-100' : 'bg-white ring-slate-200'}`}>
                         <div className="text-[12px] text-gray-500 mb-1 flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-x-2 gap-y-1">
                             <b className="text-gray-800 truncate max-w-[50%] sm:max-w-none">
                                 {node?.sender?.username || (node.system ? t('system') : t('user'))}
@@ -348,7 +348,7 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
                                 {!node.system && onReply && !isDisputeClosed && (
                                     <button
                                         onClick={() => onReply(node)}
-                                        className="text-gray-400 hover:text-emerald-600 transition underline "
+                                        className="text-gray-400 hover:text-main-600 transition underline "
                                         title={t('replyToMessage')}
                                     >
                                         {t('reply')}
@@ -383,7 +383,7 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
                 </div>
 
                 {/* Right-side avatar for my messages */}
-                {isMine && <div className='h-8 w-8 rounded-full bg-emerald-100 grid place-items-center text-[11px] font-semibold shrink-0 text-emerald-800'>{initialsFromName(node?.sender?.username) || 'ME'}</div>}
+                {isMine && <div className='h-8 w-8 rounded-full bg-main-100 grid place-items-center text-[11px] font-semibold shrink-0 text-main-800'>{initialsFromName(node?.sender?.username) || 'ME'}</div>}
             </div>
 
             {/* Children */}

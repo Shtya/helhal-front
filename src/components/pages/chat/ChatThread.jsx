@@ -203,7 +203,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
       <div className='flex  flex-wrap items-start justify-between gap-4 border-b border-b-slate-200 pb-2 mb-2'>
         <div className='flex items-center gap-3'>
           <div className='relative '>
-            <Img src={thread?.avatar} altSrc={'/no-user.png'} alt={thread?.name} className='border-green-500 border-[2px] h-10 w-10 rounded-full object-cover ring-2 ring-white shadow' />
+            <Img src={thread?.avatar} altSrc={'/no-user.png'} alt={thread?.name} className='border-main-500 border-[2px] h-10 w-10 rounded-full object-cover ring-2 ring-white shadow' />
           </div>
           <div>
             <div className='flex items-center gap-2'>
@@ -245,7 +245,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
             {hasMore && (
               <div className='text-center'>
                 {loadingOlder ? (
-                  <FaSpinner className='mx-auto h-5 w-5 animate-spin text-emerald-500' />
+                  <FaSpinner className='mx-auto h-5 w-5 animate-spin text-main-500' />
                 ) : (
                   <button
                     type='button'
@@ -278,7 +278,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
             >
               <AccessibleButton
                 onClick={handleScrollToBottom}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-colors text-sm font-medium"
+                className="bg-main-500 hover:bg-main-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 transition-colors text-sm font-medium"
                 ariaLabel={t('newMessageScroll')}
                 title={t('newMessageScroll')}
               >
@@ -380,11 +380,11 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }} className={`flex gap-4 ${me ? 'flex-row-reverse text-right' : ''}`}>
       <div className='relative h-fit flex-none'>
         {avatar ? <Img altSrc={'/no-user.png'} src={avatar} alt={name} className='h-10 w-10 rounded-full object-cover ring-2 ring-white shadow' /> : <div className={`h-10 w-10 rounded-full ${avatarBg} ring-2 ring-white shadow`} />}
-        {/* <span className='absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500' /> */}
+        {/* <span className='absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-main-500' /> */}
       </div>
 
       <div className={`flex-1 ${me ? 'flex flex-col items-end' : ''}`}>
-        <div className={`${me ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-800'} mt-1 inline-block max-w-[85%] rounded-2xl px-4 py-2 shadow-sm  ${failed ? 'bg-red-100 text-red-800' : ''}`}>
+        <div className={`${me ? 'bg-main-500 text-white' : 'bg-slate-100 text-slate-800'} mt-1 inline-block max-w-[85%] rounded-2xl px-4 py-2 shadow-sm  ${failed ? 'bg-red-100 text-red-800' : ''}`}>
           {text && <p className='max-w-4xl text-sm leading-5 break-words whitespace-pre-wrap'>{text}</p>}
 
           {attachments.length > 0 && (
@@ -446,7 +446,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
                         target="_blank"
                         title={f.filename}
                         className={`text-xs px-3 py-2 rounded-md inline-flex items-center gap-2 ${me
-                          ? 'bg-emerald-600/20 hover:bg-emerald-600/40'
+                          ? 'bg-main-600/20 hover:bg-main-600/40'
                           : 'bg-gray-100 hover:bg-gray-200'
                           }`}
                       >
@@ -490,11 +490,11 @@ function SendButton({ loading, text }) {
         // size & typography
         'text-[13px] font-medium',
         // colors
-        loading ? 'bg-emerald-400/80 text-white' : 'bg-emerald-500 text-white hover:bg-emerald-600 active:bg-emerald-700',
+        loading ? 'bg-main-400/80 text-white' : 'bg-main-500 text-white hover:bg-main-600 active:bg-main-700',
         // effects
         'shadow-sm transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed',
         // focus
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60',
       ].join(' ')}>
       <span className='grid place-items-center rounded-full h-8 w-8 bg-white/10'>{loading ? <FaSpinner className='h-3.5 w-3.5 animate-spin' /> : <Send size={14} />}</span>
 

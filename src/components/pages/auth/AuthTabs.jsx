@@ -9,7 +9,7 @@ const TABS = [
   { key: 'forgot-password', label: 'Forgot?' },
 ];
 
-export default function AuthTabs({setView}) {
+export default function AuthTabs({ setView }) {
   const router = useRouter();
   // optional: read initial tab from URL (?tab=register)
   const search = typeof useSearchParams === 'function' ? useSearchParams() : null;
@@ -23,8 +23,8 @@ export default function AuthTabs({setView}) {
   const handleClick = key => {
     setActiveTab(key);
     router.push(`/auth?tab=${key}`);
-	if(key == "login" || key === 'register')  setView("options")
-	if(key == "forgot-password") setView("email")
+    if (key == "login" || key === 'register') setView("options")
+    if (key == "forgot-password") setView("email")
   };
 
   return (
@@ -46,8 +46,8 @@ export default function AuthTabs({setView}) {
               onMouseLeave={() => setHoveredTab(null)}
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.98 }}
-              className=' cursor-pointer relative select-none rounded-xl px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500/60'>
-               {isPreviewed && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-lg' transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
+              className=' cursor-pointer relative select-none rounded-xl px-3 py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-main-500/60'>
+              {isPreviewed && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-xl bg-gradient-to-r from-main-500 to-main-400 shadow-lg' transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
 
               <span className={`relative z-10 transition-colors ${isPreviewed ? 'text-white drop-shadow-sm' : 'text-gray-700'}`}>{t.label}</span>
             </motion.button>

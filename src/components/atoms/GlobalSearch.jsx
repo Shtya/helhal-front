@@ -12,11 +12,11 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   const t = useTranslations('GlobalSearch');
-  const BRAND = '#108A0090';
+  const BRAND = 'var(--color-main-500)';
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { role } = useAuth();
-  const isBuyer = role === 'buyer';
+  const isBuyer = role === 'buyer' || role === 'guest';
   const isSeller = role === 'seller';
   // ---------- UI state
   const [q, setQ] = useState('');
@@ -235,7 +235,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
     return (
       <>
         {t.slice(0, idx)}
-        <mark className='rounded px-0.5 bg-emerald-100 text-emerald-800'>{t.slice(idx, idx + ql.length)}</mark>
+        <mark className='rounded px-0.5 bg-main-100 text-main-800'>{t.slice(idx, idx + ql.length)}</mark>
         {t.slice(idx + ql.length)}
       </>
     );
@@ -261,7 +261,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                   return next;
                 });
               }}
-              className='inline-flex items-center gap-1 max-xl:p-[10px] rounded-lg px-2 py-1 text-slate-700 max-xl:bg-emerald-600 max-xl:text-white  hover:xl:bg-slate-50 border border-transparent max-xl:border-slate-200 hover:xl:border-slate-200'
+              className='inline-flex items-center gap-1 max-xl:p-[10px] rounded-lg px-2 py-1 text-slate-700 max-xl:bg-main-600 max-xl:text-white  hover:xl:bg-slate-50 border border-transparent max-xl:border-slate-200 hover:xl:border-slate-200'
               aria-expanded={scopeOpen}>
               <span className='font-semibold'>{scope.label}</span>
               <ChevronDown className={`h-4 w-4 transition ${scopeOpen ? 'rotate-180' : ''}`} />
@@ -329,7 +329,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                     setScopeOpen(false);
                     inputRef.current?.focus();
                   }}
-                  className={`block w-full px-3 py-2 text-left text-sm ${i === scopeIndex ? 'bg-emerald-50 text-emerald-700' : 'hover:bg-slate-50'}`}>
+                  className={`block w-full px-3 py-2 text-left text-sm ${i === scopeIndex ? 'bg-main-50 text-main-700' : 'hover:bg-slate-50'}`}>
                   {opt.label}
                 </button>
               ))}
@@ -387,7 +387,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
               </div>
 
               {/* Footer CTA */}
-              <button onClick={() => go(q)} className='flex  w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-emerald-50'>
+              <button onClick={() => go(q)} className='flex  w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-main-50'>
                 <span className='break-all'>
                   {t('footer.searchIn', { query: q || '…', scope: scope.label })}
                 </span>
@@ -430,12 +430,12 @@ function Section({ title, children, loading = false, empty = false, emptyHint = 
 
 function Row({ icon, children, subtitle, meta, active, onMouseEnter, onClick }) {
   return (
-    <button type='button' onMouseEnter={onMouseEnter} onClick={onClick} className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm transition ${active ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-50'}`}>
-      <span className={`grid h-6 w-6 place-items-center rounded-md ${active ? 'bg-white/20' : 'bg-[#108A0033] border border-[#108A0013] text-slate-700'}`}>{icon}</span>
+    <button type='button' onMouseEnter={onMouseEnter} onClick={onClick} className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm transition ${active ? 'bg-main-600 text-white' : 'hover:bg-main-50'}`}>
+      <span className={`grid h-6 w-6 place-items-center rounded-md ${active ? 'bg-white/20' : 'bg-[color:var(--color-main-200)] border border-[color:var(--color-main-400)] text-slate-700'}`}>{icon}</span>
       <span className='flex-1 min-w-0'>
         <div className={`truncate ${active ? 'font-medium' : ''}`}>{children}</div>
         {(subtitle || meta) && (
-          <div className={`flex items-center gap-2 text-[11px] truncate ${active ? 'text-emerald-50' : 'text-slate-400'}`}>
+          <div className={`flex items-center gap-2 text-[11px] truncate ${active ? 'text-main-50' : 'text-slate-400'}`}>
             {subtitle && <span className='truncate'>{subtitle}</span>}
             {meta && <span className='truncate'>• {meta}</span>}
           </div>

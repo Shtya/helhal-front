@@ -33,7 +33,7 @@ export const MessageSkeletonBubble = ({ me = false, animated = false }) => (
     <Shimmer className="h-10 w-10 rounded-full flex-shrink-0" animated={animated} />
     <div className="flex flex-col gap-2 w-full max-w-[calc(100%-3.5rem)]">
       <Shimmer className="h-3 w-[40%] sm:w-24" animated={animated} />
-      <div className={`${animated ? me ? 'animate-pulse bg-emerald-500/50' : 'animate-pulse bg-slate-200/90' : me ? 'bg-emerald-500/30' : 'bg-slate-200/70'} rounded-2xl p-3`}>
+      <div className={`${animated ? me ? 'animate-pulse bg-main-500/50' : 'animate-pulse bg-slate-200/90' : me ? 'bg-main-500/30' : 'bg-slate-200/70'} rounded-2xl p-3`}>
         <Shimmer className="h-4 w-full max-w-[80%] mb-2" animated={animated} />
         <Shimmer className="h-4 w-full max-w-[60%]" animated={animated} />
       </div>

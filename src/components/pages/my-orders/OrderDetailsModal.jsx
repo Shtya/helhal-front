@@ -55,9 +55,9 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
   const getStatusColor = (status) => {
     const colors = {
       [OrderStatus.PENDING]: 'text-yellow-600 bg-yellow-50',
-      [OrderStatus.ACCEPTED]: 'text-green-600 bg-green-50',
+      [OrderStatus.ACCEPTED]: 'text-main-600 bg-main-50',
       [OrderStatus.DELIVERED]: 'text-blue-600 bg-blue-50',
-      [OrderStatus.COMPLETED]: 'text-emerald-700 bg-emerald-50',
+      [OrderStatus.COMPLETED]: 'text-main-700 bg-main-50',
       [OrderStatus.CANCELLED]: 'text-rose-600 bg-rose-50',
       [OrderStatus.REJECTED]: 'text-rose-600 bg-rose-50',
       [OrderStatus.DISPUTED]: 'text-purple-700 bg-purple-50',
@@ -71,7 +71,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
       case 'delivered':
         return <Package className="h-4 w-4 text-blue-600" />;
       case 'completed':
-        return <CheckCircle className="h-4 w-4 text-emerald-600" />;
+        return <CheckCircle className="h-4 w-4 text-main-600" />;
       case 'cancelled':
         return <XCircle className="h-4 w-4 text-rose-600" />;
       default:
@@ -230,7 +230,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                           </p>
                           <div className="mt-2 flex flex-wrap gap-2">
                             {order.service.packages.find(pkg => pkg.type === order.packageType).features?.map((feature, idx) => (
-                              <span key={idx} className="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded">
+                              <span key={idx} className="text-xs bg-main-50 text-main-700 px-2 py-1 rounded">
                                 {feature}
                               </span>
                             ))}
@@ -269,7 +269,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                             href={resolveUrl(req.answer)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-emerald-600 underline hover:text-emerald-700"
+                            className="text-sm text-main-600 underline hover:text-main-700"
                           >
                             {req.filename || 'Download file'}
                           </a>
@@ -317,7 +317,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-slate-900">{t('invoice')} #{invoice.invoiceNumber}</p>
                     <span className={`text-xs px-2 py-1 rounded-full ${invoice.paymentStatus === 'paid'
-                      ? 'bg-green-100 text-green-700'
+                      ? 'bg-main-100 text-main-700'
                       : 'bg-yellow-100 text-yellow-700'
                       }`}>
                       {invoice.paymentStatus}
@@ -369,7 +369,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                         </div>
                         <div className="col-span-2 pt-2 border-t border-slate-200">
                           <p className="text-slate-600">{t('netEarnings')}</p>
-                          <p className="text-lg font-semibold text-emerald-700 flex gap-1">
+                          <p className="text-lg font-semibold text-main-700 flex gap-1">
                             <span><Currency /> </span>
                             <span>{sellerNetPay.toFixed(2)}</span>
 

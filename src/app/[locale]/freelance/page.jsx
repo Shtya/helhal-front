@@ -68,8 +68,8 @@ function Section({
 		<section
 			className={[
 				"relative overflow-hidden",
-				withDividerTop ? "border-t border-emerald-100/70" : "",
-				isTint ? "bg-gradient-to-b from-emerald-50/70 via-white to-white" : "bg-white",
+				withDividerTop ? "border-t border-main-100/70" : "",
+				isTint ? "bg-gradient-to-b from-main-50/70 via-white to-white" : "bg-white",
 				className
 			].join(" ")}
 		>
@@ -77,13 +77,13 @@ function Section({
 			<div className="pointer-events-none absolute inset-0">
 				{isTint ? (
 					<>
-						<div className="absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-400/14 blur-3xl" />
+						<div className="absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-main-400/14 blur-3xl" />
 						<div className="absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-teal-400/12 blur-3xl" />
 						<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.10),transparent_55%)]" />
 					</>
 				) : (
 					<>
-						<div className="absolute -top-28 -left-28 h-80 w-80 rounded-full bg-emerald-400/8 blur-3xl" />
+						<div className="absolute -top-28 -left-28 h-80 w-80 rounded-full bg-main-400/8 blur-3xl" />
 						<div className="absolute -bottom-24 right-1/3 h-72 w-72 rounded-full bg-teal-400/8 blur-3xl" />
 					</>
 				)}
@@ -93,7 +93,7 @@ function Section({
 				<div className="mx-auto max-w-6xl">
 					<div className="mb-10 text-center">
 						{eyebrow ? (
-							<div className="mx-auto mb-3 inline-flex items-center rounded-full border border-emerald-200/60 bg-emerald-50 px-4 py-1 text-xs font-semibold text-emerald-900/90">
+							<div className="mx-auto mb-3 inline-flex items-center rounded-full border border-main-200/60 bg-main-50 px-4 py-1 text-xs font-semibold text-main-900/90">
 								{eyebrow}
 							</div>
 						) : null}
@@ -120,7 +120,7 @@ function Card({ children, className = "" }) {
 	return (
 		<div
 			className={[
-				"group rounded-3xl border border-emerald-100/70 bg-white/80 backdrop-blur",
+				"group rounded-3xl border border-main-100/70 bg-white/80 backdrop-blur",
 				"shadow-[0_10px_35px_-25px_rgba(2,6,23,0.35)] hover:shadow-[0_25px_60px_-40px_rgba(2,6,23,0.55)]",
 				"transition-all duration-200 hover:-translate-y-0.5",
 				className
@@ -151,7 +151,7 @@ export function Hero() {
 				/>
 
 				<div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/70" />
-				<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.30),transparent_55%)]" />
+				<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.main.500/30),transparent_55%)]" />
 
 				<div className="flex-1 relative z-10 flex h-full items-center">
 					<div className="container !px-4 sm:!px-6 lg:!px-8">
@@ -169,7 +169,7 @@ export function Hero() {
 								<div className={`mt-8 flex flex-wrap gap-3 ${isRTL ? "lg:justify-start" : ""}`}>
 									<Link
 										href="/auth?tab=register&type=seller"
-										className="inline-flex items-center justify-center h-12 px-12 max-md:px-4 rounded-lg bg-emerald-500 text-white text-sm md:text-base font-semibold hover:bg-emerald-600 transition shadow-md hover:shadow-lg"
+										className="inline-flex items-center justify-center h-12 px-12 max-md:px-4 rounded-lg bg-main-500 text-white text-sm md:text-base font-semibold hover:bg-main-600 transition shadow-md hover:shadow-lg"
 									>
 										{t("getStarted")}
 									</Link>
@@ -177,15 +177,15 @@ export function Hero() {
 
 								<div className="mt-10 flex flex-wrap items-center gap-6 text-white/80">
 									<div className="flex items-center gap-2">
-										<FiCheckCircle className="text-emerald-300" />
+										<FiCheckCircle className="text-main-300" />
 										<span className="text-sm">{t("whyChoose.items.securePayments.title")}</span>
 									</div>
 									<div className="flex items-center gap-2">
-										<FiCheckCircle className="text-emerald-300" />
+										<FiCheckCircle className="text-main-300" />
 										<span className="text-sm">{t("whyChoose.items.userFriendlyPlatform.title")}</span>
 									</div>
 									<div className="flex items-center gap-2">
-										<FiCheckCircle className="text-emerald-300" />
+										<FiCheckCircle className="text-main-300" />
 										<span className="text-sm">{t("whyChoose.items.supportiveCommunity.title")}</span>
 									</div>
 								</div>
@@ -195,8 +195,8 @@ export function Hero() {
 							<div className="lg:col-span-5">
 								<div className="rounded-3xl border border-white/15 bg-white/10 p-6 md:p-8 backdrop-blur-xl shadow-2xl shadow-black/20">
 									<div className="flex items-center gap-3">
-										<div className="flex-none h-12 w-12 rounded-2xl bg-emerald-400/20 border border-emerald-300/30 flex items-center justify-center">
-											<LuChartNetwork className="text-emerald-200 text-2xl" />
+										<div className="flex-none h-12 w-12 rounded-2xl bg-main-400/20 border border-main-300/30 flex items-center justify-center">
+											<LuChartNetwork className="text-main-200 text-2xl" />
 										</div>
 										<div>
 											<p className="text-white font-bold text-lg">{t("howStart.title")}</p>
@@ -206,7 +206,7 @@ export function Hero() {
 
 									<div className="mt-6 space-y-3">
 										<div className="flex items-start gap-3 rounded-2xl bg-white/10 border border-white/10 p-4">
-											<ImProfile className="text-emerald-200 text-2xl mt-0.5" />
+											<ImProfile className="text-main-200 text-2xl mt-0.5" />
 											<div>
 												<p className="text-white font-semibold">{t("howStart.steps.createProfile.title")}</p>
 												<p className="text-white/70 text-sm">{t("howStart.steps.createProfile.description")}</p>
@@ -214,7 +214,7 @@ export function Hero() {
 										</div>
 
 										<div className="flex items-start gap-3 rounded-2xl bg-white/10 border border-white/10 p-4">
-											<RiMenuSearchLine className="text-emerald-200 text-2xl mt-0.5" />
+											<RiMenuSearchLine className="text-main-200 text-2xl mt-0.5" />
 											<div>
 												<p className="text-white font-semibold">{t("howStart.steps.browseProjects.title")}</p>
 												<p className="text-white/70 text-sm">{t("howStart.steps.browseProjects.description")}</p>
@@ -222,7 +222,7 @@ export function Hero() {
 										</div>
 
 										<div className="flex items-start gap-3 rounded-2xl bg-white/10 border border-white/10 p-4">
-											<LuChartNetwork className="text-emerald-200 text-2xl mt-0.5" />
+											<LuChartNetwork className="text-main-200 text-2xl mt-0.5" />
 											<div>
 												<p className="text-white font-semibold">{t("howStart.steps.submitProposals.title")}</p>
 												<p className="text-white/70 text-sm">{t("howStart.steps.submitProposals.description")}</p>
@@ -233,7 +233,7 @@ export function Hero() {
 									<div className="mt-6">
 										<Link
 											href="/auth?tab=register&type=seller"
-											className="w-full inline-flex items-center justify-center h-12 rounded-full bg-white text-emerald-800 font-semibold hover:bg-emerald-50 transition"
+											className="w-full inline-flex items-center justify-center h-12 rounded-full bg-white text-main-800 font-semibold hover:bg-main-50 transition"
 										>
 											{t("getStarted")}
 										</Link>
@@ -371,16 +371,16 @@ function StatCard({ item, index, start }) {
 			<div className="absolute inset-0 rounded-3xl bg-[linear-gradient(120deg,rgba(16,185,129,0.55),rgba(45,212,191,0.45),rgba(59,130,246,0.35))] opacity-70 blur-[0.2px] transition-opacity group-hover:opacity-100" />
 			<div className="absolute -inset-6 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.22),transparent_55%)] opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
 
-			<div className="relative rounded-3xl bg-white/70 backdrop-blur-xl px-6 py-7 shadow-[0_10px_30px_-18px_rgba(2,6,23,0.35)] ring-1 ring-emerald-100/70">
+			<div className="relative rounded-3xl bg-white/70 backdrop-blur-xl px-6 py-7 shadow-[0_10px_30px_-18px_rgba(2,6,23,0.35)] ring-1 ring-main-100/70">
 				<div className="absolute rtl:left-5 ltr:right-5 top-5 opacity-0 transition-opacity group-hover:opacity-100">
-					<Sparkles className="h-5 w-5 text-emerald-500/80" />
+					<Sparkles className="h-5 w-5 text-main-500/80" />
 				</div>
 
 				<div className="flex items-center gap-4">
 					<div className="relative">
-						<div className="absolute inset-0 rounded-2xl bg-emerald-500/20 blur-xl" />
-						<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/10 ring-1 ring-emerald-200/70">
-							<Icon className="h-6 w-6 text-emerald-700" />
+						<div className="absolute inset-0 rounded-2xl bg-main-500/20 blur-xl" />
+						<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 ring-1 ring-main-200/70">
+							<Icon className="h-6 w-6 text-main-700" />
 						</div>
 					</div>
 
@@ -389,7 +389,7 @@ function StatCard({ item, index, start }) {
 							<div className=" text-nowrap text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
 								{display}
 							</div>
-							<span className="hidden md:inline text-xs font-semibold text-emerald-700/80 bg-emerald-50 px-2 py-1 rounded-full ring-1 ring-emerald-200/70">
+							<span className="hidden md:inline text-xs font-semibold text-main-700/80 bg-main-50 px-2 py-1 rounded-full ring-1 ring-main-200/70">
 								{t("verified")}
 							</span>
 						</div>
@@ -400,7 +400,7 @@ function StatCard({ item, index, start }) {
 					</div>
 				</div>
 
-				<div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-emerald-200/70 to-transparent" />
+				<div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-main-200/70 to-transparent" />
 			</div>
 		</motion.div>
 	);
@@ -481,9 +481,9 @@ export function WhyChoose() {
 
 								<div className="relative flex items-start gap-4">
 									<div className="relative">
-										<div className="absolute inset-0 rounded-2xl bg-emerald-500/20 blur-xl" />
-										<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/10 ring-1 ring-emerald-200/70">
-											<Icon className="h-6 w-6 text-emerald-700" />
+										<div className="absolute inset-0 rounded-2xl bg-main-500/20 blur-xl" />
+										<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 ring-1 ring-main-200/70">
+											<Icon className="h-6 w-6 text-main-700" />
 										</div>
 									</div>
 
@@ -602,11 +602,11 @@ export function CustomFeatures() {
 			eyebrow={t("eyebrow")}
 			title={t("title")}
 			description={t("subtitle")}
-			className=" relative bg-gradient-to-b from-white via-white to-emerald-50/40"
+			className=" relative bg-gradient-to-b from-white via-white to-main-50/40"
 		>
 			{/* background blobs */}
 			<div className="pointer-events-none absolute inset-0">
-				<div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-emerald-400/15 blur-3xl" />
+				<div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-main-400/15 blur-3xl" />
 				<div className="absolute -bottom-28 -right-28 h-80 w-80 rounded-full bg-teal-400/15 blur-3xl" />
 			</div>
 
@@ -616,27 +616,27 @@ export function CustomFeatures() {
 					<div className="relative mx-auto aspect-square w-full max-w-[520px]">
 						{/* orbit rings */}
 						<div className="pointer-events-none absolute inset-0 grid place-items-center">
-							<div className="h-[92%] w-[92%] rounded-full border border-emerald-200/60" />
-							<div className="absolute h-[72%] w-[72%] rounded-full border border-emerald-200/40" />
-							<div className="absolute h-[48%] w-[48%] rounded-full border border-emerald-200/30" />
+							<div className="h-[92%] w-[92%] rounded-full border border-main-200/60" />
+							<div className="absolute h-[72%] w-[72%] rounded-full border border-main-200/40" />
+							<div className="absolute h-[48%] w-[48%] rounded-full border border-main-200/30" />
 							<div className="absolute -inset-10 rounded-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.10),transparent_60%)] blur-2xl" />
 						</div>
 
 						{/* hub (center) */}
 						<div className="absolute inset-0 grid place-items-center">
-							<div className="relative w-[78%] rounded-[32px] bg-white/70 backdrop-blur-xl ring-1 ring-emerald-200/60 shadow-[0_30px_80px_-55px_rgba(2,6,23,0.55)] overflow-hidden">
-								<div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 opacity-80" />
+							<div className="relative w-[78%] rounded-[32px] bg-white/70 backdrop-blur-xl ring-1 ring-main-200/60 shadow-[0_30px_80px_-55px_rgba(2,6,23,0.55)] overflow-hidden">
+								<div className="h-1.5 w-full bg-gradient-to-r from-main-400 via-teal-400 to-sky-400 opacity-80" />
 
 								<div className="relative p-7 md:p-9">
 									{/* glow */}
-									<div className="pointer-events-none absolute -top-14 -right-14 h-40 w-40 rounded-full bg-emerald-400/15 blur-3xl" />
+									<div className="pointer-events-none absolute -top-14 -right-14 h-40 w-40 rounded-full bg-main-400/15 blur-3xl" />
 									<div className="pointer-events-none absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-teal-400/15 blur-3xl" />
 
 									<div className="flex items-start gap-4">
 										<div className="relative shrink-0">
-											<div className="absolute inset-0 rounded-2xl bg-emerald-500/20 blur-xl" />
-											<div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500/15 to-teal-500/10 ring-1 ring-emerald-200/70">
-												<ActiveIcon className="h-7 w-7 text-emerald-700" />
+											<div className="absolute inset-0 rounded-2xl bg-main-500/20 blur-xl" />
+											<div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 ring-1 ring-main-200/70">
+												<ActiveIcon className="h-7 w-7 text-main-700" />
 											</div>
 										</div>
 
@@ -649,7 +649,7 @@ export function CustomFeatures() {
 													exit={{ opacity: 0, y: -10 }}
 													transition={{ duration: 0.22, ease: "easeOut" }}
 												>
-													<p className="text-xs font-semibold text-emerald-800/80">
+													<p className="text-xs font-semibold text-main-800/80">
 														{t("orbit.label")}
 													</p>
 
@@ -662,7 +662,7 @@ export function CustomFeatures() {
 													</p>
 
 													<div className="mt-5 flex flex-wrap items-center gap-2">
-														<span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200/70">
+														<span className="inline-flex items-center rounded-full bg-main-50 px-3 py-1 text-xs font-semibold text-main-800 ring-1 ring-main-200/70">
 															{t("orbit.pill1")}
 														</span>
 														<span className="inline-flex items-center rounded-full bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
@@ -712,21 +712,21 @@ export function CustomFeatures() {
 										"w-14 h-14 md:w-16 md:h-16",
 										"ring-1 transition shadow-sm",
 										isActive
-											? "bg-white ring-emerald-300"
-											: "bg-white/70 ring-emerald-200 hover:bg-white"
+											? "bg-white ring-main-300"
+											: "bg-white/70 ring-main-200 hover:bg-white"
 									].join(" ")}
 									aria-label={t(`features.${item.key}.title`)}
 								>
 									{/* active ping */}
 									{isActive && (
-										<span className="pointer-events-none absolute inset-0 rounded-full bg-emerald-400/20 blur-xl" />
+										<span className="pointer-events-none absolute inset-0 rounded-full bg-main-400/20 blur-xl" />
 									)}
 
 									<div className="relative grid place-items-center">
 										<Icon
 											className={[
 												"h-6 w-6 md:h-7 md:w-7 transition",
-												isActive ? "text-emerald-700" : "text-emerald-700/80"
+												isActive ? "text-main-700" : "text-main-700/80"
 											].join(" ")}
 										/>
 									</div>
@@ -767,8 +767,8 @@ export function CustomFeatures() {
 						transition={{ duration: 0.45, ease: "easeOut" }}
 						className="max-w-lg"
 					>
-						<p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-200/70">
-							<span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+						<p className="inline-flex items-center gap-2 rounded-full bg-main-50 px-3 py-1 text-xs font-semibold text-main-800 ring-1 ring-main-200/70">
+							<span className="h-1.5 w-1.5 rounded-full bg-main-500" />
 							{t("side.kicker")}
 						</p>
 
@@ -797,7 +797,7 @@ export function BannerCTA() {
 
 	return (
 		<section className="relative overflow-hidden py-14 md:py-20">
-			<div className="absolute inset-0 bg-[linear-gradient(90deg,#059669,#10b981,#047857)]" />
+			<div style={{ background: `linear-gradient( 90deg, var(--color-main-500), var(--color-main-400), var(--color-main-600) )`, }} className="absolute inset-0 " />
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.22),transparent_45%)]" />
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_30%,rgba(255,255,255,0.18),transparent_55%)]" />
 			<div className="absolute inset-0 opacity-[0.08] [background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><filter id=%22n%22 x=%220%22 y=%220%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/></filter><rect width=%22400%22 height=%22400%22 filter=%22url(%23n)%22 opacity=%220.35%22/></svg>')]" />
@@ -844,7 +844,7 @@ export function BannerCTA() {
 
 									<Link
 										href="/auth?tab=register&type=seller"
-										className="group inline-flex items-center justify-center h-12 px-8 rounded-lg bg-white text-emerald-800 font-extrabold shadow-lg hover:shadow-xl transition hover:bg-emerald-50"
+										className="group inline-flex items-center justify-center h-12 px-8 rounded-lg bg-white text-main-800 font-extrabold shadow-lg hover:shadow-xl transition hover:bg-main-50"
 									>
 										<span>{t("cta")}</span>
 										<ArrowRight className="rtl:scale-x-[-1] ms-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -892,8 +892,8 @@ export function FAQs() {
 			withDividerTop
 		>
 			<div className="relative mx-auto max-w-5xl">
-				<div className="rounded-[32px] bg-white/60 backdrop-blur-xl ring-1 ring-emerald-200/60 shadow-[0_30px_90px_-60px_rgba(2,6,23,0.55)] overflow-hidden">
-					<div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 opacity-80" />
+				<div className="rounded-[32px] bg-white/60 backdrop-blur-xl ring-1 ring-main-200/60 shadow-[0_30px_90px_-60px_rgba(2,6,23,0.55)] overflow-hidden">
+					<div className="h-1.5 w-full bg-gradient-to-r from-main-400 via-teal-400 to-sky-400 opacity-80" />
 					<div className="p-5 md:p-8">
 						<FAQSection faqs={faqs} loading={loadingSettings} showTitle={false} />
 					</div>

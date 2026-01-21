@@ -38,15 +38,15 @@ export const SelectInput = ({
                   whileHover={{ y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   className={`relative rounded-2xl px-6 py-2 transition-colors duration-200
-                    ${isActive ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-gray-700'}
+                    ${isActive ? 'bg-main-500 text-white' : 'bg-slate-100 text-gray-700'}
                     ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-                    ${isHovered && !disabled ? 'bg-emerald-600 ' : ''}`}
+                    ${isHovered && !disabled ? 'bg-main-600 ' : ''}`}
                   disabled={disabled}
                 >
                   {isActive && (
                     <motion.span
                       layoutId='active-pill'
-                      className='absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-lg'
+                      className='absolute inset-0 rounded-xl bg-gradient-to-r from-main-500 to-main-400 shadow-lg'
                       transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                     />
                   )}

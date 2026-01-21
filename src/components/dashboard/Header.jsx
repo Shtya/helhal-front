@@ -71,7 +71,7 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
 
 function HamburgerButton({ open, onToggle, className = '' }) {
   return (
-    <motion.button type='button' onClick={onToggle} aria-label={open ? 'Close sidebar' : 'Open sidebar'} aria-pressed={open} aria-expanded={open} className={`  relative inline-flex h-[33px] w-[33px] items-center justify-center rounded-lg bg-slate-100 text-slate-700 border border-slate-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 transition cursor-pointer ${className}`} whileTap={{ scale: 0.96 }}>
+    <motion.button type='button' onClick={onToggle} aria-label={open ? 'Close sidebar' : 'Open sidebar'} aria-pressed={open} aria-expanded={open} className={`  relative inline-flex h-[33px] w-[33px] items-center justify-center rounded-lg bg-slate-100 text-slate-700 border border-slate-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60 transition cursor-pointer ${className}`} whileTap={{ scale: 0.96 }}>
       {/* hover sheen */}
       <motion.span
         className='absolute inset-0 rounded-xl bg-white/55'
@@ -196,7 +196,7 @@ function Notifications() {
   return (
     <div className='relative'>
       {/* Bell button */}
-      <motion.button type='button' onClick={toggleOpen} aria-haspopup='dialog' aria-expanded={open} className='relative h-10 w-10 rounded-xl border border-slate-300 bg-white text-slate-700 grid place-items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60' whileTap={{ scale: 0.96 }}>
+      <motion.button type='button' onClick={toggleOpen} aria-haspopup='dialog' aria-expanded={open} className='relative h-10 w-10 rounded-xl border border-slate-300 bg-white text-slate-700 grid place-items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60' whileTap={{ scale: 0.96 }}>
         <Bell className='h-5 w-5' />
         <AnimatePresence>
           {unreadCount > 0 && (
@@ -240,13 +240,13 @@ function Notifications() {
               {items.map(item => {
                 const unread = !item.isRead;
                 return (
-                  <motion.li key={item.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }} className={['group relative flex items-start gap-3 px-4 py-3', unread ? 'bg-emerald-50/60 hover:bg-emerald-50 ring-1 ring-emerald-200/40' : 'hover:bg-slate-50/80'].join(' ')}>
+                  <motion.li key={item.id} layout initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.2 }} className={['group relative flex items-start gap-3 px-4 py-3', unread ? 'bg-main-50/60 hover:bg-main-50 ring-1 ring-main-200/40' : 'hover:bg-slate-50/80'].join(' ')}>
                     {/* left accent when unread */}
-                    {unread && <span className='absolute left-0 top-0 h-full w-1 bg-emerald-400/80' aria-hidden='true' />}
+                    {unread && <span className='absolute left-0 top-0 h-full w-1 bg-main-400/80' aria-hidden='true' />}
 
                     {/* Unread dot */}
                     <div className='pt-1'>
-                      <motion.span initial={false} animate={unread ? { scale: 1, opacity: 1 } : { scale: 0.6, opacity: 0.25 }} className={`inline-block h-2.5 w-2.5 rounded-full ${unread ? 'bg-emerald-600' : 'bg-slate-300'}`} />
+                      <motion.span initial={false} animate={unread ? { scale: 1, opacity: 1 } : { scale: 0.6, opacity: 0.25 }} className={`inline-block h-2.5 w-2.5 rounded-full ${unread ? 'bg-main-600' : 'bg-slate-300'}`} />
                     </div>
 
                     {/* Content */}
@@ -260,7 +260,7 @@ function Notifications() {
                       {/* Item actions */}
                       {unread && (
                         <div className='mt-2'>
-                          <button onClick={() => markOneRead(item.id)} className='cursor-pointer text-xs text-emerald-700 hover:text-emerald-800'>
+                          <button onClick={() => markOneRead(item.id)} className='cursor-pointer text-xs text-main-700 hover:text-main-800'>
                             {t('Dashboard.header.markAsRead')}
                           </button>
                         </div>

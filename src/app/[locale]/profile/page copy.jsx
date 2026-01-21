@@ -109,7 +109,7 @@ function ProfileCard({ me, loading, editing, setEditing, state, setState, meta, 
         <div className='flex items-center justify-between'>
           <div className='flex flex-wrap items-center gap-2'>
             <Pill>{state?.type || '—'}</Pill>
-            <Pill className={`${meta.status === 'suspended' ? 'text-red-600' : meta.status === 'pending_verification' ? 'text-amber-600' : 'text-emerald-700'}`}>{meta.status || '—'}</Pill>
+            <Pill className={`${meta.status === 'suspended' ? 'text-red-600' : meta.status === 'pending_verification' ? 'text-amber-600' : 'text-main-700'}`}>{meta.status || '—'}</Pill>
             {state.sellerLevel ? <Pill>Level {state.sellerLevel}</Pill> : null}
             {meta.topRated ? (
               <Pill>
@@ -117,7 +117,7 @@ function ProfileCard({ me, loading, editing, setEditing, state, setState, meta, 
               </Pill>
             ) : null}
           </div>
-          <button onClick={() => setEditing(!editing)} aria-label='Edit profile' className='inline-flex items-center justify-center rounded-xl border border-emerald-500 p-2 text-emerald-600 hover:bg-emerald-50'>
+          <button onClick={() => setEditing(!editing)} aria-label='Edit profile' className='inline-flex items-center justify-center rounded-xl border border-main-500 p-2 text-main-600 hover:bg-main-50'>
             <Pencil className='h-4 w-4' />
           </button>
         </div>
@@ -132,7 +132,7 @@ function ProfileCard({ me, loading, editing, setEditing, state, setState, meta, 
                   {state.profileImage ? (
                     <img src={state.profileImage} alt='avatar' className='h-20 w-20 rounded-full border border-[#EDEDED] object-cover' />
                   ) : (
-                    <div className='grid h-20 w-20 place-content-center rounded-full border border-[#EDEDED] bg-[#EDEDED] group-hover:ring-2 group-hover:ring-[#108A00]'>
+                    <div className='grid h-20 w-20 place-content-center rounded-full border border-[#EDEDED] bg-[#EDEDED] group-hover:ring-2 group-hover:ring-[var(--color-main-600)]'>
                       <User2 className='h-8 w-8 text-[#6B7280]' />
                     </div>
                   )}
@@ -526,7 +526,7 @@ function KPICard({ loading, stats }) {
     <>
       <h3 className='mb-3 text-lg font-semibold'>Seller KPIs</h3>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-4'>
-        <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' />
+        <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-main-500 via-teal-500 to-cyan-400' />
         <StatCard title='Repeat Buyers' value={Number(stats.repeatBuyers || 0)} hint='Unique customers' icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
         <StatCard title='Avg. Rating' value={Number(stats.averageRating || 0)} hint={`${(stats.averageRating ?? 0).toFixed(1)} / 5`} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' />
         <StatCard title='Top Rated' value={stats.topRated ? 1 : 0} hint={stats.topRated ? 'Yes' : 'No'} icon={Award} gradient='from-fuchsia-500 via-rose-500 to-orange-400' />

@@ -36,7 +36,7 @@ export default function InputDate({ cnLabel, cnInput, className, label, placehol
 
       <div
         className={` ${cnInput} relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1 
-        transition border ${value ? 'border-emerald-600' : 'border-gray-300'} focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20`}>
+        transition border ${value ? 'border-main-600' : 'border-gray-300'} focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}>
         <span className='flex-none text-slate-400'>
           <Image src={'/icons/calendar.svg'} alt='icon' width={20} height={20} />
         </span>

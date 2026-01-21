@@ -300,7 +300,7 @@ export default function FilterServices({ category = 'all' }) {
                     <div className='mb-4'>
                         <div className='flex items-center gap-2 justify-between w-full'>
                             <div className='flex items-center gap-2'>
-                                <SlidersHorizontal className='h-5 w-5 text-emerald-600' aria-hidden='true' />
+                                <SlidersHorizontal className='h-5 w-5 text-main-600' aria-hidden='true' />
                                 <h2 className='text-lg font-bold text-slate-800'>{t('filterTitle') || tServices('filters.title')}</h2>
                             </div>
                             <span className='text-slate-500 text-base'>

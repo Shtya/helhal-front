@@ -71,12 +71,12 @@ const LoginSuccessAnimation = ({ message, onComplete }) => {
             }}
             className="relative"
           >
-            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 flex items-center justify-center shadow-2xl">
+            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-main-500 to-main-400 flex items-center justify-center shadow-2xl">
               <CheckCircle2 className="w-14 h-14 text-white" strokeWidth={2.5} />
             </div>
             {/* Ripple effect */}
             <motion.div
-              className="absolute inset-0 rounded-full bg-emerald-400"
+              className="absolute inset-0 rounded-full bg-main-400"
               initial={{ scale: 1, opacity: 0.6 }}
               animate={{ scale: 2, opacity: 0 }}
               transition={{ duration: 1, repeat: Infinity, repeatDelay: 0.5 }}
@@ -104,7 +104,7 @@ const LoginSuccessAnimation = ({ message, onComplete }) => {
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="w-2 h-2 rounded-full bg-emerald-500"
+              className="w-2 h-2 rounded-full bg-main-500"
               animate={{
                 y: [0, -8, 0],
                 opacity: [0.5, 1, 0.5],
@@ -150,7 +150,7 @@ const passwordResetFormSchema = z
   .object({
     newPassword: z.string().min(8, 'passwordMin').max(20, 'passwordMax').regex(/^[A-Za-z0-9_@$!%*?&]+$/, 'passwordInvalidChars'),
     confirmNewPassword: z.string(),
-    otp: z.string().regex(/^[0-9]+$/, 'otpNumbersOnly').length(6, 'otpLength')
+    otp: z.string().regex(/^[0-9]+$/, 'otpNumbersOnly').length(4, 'otpLength')
     ,
   })
   .refine(data => data.newPassword === data.confirmNewPassword, {
@@ -204,7 +204,7 @@ function TitleByTab({ activeTab, view }) {
         <ul className="mt-3 flex flex-col gap-2 text-gray-600">
           {content.values.map((val, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <span className="mt-1 h-2 w-2 flex-none rounded-full bg-emerald-600" />
+              <span className="mt-1 h-2 w-2 flex-none rounded-full bg-main-600" />
               <span>{val}</span>
             </li>
           ))}
@@ -244,7 +244,7 @@ function AuthTabs({ setView, activeTab, setActiveTab }) {
           const isActive = activeTab === tab.key;
           return (
             <motion.button key={tab.key} role='tab' aria-selected={isActive} onClick={() => handleClick(tab.key)} className='relative rounded-xl px-3 py-2 cursor-pointer'>
-              {isActive && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400' />}
+              {isActive && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-xl bg-gradient-to-r from-main-500 to-main-400' />}
               <span className={`relative z-10 ${isActive ? 'text-white' : 'text-gray-700'}`}>{t(tab.label)}</span>
             </motion.button>
           );
@@ -924,7 +924,7 @@ export default function AuthPage() {
             </div>
             <motion.div className='w-full max-lg:p-8 lg:py-8'>
               <div className='mb-4 w-full text-center md:text-start'>
-                <h4 className='text-sm font-semibold text-emerald-700'>{t('brandingTitle')}</h4>
+                <h4 className='text-sm font-semibold text-main-700'>{t('brandingTitle')}</h4>
                 <p className='text-xs text-slate-500 mt-1'>{t('brandingSubtitle')}</p>
               </div>
               <TitleByTab view={view} activeTab={activeTab} />
@@ -951,16 +951,16 @@ const UserTypeSelection = ({ onSelect, loading }) => {
       <h2 className='text-xl font-bold text-center mb-6'>{t('selectUserType')}</h2>
       <p className='text-gray-600 text-center mb-8'>{t('selectUserTypeDescription')}</p>
       <div className='grid grid-cols-2 gap-4 mb-8'>
-        <button type='button' onClick={() => setSelectedType('Business')} className={`p-6 rounded-lg border-2 ${selectedType === 'Business' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300'} `}>
+        <button type='button' onClick={() => setSelectedType('Business')} className={`p-6 rounded-lg border-2 ${selectedType === 'Business' ? 'border-main-500 bg-main-50' : 'border-gray-300'} `}>
           <div className='flex flex-col items-center'>
-            <div className='w-12 h-12 mb-3 bg-emerald-100 rounded-full' />
+            <div className='w-12 h-12 mb-3 bg-main-100 rounded-full' />
             <h3 className='font-semibold'>{t('business')}</h3>
             <p className='text-sm text-gray-600 mt-1 text-center'>{t('businessDescription')}</p>
           </div>
         </button>
-        <button type='button' onClick={() => setSelectedType('Individual')} className={`p-6 rounded-lg border-2 ${selectedType === 'Individual' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300'} `}>
+        <button type='button' onClick={() => setSelectedType('Individual')} className={`p-6 rounded-lg border-2 ${selectedType === 'Individual' ? 'border-main-500 bg-main-50' : 'border-gray-300'} `}>
           <div className='flex flex-col items-center'>
-            <div className='w-12 h-12 mb-3 bg-emerald-100 rounded-full' />
+            <div className='w-12 h-12 mb-3 bg-main-100 rounded-full' />
             <h3 className='font-semibold'>{t('individual')}</h3>
             <p className='text-sm text-gray-600 mt-1 text-center'>{t('individualDescription')}</p>
           </div>

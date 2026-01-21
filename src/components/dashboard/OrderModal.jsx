@@ -11,13 +11,13 @@ export default function OrderModal({ order, onClose }) {
     Pending: 'bg-yellow-100 text-yellow-800',
     Accepted: 'bg-blue-100 text-blue-800',
     Delivered: 'bg-purple-100 text-purple-800',
-    Completed: 'bg-green-100 text-green-800',
+    Completed: 'bg-main-100 text-main-800',
     Cancelled: 'bg-red-100 text-red-800',
   };
 
   return (
-    <Modal 
-      title={`Order #${order.id}`} 
+    <Modal
+      title={`Order #${order.id}`}
       onClose={onClose}
       size="lg"
     >
@@ -25,31 +25,28 @@ export default function OrderModal({ order, onClose }) {
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('details')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'details'
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'details'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             Details
           </button>
           <button
             onClick={() => setActiveTab('timeline')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'timeline'
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'timeline'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             Timeline
           </button>
           <button
             onClick={() => setActiveTab('requirements')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'requirements'
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'requirements'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
+              }`}
           >
             Requirements
           </button>
@@ -142,12 +139,12 @@ export default function OrderModal({ order, onClose }) {
               <div className="relative">
                 {/* Timeline line */}
                 <div className="absolute left-4 top-0 h-full w-0.5 bg-gray-200"></div>
-                
+
                 {order.timeline.map((event, index) => (
                   <div key={index} className="relative pl-12 pb-6">
                     {/* Timeline dot */}
                     <div className="absolute left-3.5 top-1 h-2 w-2 rounded-full bg-blue-500"></div>
-                    
+
                     <div className="bg-gray-50 p-3 rounded-lg">
                       <p className="text-sm font-medium text-gray-900 capitalize">{event.status}</p>
                       <p className="text-xs text-gray-500 mt-1">

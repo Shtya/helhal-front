@@ -29,7 +29,7 @@ const InputSearch = ({ className, placeholder, iconLeft, showAction = true, acti
     <div className={`relative w-full ${className} max-w-[350px] `}>
       <div
         className={`search-parnet relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1
-        transition border ${searchTerm ? 'border-emerald-600' : 'border-gray-300'} focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20`}>
+        transition border ${searchTerm ? 'border-main-600' : 'border-gray-300'} focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}>
         {/* Left icon */}
         {iconLeft && (
           <span className='flex-none text-slate-400'>
@@ -44,7 +44,7 @@ const InputSearch = ({ className, placeholder, iconLeft, showAction = true, acti
 
         {/* Action button */}
         {actionIcon && showAction && (
-          <button onClick={handleSearch} className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-emerald-600 text-white hover:bg-emerald-700 transition'>
+          <button onClick={handleSearch} className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-main-600 text-white hover:bg-main-700 transition'>
             <img src={actionIcon} alt='action icon' className='w-full' />
           </button>
         )}

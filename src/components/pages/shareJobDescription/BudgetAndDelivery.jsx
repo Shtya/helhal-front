@@ -37,15 +37,15 @@ export default function BudgetAndDelivery({ setCurrentStep, t, defaultData, onSu
 
         {formData.delivery?.id === 'date' && (
           <div className='mt-3'>
-            <input type='date' value={formData.specificDate} onChange={e => setFormData({ ...formData, specificDate: e.target.value })} className='h-[40px] w-full rounded-md border border-emerald-600 px-3 text-sm text-gray-700 focus:ring-2 focus:ring-emerald-600/20 outline-none' />
+            <input type='date' value={formData.specificDate} onChange={e => setFormData({ ...formData, specificDate: e.target.value })} className='h-[40px] w-full rounded-md border border-main-600 px-3 text-sm text-gray-700 focus:ring-2 focus:ring-main-600/20 outline-none' />
           </div>
         )}
         <p className='text-sm text-gray-600'>{t('step2.note')}</p>
       </div>
 
       <div className='flex items-center justify-between gap-4 mt-6 '>
-        <Button className='!max-w-fit' name={t('common.back')} onClick={()=> setCurrentStep(prev => prev - 1) } color='secondary' />
-        <Button className='!max-w-fit' name={t('step1.submit')} onClick={()=> setCurrentStep(prev => prev + 1) } color='green' />
+        <Button className='!max-w-fit' name={t('common.back')} onClick={() => setCurrentStep(prev => prev - 1)} color='secondary' />
+        <Button className='!max-w-fit' name={t('step1.submit')} onClick={() => setCurrentStep(prev => prev + 1)} color='green' />
       </div>
     </form>
   );

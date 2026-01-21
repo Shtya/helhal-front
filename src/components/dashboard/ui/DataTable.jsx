@@ -89,7 +89,7 @@ export default function DataTable({
             {displayRows.map((row, idx) => {
               const isSkeleton = loading || row.__skeleton !== undefined;
               return (
-                <tr key={row.__skeleton ?? idx} className="hover:bg-gray-50 odd:bg-emerald-50/20">
+                <tr key={row.__skeleton ?? idx} className="hover:bg-gray-50 odd:bg-main-50/20">
                   {columns.map(column => {
                     if (isSkeleton) {
                       return (

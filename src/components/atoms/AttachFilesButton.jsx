@@ -16,12 +16,22 @@ import toast from 'react-hot-toast';
 export const getFileIcon = mimeType => {
   if (mimeType?.startsWith('image')) return <ImageIcon className='w-10 h-10 text-blue-500' />;
   if (mimeType?.startsWith('video')) return <Video className='w-10 h-10 text-purple-500' />;
-  if (mimeType?.startsWith('audio')) return <Music className='w-10 h-10 text-green-500' />;
+  if (mimeType?.startsWith('audio')) return <Music className='w-10 h-10 text-main-500' />;
   if (mimeType === 'application/pdf' || mimeType === 'document') return <FileText className='w-10 h-10 text-red-500' />;
   return <File className='w-10 h-10 text-gray-400' />;
 };
 
-
+const AttachmentIcon = () => (
+  <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--color-main-600)' }}>
+    <path
+      d="M12.8297 12.1499L10.3597 14.6199C8.98969 15.9899 8.98969 18.1999 10.3597 19.5699C11.7297 20.9399 13.9397 20.9399 15.3097 19.5699L19.1997 15.6799C21.9297 12.9499 21.9297 8.50992 19.1997 5.77992C16.4697 3.04992 12.0297 3.04992 9.29969 5.77992L5.05969 10.0199C2.71969 12.3599 2.71969 16.1599 5.05969 18.5099"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 export default function AttachFilesButton({ iconOnly, hiddenFiles, className, onChange, value, cnBtn, maxSelection = undefined, cnModel }) {
   const t = useTranslations('AttachFiles'); // added
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -277,7 +287,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
           <div className='flex items-center gap-3'>
             <span className='text-lg font-semibold text-slate-800'>{t('title')}</span>
             {selectedIds.size > 0 && (
-              <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span className="px-2 py-0.5 text-xs rounded-full bg-main-50 text-main-700 border border-main-200">
                 {typeof maxSelection === "number" ? `${selectedIds.size} / ${maxSelection} ${t('selected')}` : `${selectedIds.size} ${t('selected')}`}
               </span>
             )}
@@ -301,7 +311,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
         <div className='p-5 overflow-auto'>
           <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4'>
             {/* Upload card (secondary) */}
-            <label className='group relative border-2 border-dashed border-slate-300 hover:border-emerald-400 rounded-xl flex items-center justify-center h-[140px] bg-slate-50 hover:bg-emerald-50/40 transition cursor-pointer'>
+            <label className='group relative border-2 border-dashed border-slate-300 hover:border-main-400 rounded-xl flex items-center justify-center h-[140px] bg-slate-50 hover:bg-main-50/40 transition cursor-pointer'>
               <input type='file' className='sr-only' onChange={handleFileChange} multiple disabled={uploading || loading} />
               {!uploading ? (
                 <div className='flex flex-col items-center text-slate-600'>
@@ -309,7 +319,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
                   <span className='mt-1 text-xs'>{t('upload')}</span>
                 </div>
               ) : (
-                <FaSpinner className='animate-spin h-5 w-5 text-emerald-600' />
+                <FaSpinner className='animate-spin h-5 w-5 text-main-600' />
               )}
             </label>
 
@@ -322,7 +332,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
               filtered.map(asset => {
                 const isSelected = selectedIds.has(asset.id);
                 return (
-                  <button key={asset.id} onClick={() => toggleSelect(asset)} className={['group relative h-[140px] rounded-xl border transition text-left', isSelected ? 'border-emerald-500 bg-emerald-50/40' : 'border-slate-200 hover:border-emerald-400 bg-white'].join(' ')}>
+                  <button key={asset.id} onClick={() => toggleSelect(asset)} className={['group relative h-[140px] rounded-xl border transition text-left', isSelected ? 'border-main-500 bg-main-50/40' : 'border-slate-200 hover:border-main-400 bg-white'].join(' ')}>
                     {/* delete button */}
                     {/* <div onClick={e => handleDeleteFile(asset.id, e)} className='cursor-pointer absolute top-2 right-2 p-1 rounded-full bg-white/90 border border-slate-200 shadow-sm opacity-0 group-hover:opacity-100 transition' title='Delete'>
                       <FiX className='w-4 h-4 text-red-600' />
@@ -330,7 +340,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
 
                     {/* check mark */}
                     {isSelected && (
-                      <span className='absolute left-2 top-2 inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white shadow'>
+                      <span className='absolute left-2 top-2 inline-flex items-center justify-center w-6 h-6 rounded-full bg-main-500 text-white shadow'>
                         <Check className='w-4 h-4' />
                       </span>
                     )}
@@ -374,7 +384,7 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
             <button onClick={closeModal} className='  px-4 py-2 text-slate-700 hover:bg-white border border-slate-300 rounded-md'>
               {t('cancel')}
             </button>
-            <button onClick={handleOkClick} disabled={selectedIds.size === 0} className='gradient px-4 py-2 rounded-md bg-emerald-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-700'>
+            <button onClick={handleOkClick} disabled={selectedIds.size === 0} className='gradient px-4 py-2 rounded-md bg-main-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-main-700'>
               {t('useFiles', { count: selectedIds.size })}
             </button>
           </div>
@@ -387,8 +397,8 @@ export default function AttachFilesButton({ iconOnly, hiddenFiles, className, on
     <div className={className || ''}>
       {/* Trigger + selected chips */}
       <div className='flex flex-col md:flex-row  md:items-center gap-4 mt-6 mb-6'>
-        <button onClick={openModal} className={[iconOnly ? '!w-fit !px-2 !rounded-md' : 'px-10', 'flex-none flex items-center gap-2 py-2 rounded-lg border border-emerald-500 text-emerald-500 cursor-pointer hover:bg-emerald-50', cnBtn].join(' ')}>
-          <img src='/icons/attachment-green.svg' alt='' className='w-5 h-5' />
+        <button onClick={openModal} className={[iconOnly ? '!w-fit !px-2 !rounded-md' : 'px-10', 'flex-none flex items-center gap-2 py-2 rounded-lg border border-main-500 text-main-500 cursor-pointer hover:bg-main-50', cnBtn].join(' ')}>
+          <AttachmentIcon />
           <span className={iconOnly ? 'hidden' : 'font-medium'}>{t('attachFiles')}</span>
         </button>
 

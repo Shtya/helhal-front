@@ -32,7 +32,7 @@ export default function Tabs({ tabs, activeTab, setActiveTab, className = '', id
               onMouseLeave={() => setHoveredTab(null)}
               onFocus={() => setHoveredTab(t.value)} // keyboard preview
               onBlur={() => setHoveredTab(null)} // return to active on blur
-              className='relative cursor-pointer select-none rounded-xl px-3 py-1.5 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60'
+              className='relative cursor-pointer select-none rounded-xl px-3 py-1.5 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-main-500/60'
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 350, damping: 30 }}>

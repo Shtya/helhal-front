@@ -504,7 +504,7 @@ function JobCard({ job, onOpen, index }) {
           onKeyDown={e => e.stopPropagation()} >
           {/* relation badge */}
           {isRelatedToUser && (
-            <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
+            <span className='inline-flex items-center rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs font-semibold text-main-700'>
               {t('page.relatedToYou')}
             </span>
           )}
@@ -727,7 +727,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                 </p>
                 <button
                   onClick={onClose}
-                  className="mt-6 px-4 py-2 rounded-md bg-emerald-600 text-white hover:bg-emerald-700"
+                  className="mt-6 px-4 py-2 rounded-md bg-main-600 text-white hover:bg-main-700"
                 >
                   {t("page.close")}
                 </button>
@@ -742,7 +742,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                       <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || t('page.jobDetails')}</h3>
                       {/* show relation badge in drawer header */}
                       {user && (localJob?.buyer?.id === user?.id || localJob?.seller?.id === user?.id) && (
-                        <span className='inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700'>
+                        <span className='inline-flex items-center rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs font-semibold text-main-700'>
                           {t('page.youPostedThis')}
                         </span>
                       )}
@@ -835,7 +835,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                         <div className='flex items-center gap-2'>
 
                           {localJob?.buyer?.paymentVerified ?
-                            <CheckCircle2 className='h-4 w-4 text-emerald-600' />
+                            <CheckCircle2 className='h-4 w-4 text-main-600' />
                             : <CircleX className='h-4 w-4 text-red-600' />}
                           <span>{t('page.paymentMethodVerified')}</span>
                         </div>
@@ -877,12 +877,12 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                         <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                           <div>
                             <label className='block text-sm font-medium text-slate-700'>{t('page.bidAmount')}</label>
-                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='90' {...register('bidAmount')} />
+                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder='90' {...register('bidAmount')} />
                             {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
                           </div>
                           <div>
                             <label className='block text-sm font-medium text-slate-700'>{t('page.delivery')}</label>
-                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder='3' {...register('deliveryDays')} />
+                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder='3' {...register('deliveryDays')} />
                             {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
                           </div>
                         </div>
@@ -890,14 +890,14 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                         {/* Cover letter */}
                         <div>
                           <label className='block text-sm font-medium text-slate-700'>{t('page.coverLetter')}</label>
-                          <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.coverLetterPlaceholder')} {...register('coverLetter')} />
+                          <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder={t('page.coverLetterPlaceholder')} {...register('coverLetter')} />
                           {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
                         </div>
 
                         {/* Portfolio links */}
                         <div>
                           <label className='block text-sm font-medium text-slate-700'>{t('page.portfolioLinks')}</label>
-                          <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500' placeholder={t('page.portfolioLinksPlaceholder')} {...register('portfolioUrls')} />
+                          <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder={t('page.portfolioLinksPlaceholder')} {...register('portfolioUrls')} />
                           {errors.portfolioUrls && (
                             <p className="mt-1 text-xs text-rose-600">{errors.portfolioUrls.message}</p>
                           )}
@@ -907,7 +907,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
                           <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
                             {t('page.cancel')}
                           </button>
-                          <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60'>
+                          <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-main-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-main-700 disabled:opacity-60'>
                             {isSubmitting ? t('page.submitting') : t('page.applyNow')}
                           </button>
                         </div>

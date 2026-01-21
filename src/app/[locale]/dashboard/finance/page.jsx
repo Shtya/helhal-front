@@ -146,7 +146,7 @@ export default function WithdrawManagement() {
         title: t('columns.type'),
         render: v => (
           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${v === 'earning'
-            ? 'bg-emerald-100 text-emerald-800'
+            ? 'bg-main-100 text-main-800'
             : v === 'withdrawal'
               ? 'bg-amber-100 text-amber-800'
               : v === 'refund'
@@ -161,7 +161,7 @@ export default function WithdrawManagement() {
         key: 'amount',
         title: t('columns.amount'),
         render: v => (
-          <span className={`font-medium ${Number(v) < 0 ? 'text-amber-700' : 'text-emerald-700'}`}>
+          <span className={`font-medium ${Number(v) < 0 ? 'text-amber-700' : 'text-main-700'}`}>
             {formatMoney(Number(v < 0 ? -v : v))}
             {Number(v) < 0 ? t('debit') : ''}
           </span>
@@ -172,7 +172,7 @@ export default function WithdrawManagement() {
         title: t('columns.status'),
         render: v => (
           <span className={`px-2 py-1 rounded-full text-xs ${v === 'completed'
-            ? 'bg-emerald-100 text-emerald-800'
+            ? 'bg-main-100 text-main-800'
             : v === 'pending'
               ? 'bg-yellow-100 text-yellow-800'
               : 'bg-red-100 text-red-800'
@@ -191,7 +191,7 @@ export default function WithdrawManagement() {
     <div>
       {/* KPIs */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <KpiCard icon={Wallet} label={t('kpis.availableBalance')} value={formatMoney(balance.availableBalance)} hint={t('kpis.readyToWithdraw')} iconBg='bg-emerald-50 text-emerald-600' />
+        <KpiCard icon={Wallet} label={t('kpis.availableBalance')} value={formatMoney(balance.availableBalance)} hint={t('kpis.readyToWithdraw')} iconBg='bg-main-50 text-main-600' />
         <KpiCard icon={Banknote} label={t('kpis.credits')} value={formatMoney(balance.credits)} hint={t('kpis.refundCredits')} iconBg='bg-blue-50 text-blue-600' />
         <KpiCard icon={ArrowUpRight} label={t('kpis.earningsToDate')} value={formatMoney(balance.earningsToDate)} hint={t('kpis.lifetimeGross')} iconBg='bg-purple-50 text-purple-600' />
         <KpiCard icon={Clock} label={t('kpis.cancelledOrdersCredit')} value={formatMoney(balance.cancelledOrdersCredit)} hint={t('kpis.holdbacks')} iconBg='bg-rose-50 text-rose-600' />
@@ -220,7 +220,7 @@ export default function WithdrawManagement() {
   );
 }
 
-function KpiCard({ icon: Icon, label, value, hint, currency, iconBg = 'bg-emerald-50 text-emerald-600' }) {
+function KpiCard({ icon: Icon, label, value, hint, currency, iconBg = 'bg-main-50 text-main-600' }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-4 sm:p-6 flex flex-col justify-between">
       {/* Header */}

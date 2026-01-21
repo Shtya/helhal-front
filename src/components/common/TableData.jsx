@@ -63,7 +63,7 @@ const TableData = ({ data, columns, actions, pagination, onPageChange, onLimitCh
               </tr>
             ) : (
               data.map((row, index) => (
-                <tr key={index} className='text-center odd:bg-[#108A000D] odd:hover:bg-[#108A00]/10 hover:bg-gray-50'>
+                <tr key={index} className='text-center odd:bg-main-600/5 odd:hover:bg-[var(--color-main-600)]/10 hover:bg-gray-50'>
                   {columns.map(column => (
                     <td key={column.key} className='text-nowrap px-4 py-4 text-base font-[500] text-gray-800'>
                       {column.type === 'img' ? (
@@ -184,7 +184,7 @@ function SkeletonTable({ columns, actions }) {
 
           <tbody>
             {Array.from({ length: rows }).map((_, r) => (
-              <tr key={`r-${r}`} className='text-center odd:bg-[#108A000D] odd:hover:bg-[#108A00]/10 hover:bg-gray-50'>
+              <tr key={`r-${r}`} className='text-center odd:bg-main-600/5 odd:hover:bg-[var(--color-main-600)]/10 hover:bg-gray-50'>
                 {Array.from({ length: colsCount }).map((__, c) => (
                   <SkeletonCell key={`c-${r}-${c}`} />
                 ))}

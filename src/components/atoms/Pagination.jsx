@@ -135,7 +135,7 @@ export default function Pagination({
           onClick={() => goTo(page - 1)}
           disabled={page === 1 || loading}
           aria-label={t('previous')}
-          className="cursor-pointer h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          className="cursor-pointer h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-main-500/50"
         >
           {isRtl ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </motion.button>
@@ -160,7 +160,7 @@ export default function Pagination({
                     ? t('jumpBack', { count: jumpBy })
                     : t('jumpForward', { count: jumpBy })
                 }
-                className="cursor-pointer h-9 min-w-9 px-2 inline-flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="cursor-pointer h-9 min-w-9 px-2 inline-flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-main-500"
               >
                 <MoreHorizontal className="w-4 h-4" />
               </motion.button>
@@ -183,8 +183,8 @@ export default function Pagination({
               className={[
                 'cursor-pointer h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-lg text-sm font-medium focus:outline-none focus:ring-2',
                 isActive
-                  ? 'bg-emerald-500 text-white shadow-sm focus:ring-emerald-500'
-                  : 'text-slate-700 hover:bg-slate-100 focus:ring-emerald-500',
+                  ? 'bg-main-500 text-white shadow-sm focus:ring-main-500'
+                  : 'text-slate-700 hover:bg-slate-100 focus:ring-main-500',
               ].join(' ')}
             >
               {token}
@@ -203,7 +203,7 @@ export default function Pagination({
           onClick={() => goTo(page + 1)}
           disabled={page === totalPages || loading}
           aria-label={t('next')}
-          className="cursor-pointer h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+          className="cursor-pointer h-9 w-9 inline-flex items-center justify-center rounded-lg text-slate-600 enabled:hover:bg-slate-100 enabled:hover:text-slate-900 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-main-500/50"
         >
           {isRtl ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </motion.button>

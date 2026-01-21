@@ -37,7 +37,7 @@ export default function ProgressBar({
         <div className='min-w-[680px] sm:min-w-0'>
           {/* Track line */}
           <div className='relative h-2 w-full rounded-full bg-slate-200'>
-            <div className='absolute start-0 top-0 h-2 rounded-full bg-emerald-500 transition-[width] duration-500 ease-out' style={{ width: `${progressPct}%` }} aria-hidden />
+            <div className='absolute start-0 top-0 h-2 rounded-full bg-main-500 transition-[width] duration-500 ease-out' style={{ width: `${progressPct}%` }} aria-hidden />
           </div>
 
           {/* Steps */}
@@ -48,8 +48,8 @@ export default function ProgressBar({
               const isActive = idx === clampedStep;
 
               const baseDot = 'grid h-8 w-8 place-items-center rounded-full border transition-all duration-3 0';
-              const doneDot = 'bg-emerald-500 border-emerald-500 text-white';
-              const activeDot = 'bg-emerald-600 border-emerald-600 text-white shadow-[0_0_0_4px_rgba(16,185,129,0.15)]';
+              const doneDot = 'bg-main-500 border-main-500 text-white';
+              const activeDot = 'bg-main-600 border-main-600 text-white shadow-[0_0_0_4px_rgba(16,185,129,0.15)]';
               const idleDot = 'bg-white border-slate-300 text-slate-500';
 
               const handleClick = () => {

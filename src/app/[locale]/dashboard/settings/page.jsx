@@ -328,7 +328,7 @@ export default function AdminSettingsDashboard() {
     <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
       <div className='p-4 sm:p-6'>
         {/* Header */}
-        <GlassCard gradient='bg-emerald-500/60' className='mb-6'>
+        <GlassCard gradient='bg-main-500/60' className='mb-6'>
           <div className='flex max-sm:flex-col items-center justify-between gap-2'>
             <div>
               <h1 className='text-2xl font-bold text-black'>{t('title')}</h1>
@@ -340,7 +340,7 @@ export default function AdminSettingsDashboard() {
 
         {/* Alerts */}
         {apiError && <div className='mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-800'>{apiError}</div>}
-        {successMessage && <div className='mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-800'>{successMessage}</div>}
+        {successMessage && <div className='mb-6 rounded-md border border-main-200 bg-main-50 px-4 py-3 text-main-800'>{successMessage}</div>}
 
         {/* KPI Row (No affiliate, no platform wallet KPI) */}
         <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
@@ -353,8 +353,8 @@ export default function AdminSettingsDashboard() {
           />
 
           {/* Platform Fee Badge */}
-          <MetricBadge icon={<Currency style={{ fill: "#007a55" }} size={16} />} label={t('platformFee')} value={<div className='flex gap-1 items-center '>
-            {Number(settings.platformPercent || 0).toFixed(1)}  <Currency style={{ fill: "#007a55" }} size={14} />
+          <MetricBadge icon={<Currency style={{ fill: "var(--color-main-600)" }} size={16} />} label={t('platformFee')} value={<div className='flex gap-1 items-center '>
+            {Number(settings.platformPercent || 0).toFixed(1)}  <Currency style={{ fill: "var(--color-main-600)" }} size={14} />
           </div>} intent='success' />
 
           {/* Seller Fee Badge (New) */}
@@ -807,9 +807,9 @@ function PreviewBox({ text }) {
 /* ----------------------------- MetricBadge --------------------------- */
 const intentStyles = {
   success: {
-    chip: 'bg-emerald-100 text-emerald-700',
-    value: 'text-emerald-700',
-    ring: 'ring-emerald-100',
+    chip: 'bg-main-100 text-main-700',
+    value: 'text-main-700',
+    ring: 'ring-main-100',
   },
   warn: {
     chip: 'bg-amber-100 text-amber-700',
@@ -997,7 +997,7 @@ function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
                         </button>
                         <button
                           onClick={saveEdit}
-                          className="rounded bg-emerald-600 px-2 py-1 text-[11px] text-white"
+                          className="rounded bg-main-600 px-2 py-1 text-[11px] text-white"
                         >
                           {dir === 'rtl' ? 'حفظ' : 'Save'}
                         </button>

@@ -63,7 +63,7 @@ export default function PaymentSuccessPage() {
         <div className="container max-w-lg text-center">
           <h1 className="mb-4 text-2xl font-bold text-rose-600">{t('orderNotFound')}</h1>
           <p className="mb-6 text-slate-600">{t('orderNotFoundDesc')}</p>
-          <Link href="/my-orders" className="text-emerald-700 underline">
+          <Link href="/my-orders" className="text-main-700 underline">
             {t('goToOrders')}
           </Link>
         </div >
@@ -75,11 +75,11 @@ export default function PaymentSuccessPage() {
     <div className='py-16'>
       <div className="container max-w-2xl text-center">
         {/* Success banner */}
-        <div className="mx-auto mb-8 w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center">
+        <div className="mx-auto mb-8 w-20 h-20 rounded-full bg-main-100 flex items-center justify-center">
           <span className="text-4xl">🎉</span>
         </div>
 
-        <h1 className="mb-3 text-3xl font-bold text-emerald-600">{t('title')}</h1>
+        <h1 className="mb-3 text-3xl font-bold text-main-600">{t('title')}</h1>
         <p className="mb-10 text-slate-700">{t('description')}</p>
 
         {/* Order summary */}
@@ -88,7 +88,7 @@ export default function PaymentSuccessPage() {
           <p><span className="font-medium">{t('orderId')}</span> {order.id}</p>
           <p><span className="font-medium">{t('titleLabel')}</span> {order.title}</p>
           <p><span className="font-medium">{t('amount')}</span> {order.totalAmount} {order.invoices?.[0]?.currencyId || 'SAR'}</p>
-          <p><span className="font-medium">{t('status')}</span> <span className="text-emerald-600">{order.status}</span></p>
+          <p><span className="font-medium">{t('status')}</span> <span className="text-main-600">{order.status}</span></p>
           <p><span className="font-medium">{t('buyer')}</span> {order.buyer?.username}</p>
           <p><span className="font-medium">{t('seller')}</span> {order.seller?.username}</p>
           <p><span className="font-medium">{t('invoice')}</span> {order.invoices?.[0]?.invoiceNumber}</p>

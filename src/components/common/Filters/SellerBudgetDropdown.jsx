@@ -14,7 +14,7 @@ export default function SellerBudgetDropdown({
   currencySymbol = '$', // تقدر تغيّرها لـ EGP مثلاً
 }) {
   const t = useTranslations('Services.filters.budget');
-  const BRAND = '#007a55';
+  const BRAND = 'var(--color-main-700)';
   const rootRef = useRef(null);
 
   const fmtNumber = n => {
@@ -146,7 +146,7 @@ export default function SellerBudgetDropdown({
         type='button'
         onClick={() => onPick(id)}
         className={`w-full px-1 py-2.5  rounded-md flex items-center justify-between text-left transition
-          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-emerald-100 text-slate-800'}`}>
+          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-main-100 text-slate-800'}`}>
         <span className='flex items-center gap-2'>
           <span
             className={`w-5 h-5 rounded-full border flex items-center justify-center
@@ -172,10 +172,8 @@ export default function SellerBudgetDropdown({
           aria-expanded={open}
           onClick={() => setOpen(o => !o)}
           className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition
-            ${open ? 'ring-2' : ''}`}
+            ${open ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]' : 'border-slate-300'}`}
           style={{
-            borderColor: open ? `${BRAND}90` : '#cbd5e1',
-            boxShadow: open ? `0 0 0 3px ${BRAND}66 inset` : undefined,
           }}>
           <span className='truncate'>{activeLabel()}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
@@ -183,10 +181,9 @@ export default function SellerBudgetDropdown({
 
         {/* Panel */}
         <div
-          className={`absolute left-0 mt-2 w-full rounded-lg border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
+          className={` border border-main-700/40  absolute left-0 mt-2 w-full rounded-lg  bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
             transition origin-top z-[70]
-            ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
-          style={{ border: `1px solid ${BRAND}60` }}>
+            ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
           <div className='py-4'>
             <div className='px-4'>
               <h4 className='text-lg font-bold text-slate-900 mb-2  text-start'>{t('budget')}</h4>

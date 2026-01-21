@@ -38,15 +38,6 @@ export default function ExplorePage() {
 
 // ========================= DATA =========================
 
-const CATEGORIES_FALLBACK = [
-  { id: 'dev-1', slug: 'app-development', name: 'App Development', iconUrl: '/icons/categories/app-development.svg' },
-  { id: 'dev-2', slug: 'programming-tech', name: 'Programming & Tech', iconUrl: '/icons/categories/programming-tech.svg' },
-  { id: 'dev-3', slug: 'ui-design', name: 'UI Design', iconUrl: '/icons/categories/ui-design.svg' },
-  { id: 'dev-4', slug: 'video-animation', name: 'Video & Animation', iconUrl: '/icons/categories/video-animation.svg' },
-  { id: 'dev-5', slug: 'writing-translation', name: 'Writing & Translation', iconUrl: '/icons/categories/writing-translation.svg' },
-  { id: 'dev-6', slug: 'music-audio', name: 'Music & Audio', iconUrl: '/icons/categories/music-audio.svg' },
-];
-
 export const POPULAR_SERVICES = [
   {
     id: '23654d6f54d545df45d',
@@ -185,8 +176,8 @@ function SearchBar({ className = '', large = false }) {
           }
         }}
         className={[
-          'w-full bg-white/95 border border-emerald-200/60 shadow-sm',
-          'focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:border-emerald-500',
+          'w-full bg-white/95 border border-main-200/60 shadow-sm',
+          'focus:outline-none focus:ring-4 focus:ring-main-500/20 focus:border-main-500',
           'rounded-xl text-gray-700 placeholder-gray-400',
           large ? 'py-4 ps-12 pe-16 text-base' : 'py-2 ps-10 pe-12 text-sm',
         ].join(' ')}
@@ -195,8 +186,8 @@ function SearchBar({ className = '', large = false }) {
         type="submit"
         className={[
           'absolute top-1/2 -translate-y-1/2 rounded-lg',
-          'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800',
-          'text-white font-medium shadow-lg shadow-emerald-600/20',
+          'bg-main-600 hover:bg-main-700 active:bg-main-800',
+          'text-white font-medium shadow-lg shadow-main-600/20',
           large
             ? isRTL
               ? 'left-2 py-2 px-4'
@@ -226,7 +217,7 @@ function Hero() {
       <Image priority loading='eager' src='/images/hero-background.jpg' alt={t('hero.alt')} fill className='object-cover object-center' />
 
       {/* Green gradient overlay */}
-      <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-emerald-900/35 to-black/60' />
+      <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-main-900/35 to-black/60' />
 
       <div className='min-h-[71vh] md:min-h-[76vh] relative z-10 h-full flex items-center pt-4'>
         <div className='container !px-4 sm:!px-6 lg:!px-8'>
@@ -237,25 +228,25 @@ function Hero() {
 
             <h1 className='text-4xl md:text-6xl font-extrabold leading-[1.1] drop-shadow'>{t('hero.title')}</h1>
 
-            <p className='text-emerald-50/95 text-lg md:text-xl'>{t('hero.subtitle')}</p>
+            <p className='text-main-50/95 text-lg md:text-xl'>{t('hero.subtitle')}</p>
 
             <SearchBar large className='mt-2' />
 
 
 
-            <div className='flex flex-wrap items-center gap-4 pt-4 text-emerald-50/90'>
+            <div className='flex flex-wrap items-center gap-4 pt-4 text-main-50/90'>
               <Badge icon={<CheckCircle className='w-4 h-4' />} label={t('hero.trust.offers')} />
               <Badge icon={<Stars className='w-4 h-4' />} label={t('hero.trust.pricing')} />
               <Badge icon={<ShieldCheck className='w-4 h-4' />} label={t('hero.trust.safepay')} />
             </div>
 
-            <p className='text-sm md:text-base text-emerald-50/80'>{t('hero.tagline')}</p>
+            <p className='text-sm md:text-base text-main-50/80'>{t('hero.tagline')}</p>
 
             <div className="flex flex-wrap items-center gap-3 mt-4">
               {/* Primary CTA: Post Your Request */}
               <Link
                 href={primaryHref}
-                className="inline-flex items-center justify-center h-12 px-6 rounded-xl bg-emerald-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-emerald-700 transition-all"
+                className="inline-flex items-center justify-center h-12 px-6 rounded-xl bg-main-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-main-700 transition-all"
               >
                 {t('hero.postOrder')}
               </Link>
@@ -263,7 +254,7 @@ function Hero() {
               {/* Secondary CTA: Browse Services */}
               <Link
                 href="/freelance"
-                className="inline-flex items-center justify-center h-12 px-6 rounded-xl border border-emerald-700 text-emerald-700 text-sm md:text-base font-medium bg-emerald-50 hover:bg-emerald-100 transition-all"
+                className="inline-flex items-center justify-center h-12 px-6 rounded-xl border border-main-700 text-main-700 text-sm md:text-base font-medium bg-main-50 hover:bg-main-100 transition-all"
               >
                 {t('hero.search')}
               </Link>
@@ -351,12 +342,12 @@ export function CategorySwiper() {
                   <div
                     className={[
                       'group relative flex flex-col items-center justify-center h-full',
-                      'rounded-xl border border-emerald-100/70 bg-white',
+                      'rounded-xl border border-main-100/70 bg-white',
                       'px-5 py-8 transition-all duration-200',
                     ].join(' ')}
                     aria-hidden
                   >
-                    <span className="absolute inset-0 rounded-xl bg-emerald-50 opacity-0 transition-opacity" />
+                    <span className="absolute inset-0 rounded-xl bg-main-50 opacity-0 transition-opacity" />
                     <div className="relative w-12 h-12 mb-3">
                       <div className="w-full h-full rounded-full bg-gray-100 animate-pulse" />
                     </div>
@@ -371,18 +362,18 @@ export function CategorySwiper() {
                     href={`/services/${encodeURIComponent(category.slug)}`}
                     className={[
                       'group relative flex flex-col items-center justify-center h-full',
-                      'rounded-xl border border-emerald-100/70 bg-white',
+                      'rounded-xl border border-main-100/70 bg-white',
                       'px-5 py-8 transition-all duration-200',
-                      'shadow-sm hover:shadow-emerald-200/60 hover:shadow-lg',
+                      'shadow-sm hover:shadow-main-200/60 hover:shadow-lg',
                       'hover:-translate-y-0.5',
                     ].join(' ')}
                     aria-label={t('categories.browse', { name })}
                   >
-                    <span className="absolute inset-0 rounded-xl bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="absolute inset-0 rounded-xl bg-main-50 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative w-12 h-12 mb-3">
                       <Image src={category.topIconUrl ? resolveUrl(category.topIconUrl) : '/icons/service.png'} alt={name} fill sizes="48px" className="object-contain" />
                     </div>
-                    <span className="text-nowrap truncate relative text-sm font-semibold text-gray-900 group-hover:text-emerald-700">
+                    <span className="text-nowrap truncate relative text-sm font-semibold text-gray-900 group-hover:text-main-700">
                       {name}
                     </span>
                   </Link>
@@ -444,7 +435,7 @@ export function PopularServicesSwiper() {
     <section className="container !px-4 sm:!px-6 lg:!px-8 !py-12">
       <div className="flex items-end justify-between mb-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{t('popularServices.title')}</h2>
-        <Link href="/services" className="text-emerald-700 hover:text-emerald-800 text-sm font-semibold underline underline-offset-4">
+        <Link href="/services" className="text-main-700 hover:text-main-800 text-sm font-semibold underline underline-offset-4">
           {t('popularServices.seeAll')}
         </Link>
       </div>
@@ -466,13 +457,13 @@ export function PopularServicesSwiper() {
               <div
                 className={[
                   'group relative flex flex-col items-center text-center',
-                  'bg-white rounded-2xl border border-emerald-100/70',
+                  'bg-white rounded-2xl border border-main-100/70',
                   'px-6 py-10 h-full',
                   'transition-all duration-200',
                 ].join(' ')}
                 aria-hidden
               >
-                <div className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full opacity-0" />
+                <div className="absolute top-3 right-3 text-[10px] font-bold bg-main-600 text-white px-2 py-0.5 rounded-full opacity-0" />
                 <div className="relative w-14 h-14 mb-4">
                   <div className="w-full h-full rounded-full bg-gray-100 animate-pulse" />
                 </div>
@@ -489,14 +480,14 @@ export function PopularServicesSwiper() {
                 href={`/services/${encodeURIComponent(service?.category?.slug)}/${encodeURIComponent(service.slug)}`}
                 className={[
                   'group relative flex flex-col items-center text-center',
-                  'bg-white rounded-2xl border border-emerald-100/70',
+                  'bg-white rounded-2xl border border-main-100/70',
                   'px-6 py-10 h-full',
                   'shadow-[0_6px_24px_rgba(16,185,129,0.06)] hover:shadow-[0_16px_40px_rgba(16,185,129,0.15)]',
                   'transition-all duration-200 hover:-translate-y-0.5',
                 ].join(' ')}
                 aria-label={service.title}
               >
-                <span className="absolute top-3 right-3 text-[10px] font-bold bg-emerald-600 text-white px-2 py-0.5 rounded-full">{t('popularServices.from', { price: minPrice })}</span>
+                <span className="absolute top-3 right-3 text-[10px] font-bold bg-main-600 text-white px-2 py-0.5 rounded-full">{t('popularServices.from', { price: minPrice })}</span>
                 <div className="relative w-14 h-14 mb-4">
                   <Image
                     src={service.iconUrl ? resolveUrl(service.iconUrl) : '/icons/service.png'}
@@ -507,8 +498,8 @@ export function PopularServicesSwiper() {
                     className="object-contain"
                   />
                 </div>
-                <span className="text-sm font-semibold text-gray-900 group-hover:text-emerald-700">{service.title}</span>
-                <span className="mt-2 text-xs text-emerald-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity">{t('popularServices.bookNow')}</span>
+                <span className="text-sm font-semibold text-gray-900 group-hover:text-main-700">{service.title}</span>
+                <span className="mt-2 text-xs text-main-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity">{t('popularServices.bookNow')}</span>
               </Link>
             </SwiperSlide>)
           })}
@@ -523,7 +514,7 @@ export function WhyChoose() {
 
   return (
     <section className='container !px-4 sm:!px-6 lg:!px-8 !py-12'>
-      <div className='rounded-3xl bg-gradient-to-r from-emerald-50 to-white border border-emerald-100/70 p-6 md:p-10'>
+      <div className='rounded-3xl bg-gradient-to-r from-main-50 to-white border border-main-100/70 p-6 md:p-10'>
         <h2 className='text-3xl md:text-4xl font-extrabold mb-8'>{t('whyChoose.title')}</h2>
         {/* Subtitle */}
         <p className="text-lg text-slate-700 mb-8">
@@ -531,7 +522,7 @@ export function WhyChoose() {
         </p>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
           {WHY_CHOOSE_ITEMS.map(item => (
-            <div key={item.key} className={['flex flex-col rounded-2xl bg-white border border-emerald-100/70', 'px-6 py-8 shadow-sm hover:shadow-emerald-200/50 hover:shadow-lg', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>
+            <div key={item.key} className={['flex flex-col rounded-2xl bg-white border border-main-100/70', 'px-6 py-8 shadow-sm hover:shadow-main-200/50 hover:shadow-lg', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>
               <div className='w-12 h-12 mb-4 relative'>
                 <Image src={item.icon} loader={localImageLoader} alt={t(`whyChoose.items.${item.key}.title`)} fill sizes='48px' className='object-contain' />
               </div>
@@ -566,7 +557,7 @@ export function ClientsExperiences() {
         wrapperClass='items-stretch'>
         {experiences.map(item => (
           <SwiperSlide key={item.id} className='!min-h-[444px]'>
-            <article className={['bg-white rounded-2xl border border-emerald-100/70', 'p-4 h-full flex flex-col gap-5', 'shadow-[0_6px_24px_rgba(16,185,129,0.06)]'].join(' ')}>
+            <article className={['bg-white rounded-2xl border border-main-100/70', 'p-4 h-full flex flex-col gap-5', 'shadow-[0_6px_24px_rgba(16,185,129,0.06)]'].join(' ')}>
               <div className='relative  w-full rounded-xl overflow-hidden aspect-[16/10]'>
                 <Image src={item.image} loader={localImageLoader} alt={item.clientName} fill sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw' className='object-cover  h-full max-h-[300px]' />
               </div>
@@ -575,7 +566,7 @@ export function ClientsExperiences() {
                 “{item.quote}”<span className='text-xs ms-2 inline-block text-gray-600 italic'> — {item.company}</span>
               </blockquote>
 
-              <footer className='pt-4 border-t border-emerald-100/70'>
+              <footer className='pt-4 border-t border-main-100/70'>
                 <p className='text-base font-semibold'>{item.clientName}</p>
                 <p className='text-sm text-gray-500'>{item.title}</p>
               </footer>
@@ -675,21 +666,21 @@ export function CTAStrip() {
 
   return (
     <section className="container !px-4 sm:!px-6 lg:!px-8 !pb-16">
-      <div className="relative overflow-hidden rounded-3xl border border-emerald-100/70 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600">
+      <div className="relative overflow-hidden rounded-3xl border border-main-100/70 bg-gradient-to-r from-main-600 via-main-500 to-main-600">
         <div className="absolute -inset-1 opacity-20 [mask-image:radial-gradient(closest-side,white,transparent)] bg-[conic-gradient(at_top_left,white,transparent_30%)]" />
         <div className="relative p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 text-white">
           <div>
             <h3 className="text-2xl md:text-3xl font-extrabold">
               {t('cta.title')}
             </h3>
-            <p className="text-emerald-50/90 mt-1">
+            <p className="text-main-50/90 mt-1">
               {t('cta.subtitle')}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href={primaryHref}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-emerald-700 font-bold shadow-lg hover:shadow-xl transition"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-main-700 font-bold shadow-lg hover:shadow-xl transition"
             >
               {primaryLabel} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
             </Link>

@@ -34,9 +34,9 @@ const Textarea = forwardRef(({
       <div className={`relative flex items-center rounded-md bg-white transition border ${error
         ? 'border-red-500 ring-2 ring-red-500/20'
         : props.value
-          ? 'border-emerald-600'
+          ? 'border-main-600'
           : 'border-gray-300'
-        } focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20 ${cnInput}`}>
+        } focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20 ${cnInput}`}>
 
         {iconLeft && (
           <span className='flex-none text-slate-400 pl-2'>

@@ -34,41 +34,41 @@ export default function Analytics() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <StatCard 
-        title="Total Users" 
-        value={stats.totalUsers} 
-        icon="👥" 
-        color="blue" 
+      <StatCard
+        title="Total Users"
+        value={stats.totalUsers}
+        icon="👥"
+        color="blue"
       />
-      <StatCard 
-        title="Total Orders" 
-        value={stats.totalOrders} 
-        icon="📦" 
-        color="green" 
+      <StatCard
+        title="Total Orders"
+        value={stats.totalOrders}
+        icon="📦"
+        color="green"
       />
-      <StatCard 
-        title="Total Revenue" 
-        value={`$${stats.totalRevenue}`} 
-        icon="💰" 
-        color="purple" 
+      <StatCard
+        title="Total Revenue"
+        value={`$${stats.totalRevenue}`}
+        icon="💰"
+        color="purple"
       />
-      <StatCard 
-        title="Pending Withdrawals" 
-        value={stats.pendingWithdrawals} 
-        icon="⏳" 
-        color="yellow" 
+      <StatCard
+        title="Pending Withdrawals"
+        value={stats.pendingWithdrawals}
+        icon="⏳"
+        color="yellow"
       />
-      <StatCard 
-        title="Active Services" 
-        value={stats.activeServices} 
-        icon="🛍️" 
-        color="indigo" 
+      <StatCard
+        title="Active Services"
+        value={stats.activeServices}
+        icon="🛍️"
+        color="indigo"
       />
-      <StatCard 
-        title="Abuse Reports" 
-        value={stats.abuseReports} 
-        icon="⚠️" 
-        color="red" 
+      <StatCard
+        title="Abuse Reports"
+        value={stats.abuseReports}
+        icon="⚠️"
+        color="red"
       />
     </div>
   );
@@ -77,7 +77,7 @@ export default function Analytics() {
 function StatCard({ title, value, icon, color }) {
   const colorClasses = {
     blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-green-100 text-green-600',
+    green: 'bg-main-100 text-main-600',
     purple: 'bg-purple-100 text-purple-600',
     yellow: 'bg-yellow-100 text-yellow-600',
     indigo: 'bg-indigo-100 text-indigo-600',

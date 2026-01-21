@@ -66,7 +66,7 @@ function MessageNode({ node, onReply, level = 0 }) {
     <div className='space-y-2' style={{ marginLeft: level * 16 }}>
       <div className={`flex gap-3 `}>
         <div className='h-8 w-8 rounded-full bg-gray-200 overflow-hidden grid place-items-center text-xs font-semibold shrink-0'>{(node?.sender?.username?.[0] || 'S').toUpperCase()}</div>
-        <div className={`${isMine ? 'bg-emerald-50 ring-emerald-100' : 'bg-slate-50 ring-slate-200'} flex-1 p-1 rounded-lg `}>
+        <div className={`${isMine ? 'bg-main-50 ring-main-100' : 'bg-slate-50 ring-slate-200'} flex-1 p-1 rounded-lg `}>
           <div className='text-[13px]'>
             <b>{node?.sender?.username || 'System'}</b> <span className='text-gray-500'>• {new Date(node.created_at).toLocaleString()}</span>
           </div>
@@ -160,7 +160,7 @@ export default function DisputesPage() {
         status: [
           ['open', 'text-yellow-700'],
           ['in_review', 'text-blue-700'],
-          ['resolved', 'text-emerald-700'],
+          ['resolved', 'text-main-700'],
           ['rejected', 'text-rose-700'],
         ],
         headerClassName: 'text-center',
@@ -490,7 +490,7 @@ export default function DisputesPage() {
   return (
     <div>
 
-      <GlassCard gradient='from-green-400 via-emerald-400 to-teal-400' className='mb-6 !overflow-visible'>
+      <GlassCard gradient='from-main-400 via-main-400 to-teal-400' className='mb-6 !overflow-visible'>
         <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
           <Tabs tabs={TABS} activeTab={activeTab} setActiveTab={handleTabChange} />
           <div className='flex flex-wrap items-center gap-3'>
@@ -660,7 +660,7 @@ export default function DisputesPage() {
             {resError ? <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{resError}</div> : null}
 
             <div className='flex items-center justify-end gap-2'>
-              <Button disabled={!orderDetail} name={resSubmitting ? t('Dashboard.disputes.modals.processing') : t('Dashboard.disputes.modals.resolvePayout')} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-emerald-600 hover:bg-emerald-700'}`} loading={resSubmitting} />
+              <Button disabled={!orderDetail} name={resSubmitting ? t('Dashboard.disputes.modals.processing') : t('Dashboard.disputes.modals.resolvePayout')} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-main-600 hover:bg-main-700'}`} loading={resSubmitting} />
             </div>
           </div>
         </Modal>

@@ -8,15 +8,15 @@ export const SubmitButton = ({
 }) => (
   <motion.button
     type="submit"
-    disabled={isLoading} 
+    disabled={isLoading}
     className={`
       relative flex items-center justify-center cursor-pointer
       ${isLoading ? "w-fit px-4 py-4 rounded-full" : "w-full px-6 py-3 rounded-2xl"} 
       font-semibold text-white 
-      bg-gradient-to-r from-emerald-500 to-emerald-400 
+      bg-gradient-to-r from-main-500 to-main-400 
       shadow-sm transition-all duration-300
-      hover:shadow-lg hover:from-emerald-600 hover:to-emerald-500 over:!scale-1
-      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500
+      hover:shadow-lg hover:from-main-600 hover:to-main-500 over:!scale-1
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-main-500
       disabled:opacity-70 mx-auto disabled:cursor-not-allowed
       ${className}
     `}

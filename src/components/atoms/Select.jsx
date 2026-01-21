@@ -92,7 +92,7 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
 
   const getBorderClass = () => {
     if (error) return 'border-red-500 ring-2 ring-red-500/20';
-    if (selected || open) return 'border-emerald-600';
+    if (selected || open) return 'border-main-600';
     return 'border-gray-300';
   };
 
@@ -159,7 +159,7 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
   const rowRenderer = ({ index, key, style }) => {
     const opt = internalOptions[index];
     return (
-      <li style={style} key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white'}`}>
+      <li style={style} key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white'}`}>
         {opt.name}
       </li>
     )
@@ -229,7 +229,7 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
                 : (
                   <ul className='divide-y divide-gray-100'>
                     {internalOptions.map(opt => (
-                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-emerald-500 to-emerald-400  hover:text-white option-selected'}`}>
+                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white option-selected'}`}>
                         {opt.name}
                       </li>
                     ))}
@@ -259,8 +259,8 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
           onClick={handleButtonClick}
           className={`${cnSelect || ''} ${getBorderClass()} h-[40px] cursor-pointer w-full flex items-center justify-between rounded-md border px-4 py-2 text-sm transition
               bg-white text-gray-700 
-              hover:bg-gray-50 hover:border-emerald-600/70 
-              focus:outline-none focus:ring-2 focus:ring-emerald-600/50`}
+              hover:bg-gray-50 hover:border-main-600/70 
+              focus:outline-none focus:ring-2 focus:ring-main-600/50`}
           aria-haspopup='listbox'
           aria-expanded={open}
           name={name}
@@ -268,7 +268,7 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
 
           {isLoading ? <span className={`truncate text-gray-900 font-medium`}>{defaultLoadingText || defaultPlaceholder}</span>
             : <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated && selectkey ? `${selectkey}: ` : ''} {formated || defaultPlaceholder}</span>}
-          {!hideIcon && <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />}
+          {!hideIcon && <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-main-600' : 'text-gray-400'}`} />}
         </button>
       </div>
 

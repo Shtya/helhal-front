@@ -17,7 +17,7 @@ export default function AdvancedJobsDropdown({
   className = '',
 }) {
   const t = useTranslations('AdvancedJobsDropdown');
-  const BRAND = '#108A00';
+  const BRAND = 'var(--color-main-600)';
   const rootRef = useRef(null);
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
@@ -65,7 +65,7 @@ export default function AdvancedJobsDropdown({
       type='button'
       onClick={onClick}
       className={`w-full px-2 py-1 mx-1 rounded-md flex items-center justify-between text-left transition
-        cursor-pointer ${active ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-50 text-slate-800'}`}>
+        cursor-pointer ${active ? 'bg-main-600 text-white' : 'hover:bg-main-50 text-slate-800'}`}>
       <span className='flex items-center gap-2'>
         <span
           className={`w-5 h-5 rounded-md border flex items-center justify-center

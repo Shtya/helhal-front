@@ -23,7 +23,41 @@ import AccountVerificationCard from '@/components/pages/profile/AccountVerificat
 import { resolveUrl } from '@/utils/helper';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 
-
+const EditIcon = ({ className }) => (
+  <svg
+    className={`cursor-pointer hover:scale-[1.1] duration-300 ${className}`}
+    width="30"
+    height="30"
+    viewBox="0 0 42 42"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ color: 'var(--color-main-600)' }}
+  >
+    <path
+      d="M19.25 3.5H15.75C7 3.5 3.5 7 3.5 15.75V26.25C3.5 35 7 38.5 15.75 38.5H26.25C35 38.5 38.5 35 38.5 26.25V22.75"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M28.0703 5.2852L14.2803 19.0752C13.7553 19.6002 13.2303 20.6327 13.1253 21.3852L12.3728 26.6527C12.0928 28.5602 13.4403 29.8902 15.3478 29.6277L20.6153 28.8752C21.3503 28.7702 22.3828 28.2452 22.9253 27.7202L36.7153 13.9302C39.0953 11.5502 40.2153 8.7852 36.7153 5.2852C33.2153 1.7852 30.4503 2.9052 28.0703 5.2852Z"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M26.0918 7.2627C27.2643 11.4452 30.5368 14.7177 34.7368 15.9077"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
 
 /* -------------------------------- Utilities -------------------------------- */
 const toDate = iso => (iso ? new Date(iso).toLocaleString() : '—');
@@ -70,7 +104,14 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
             ) : null}
           </div>
 
-          <img onClick={() => setEditing(!editing)} className='cursor-pointer hover:scale-[1.1] duration-300' src={'/icons/edit-green.svg'} alt='' />
+          {/* Replace your <img> with this */}
+          <button
+            onClick={() => setEditing(!editing)}
+            className="p-1 rounded-lg transition-all focus:outline-none"
+            aria-label="Edit"
+          >
+            <EditIcon className={editing ? "scale-110 opacity-70" : ""} />
+          </button>
         </div>
 
         <div className='mt-4 flex flex-col items-center'>
@@ -83,7 +124,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                   {state.profileImage ? (
                     <Img altSrc={'/no-user.png'} src={state.profileImage} alt='avatar' className='h-20 w-20 rounded-full border border-[#EDEDED] object-cover' />
                   ) : (
-                    <div className='grid h-20 w-20 place-content-center rounded-full border border-[#EDEDED] bg-[#EDEDED] group-hover:ring-2 group-hover:ring-[#108A00]'>
+                    <div className='grid h-20 w-20 place-content-center rounded-full border border-[#EDEDED] bg-[#EDEDED] group-hover:ring-2 group-hover:ring-[var(--color-main-600)]'>
                       <span className='text-2xl font-bold text-[#6B7280]'>{letterFromName(state.username || state.email)}</span>
                     </div>
                   )}
@@ -353,7 +394,7 @@ function KPICard({ loading, stats }) {
     <>
       {/* <h3 className='mb-3 text-lg font-semibold'>Seller KPIs</h3> */}
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-        <StatCard title={t('ordersCompleted')} value={Number(stats.ordersCompleted || 0)} hint={t('allTime')} icon={CheckCircle2} gradient='from-emerald-500 via-teal-500 to-cyan-400' />
+        <StatCard title={t('ordersCompleted')} value={Number(stats.ordersCompleted || 0)} hint={t('allTime')} icon={CheckCircle2} gradient='from-main-500 via-teal-500 to-cyan-400' />
         <StatCard title={t('repeatBuyers')} value={Number(stats.repeatBuyers || 0)} hint={t('uniqueCustomers')} icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
         {/* <StatCard title='Avg. Rating' value={stats.averageRating ? Number(stats.averageRating) : '—'}
           hint={stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} / 5` : 'Not yet calculated'} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' /> */}
@@ -588,11 +629,11 @@ function Assets({
                 <div className='space-y-2'>
                   <div className='flex items-center justify-between'>
                     <span className='text-sm font-medium text-slate-700'>{t('uploading')}</span>
-                    <span className='text-sm font-semibold text-emerald-600'>{videoUploadProgress}%</span>
+                    <span className='text-sm font-semibold text-main-600'>{videoUploadProgress}%</span>
                   </div>
                   <div className='w-full h-3 bg-slate-200 rounded-full overflow-hidden'>
                     <div
-                      className='h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500 ease-out'
+                      className='h-full bg-gradient-to-r from-main-500 to-main-600 rounded-full transition-all duration-500 ease-out'
                       style={{ width: `${videoUploadProgress}%` }}
                       aria-valuenow={videoUploadProgress}
                       aria-valuemin={0}
@@ -670,7 +711,7 @@ function Assets({
 
           {imgs.length < 6 && (
             <button type='button' onClick={handlePickImages} className='group grid aspect-[16/11] place-items-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 hover:bg-slate-100'>
-              <span className='flex flex-col items-center text-emerald-600'>
+              <span className='flex flex-col items-center text-main-600'>
                 <Upload className='h-5 w-5' />
                 <span className='mt-1 text-sm font-medium'>{t('upload')}</span>
               </span>
@@ -1189,7 +1230,7 @@ export default function Overview() {
 
         {/* Bottom Save Drawer */}
         <div className={`fixed inset-x-0 bottom-0 z-50 transition-transform duration-300 ${dirty ? 'translate-y-0' : 'translate-y-full'}`}>
-          <div className='mx-auto mb-4 w-[min(960px,92%)] rounded-2xl border border-emerald-200 bg-white/95 shadow-[0_20px_40px_rgba(0,0,0,0.12)] backdrop-blur'>
+          <div className='mx-auto mb-4 w-[min(960px,92%)] rounded-2xl border border-main-200 bg-white/95 shadow-[0_20px_40px_rgba(0,0,0,0.12)] backdrop-blur'>
             <div className='flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between'>
               <div className='flex items-start gap-3'>
                 <AlertTriangle className='mt-[2px] h-5 w-5 text-amber-600' />

@@ -254,7 +254,7 @@ export default function Header() {
               <Link href='/chat' aria-label='Go to chat' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
                 <MessageCircle className='h-5 w-5 text-slate-600' />
                 {unreadChatCount > 0 && (
-                  <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center font-semibold'>
+                  <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-main-600 text-white text-[11px] grid place-items-center font-semibold'>
                     {unreadChatCount > 99 ? '99+' : unreadChatCount}
                   </span>
                 )}
@@ -265,7 +265,7 @@ export default function Header() {
               <Link href='/cart' aria-label='Cart' className='shrink-0  relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
                 <ShoppingCart className='h-5 w-5 text-slate-600 ' />
                 {cartTotal > 0 && (
-                  <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-emerald-600 text-white text-[11px] grid place-items-center font-semibold'>
+                  <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-main-600 text-white text-[11px] grid place-items-center font-semibold'>
                     {cartTotal > 99 ? '99+' : cartTotal}
                   </span>
                 )}
@@ -277,10 +277,10 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-emerald-700 transition-colors rounded-xl'>
+              <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-main-700 transition-colors rounded-xl'>
                 {tHeader('auth.signUp')}
               </Link>
-              <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors'>
+              <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium bg-main-600 text-white rounded-xl hover:bg-main-700 transition-colors'>
                 {tHeader('auth.signIn')}
               </Link>
               <div className='order-2 max-lg:hidden s'>
@@ -339,7 +339,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
     <div className='relative' ref={dropdownRef}>
       <motion.button onClick={() => setIsOpen(v => !v)} className='hidden lg:inline-flex items-center justify-center' whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
 
-        <Img src={user?.profileImage || '/images/placeholder-avatar.png'} altSrc='/images/placeholder-avatar.png' loader={localImageLoader} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-emerald-600 shadow-sm' />
+        <Img src={user?.profileImage || '/images/placeholder-avatar.png'} altSrc='/images/placeholder-avatar.png' loader={localImageLoader} alt='Avatar' width={45} height={45} className='h-[45px] w-[45px] rounded-full object-cover border-2 border-main-600 shadow-sm' />
       </motion.button>
 
       <AnimatePresence>
@@ -356,7 +356,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
                 if (item.divider) return <Divider key={`div-${index}`} className='!my-0' />;
                 return (
                   <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.04 }}>
-                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${item.active ? 'text-emerald-700 bg-emerald-50' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setIsOpen(false)}>
+                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${item.active ? 'text-main-700 bg-main-50' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setIsOpen(false)}>
                       {item.icon}
                       <span className='truncate'>{item.label}</span>
                     </Link>
@@ -432,10 +432,10 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
 
   return (
     <div ref={rootRef} className='relative' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
+      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 hover:text-main-700'}`}>
         {icon} {label}
         <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
-        <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
+        <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-main-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
       <AnimatePresence>
@@ -477,7 +477,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
                           <li key={category?.id || category?.slug}>
                             <Link
                               href={`/services/${encodeURIComponent(category?.slug || '')}`}
-                              className={`block mb-2 text-sm font-semibold text-slate-900 hover:text-emerald-700 transition-colors ${pathname === `/services/${category?.slug}` || pathname.startsWith(`/services/${category?.slug}/`) ? 'text-emerald-700' : ''}`}
+                              className={`block mb-2 text-sm font-semibold text-slate-900 hover:text-main-700 transition-colors ${pathname === `/services/${category?.slug}` || pathname.startsWith(`/services/${category?.slug}/`) ? 'text-main-700' : ''}`}
                             >
                               {categoryName || 'Unnamed Category'}
                             </Link>
@@ -489,7 +489,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
                                     <li key={subcategory?.id || subcategory?.slug}>
                                       <Link
                                         href={`/services/${encodeURIComponent(subcategory?.slug || '')}`}
-                                        className='block text-sm text-slate-600 hover:text-emerald-600 hover:underline transition-colors'
+                                        className='block text-sm text-slate-600 hover:text-main-600 hover:underline transition-colors'
                                       >
                                         {subcategoryName || 'Unnamed Subcategory'}
                                       </Link>
@@ -544,9 +544,9 @@ function NavLinks({ links, topCategories, loadingTopCategories }) {
 
 function TopLink({ href, label, icon, active }) {
   return (
-    <Link href={href} className={`  relative px-2 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
+    <Link href={href} className={`  relative px-2 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 hover:text-main-700'}`}>
       {icon} {label}
-      <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
+      <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active ? 'bg-main-600' : 'bg-transparent'}`} transition={springy} />
     </Link>
   );
 }
@@ -568,10 +568,10 @@ export function DropdownItem({ label, icon, active, children }) {
 
   return (
     <div ref={rootRef} className='relative' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-emerald-700' : 'text-slate-700 hover:text-emerald-700'}`}>
+      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 hover:text-main-700'}`}>
         {icon} {label}
         <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
-        <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-emerald-600' : 'bg-transparent'}`} transition={springy} />
+        <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-main-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
       <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute start-0  w-[240px] rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
@@ -587,7 +587,7 @@ function DropdownPanel({ items = [] }) {
       <span className='bg-red-500 opacity-0 w-full  h-[20px] top-[-20px] block absolute inset-0'></span>
       {items.map(it => (
         <li key={it.href}>
-          <Link href={it.href} className='flex items-center gap-2 px-3 py-2 text-[14px] text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'>
+          <Link href={it.href} className='flex items-center gap-2 px-3 py-2 text-[14px] text-slate-700 hover:text-main-700 hover:bg-main-50'>
             <span className='scale-125'>{it.icon}</span>
             {it.label}
           </Link>
@@ -620,10 +620,10 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
             <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/100'>
               {/* Header */}
               <div className='relative px-4 pt-4 pb-3'>
-                <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-50/70 to-transparent pointer-events-none' />
+                <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-main-50/70 to-transparent pointer-events-none' />
                 <div className='relative flex items-center justify-between'>
                   <span className='text-sm font-semibold text-slate-700'>{tHeader('userMenu.menu')}</span>
-                  <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400' aria-label='Close' autoFocus>
+                  <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-400' aria-label='Close' autoFocus>
                     <X className='h-5 w-5 text-slate-600' />
                   </button>
                 </div>
@@ -639,7 +639,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                   <div className='min-w-0'>
                     <p className='text-sm text-slate-900 font-medium truncate'>{user.username || tHeader('userMenu.user')}</p>
                     <p className='text-xs text-slate-500 truncate'>{user.email}</p>
-                    {/* <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full capitalize'>{user.role || tHeader('userMenu.member')}</span> */}
+                    {/* <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-main-100 text-main-800 rounded-full capitalize'>{user.role || tHeader('userMenu.member')}</span> */}
                     <span className={`text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${chip}`} title={`Role: ${role}`}>
                       <UserIcon className='h-3.5 w-3.5' />
                       {role}
@@ -662,7 +662,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                         <MobileCollapsible label={link.label} icon={link.icon}>
                           <div className='py-1'>
                             {link.children.map(c => (
-                              <Link key={c.href} href={c.href} onClick={onClose} className='flex items-center gap-2 px-3 py-2 rounded-lg text-[15px] text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'>
+                              <Link key={c.href} href={c.href} onClick={onClose} className='flex items-center gap-2 px-3 py-2 rounded-lg text-[15px] text-slate-700 hover:bg-main-50 hover:text-main-700'>
                                 {c.icon}
                                 {c.label}
                               </Link>
@@ -670,7 +670,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                           </div>
                         </MobileCollapsible>
                       ) : (
-                        <Link href={link.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${active ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+                        <Link href={link.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${active ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
                           {link.icon}
                           {link.label}
                         </Link>
@@ -689,7 +689,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                     if (item.divider) return <Divider key={`divider-${index}`} className='!my-0' />;
                     return (
                       <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 }}>
-                        <Link href={item.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${pathname.startsWith(item.href) ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+                        <Link href={item.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${pathname.startsWith(item.href) ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
                           {item.icon}
                           <span className='truncate'>{item.label}</span>
                         </Link>
@@ -705,7 +705,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                 <motion.button
                   onClick={toggleLocale}
                   disabled={isPending}
-                  className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-slate-800 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors'
+                  className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-slate-800 hover:text-main-700 hover:bg-main-50 rounded-lg transition-colors'
                   whileTap={{ scale: 0.98 }}
                   aria-label={locale === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
                 >
@@ -737,7 +737,7 @@ function MobileCollapsible({ label, icon, children }) {
   const [open, setOpen] = useState(false);
   return (
     <div className='px-1'>
-      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
         <span className='inline-flex items-center gap-2'>
           {icon}
           {label}
@@ -770,7 +770,7 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
 
   return (
     <div className='px-1'>
-      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
         <span className='inline-flex items-center gap-2'>
           {icon}
           {label}
@@ -827,14 +827,14 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
         <Link
           href={`/services/${encodeURIComponent(category?.slug || '')}`}
           onClick={onClose}
-          className={`flex-1 px-3 py-2 rounded-lg text-[15px] transition ${isActive ? 'bg-emerald-50 text-emerald-700 font-medium' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700'}`}
+          className={`flex-1 px-3 py-2 rounded-lg text-[15px] transition ${isActive ? 'bg-main-50 text-main-700 font-medium' : 'text-slate-700 hover:bg-main-50 hover:text-main-700'}`}
         >
           {categoryName || 'Unnamed Category'}
         </Link>
         {hasChildren && (
           <button
             onClick={() => setOpen(o => !o)}
-            className='px-2 py-2 text-slate-600 hover:text-emerald-700'
+            className='px-2 py-2 text-slate-600 hover:text-main-700'
           >
             <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
           </button>
@@ -853,7 +853,7 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
                       <Link
                         href={`/services/${encodeURIComponent(subcategory?.slug || '')}`}
                         onClick={onClose}
-                        className={`block px-3 py-2 rounded-lg text-[14px] transition ${isSubActive ? 'bg-emerald-50 text-emerald-700 font-medium' : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'}`}
+                        className={`block px-3 py-2 rounded-lg text-[14px] transition ${isSubActive ? 'bg-main-50 text-main-700 font-medium' : 'text-slate-600 hover:bg-main-50 hover:text-main-700'}`}
                       >
                         {subcategoryName || 'Unnamed Subcategory'}
                       </Link>
@@ -871,7 +871,7 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
 
 const roleStyles = {
   seller: { chip: 'bg-amber-100 text-amber-800', dot: 'bg-amber-500' },
-  buyer: { chip: 'bg-emerald-100 text-emerald-800', dot: 'bg-emerald-500' },
+  buyer: { chip: 'bg-main-100 text-main-800', dot: 'bg-main-500' },
   admin: { chip: 'bg-indigo-100 text-indigo-800', dot: 'bg-indigo-500' },
   member: { chip: 'bg-slate-100 text-slate-700', dot: 'bg-slate-400' },
 };
@@ -896,7 +896,7 @@ function UserMiniCard({ user }) {
       <motion.div whileHover={{ rotate: 2, scale: 1.02 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }} className='relative' aria-label={`${name} avatar`}>
         <div className='relative'>
           {/* animated conic ring */}
-          <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-emerald-400 via-sky-400 to-violet-400 blur opacity-30 group-hover:opacity-60 transition' />
+          <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-main-400 via-sky-400 to-violet-400 blur opacity-30 group-hover:opacity-60 transition' />
           <div className='relative size-12 rounded-full border border-slate-200 shadow-sm overflow-hidden bg-white flex items-center justify-center'>
             <Img src={user.profileImage} alt={`${name} avatar`} width={48} height={48} className='rounded-full object-cover size-12' textFallback={getInitials(name)} />
           </div>

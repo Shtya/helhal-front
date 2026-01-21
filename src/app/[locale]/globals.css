@@ -2,12 +2,24 @@
 @import 'tailwindcss';
 
 :root {
-  --main: #108a00;
+  --main: #3b82f6;
   --secondary: #1f2937;
 }
 
 @theme {
   --breakpoint-xs: 480px;
+
+  --color-main-50: #eff6ff;
+  --color-main-100: #dbeafe;
+  --color-main-200: #bfdbfe;
+  --color-main-300: #93c5fd;
+  --color-main-400: #60a5fa;
+  --color-main-500: #3b82f6;
+  --color-main-600: #2563eb;
+  --color-main-700: #1d4ed8;
+  --color-main-800: #1e40af;
+  --color-main-900: #1e3a8a;
+  --color-main-950: #172554
 }
 
 button {
@@ -96,9 +108,10 @@ body {
 }
 
 .popular-services-swiper .swiper-pagination-bullet-active {
-  color: #0e8a00;
-  background-color: #0e8a00;
+  color: var(--color-main-500);
+  background-color: var(--color-main-500);
 }
+
 
 .container {
   max-width: 1700px !important;
@@ -262,8 +275,8 @@ body {
 
 /* Scrollbar thumb */
 ::-webkit-scrollbar-thumb {
-  background-image: linear-gradient(to right, #10b981, #34d399);
-  /* emerald-500 → emerald-400 */
+  background-image: linear-gradient(to right, var(--color-main-500), var(--color-main-400));
+  /* main-500 → main-400 */
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -4px rgba(0, 0, 0, 0.1);
   /* shadow-lg */
@@ -280,8 +293,8 @@ body {
 
 /* Gradient utility */
 .gradient {
-  background-image: linear-gradient(to right, #10b981, #34d399);
-  /* emerald-500 → emerald-400 */
+  background-image: linear-gradient(to right, var(--color-main-500), var(--color-main-400));
+  /* main-500 → main-400 */
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -4px rgba(0, 0, 0, 0.1);
   /* shadow-lg */
@@ -291,8 +304,8 @@ body {
 
 /* Gradient hover */
 .gradient:hover {
-  background-image: linear-gradient(to right, #059669, #10b981);
-  /* emerald-600 → emerald-500 */
+  background-image: linear-gradient(to right, var(--color-main-500), var(--color-main-400));
+  /* main-600 → main-500 */
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
   /* shadow-xl */
@@ -328,8 +341,8 @@ body {
 
 .bg-second {
   position: absolute;
-  background-image: linear-gradient(to top right, #059669, #22c55e);
-  /* emerald-600 → green-500 */
+  background-image: linear-gradient(to top right, var(--color-main-600), var(--color-main-500));
+  /* main-600 → main-500 */
   border-radius: 10px;
   color: #fff;
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35),
@@ -343,8 +356,8 @@ body {
   position: relative;
   border-radius: 10px;
   color: #fff;
-  background-image: linear-gradient(to top right, #059669, #22c55e);
-  /* emerald-600 → green-500 */
+  background-image: linear-gradient(to top right, var(--color-main-600), var(--color-main-500));
+  /* main-600 → main-500 */
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35),
     0 2px 0 rgba(255, 255, 255, 0.18) inset,
     0 -10px 18px rgba(0, 0, 0, 0.35) inset;
@@ -436,11 +449,11 @@ body {
 .bg-outline-green {
   position: relative;
   border-radius: 10px;
-  color: #059669;
-  /* emerald-600 */
+  color: var(--color-main-600);
+  /* main-600 */
   background-color: transparent;
-  border: 2px solid rgba(16, 185, 129, 0.8);
-  /* emerald-500 */
+  border: 2px solid color-mix(in srgb, var(--color-main-500) 80%, transparent);
+  /* main-500 */
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) inset;
   transform: translateZ(0);
   transition: all 0.25s ease;

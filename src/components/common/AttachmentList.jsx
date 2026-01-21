@@ -50,8 +50,8 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
   };
 
   // Theme color for labels/icons (use site theme color)
-  const themeBg = 'bg-emerald-500';
-  const themeText = 'text-emerald-600';
+  const themeBg = 'bg-main-500';
+  const themeText = 'text-main-600';
 
   return (
     <>
@@ -101,7 +101,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                     title={t('preview')}
                     aria-label={t('preview')}
                   >
-                    <Paperclip className="w-4 h-4 text-emerald-600" />
+                    <Paperclip className="w-4 h-4 text-main-600" />
                     <span className="hidden sm:inline">{t('preview')}</span>
                   </button>
                 </div>
@@ -177,7 +177,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                   target="_blank"
                   rel="noreferrer"
                   download={selectedFile?.name || selectedFile?.filename}
-                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                  className="px-4 py-2 bg-main-600 text-white rounded-md hover:bg-main-700 transition"
                 >
                   {t('download')}
                 </a>

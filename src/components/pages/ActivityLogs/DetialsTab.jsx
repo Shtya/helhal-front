@@ -68,7 +68,7 @@ const DetialsTab = () => {
 
                   {/* SUMMARY ROWS */}
                   {summary.map((s, i) => (
-                    <tr key={`sum-${s.label}-${i}`} className={'bg-[#108A000D]'}>
+                    <tr key={`sum-${s.label}-${i}`} className={'bg-main-600/5'}>
                       <td className={`py-4 px-4 text-xl font-semibold text-slate-900`}>{s.label}</td>
                       <td />
                       <td />

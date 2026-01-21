@@ -268,7 +268,7 @@ export default function AdminOrdersDashboard() {
   return (
     <div>
       <div className='p-6'>
-        <GlassCard gradient='from-green-400 via-emerald-400 to-teal-400' className='mb-6 !overflow-visible'>
+        <GlassCard gradient='from-main-400 via-main-400 to-teal-400' className='mb-6 !overflow-visible'>
           <div className='flex flex-col md:flex-row gap-4 items-center justify-between'>
             <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={handleTabChange} />
             <div className='flex flex-wrap items-center gap-3'>

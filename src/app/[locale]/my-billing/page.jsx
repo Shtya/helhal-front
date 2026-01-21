@@ -254,7 +254,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       currency: '﷼',
       description: t('earningsToDate.description'),
       icon: Wallet,
-      iconBg: 'bg-[#cfe8cc] text-[#108a00]',
+      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
     },
     {
       title: t('availableBalance.title'),
@@ -262,7 +262,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       currency: '﷼',
       description: t('availableBalance.description'),
       icon: CreditCard,
-      iconBg: 'bg-[#cfe8cc] text-[#108a00]',
+      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
     },
     {
       title: t('credits.title'),
@@ -270,7 +270,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       currency: '﷼',
       description: t('credits.description'),
       icon: DollarSign,
-      iconBg: 'bg-[#cfe8cc] text-[#108a00]',
+      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
     },
   ];
 
@@ -438,14 +438,14 @@ const BillingInformation = () => {
         <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
       </div>
 
-      {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{message}</div>}
+      {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-main-100 text-main-700'}`}>{message}</div>}
 
       <div className='max-w-[800px] w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
-        <Input cnInput={'!border-[#108A00]'} label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={billingInfo.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
-        <Input cnInput={'!border-[#108A00]'} label={t('state')} placeholder={t('statePlaceholder')} value={billingInfo.state} onChange={e => handleInputChange('state', e.target.value)} />
-        <Select showSearch cnSelect={'!border-[#108A00]'} label={t('country')} placeholder={t('selectCountry')} options={countriesOptions} isLoading={countryLoading} value={billingInfo.countryId} onChange={value => handleInputChange('country', value?.id)} />
+        <Input cnInput={'!border-[var(--color-main-600)]'} label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={billingInfo.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
+        <Input cnInput={'!border-[var(--color-main-600)]'} label={t('state')} placeholder={t('statePlaceholder')} value={billingInfo.state} onChange={e => handleInputChange('state', e.target.value)} />
+        <Select showSearch cnSelect={'!border-[var(--color-main-600)]'} label={t('country')} placeholder={t('selectCountry')} options={countriesOptions} isLoading={countryLoading} value={billingInfo.countryId} onChange={value => handleInputChange('country', value?.id)} />
         <Select
-          cnSelect={'!border-[#108A00]'}
+          cnSelect={'!border-[var(--color-main-600)]'}
           label={t('saudiResident')}
           placeholder={t('select')}
           options={[
@@ -588,7 +588,7 @@ const PaymentMethods = () => {
         <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
       </div>
 
-      {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>{message}</div>}
+      {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-main-100 text-main-700'}`}>{message}</div>}
 
       {/* Existing Bank Accounts */}
       {bankAccounts.length > 0 && (
@@ -616,7 +616,7 @@ const PaymentMethods = () => {
                     <p className='text-gray-600'>
                       {country?.name} - {account.state}
                     </p>
-                    {account.isDefault && <span className='inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
+                    {account.isDefault && <span className='inline-block bg-main-100 text-main-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
                   </div>
                   <div className='flex gap-2'>
                     {!account.isDefault && (
@@ -639,13 +639,13 @@ const PaymentMethods = () => {
 
       {/* Add New Bank Account Form */}
       <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        <Input cnInput='!border-[#108A00]' label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={formData.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label={t('ibanLabel')} placeholder={t('ibanPlaceholder')} value={formData.iban} onChange={e => handleInputChange('iban', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label={t('clientId')} placeholder={t('clientIdPlaceholder')} value={formData.clientId} onChange={e => handleInputChange('clientId', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label={t('clientSecret')} placeholder={t('clientSecretPlaceholder')} type='password' value={formData.clientSecret} onChange={e => handleInputChange('clientSecret', e.target.value)} />
-        <Select cnSelect='!border-[#108A00]' label={t('country')} placeholder={t('selectCountry')} showSearch isLoading={countryLoading} options={countriesOptions} value={formData.country} onChange={value => handleInputChange('country', value)} />
-        <Input cnInput='!border-[#108A00]' label={t('state')} placeholder={t('statePlaceholder')} value={formData.state} onChange={e => handleInputChange('state', e.target.value)} />
-        <Input cnInput='!border-[#108A00]' label={t('mobileNumber')} placeholder={t('mobileNumberPlaceholder')} value={formData.mobileNumber} onChange={e => handleInputChange('mobileNumber', e.target.value)} />
+        <Input cnInput='!border-[var(--color-main-600)]' label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={formData.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
+        <Input cnInput='!border-[var(--color-main-600)]' label={t('ibanLabel')} placeholder={t('ibanPlaceholder')} value={formData.iban} onChange={e => handleInputChange('iban', e.target.value)} />
+        <Input cnInput='!border-[var(--color-main-600)]' label={t('clientId')} placeholder={t('clientIdPlaceholder')} value={formData.clientId} onChange={e => handleInputChange('clientId', e.target.value)} />
+        <Input cnInput='!border-[var(--color-main-600)]' label={t('clientSecret')} placeholder={t('clientSecretPlaceholder')} type='password' value={formData.clientSecret} onChange={e => handleInputChange('clientSecret', e.target.value)} />
+        <Select cnSelect='!border-[var(--color-main-600)]' label={t('country')} placeholder={t('selectCountry')} showSearch isLoading={countryLoading} options={countriesOptions} value={formData.country} onChange={value => handleInputChange('country', value)} />
+        <Input cnInput='!border-[var(--color-main-600)]' label={t('state')} placeholder={t('statePlaceholder')} value={formData.state} onChange={e => handleInputChange('state', e.target.value)} />
+        <Input cnInput='!border-[var(--color-main-600)]' label={t('mobileNumber')} placeholder={t('mobileNumberPlaceholder')} value={formData.mobileNumber} onChange={e => handleInputChange('mobileNumber', e.target.value)} />
 
         <Button className='lg:col-span-2 ml-auto mt-auto !h-[45px] !py-1 max-w-[250px]' name={saving ? t('adding') : t('addBankAccount')} color='green' onClick={handleSave} disabled={saving} />
       </div>

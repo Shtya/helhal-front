@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import Input from '@/components/atoms/Input'; 
+import Input from '@/components/atoms/Input';
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -132,7 +132,7 @@ export default function Invite() {
             <div className='flex flex-wrap items-center justify-between mt-5 gap-3 text-sm'>
               <span className='text-slate-600'>Separate emails with commas, spaces, or new lines.</span>
               <div className='flex items-center gap-3'>
-                <button onClick={() => setShowPreview(true)} className='text-emerald-700 hover:text-emerald-800 underline underline-offset-2'>
+                <button onClick={() => setShowPreview(true)} className='text-main-700 hover:text-main-800 underline underline-offset-2'>
                   Preview Email
                 </button>
                 <button onClick={() => setRawEmails('')} className='text-slate-500 hover:text-slate-700 underline underline-offset-2'>
@@ -145,7 +145,7 @@ export default function Invite() {
             {(validEmails.length > 0 || invalidEmails.length > 0) && (
               <div className='flex flex-wrap gap-2' data-aos='fade-up' data-aos-delay='0'>
                 {validEmails.map(e => (
-                  <span key={`good-${e}`} className='px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs border border-emerald-200'>
+                  <span key={`good-${e}`} className='px-2.5 py-1 rounded-full bg-main-50 text-main-700 text-xs border border-main-200'>
                     {e}
                   </span>
                 ))}
@@ -160,10 +160,10 @@ export default function Invite() {
             {/* Stats + Send button */}
             <div className='mt-1 flex items-center justify-between'>
               <div className='text-sm text-slate-600'>
-                <b className='text-emerald-700'>{validEmails.length}</b> valid • <b className='text-rose-600'>{invalidEmails.length}</b> invalid
+                <b className='text-main-700'>{validEmails.length}</b> valid • <b className='text-rose-600'>{invalidEmails.length}</b> invalid
               </div>
 
-              <button onClick={handleSendInvites} disabled={!canSend} className='inline-flex items-center gap-2 rounded-xl bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed'>
+              <button onClick={handleSendInvites} disabled={!canSend} className='inline-flex items-center gap-2 rounded-xl bg-main-600 text-white px-4 py-2 text-sm font-medium hover:bg-main-700 transition disabled:opacity-50 disabled:cursor-not-allowed'>
                 {sending ? (
                   <span className='animate-pulse'>Sending…</span>
                 ) : (
@@ -176,7 +176,7 @@ export default function Invite() {
             </div>
 
             {sentCount > 0 && (
-              <div className='text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2' data-aos='fade-in'>
+              <div className='text-sm text-main-700 bg-main-50 border border-main-200 rounded-lg px-3 py-2' data-aos='fade-in'>
                 Successfully sent to {sentCount} {sentCount === 1 ? 'email' : 'emails'}.
               </div>
             )}
@@ -186,10 +186,10 @@ export default function Invite() {
           <div className='flex flex-col gap-5' data-aos='fade-left' data-aos-delay='200'>
             <Input cnInput='!h-[52px] !rounded-xl' label='Your unique invite link' cnLabel='text-base md:text-lg' placeholder='https://…' actionIcon='/icons/copy.svg' onAction={handleCopy} value={link} onChange={setLink} className='h-[56px]' />
             <div className='flex items-center gap-3 mt-5 '>
-              <button onClick={handleCopy} className='h-9 px-4 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition'>
+              <button onClick={handleCopy} className='h-9 px-4 rounded-md bg-main-600 text-white text-sm font-medium hover:bg-main-700 transition'>
                 Copy
               </button>
-              <span className={`text-sm ${copied ? 'text-emerald-700' : 'text-slate-500'}`}>{copied ? 'Copied!' : 'Share your link or use social buttons below.'}</span>
+              <span className={`text-sm ${copied ? 'text-main-700' : 'text-slate-500'}`}>{copied ? 'Copied!' : 'Share your link or use social buttons below.'}</span>
             </div>
 
             <div className='rounded-xl border border-slate-200 p-4 bg-slate-50/50' data-aos='fade-up' data-aos-delay='50'>

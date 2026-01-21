@@ -140,7 +140,7 @@ const NotificationsPage = () => {
       case 'message':
         return 'bg-blue-100 text-blue-600';
       case 'order':
-        return 'bg-green-100 text-green-600';
+        return 'bg-main-100 text-main-600';
       case 'system':
         return 'bg-purple-100 text-purple-600';
       case 'promotion':

@@ -18,11 +18,11 @@ export const Stars = ({ value = 0, size = 12, stroke = 'stroke-white', dim = 'st
   return (
     <div className='flex items-center gap-0.5'>
       {Array.from({ length: full }).map((_, i) => (
-        <Star size={size} key={`full-${i}`} className={`${stroke} fill-emerald-500 !stroke-emerald-500`} />
+        <Star size={size} key={`full-${i}`} className={`${stroke} fill-main-500 !stroke-main-500`} />
       ))}
-      {half === 1 && <Star size={size} key='half' className={`${stroke} !stroke-emerald-500`} />}
+      {half === 1 && <Star size={size} key='half' className={`${stroke} !stroke-main-500`} />}
       {Array.from({ length: empty }).map((_, i) => (
-        <Star size={size} key={`empty-${i}`} className={`${dim} !stroke-emerald-500`} />
+        <Star size={size} key={`empty-${i}`} className={`${dim} !stroke-main-500`} />
       ))}
     </div>
   );
@@ -161,7 +161,7 @@ export default memo(function AmazingServiceCard({
               <ul className='space-y-2 max-h-[50%] overflow-hidden pr-1'>
                 {(featureBullets?.length ? featureBullets.slice(0, 4) : ['No details provided']).map((b, i) => (
                   <li key={i} className='flex items-start gap-2 text-sm leading-snug'>
-                    <CheckCircle2 className='text-emerald-500 w-4 h-4 mt-0.5 flex-none' />
+                    <CheckCircle2 className='text-main-500 w-4 h-4 mt-0.5 flex-none' />
                     <span className='whitespace-nowrap truncate'>{b}</span>
                   </li>
                 ))}
@@ -211,7 +211,7 @@ const SellerLevelBadge = ({ level }) => {
   const levelConfig = {
     lvl1: { text: 'Level 1', color: 'bg-gray-200 text-gray-800' },
     lvl2: { text: 'Level 2', color: 'bg-blue-200 text-blue-800' },
-    new: { text: 'New', color: 'bg-green-200 text-green-800' },
+    new: { text: 'New', color: 'bg-main-200 text-main-800' },
     top: { text: 'Top Rated', color: 'bg-yellow-300 text-yellow-900 font-semibold' },
   };
 

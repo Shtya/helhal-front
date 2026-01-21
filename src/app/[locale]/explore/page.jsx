@@ -39,7 +39,7 @@ const page = () => {
           <h1 className='text-3xl md:text-5xl font-extrabold mb-4'>{t('page.hero.title')}</h1>
           <p className='text-xl opacity-90 md:text-4xl mb-8'>{t('page.hero.subtitle')}</p>
           <Button name={t('page.hero.seeMore')} href={'/services/all'} color='green' className='!max-w-[300px] w-full ' />
-          {/* <a href='#services' className='inline-block px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-lg rounded-lg shadow-lg transition'>
+          {/* <a href='#services' className='inline-block px-8 py-3 bg-main-600 hover:bg-main-700 text-white font-semibold text-lg rounded-lg shadow-lg transition'>
             See more
           </a> */}
         </div>

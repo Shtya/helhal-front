@@ -102,15 +102,15 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
               const Icon = item.icon;
               return (
                 <motion.li key={item.href} variants={itemVariants} className='relative'>
-                  <Link href={item.href} prefetch className='group relative z-10 flex items-center gap-3 h-11 px-2 rounded-xl text-slate-700 outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/70' aria-current={isActive ? 'page' : undefined} onClick={closeOnMobile}>
+                  <Link href={item.href} prefetch className='group relative z-10 flex items-center gap-3 h-11 px-2 rounded-xl text-slate-700 outline-none focus-visible:ring-2 focus-visible:ring-main-500/70' aria-current={isActive ? 'page' : undefined} onClick={closeOnMobile}>
                     {/* Active background */}
-                    {isActive && <motion.span layoutId='active-row-bg' className='absolute inset-0 rounded-xl bg-emerald-50 border border-emerald-100' transition={{ type: 'spring', stiffness: 420, damping: 35 }} />}
+                    {isActive && <motion.span layoutId='active-row-bg' className='absolute inset-0 rounded-xl bg-main-50 border border-main-100' transition={{ type: 'spring', stiffness: 420, damping: 35 }} />}
 
                     {/* Left accent when active */}
-                    <motion.span className='absolute left-0 top-1/2 -translate-y-1/2 h-[calc(100%-10px)] w-1.5 rounded-r bg-emerald-500' initial={{ opacity: 0, scaleY: 0.2 }} animate={isActive ? { opacity: 1, scaleY: 1 } : { opacity: 0, scaleY: 0 }} transition={{ type: 'spring', stiffness: 350, damping: 28 }} />
+                    <motion.span className='absolute left-0 top-1/2 -translate-y-1/2 h-[calc(100%-10px)] w-1.5 rounded-r bg-main-500' initial={{ opacity: 0, scaleY: 0.2 }} animate={isActive ? { opacity: 1, scaleY: 1 } : { opacity: 0, scaleY: 0 }} transition={{ type: 'spring', stiffness: 350, damping: 28 }} />
 
                     <span className={`relative  ${!open && " w-full"} z-10 shrink-0`}>
-                      <Icon className={`h-5 w-5  mx-auto ${isActive ? 'text-emerald-600' : 'text-slate-400 group-hover:text-emerald-600'}`} />
+                      <Icon className={`h-5 w-5  mx-auto ${isActive ? 'text-main-600' : 'text-slate-400 group-hover:text-main-600'}`} />
                     </span>
 
                     {/* Label (hide when collapsed) */}

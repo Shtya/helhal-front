@@ -8,8 +8,7 @@ import Button from '@/components/atoms/Button';
 
 export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDeliveryTime, customDeliveryTime }) {
   const t = useTranslations('Services.filters.deliveryTime');
-  const BRAND = '#007a55';
-  const RING = `${BRAND}66`;
+  const BRAND = 'var(--color-main-700)';
   const tiers = [
     { id: 'u1000', label: t('express24hrs') },
     { id: 'm1000_3600', label: t('upto3Days') },
@@ -98,7 +97,7 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
         type='button'
         onClick={() => onPick(id)}
         className={`w-full px-3 py-2.5  rounded-md flex items-center justify-between text-left transition
-          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-emerald-100 text-slate-800'}`}>
+          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-main-100 text-slate-800'}`}>
         <span className='flex items-center gap-3'>
           <span
             className={`w-5 h-5 rounded-full border flex items-center justify-center
@@ -122,21 +121,18 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
           type='button'
           onClick={() => setOpen(o => !o)}
           className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition
-            ${open ? 'ring-2' : ''}`}
-          style={{
-            borderColor: open ? `${BRAND}90` : '#cbd5e1',
-            boxShadow: open ? `0 0 0 3px ${BRAND}66 inset` : undefined,
-          }}>
+            ${open ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]' : 'border-slate-300'}`}
+        >
           <span className='truncate'>{activeLabel()}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
         </button>
 
         {/* Panel */}
         <div
-          className={`absolute left-0 mt-2 w-full rounded-lg border border-slate-200 bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
+          className={` border border-main-700/40 absolute left-0 mt-2 w-full rounded-lg  bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
             transition origin-top z-[70]
             ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
-          style={{ border: `1px solid ${BRAND}60` }}>
+        >
           <div className='py-4'>
             <div className='px-4'>
               <h4 className='text-lg font-bold text-slate-900 mb-2 text-start'>{t('deliveryTime')}</h4>

@@ -2,23 +2,42 @@ import { Divider } from '@/app/[locale]/services/[category]/[service]/page';
 import Button from '@/components/atoms/Button';
 import PriceTag from '@/components/atoms/priceTag';
 import React from 'react';
+const DocumentIcon = ({ className }) => (
+  <svg
+    width="62"
+    height="62"
+    viewBox="0 0 62 62"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    style={{ color: 'var(--color-main-600)' }}
+  >
+    {/* Background Circle - Uses variable with 0.2 opacity */}
+    <rect width="62" height="62" rx="31" fill="currentColor" fillOpacity="0.2" />
 
+    {/* Document Paths */}
+    <path d="M45 24.4375V41.5C45 46.75 41.8675 48.5 38 48.5H24C20.1325 48.5 17 46.75 17 41.5V24.4375C17 18.75 20.1325 17.4375 24 17.4375C24 18.5225 24.4375 19.5025 25.155 20.22C25.8725 20.9375 26.8525 21.375 27.9375 21.375H34.0625C36.2325 21.375 38 19.6075 38 17.4375C41.8675 17.4375 45 18.75 45 24.4375Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M38 17.4375C38 19.6075 36.2325 21.375 34.0625 21.375H27.9375C26.8525 21.375 25.8725 20.9375 25.155 20.22C24.4375 19.5025 24 18.5225 24 17.4375C24 15.2675 25.7675 13.5 27.9375 13.5H34.0625C35.1475 13.5 36.1275 13.9375 36.845 14.655C37.5625 15.3725 38 16.3525 38 17.4375Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 32.75H31" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 39.75H38" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 const ActivityTab = () => {
   const timeline = [
     {
       date: '26 Mar',
-      items: [{ icon: '/icons/invoice.svg', text: 'Your order has been placed.' }],
+      items: [{ text: 'Your order has been placed.' }],
     },
     {
       date: '27 Mar',
       items: [
-        { icon: '/icons/invoice.svg', text: 'Seller started working on your order.' },
-        { icon: '/icons/invoice.svg', text: 'You received a new message.' },
+        { text: 'Seller started working on your order.' },
+        { text: 'You received a new message.' },
       ],
     },
     {
       date: '28 Mar',
-      items: [{ icon: '/icons/invoice.svg', text: 'Order details were updated.' }],
+      items: [{ text: 'Order details were updated.' }],
     },
   ];
 
@@ -35,7 +54,7 @@ const ActivityTab = () => {
             <div className='flex flex-col gap-3'>
               {group.items.map((item, i) => (
                 <div key={i} className='flex items-center gap-2'>
-                  <img src={item.icon} alt='' className='w-[50px] h-[50px]' />
+                  <item.icon className="w-full h-full" />
                   <p className='text-lg opacity-80'>{item.text}</p>
                 </div>
               ))}

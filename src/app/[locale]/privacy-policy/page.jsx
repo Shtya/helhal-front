@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center mt-8 p-6 border border-dashed border-slate-300 rounded-lg bg-slate-50">
-                    <FaRegFileAlt className="w-10 h-10 text-emerald-600 mb-3" />
+                    <FaRegFileAlt className="w-10 h-10 text-main-600 mb-3" />
                     <p className="text-lg font-semibold text-slate-700">
                         {t("notFoundTitle")}
                     </p>

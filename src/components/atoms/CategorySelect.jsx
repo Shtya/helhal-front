@@ -45,7 +45,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
 
   const getBorderClass = () => {
     if (error) return 'border-red-500 ring-2 ring-red-500/20';
-    if (selected || open) return 'border-emerald-600';
+    if (selected || open) return 'border-main-600';
     return 'border-gray-300';
   };
 
@@ -188,22 +188,22 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
           disabled={disabled}
           className={`${cnSelect || ''} ${getBorderClass()} h-[40px] cursor-pointer w-full flex items-center justify-between rounded-md border px-4 py-2 text-sm transition
                 bg-white text-gray-700 
-                hover:bg-gray-50 hover:border-emerald-600/70 
-                focus:outline-none focus:ring-2 focus:ring-emerald-600/50`}
+                hover:bg-gray-50 hover:border-main-600/70 
+                focus:outline-none focus:ring-2 focus:ring-main-600/50`}
           aria-haspopup='listbox'
           aria-expanded={open}
           name={name}>
           <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{loading ? defaultLoadingText : selected ? locale === 'ar' ? selected?.name_ar : selected?.name_en : defaultPlaceholder}</span>
-          <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-emerald-600' : 'text-gray-400'}`} />
+          <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-main-600' : 'text-gray-400'}`} />
         </button>
 
         {open && (
           <div ref={menuRef} className='absolute mt-2 w-full rounded-md border border-gray-200 bg-white shadow-lg z-50'>
             {/* Search / Create */}
             <div className='p-2 border-b border-gray-200'>
-              <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder={t('search', { type })} className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500' />
+              <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder={t('search', { type })} className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-main-500' />
               {canCreate && filtered?.length === 0 && (
-                <button onClick={createIfNotExists} disabled={creating || (type === 'subcategory' && !parentId)} className='mt-2 w-full flex items-center gap-2 px-3 py-2 text-sm text-emerald-700 hover:bg-emerald-50 disabled:opacity-60'>
+                <button onClick={createIfNotExists} disabled={creating || (type === 'subcategory' && !parentId)} className='mt-2 w-full flex items-center gap-2 px-3 py-2 text-sm text-main-700 hover:bg-main-50 disabled:opacity-60'>
                   {creating ? <Loader2 className='w-4 h-4 animate-spin' /> : <Plus className='w-4 h-4' />}
                   {t('create', { name: query.trim() })}
                 </button>
@@ -225,7 +225,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
                   {filtered?.map(opt => {
                     const name = locale === 'ar' ? opt.name_ar : opt.name_en;
                     return <li key={opt.id}>
-                      <button onClick={() => handleSelect(opt)} className={`w-full text-start px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-emerald-500 to-emerald-400 hover:text-white'}`}>
+                      <button onClick={() => handleSelect(opt)} className={`w-full text-start px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-main-500 to-main-400 hover:text-white'}`}>
                         {name}
                       </button>
                     </li>

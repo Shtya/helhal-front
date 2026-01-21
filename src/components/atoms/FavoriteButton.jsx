@@ -111,7 +111,7 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
               transition={{ type: 'spring', stiffness: 900, damping: 50 }}
               className="flex"
             >
-              <ShoppingCart className="w-5 h-5 text-green-600 fill-green-600" />
+              <ShoppingCart className="w-5 h-5 text-main-600 fill-main-600" />
             </motion.div>
           ) : (
             <motion.div

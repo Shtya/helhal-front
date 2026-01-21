@@ -19,7 +19,7 @@ export default function GigCard({ gig, category, service }) {
 
         <Link
           href={`/services/${category}/${service}/${gig.slug}`}
-          className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-[#108A00] text-white px-4 py-2 hover:bg-emerald-700 transition"
+          className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-[var(--color-main-600)] text-white px-4 py-2 hover:bg-main-700 transition"
         >
           View Details
         </Link>

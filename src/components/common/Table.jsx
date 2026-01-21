@@ -19,9 +19,9 @@ function EmptyState({ title, subtitle, onResetFilters, onReload }) {
   return (
     <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className='flex flex-col items-center justify-center py-10' aria-live='polite'>
       <div className='relative'>
-        <div className='absolute -inset-3 rounded-full bg-emerald-100/40 blur-md' />
-        <div className='relative h-14 w-14 rounded-2xl bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center'>
-          <SearchX className='h-7 w-7 text-emerald-600' />
+        <div className='absolute -inset-3 rounded-full bg-main-100/40 blur-md' />
+        <div className='relative h-14 w-14 rounded-2xl bg-main-50 ring-1 ring-main-100 flex items-center justify-center'>
+          <SearchX className='h-7 w-7 text-main-600' />
         </div>
       </div>
 
@@ -37,7 +37,7 @@ function EmptyState({ title, subtitle, onResetFilters, onReload }) {
             </button>
           )}
           {onReload && (
-            <button onClick={onReload} className='inline-flex items-center gap-2 rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700'>
+            <button onClick={onReload} className='inline-flex items-center gap-2 rounded-md bg-main-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-main-700'>
               <RefreshCw className='h-4 w-4' />
               {t('reload')}
             </button>
@@ -117,7 +117,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
 
           <tbody>
             {displayRows.map((row, idx) => (
-              <tr key={row.__skeleton ?? idx} className='odd:bg-[#108A000D] odd:hover:bg-[#108A00]/10 hover:bg-gray-50'>
+              <tr key={row.__skeleton ?? idx} className='odd:bg-main-600/5 odd:hover:bg-[var(--color-main-600)]/10 hover:bg-gray-50'>
                 {columns.map(column => {
                   const isSkeleton = loading || row.__skeleton !== undefined;
 

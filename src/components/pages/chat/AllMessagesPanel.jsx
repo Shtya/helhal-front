@@ -26,7 +26,7 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
 
             <div className='flex items-center gap-1.5'>
               {/* Contact Admin */}
-              {showContactAdmin && <button disabled={loading || adminLoading} onClick={onContactAdmin} className='p-2 rounded-lg text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors' title={t('contactAdmin')}>
+              {showContactAdmin && <button disabled={loading || adminLoading} onClick={onContactAdmin} className='p-2 rounded-lg text-main-700 bg-main-50 hover:bg-main-100 transition-colors' title={t('contactAdmin')}>
                 <LifeBuoy size={18} />
               </button>
               }
@@ -158,7 +158,7 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
 function ThreadItem({ id, user, name, avatar, time = 'Just now', active = false, unreadCount = 0, onClick, isFavorite, isPinned, isArchived, onToggleFavorite, onTogglePin, onToggleArchive }) {
 
   return (
-    <div onClick={onClick} data-conversation-id={id} aria-label={`Conversation with ${name}`} aria-pressed={active} className={['cursor-pointer group w-full text-left flex items-center justify-between gap-3 rounded-xl p-3', 'ring-1 ring-transparent transition-all duration-200', 'hover:ring-slate-200 hover:bg-slate-50/80', 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50', active ? 'gradient  ' : 'bg-transparent text-slate-900'].join(' ')}>
+    <div onClick={onClick} data-conversation-id={id} aria-label={`Conversation with ${name}`} aria-pressed={active} className={['cursor-pointer group w-full text-left flex items-center justify-between gap-3 rounded-xl p-3', 'ring-1 ring-transparent transition-all duration-200', 'hover:ring-slate-200 hover:bg-slate-50/80', 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500/50', active ? 'gradient  ' : 'bg-transparent text-slate-900'].join(' ')}>
       <div className='flex items-center gap-3 min-w-0 flex-1'>
         <div className='relative flex-none'>
           <Img altSrc={'/no-user.png'} src={avatar} alt={name} className='h-9 w-9 rounded-full object-cover ring-2 ring-white shadow' />

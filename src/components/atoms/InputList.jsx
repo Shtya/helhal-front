@@ -54,9 +54,9 @@
 
 //       <div className='mt-2 flex flex-wrap gap-2'>
 //         {value?.map((item, index) => (
-//           <span key={index} className='bg-green-100 text-green-800 px-3 py-1 rounded-full text-base cursor-pointer hover:opacity-80 duration-300 flex items-center'>
+//           <span key={index} className='bg-main-100 text-main-800 px-3 py-1 rounded-full text-base cursor-pointer hover:opacity-80 duration-300 flex items-center'>
 //             {renderItem ? renderItem(item, index) : item}
-//             <button type='button' onClick={() => handleRemoveItem(index)} className='ml-2 text-green-600 hover:text-green-800'>
+//             <button type='button' onClick={() => handleRemoveItem(index)} className='ml-2 text-main-600 hover:text-main-800'>
 //               <X size={16} className='cursor-pointer' />
 //             </button>
 //           </span>
@@ -215,12 +215,12 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
     <div className={className || ''}>
       {label && <label className='block text-sm font-medium text-gray-700 mb-2'>{label}</label>}
 
-      <div ref={containerRef} className={['w-full min-h-[44px] rounded-md border px-2 py-1.5 flex items-center gap-1 flex-wrap', 'bg-white shadow-sm transition-colors', 'focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500', errorMsg ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-300 hover:border-emerald-500/60'].join(' ')}>
+      <div ref={containerRef} className={['w-full min-h-[44px] rounded-md border px-2 py-1.5 flex items-center gap-1 flex-wrap', 'bg-white shadow-sm transition-colors', 'focus-within:ring-2 focus-within:ring-main-500 focus-within:border-main-500', errorMsg ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-300 hover:border-main-500/60'].join(' ')}>
         {/* tags */}
         {tags.map((t, i) => (
-          <span key={`${t}-${i}`} className=' border border-slate-200 group inline-flex items-center gap-1 rounded-xl bg-emerald-100  text-emerald-800 px-2.5 py-1 text-sm'>
+          <span key={`${t}-${i}`} className=' border border-slate-200 group inline-flex items-center gap-1 rounded-xl bg-main-100  text-main-800 px-2.5 py-1 text-sm'>
             <span className='break-all'>{t}</span>
-            <button type='button' data-chip onClick={() => handleRemove(t)} title='Remove' className='cursor-pointer  text-emerald-600 hover:text-emerald-800 transition'>
+            <button type='button' data-chip onClick={() => handleRemove(t)} title='Remove' className='cursor-pointer  text-main-600 hover:text-main-800 transition'>
               <X size={13} />
             </button>
           </span>

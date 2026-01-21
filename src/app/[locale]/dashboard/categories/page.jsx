@@ -235,7 +235,7 @@ export default function AdminCategoriesDashboard() {
         <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title={t('actions.view')}>
           <Eye size={16} />
         </button>
-        {canEdit && <button onClick={() => openEdit(row)} className='p-2 text-emerald-600 hover:bg-emerald-50 rounded-full' title={t('actions.edit')}>
+        {canEdit && <button onClick={() => openEdit(row)} className='p-2 text-main-600 hover:bg-main-50 rounded-full' title={t('actions.edit')}>
           <Edit size={16} />
         </button>}
         {canDelete && <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>

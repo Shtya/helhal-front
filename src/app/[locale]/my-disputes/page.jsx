@@ -285,7 +285,7 @@ export default function MyDisputesPage() {
                   {disputes.map(d => {
                     const isActive = selectedId === d.id;
                     return (
-                      <li key={d.id} className={`p-4 cursor-pointer group transition ${isActive ? 'bg-emerald-50/40' : 'bg-white'} hover:bg-emerald-50/30`} onClick={() => {
+                      <li key={d.id} className={`p-4 cursor-pointer group transition ${isActive ? 'bg-main-50/40' : 'bg-white'} hover:bg-main-50/30`} onClick={() => {
                         setSelectedId(d?.id);
                       }}>
                         <div className='flex items-start justify-between gap-3'>
@@ -304,8 +304,8 @@ export default function MyDisputesPage() {
                 </ul>
               ) : (
                 <div className='p-8 text-center'>
-                  <div className='mx-auto h-12 w-12 rounded-xl bg-emerald-50 ring-1 ring-emerald-100 flex items-center justify-center'>
-                    <MessageSquare className='h-6 w-6 text-emerald-600' />
+                  <div className='mx-auto h-12 w-12 rounded-xl bg-main-50 ring-1 ring-main-100 flex items-center justify-center'>
+                    <MessageSquare className='h-6 w-6 text-main-600' />
                   </div>
                   <h3 className='mt-3 text-sm font-semibold text-gray-800'>{t('noDisputes')}</h3>
                   <p className='mt-1 text-xs text-gray-500'>{t('noDisputesDesc')}</p>
@@ -382,7 +382,7 @@ export default function MyDisputesPage() {
                             <span className="text-gray-500 block text-xs">{t('raisedBy')}</span>
                             <div className="flex items-center gap-2 mt-0.5">
                               {detail?.dispute?.raisedBy?.id === me?.id ? (
-                                <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-100 text-emerald-700">{t('you')}</span>
+                                <span className="px-2 py-0.5 text-xs rounded-full bg-main-100 text-main-700">{t('you')}</span>
                               ) : (
                                 <span className="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-700">{t('otherParty')}</span>
                               )}
@@ -480,7 +480,7 @@ export default function MyDisputesPage() {
       {resModalOpen && (
         <Modal title={t('proposedResolution')} onClose={() => setResModalOpen(false)}>
           <div className='space-y-3'>
-            <div className='rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm'>
+            <div className='rounded-md bg-main-50 border border-main-200 p-3 text-sm'>
               <div className='text-[13px] space-y-1'>
                 {(() => {
                   const r = detail?.dispute?.resolution;
@@ -500,7 +500,7 @@ export default function MyDisputesPage() {
                     return Object.entries(parsed).map(([key, value]) =>
                       value ? (
                         <div key={key} className='flex justify-between gap-4 pb-2'>
-                          <span className='font-medium text-base text-emerald-800 capitalize'>{mapNames[key] || key}</span>
+                          <span className='font-medium text-base text-main-800 capitalize'>{mapNames[key] || key}</span>
                           <span className='text-gray-700 text-base'>{String(value)}</span>
                         </div>
                       ) : null,

@@ -10,8 +10,8 @@ export function AnimatedCheckbox({ checked, onChange }) {
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative cursor-pointer flex h-6 w-6 items-center justify-center rounded-md border transition-colors duration-300
-        ${checked ? 'gradient border-green-500' : 'bg-white border-gray-300'}
-        focus:outline-none focus:ring-2 focus:ring-green-400`}
+        ${checked ? 'gradient border-main-500' : 'bg-white border-gray-300'}
+        focus:outline-none focus:ring-2 focus:ring-main-400`}
     >
       {/* Animated Icon */}
       <motion.div

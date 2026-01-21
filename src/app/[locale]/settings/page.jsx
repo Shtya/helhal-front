@@ -507,7 +507,7 @@ function SecuritySettings() {
                     <div>
                       <p className='font-medium text-gray-800'>
                         {meta}
-                        {isThisDevice && <span className='ml-2 text-emerald-600 text-xs font-semibold'>{t('thisDevice')}</span>}
+                        {isThisDevice && <span className='ml-2 text-main-600 text-xs font-semibold'>{t('thisDevice')}</span>}
                         {killed && <span className='ml-2 text-red-600 text-xs font-semibold'>{t('signedOut')}</span>}
                       </p>
                       <p className='text-sm text-gray-600'>

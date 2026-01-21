@@ -18,7 +18,7 @@ const cardBase = ' !bg-gray-50/50 group relative overflow-hidden rounded-2xl bor
 const getStatusStyles = status => {
     switch (status) {
         case 'published':
-            return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+            return 'bg-main-50 text-main-700 border-main-200';
         // case 'draft':
         //   return 'bg-slate-50 text-slate-700 border-slate-200';
         case 'awarded':

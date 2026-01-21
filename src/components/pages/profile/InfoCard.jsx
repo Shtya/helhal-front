@@ -17,18 +17,74 @@ import api from "@/lib/axios";
 import { allLanguages } from "@/constants/languages";
 import { showWarningToast } from "@/utils/notifications";
 import { useValues } from "@/context/GlobalContext";
+// Create a component for the icon
+const MyIcon = () => (
+    <svg width="36" height="36" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--color-main-600)' }}>
+        <path d="M14 21H28" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M21 28V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M15.75 38.5H26.25C35 38.5 38.5 35 38.5 26.25V15.75C38.5 7 35 3.5 26.25 3.5H15.75C7 3.5 3.5 7 3.5 15.75V26.25C3.5 35 7 38.5 15.75 38.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
 
+const EditIcon = ({ className }) => (
+    <svg
+        className={`cursor-pointer hover:scale-[1.1] duration-300 ${className}`}
+        width="30"
+        height="30"
+        viewBox="0 0 42 42"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ color: 'var(--color-main-600)' }}
+    >
+        <path
+            d="M19.25 3.5H15.75C7 3.5 3.5 7 3.5 15.75V26.25C3.5 35 7 38.5 15.75 38.5H26.25C35 38.5 38.5 35 38.5 26.25V22.75"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M28.0703 5.2852L14.2803 19.0752C13.7553 19.6002 13.2303 20.6327 13.1253 21.3852L12.3728 26.6527C12.0928 28.5602 13.4403 29.8902 15.3478 29.6277L20.6153 28.8752C21.3503 28.7702 22.3828 28.2452 22.9253 27.7202L36.7153 13.9302C39.0953 11.5502 40.2153 8.7852 36.7153 5.2852C33.2153 1.7852 30.4503 2.9052 28.0703 5.2852Z"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeMiterlimit="10"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M26.0918 7.2627C27.2643 11.4452 30.5368 14.7177 34.7368 15.9077"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeMiterlimit="10"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
 
-function SectionHeader({ title, iconSrc, actionAria, onAction, disabled }) {
-
+function SectionHeader({ title, iconSrc: Icon, actionAria, onAction, disabled }) {
+    const isImagePath = typeof Icon === 'string';
     return (
         <div className='mt-1 flex items-center justify-between'>
             <h3 className='text-[20px] font-semibold tracking-tight text-[#111827]'>{title}</h3>
-            {iconSrc && (
-                <button onClick={() => {
-                    onAction?.();
-                }} disabled={disabled} aria-label={actionAria} title={actionAria} className='cursor-pointer  h-9 w-9 items-center justify-center rounded-xl  hover:scale-[1.1] active:scale-95 transition'>
-                    <Image src={iconSrc} alt={title} width={36} height={36} />
+            {Icon && (
+                <button
+                    onClick={() => onAction?.()}
+                    disabled={disabled}
+                    aria-label={actionAria}
+                    title={actionAria}
+                    className='flex cursor-pointer h-9 w-9 items-center justify-center rounded-xl hover:scale-[1.1] active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                    {isImagePath ? (
+                        /* Case 1: Standard Image path */
+                        <Image src={Icon} alt={title} width={36} height={36} />
+                    ) : (
+                        /* Case 2: Inline SVG or Component */
+                        <div className="w-9 h-9 flex items-center justify-center">
+                            {/* If it's a component <Icon />, if it's an element {Icon} */}
+                            {typeof Icon === 'function' ? <Icon /> : Icon}
+                        </div>
+                    )}
                 </button>
             )}
         </div>
@@ -74,7 +130,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                         }}
                         autoFocus
                         placeholder={placeholder || t('addItem')}
-                        className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-600'
+                        className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-600'
                     />
                     <button
                         onClick={() => {
@@ -83,7 +139,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                             setInput('');
                             setShowInput(false);
                         }}
-                        className='rounded-xl border border-emerald-600 px-3 py-2 text-sm text-emerald-600 hover:bg-emerald-50' disabled={!input}>
+                        className='rounded-xl border border-main-600 px-3 py-2 text-sm text-main-600 hover:bg-main-50' disabled={!input}>
                         {t('save')}
                     </button>
                 </div>
@@ -325,7 +381,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
 
     return (
         <Card className={` p-4 sm:p-5 ${className}`}>
-            <SectionHeader title={t('description')} iconSrc={'/icons/edit-green.svg'} actionAria={editingDesc ? t('finishEditingDescription') : t('editDescription')} onAction={() => setEditingDesc(v => !v)} />
+            <SectionHeader title={t('description')} iconSrc={EditIcon} actionAria={editingDesc ? t('finishEditingDescription') : t('editDescription')} onAction={() => setEditingDesc(v => !v)} />
             <Divider className='!my-2' />
             {editingDesc ? (
                 <>
@@ -356,7 +412,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider className='!mt-6 !mb-2 ' />
 
             {/* Skills */}
-            <SectionHeader title={t('skills')} iconSrc='/icons/add-green.svg' actionAria={t('addSkill')} onAction={() => setShowSkillInput(true)} disabled={skills.length >= MAX_SKILLS} />
+            <SectionHeader title={t('skills')} iconSrc={MyIcon} actionAria={t('addSkill')} onAction={() => setShowSkillInput(true)} disabled={skills.length >= MAX_SKILLS} />
 
             <PillEditor
                 items={skills}
@@ -387,7 +443,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider className='!mt-6 !mb-2 ' />
 
             {/* Education */}
-            <SectionHeader title={t('education')} iconSrc='/icons/add-green.svg' actionAria={t('addEducation')} onAction={() => setEduOpen(true)} disabled={educations.length >= MAX_EDUCATIONS} />
+            <SectionHeader title={t('education')} iconSrc={MyIcon} actionAria={t('addEducation')} onAction={() => setEduOpen(true)} disabled={educations.length >= MAX_EDUCATIONS} />
             <div className='mt-2 space-y-2'>
                 {(educations).length > 0 ? (
                     educations.map((e, idx) => (
@@ -431,7 +487,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
             <Divider />
 
             {/* Certifications */}
-            <SectionHeader title={t('certification')} iconSrc='/icons/add-green.svg' actionAria={t('addCertification')} onAction={() => setCertOpen(true)} disabled={certifications.length >= MAX_CERTIFICATIONS} />
+            <SectionHeader title={t('certification')} iconSrc={MyIcon} actionAria={t('addCertification')} onAction={() => setCertOpen(true)} disabled={certifications.length >= MAX_CERTIFICATIONS} />
             <div className='mt-2 space-y-2'>
                 {(certifications).length > 0 ? (
                     certifications.map((c, idx) => (
@@ -599,7 +655,7 @@ function LanguageSelector({ value = [], setValue }) {
 
     return (
         <>
-            <SectionHeader title={t('languages')} iconSrc='/icons/add-green.svg' actionAria={t('addLanguage')} onAction={() => setShowLangInput(true)} />
+            <SectionHeader title={t('languages')} iconSrc={MyIcon} actionAria={t('addLanguage')} onAction={() => setShowLangInput(true)} />
             <div className='mt-1 flex flex-wrap items-center gap-2'>
                 {value.map((lang, idx) => (
                     <div key={idx} className='group relative inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] border border-[#EDEDED] shadow'>
@@ -635,7 +691,7 @@ function LanguageSelector({ value = [], setValue }) {
                                 setShowLangInput(false);
                             }}
                             disabled={!selectedLang}
-                            className={`rounded-xl border px-3 py-2 text-sm border-emerald-600 text-emerald-600 hover:bg-emerald-50`}>
+                            className={`rounded-xl border px-3 py-2 text-sm border-main-600 text-main-600 hover:bg-main-50`}>
                             {t('add')}
                         </button>
                     </div>

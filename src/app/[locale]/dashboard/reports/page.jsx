@@ -116,11 +116,11 @@ export default function AdminReportsDashboard() {
           <p className='text-blue-100'>{summaryData.users?.new} new this period</p>
         </div>
 
-        <div className='bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg'>
+        <div className='bg-gradient-to-r from-main-500 to-main-600 text-white p-6 rounded-lg'>
           <ShoppingCart size={24} />
           <h3 className='text-lg font-semibold mt-2'>Total Orders</h3>
           <p className='text-3xl font-bold'>{summaryData.orders?.total?.toLocaleString()}</p>
-          <p className='text-green-100'>{summaryData.orders?.period} this period</p>
+          <p className='text-main-100'>{summaryData.orders?.period} this period</p>
         </div>
 
         <div className='bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg'>

@@ -146,10 +146,10 @@ export default function Page() {
         key: 'status',
         label: t('columns.status'),
         status: [
-          [OrderStatus.ACCEPTED, 'text-green-600'],
+          [OrderStatus.ACCEPTED, 'text-main-600'],
           [OrderStatus.PENDING, 'text-yellow-600'],
           [OrderStatus.DELIVERED, 'text-blue-600'],
-          [OrderStatus.COMPLETED, 'text-emerald-700'],
+          [OrderStatus.COMPLETED, 'text-main-700'],
           [OrderStatus.CANCELLED, 'text-rose-600'],
           [OrderStatus.MISSING_DETAILS, 'text-orange-600'],
           [OrderStatus.DISPUTED, 'text-purple-700'], // <—

@@ -16,7 +16,7 @@ const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placehold
 
       <div
         className={`${cnInput} overflow-hidden relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1 
-        transition border ${error ? 'border-red-500 ring-2 ring-red-500/20' : props.value ? 'border-emerald-600' : 'border-gray-300'} focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20`}>
+        transition border ${error ? 'border-red-500 ring-2 ring-red-500/20' : props.value ? 'border-main-600' : 'border-gray-300'} focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}>
         {iconLeft && (
           <span className='flex-none text-slate-400'>
             <img src={iconLeft} alt='' className='w-4' />

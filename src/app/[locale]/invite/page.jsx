@@ -209,7 +209,7 @@ export default function Invite() {
             <div className='flex flex-wrap items-center justify-between mt-5 gap-3 text-sm'>
               <span className='text-slate-600'>{t('separateEmails')}</span>
               <div className='flex items-center gap-3'>
-                <button onClick={() => setShowPreview(true)} className='text-emerald-700 hover:text-emerald-800 underline underline-offset-2'>
+                <button onClick={() => setShowPreview(true)} className='text-main-700 hover:text-main-800 underline underline-offset-2'>
                   {t('previewEmail')}
                 </button>
                 <button onClick={() => setRawEmails('')} className='text-slate-500 hover:text-slate-700 underline underline-offset-2'>
@@ -222,7 +222,7 @@ export default function Invite() {
             {(validEmails.length > 0 || invalidEmails.length > 0) && (
               <div className='flex flex-wrap gap-2' data-aos='fade-up' data-aos-delay='0'>
                 {validEmails.map(e => (
-                  <span key={`good-${e}`} className='px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs border border-emerald-200'>
+                  <span key={`good-${e}`} className='px-2.5 py-1 rounded-full bg-main-50 text-main-700 text-xs border border-main-200'>
                     {e}
                   </span>
                 ))}
@@ -237,10 +237,10 @@ export default function Invite() {
             {/* Stats + Send button */}
             <div className='mt-1 flex items-center justify-between'>
               <div className='text-sm text-slate-600'>
-                <b className='text-emerald-700'>{validEmails.length}</b> {t('valid')} • <b className='text-rose-600'>{invalidEmails.length}</b> {t('invalid')}
+                <b className='text-main-700'>{validEmails.length}</b> {t('valid')} • <b className='text-rose-600'>{invalidEmails.length}</b> {t('invalid')}
               </div>
 
-              <button onClick={handleSendInvites} disabled={!canSend} className='inline-flex items-center gap-2 rounded-xl bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed'>
+              <button onClick={handleSendInvites} disabled={!canSend} className='inline-flex items-center gap-2 rounded-xl bg-main-600 text-white px-4 py-2 text-sm font-medium hover:bg-main-700 transition disabled:opacity-50 disabled:cursor-not-allowed'>
                 {sending ? (
                   <span className='animate-pulse'>{t('sending')}</span>
                 ) : (
@@ -253,7 +253,7 @@ export default function Invite() {
             </div>
 
             {sentCount > 0 && (
-              <div className='text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2' data-aos='fade-in'>
+              <div className='text-sm text-main-700 bg-main-50 border border-main-200 rounded-lg px-3 py-2' data-aos='fade-in'>
                 {t('successfullySent', { count: sentCount })}
               </div>
             )}
@@ -263,10 +263,10 @@ export default function Invite() {
           <div className='flex flex-col gap-5' data-aos='fade-left' data-aos-delay='200'>
             <Input cnInput='!h-[52px] !rounded-xl' label={t('uniqueLink')} cnLabel='text-base md:text-lg' placeholder='https://…' actionIcon='/icons/copy.svg' onAction={handleCopy} value={link} onChange={setLink} className='h-[56px]' />
             <div className='flex items-center gap-3 mt-5 '>
-              <button onClick={handleCopy} className='h-9 text-nowrap px-4 rounded-md bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 transition'>
+              <button onClick={handleCopy} className='h-9 text-nowrap px-4 rounded-md bg-main-600 text-white text-sm font-medium hover:bg-main-700 transition'>
                 {t('copy')}
               </button>
-              <span className={`text-sm ${copied ? 'text-emerald-700' : 'text-slate-500'}`}>{copied ? t('copied') : t('shareLink')}</span>
+              <span className={`text-sm ${copied ? 'text-main-700' : 'text-slate-500'}`}>{copied ? t('copied') : t('shareLink')}</span>
             </div>
 
             <div className='rounded-xl border border-slate-200 p-4 bg-slate-50/50' data-aos='fade-up' data-aos-delay='50'>
@@ -304,7 +304,7 @@ export default function Invite() {
                     data-aos="fade-up"
                     data-aos-delay={idx * 150}
                   >
-                    <span className="mt-2 h-2 w-2 flex-none rounded-full bg-emerald-600" />
+                    <span className="mt-2 h-2 w-2 flex-none rounded-full bg-main-600" />
                     <p className="text-slate-700 text-base leading-relaxed">
                       {item}
                     </p>
@@ -384,7 +384,7 @@ export function SectionHeader({ title, onEdit, withEdit }) {
     <div className='flex items-center justify-between'>
       <h3 className='text-2xl font-bold text-[#000000]'>{title}</h3>
       {withEdit && (
-        <button onClick={onEdit} aria-label={`Edit ${title}`} className='inline-flex items-center justify-center rounded-xl border border-[#108A00] text-[#108A00] p-2 hover:bg-[#108A00]/5 transition'>
+        <button onClick={onEdit} aria-label={`Edit ${title}`} className='inline-flex items-center justify-center rounded-xl border border-[var(--color-main-600)] text-[var(--color-main-600)] p-2 hover:bg-[var(--color-main-600)]/5 transition'>
           <Pencil className='h-4 w-4' />
         </button>
       )}
@@ -410,7 +410,7 @@ export function RowWithAdd({ title, onAdd, children }) {
     <div>
       <div className='flex items-center justify-between'>
         <h4 className='text-xl font-semibold text-[#292D32]'>{title}</h4>
-        <button onClick={onAdd} aria-label={`Add to ${title}`} className='inline-flex items-center justify-center rounded-xl border border-[#108A00] text-[#108A00] p-2 hover:bg-[#108A00]/5 transition'>
+        <button onClick={onAdd} aria-label={`Add to ${title}`} className='inline-flex items-center justify-center rounded-xl border border-[var(--color-main-600)] text-[var(--color-main-600)] p-2 hover:bg-[var(--color-main-600)]/5 transition'>
           <Plus className='h-4 w-4' />
         </button>
       </div>

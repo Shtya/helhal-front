@@ -14,11 +14,11 @@ export const SocialButton = ({ icon, text, onClick, className = '' }) => (
       overflow-hidden 
       transition-all duration-300
       hover:shadow-lg hover:border-gray-300 
-      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 
+      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-main-500 
       ${className}`}>
 
     <span
-      className='absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-emerald-100/40 to-emerald-400/0 
+      className='absolute inset-0 bg-gradient-to-r from-main-400/0 via-main-100/40 to-main-400/0 
         translate-x-[-150%] group-hover:translate-x-[150%] 
         transition-transform duration-700 ease-out '
     />
@@ -34,7 +34,7 @@ export const SocialButton = ({ icon, text, onClick, className = '' }) => (
     {/* Ripple Glow Background (subtle) */}
     <span
       className='absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 
-        bg-gradient-to-r from-emerald-50 via-white to-emerald-50 
+        bg-gradient-to-r from-main-50 via-white to-main-50 
         transition-opacity duration-500'
     />
   </motion.button>

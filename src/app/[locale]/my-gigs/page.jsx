@@ -116,7 +116,7 @@ export default function Page() {
       key: 'status',
       label: t('columns.status'),
       status: [
-        [t('status.active'), 'text-green-500 bg-green-100 px-2 py-1 rounded'],
+        [t('status.active'), 'text-main-500 bg-main-100 px-2 py-1 rounded'],
         [t('status.pending'), 'text-yellow-500 bg-yellow-100 px-2 py-1 rounded'],
         [t('status.draft'), 'text-gray-500 bg-gray-100 px-2 py-1 rounded'],
         [t('status.denied'), 'text-red-500 bg-red-100 px-2 py-1 rounded'],
@@ -158,7 +158,7 @@ export default function Page() {
           <Eye className='w-4 h-4' />
         </Link>
         {/* 
-        <Link href={`/create-gig?slug=${services[index].slug}`} className={`${baseStyle} border-green-200 bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-800`} >
+        <Link href={`/create-gig?slug=${services[index].slug}`} className={`${baseStyle} border-main-200 bg-main-50 text-main-600 hover:bg-main-100 hover:text-main-800`} >
           <Pencil className='w-4 h-4' />
         </Link> */}
 

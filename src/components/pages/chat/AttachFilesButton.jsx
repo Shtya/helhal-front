@@ -21,7 +21,7 @@ export const getFileIcon = mimeType => {
   } else if (mimeType?.startsWith('video')) {
     return <Video className='w-18 h-full text-purple-500' />;
   } else if (mimeType?.startsWith('audio')) {
-    return <Music className='w-18 h-full text-green-500' />;
+    return <Music className='w-18 h-full text-main-500' />;
   } else if (mimeType === 'application/pdf' || mimeType === 'document') {
     return <FileText className='w-18 h-full text-red-500' />;
   } else {
@@ -178,11 +178,11 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
 
   const tChat = useTranslations('Chat');
   const Trigger = (
-    <button type='button' onClick={toggleModal} aria-label={tChat('attachFiles')} className={[' border-slate-200 text-slate-700 ', ' text-[13px] font-medium transition-colors', 'focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60', className || ''].join(' ')}>
+    <button type='button' onClick={toggleModal} aria-label={tChat('attachFiles')} className={[' border-slate-200 text-slate-700 ', ' text-[13px] font-medium transition-colors', 'focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60', className || ''].join(' ')}>
       <span className='grid h-8 w-8 place-items-center rounded-full bg-slate-100'>
         <Paperclip size={14} />
       </span>
-      {selectedCount > 0 && <span className='ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[11px] font-semibold text-white'>{selectedCount}</span>}
+      {selectedCount > 0 && <span className='ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-main-500 px-1 text-[11px] font-semibold text-white'>{selectedCount}</span>}
     </button>
   );
 
@@ -217,7 +217,7 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
               const absolute = asset.url ? (asset.url.startsWith('http') ? asset.url : baseImg + asset.url) : '';
               const isImage = asset.mimeType?.startsWith?.('image/');
               return (
-                <div key={asset.id} onClick={() => handleFileSelect(asset)} className={['relative group cursor-pointer rounded-lg border p-2', 'border-slate-200 hover:border-emerald-400 transition', isSelected ? 'ring-2 ring-emerald-500/60 border-emerald-300 bg-emerald-50/40' : 'bg-white'].join(' ')}>
+                <div key={asset.id} onClick={() => handleFileSelect(asset)} className={['relative group cursor-pointer rounded-lg border p-2', 'border-slate-200 hover:border-main-400 transition', isSelected ? 'ring-2 ring-main-500/60 border-main-300 bg-main-50/40' : 'bg-white'].join(' ')}>
                   {/* <button onClick={e => handleDeleteFile(asset.id, e)} aria-label='Delete file' className='absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity'>
                     <span className='grid h-6 w-6 place-items-center rounded-full bg-red-500 text-white'>
                       <FiX className='h-3 w-3' />
@@ -257,7 +257,7 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
           <button type='button' onClick={toggleModal} className='text-[13px] px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50'>
             {tChat('close')}
           </button>
-          <button onClick={handleOkClick} disabled={!selectedCount} className={['text-[13px] px-3 py-1.5 rounded-md transition', selectedCount ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-slate-200 text-slate-500 cursor-not-allowed'].join(' ')}>
+          <button onClick={handleOkClick} disabled={!selectedCount} className={['text-[13px] px-3 py-1.5 rounded-md transition', selectedCount ? 'bg-main-600 text-white hover:bg-main-700' : 'bg-slate-200 text-slate-500 cursor-not-allowed'].join(' ')}>
             {tChat('useFiles', { count: selectedCount || 0 })}
           </button>
         </div>

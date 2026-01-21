@@ -42,7 +42,7 @@ const fadeItem = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } };
 
 function statusTone(s) {
   const val = String(s || '').toLowerCase();
-  if (val === 'accepted') return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+  if (val === 'accepted') return 'bg-main-50 text-main-700 border-main-200';
   if (val === 'rejected') return 'bg-rose-50 text-rose-700 border-rose-200';
   return 'bg-slate-50 text-slate-700 border-slate-200'; // submitted/other
 }
@@ -215,7 +215,7 @@ function ProposalCard({ proposal, onOpenJob }) {
               <button
                 type="button"
                 onClick={() => setExpanded(!expanded)}
-                className="mt-1 text-xs text-emerald-600 hover:underline"
+                className="mt-1 text-xs text-main-600 hover:underline"
               >
                 {expanded ? t('showLess') : t('showMore')}
               </button>
@@ -246,7 +246,7 @@ function ProposalCard({ proposal, onOpenJob }) {
                     href={resolveUrl(url)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-emerald-600 hover:underline break-all"
+                    className="text-sm text-main-600 hover:underline break-all"
                   >
                     {url}
                   </a>

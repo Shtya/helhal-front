@@ -23,7 +23,7 @@ export function StatCard({
             <p className='text-xs font-medium uppercase tracking-wide text-slate-500'>{title}</p>
             <div className='mt-1 flex items-end gap-2'>
               <AnimatedCounter value={value} className='text-3xl font-extrabold text-slate-900' />
-              {trend && <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${trend.tone === 'down' ? 'bg-red-50 text-red-700 ring-1 ring-red-100' : 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100'}`}>{trend.label}</span>}
+              {trend && <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${trend.tone === 'down' ? 'bg-red-50 text-red-700 ring-1 ring-red-100' : 'bg-main-50 text-main-700 ring-1 ring-main-100'}`}>{trend.label}</span>}
             </div>
           </div>
           <div className='shrink-0 grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-white to-slate-50 ring-1 ring-slate-200 shadow-inner'>{Icon ? <Icon className='h-5 w-5 text-slate-700' /> : null}</div>
@@ -46,7 +46,7 @@ export function StatCard({
                 const y = 27 - ((v - min) / range) * 24; // padding top
                 return `${x},${y}`;
               });
-              return <polyline points={pts.join(' ')} fill='none' stroke='currentColor' className='text-emerald-500' strokeWidth='2' strokeLinejoin='round' strokeLinecap='round' />;
+              return <polyline points={pts.join(' ')} fill='none' stroke='currentColor' className='text-main-500' strokeWidth='2' strokeLinejoin='round' strokeLinecap='round' />;
             })()}
           </svg>
         ) : null}
@@ -92,7 +92,7 @@ export function GlassCard({ children, className = '', gradient = 'from-sky-400 v
 export function MetricBadge({ tone = 'info', children }) {
   const map = {
     info: 'bg-sky-50 text-sky-800 ring-1 ring-sky-100',
-    success: 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-100',
+    success: 'bg-main-50 text-main-800 ring-1 ring-main-100',
     warning: 'bg-amber-50 text-amber-800 ring-1 ring-amber-100',
     danger: 'bg-red-50 text-red-800 ring-1 ring-red-100',
     neutral: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
@@ -114,7 +114,7 @@ const SIZE_CLASS = {
 
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ className, open, title, subtitle, icon: Icon, onClose, size = 'md', footer, children, closeOnBackdrop = true, hideHeader = false, hideFooter = false, accent = 'emerald', initialFocusRef }) {
+export function Modal({ className, open, title, subtitle, icon: Icon, onClose, size = 'md', footer, children, closeOnBackdrop = true, hideHeader = false, hideFooter = false, accent = 'main', initialFocusRef }) {
   const panelRef = useRef(null);
   const closeBtnRef = useRef(null);
 
@@ -167,7 +167,7 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
   }, [open]);
 
   const accentGrad = {
-    emerald: 'from-emerald-400/50 via-teal-400/40 to-sky-400/40',
+    main: 'from-main-400/50 via-teal-400/40 to-sky-400/40',
     violet: 'from-violet-400/50 via-fuchsia-400/40 to-rose-400/40',
     sky: 'from-sky-400/50 via-indigo-400/40 to-violet-400/40',
     amber: 'from-amber-400/50 via-orange-400/40 to-rose-400/40',
@@ -204,7 +204,7 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
                         ) : null}
                         {subtitle ? <p className='mt-0.5 text-sm text-slate-600'>{subtitle}</p> : null}
                       </div>
-                      <button ref={closeBtnRef} onClick={onClose} className='cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500' aria-label='Close'>
+                      <button ref={closeBtnRef} onClick={onClose} className='cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500' aria-label='Close'>
                         <X className='h-5 w-5' />
                       </button>
                     </div>

@@ -266,7 +266,7 @@ export default function AdminUsersDashboard() {
       key: 'status',
       label: t('columns.status'),
       status: [
-        ['active', 'inline-flex items-center gap-1 text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full text-xs'],
+        ['active', 'inline-flex items-center gap-1 text-main-700 bg-main-100 px-2 py-1 rounded-full text-xs'],
         ['suspended', 'inline-flex items-center gap-1 text-red-700 bg-red-100 px-2 py-1 rounded-full text-xs'],
         ['pending_verification', 'inline-flex items-center gap-1 text-amber-700 bg-amber-100 px-2 py-1 rounded-full text-xs'],
         ['deleted', 'inline-flex items-center gap-1 text-slate-600 bg-slate-100 px-2 py-1 rounded-full text-xs'],
@@ -339,7 +339,7 @@ export default function AdminUsersDashboard() {
       <div className=" flex items-center gap-2">
         <button
           onClick={() => viewUserDetails(user)}
-          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-full"
+          className="p-2 text-main-600 hover:bg-main-50 rounded-full"
           title={t('actions.viewDetails')}
         >
           <Eye size={16} />
@@ -383,7 +383,7 @@ export default function AdminUsersDashboard() {
             {canChangeStatus && user.status !== 'active' && (
               <button
                 onClick={() => handleStatusChange(user.id, 'active')}
-                className="flex items-center w-full px-4 py-2 text-sm text-emerald-700 hover:bg-emerald-50"
+                className="flex items-center w-full px-4 py-2 text-sm text-main-700 hover:bg-main-50"
               >
                 {t('actions.activate')}
               </button>
@@ -540,7 +540,7 @@ export default function AdminUsersDashboard() {
                 <button
                   onClick={() => handleSaveUser(editingUser)}
                   disabled={savingUser || phoneError || usernameError}
-                  className='px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50'
+                  className='px-4 py-2 bg-main-600 text-white rounded-lg hover:bg-main-700 disabled:opacity-50'
                 >
                   {savingUser ? t('modal.saving') : t('modal.saveChanges')}
                 </button>
@@ -606,7 +606,7 @@ export default function AdminUsersDashboard() {
           <div className="flex justify-between mb-4">
             <button
               onClick={grantAll}
-              className="text-sm text-emerald-600 hover:underline"
+              className="text-sm text-main-600 hover:underline"
             >
               {t('permissions.modal.grantAll')}
             </button>
@@ -668,7 +668,7 @@ export default function AdminUsersDashboard() {
             <button
               onClick={savePermissions}
               disabled={updatingPermissions}
-              className='px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50'
+              className='px-4 py-2 bg-main-600 text-white rounded-lg hover:bg-main-700 disabled:opacity-50'
             >
               {updatingPermissions ? t('modal.saving') : t('modal.saveChanges')}
             </button>
