@@ -4,7 +4,7 @@ export default function PriceTag({ price, color = 'black', className = '' }) {
   const colors = {
     black: '#111',
     white: '#fff',
-    green: '#00bb7c',
+    green: 'var(--color-main-600)',
   };
   return (
     <div className={`inline-flex text-base items-center gap-1   ${className}`} style={{ color: colors[color] }}  >

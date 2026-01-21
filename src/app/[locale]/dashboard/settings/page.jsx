@@ -409,7 +409,7 @@ export default function AdminSettingsDashboard() {
           {/* Financial */}
           <GlassCard className='p-3 sm:p-6'>
             <div className='mb-4 flex items-center'>
-              <Currency style={{ fill: "#00a63e" }} size={20} />
+              <Currency style={{ fill: "var(--color-main-600)" }} size={20} />
               <h2 className='text-lg font-semibold'>{t('sections.financial')}</h2>
             </div>
 
@@ -541,7 +541,7 @@ export default function AdminSettingsDashboard() {
           <GlassCard className="p-3 sm:p-6">
             {/* Header */}
             <div className="mb-4 flex items-center">
-              <Info size={20} className="mr-2 text-teal-600" />
+              <Info size={20} className="mr-2 text-main-600" />
               <h2 className="text-lg font-semibold">{t('faqs')}</h2>
             </div>
 

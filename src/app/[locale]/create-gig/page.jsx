@@ -1500,6 +1500,48 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
   );
 }
 
+
+const UploadImage = ({ className = "w-[100px] h-[100px]  " }) => {
+  return (
+    <div className='bg-main-300 p-2 rounded-full w-fit mx-auto'>
+
+      <svg
+        width="12" height="12"
+        viewBox="0 0 24 24"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlnsXlink="http://www.w3.org/1999/xlink"
+        style={{ color: 'var(--color-main-700)' }}
+        className={`${className} fill-main-400 stroke-main-700`}
+      >
+        <g id="Iconly/Bold/Image-2" stroke="none" transform="translate(2.5, 2) scale(0.8)" strokeWidth="1" fill="none" fillRule="evenodd">
+          <g id="Image-2" transform="translate(1.999400, 2.000400)" fill="currentColor" fillRule="nonzero">
+
+            <path d="M14.354,0 C17.731,0 20,2.362 20,5.888 L20,5.888 L20,14.102 C20,14.253 19.973,14.388 19.965,14.534 C19.96,14.619 19.961,14.704 19.954,14.789 C19.95,14.827 19.939,14.862 19.935,14.9 C19.902,15.214 19.851,15.514 19.78,15.805 C19.762,15.883 19.741,15.958 19.72,16.034 C19.64,16.316 19.546,16.585 19.433,16.842 C19.4,16.914 19.364,16.983 19.33,17.054 C19.208,17.299 19.076,17.534 18.923,17.752 L18.923,17.752 L18.775,17.944 C18.616,18.15 18.45,18.347 18.262,18.526 C18.201,18.584 18.132,18.634 18.068,18.689 C17.875,18.855 17.678,19.014 17.461,19.15 C17.383,19.199 17.297,19.235 17.217,19.279 C16.996,19.401 16.773,19.52 16.53,19.612 C16.43,19.65 16.319,19.67 16.215,19.703 C15.976,19.777 15.74,19.854 15.483,19.898 C15.4183333,19.9093333 15.3517778,19.9173333 15.2842222,19.9235926 L14.874,19.953 C14.7,19.966 14.535,20 14.354,20 L14.354,20 L5.638,20 C5.262,20 4.903,19.962 4.556,19.905 C4.543,19.903 4.531,19.901 4.519,19.899 C3.166,19.666 2.043,19.013 1.256,18.028 C1.247,18.028 1.247,18.018 1.238,18.009 C0.447,17.013 1.77635684e-15,15.674 1.77635684e-15,14.102 L1.77635684e-15,14.102 L1.77635684e-15,5.888 C1.77635684e-15,2.362 2.271,0 5.638,0 L5.638,0 Z M14.354,1.395 L5.638,1.395 C3.061,1.395 1.396,3.162 1.396,5.888 L1.396,5.888 L1.396,14.102 C1.396,14.867 1.538,15.55 1.781,16.141 C1.812,16.104 3.749,13.742 3.758,13.734 C4.45,12.944 5.749,11.766 7.454,12.479 C7.864,12.649 8.224,12.888 8.554,13.098 C9.127,13.481 9.464,13.661 9.814,13.631 C9.959,13.611 10.095,13.568 10.224,13.488 C10.782,13.144 12.359,10.844 12.454,10.719 C13.544,9.299 15.224,8.919 16.624,9.759 C16.718,9.815 17.10175,10.07825 17.51775,10.37475 L17.8317734,10.6006406 C18.1437969,10.8273281 18.43775,11.04825 18.605,11.19 L18.605,11.19 L18.605,5.888 C18.605,3.162 16.94,1.395 14.354,1.395 L14.354,1.395 Z M6.47928217,3.9996 C7.17695659,3.9996 7.80873953,4.29297966 8.26125891,4.76103602 C8.71571628,5.21268628 9.0006,5.83515298 9.0006,6.5145585 C9.0006,7.86950928 7.86687907,8.9996 6.50544496,8.9996 C5.30873953,8.9996 4.2883907,8.12525142 4.05970853,6.99323057 C4.02191783,6.82337919 4.0006,6.64870249 4.0006,6.4682354 C4.0006,5.10363397 5.10912713,3.9996 6.47928217,3.9996 Z"></path>
+          </g>
+        </g>
+        <g
+          id="Upload-Overlay"
+          transform="translate(16, 2) scale(0.35)"
+          fillRule="nonzero"
+        >
+          <path
+            d="M8,0C3.5,0,0,3.5,0,8s3.5,8,8,8s8-3.5,8-8S12.5,0,8,0z"
+            fill="currentColor"
+          />
+
+          <path
+            d="M10,7v6H6V7H4l4-5l4,5H10z"
+            fill="white"
+          />
+        </g>
+
+
+      </svg>
+    </div>
+  );
+};
+
 const getFirstFileError = (errors, type) => {
   if (!errors?.[type]) return null;
 
@@ -1588,6 +1630,8 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     }));
   };
 
+
+
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       <div>
@@ -1609,7 +1653,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
               </div>
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
-              <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
+              {/* Replace the old <img> tag with this */}<UploadImage className='w-[100px] h-[100px]' />
               <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseImages')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} maxSelection={3} />
             </div>
@@ -1637,7 +1681,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
               </div>
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
-              <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
+              <UploadImage className='w-[100px] h-[100px]' />
               <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseVideo')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} maxSelection={1} />
             </div>
@@ -1664,7 +1708,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
               </div>
             ))}
             <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
-              <img src='/icons/uploadImage.png' alt='' className='w-[100px] h-[100px] mx-auto mb-2 ' />
+              <UploadImage className='w-[100px] h-[100px]' />
               <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseDocuments')}</span></div>
               <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} maxSelection={2} />
             </div>
