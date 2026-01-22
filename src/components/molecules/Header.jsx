@@ -66,10 +66,22 @@ export default function Header() {
         // ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
         {
           label: tHeader('navigation.services'),
-          icon: <Package className='h-5 w-5' />,
+          icon: <Package className="h-5 w-5" />,
           href: '/services', // fallback href
-          useMegaMenu: true, // flag to use mega menu instead of dropdown
+          useMegaMenu: u?.role !== 'seller', // flag to use mega menu instead of dropdown
+          ...(u?.role === 'seller'
+            ? {
+              children: [
+                {
+                  href: '/my-gigs',
+                  label: tHeader('navigation.myServices'),
+                  icon: <LayoutGrid size={18} className="h-4 w-4" />,
+                },
+              ],
+            }
+            : {})
         },
+
       ];
 
       //guest
