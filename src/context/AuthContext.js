@@ -85,7 +85,7 @@ export function AuthProvider({ children }) {
       'googleId', 'appleId', 'resetPasswordToken', 'lastResetPasswordSentAt',
       'resetPasswordExpires', 'otpCode', 'otpLastSentAt', 'otpExpiresAt',
       'referralCode', 'languages', 'country', 'countryId',
-      'permissions', 'status', 'deactivatedAt'
+      'permissions', 'status', 'deactivatedAt', 'nationalId'
     ];
 
     setUser(prev => {
@@ -110,7 +110,7 @@ export function AuthProvider({ children }) {
     user?.googleId, user?.appleId, user?.resetPasswordToken, user?.lastResetPasswordSentAt,
     user?.resetPasswordExpires, user?.otpCode, user?.otpLastSentAt, user?.otpExpiresAt,
     user?.referralCode, user?.languages, user?.countryId,
-    user?.permissions, user?.status, user?.deactivatedAt
+    user?.permissions, user?.status, user?.deactivatedAt, user?.nationalId
   ]);
 
   return (

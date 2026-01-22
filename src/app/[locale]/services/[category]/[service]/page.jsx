@@ -25,6 +25,7 @@ import { useLocale, useTranslations } from 'next-intl'; // Add this import
 import { resolveUrl } from '@/utils/helper';
 import toast from 'react-hot-toast';
 import CountryFlag from '@/components/common/CountryFlag';
+import IdentityStatus from '@/components/atoms/IdentityStatus';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -1286,7 +1287,7 @@ function AboutSeller({ serviceData }) {
   }
 
   return (
-    <section className='bg-white rounded-xl shadow-custom  border border-slate-200 overflow-hidden mb-6'>
+    <section className='bg-white rounded-xl shadow-custom  border border-slate-200 mb-6'>
       {/* header */}
       <div className='p-6'>
         <div className='flex items-center gap-3'>
@@ -1300,6 +1301,7 @@ function AboutSeller({ serviceData }) {
               <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none'>
                 {seller?.username || 'Unknown Seller'}
               </Link>
+              <IdentityStatus user={seller} />
               {!!seller?.sellerLevel && (
                 <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
                   <BadgeCheck className='h-3 w-3 text-main-600' />

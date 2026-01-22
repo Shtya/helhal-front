@@ -164,7 +164,7 @@ export const SocketProvider = ({ children }) => {
 
                 // Publisher/Subscriber
                 subscribe,
-
+                socket: socketRef.current,
                 // External controls
                 incrementUnread,
                 resetUnread,

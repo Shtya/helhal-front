@@ -313,7 +313,7 @@ function JobView({ value, onClose }) {
         <div className='p-3 bg-slate-50 rounded-md whitespace-pre-wrap'>{value.description}</div>
       </div>
 
-      <Client name={value.buyer?.username} subtitle={value.buyer?.email} id={value.buyer?.id} />
+      <Client isVerifed={value.buyer?.isIdentityVerified} name={value.buyer?.username} subtitle={value.buyer?.email} id={value.buyer?.id} />
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <div>

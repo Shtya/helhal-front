@@ -1190,16 +1190,32 @@
       "editPhone": "تعديل رقم الهاتف",
       "editNationalID": "تعديل الهوية الوطنية",
       "cancel": "إلغاء",
+      "retry": "أعد المحاولة",
       "saveChanges": "حفظ التغييرات",
       "nationalId": "الهوية الوطنية",
       "nationalIdPlaceholder": "أدخل رقم الهوية الوطنية",
-      "nationalIdHint": "يجب أن يكون رقم الهوية الوطنية 10 أرقام تبدأ بـ 1 أو 2",
       "editPhoneAgain": "تعديل رقم الهاتف مرة أخرى",
       "failedToUpdatePhone": "فشل تحديث رقم الهاتف",
       "nationalIdUpdated": "تم تحديث معلومات الهوية الوطنية بنجاح",
       "failedToUpdateNationalId": "فشل تحديث معلومات الهوية الوطنية",
+      "verifiedTooltip": "الهوية موثقة عبر نفاذ",
+      "unverifiedTooltip": "الهوية غير موثقة",
+      "nafath": {
+        "requestSent": "تم إرسال طلب التحقق بنجاح، يرجى إكمال العملية من خلال تطبيق نفاذ",
+        "openAppConfirm": "الرجاء فتح تطبيق نفاذ وتأكيد الطلب باختيار الرقم أعلاه",
+        "randomNumber": "رقم التحقق",
+        "completed": "تم التحقق بنجاح",
+        "rejected": "تم رفض الطلب",
+        "expired": "انتهت صلاحية الطلب",
+        "timeout": "انتهت مهلة التحقق",
+        "cancelled": "تم إلغاء الطلب",
+        "failed": "فشل بدء التحقق",
+        "error": "حدث خطأ أثناء التحقق",
+        "cancelFailed": "فشل إلغاء طلب التحقق"
+      },
       "errors": {
-        "inValidOptionalPhone": "رقم هاتف غير صالح"
+        "inValidOptionalPhone": "رقم هاتف غير صالح",
+        "invalidNationalId": "رقم الهوية يجب أن يتكون من 10 أرقام ويبدأ بـ 1 أو 2"
       }
     }
   },

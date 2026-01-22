@@ -693,9 +693,9 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
   const canSubmitProposal = user && role === 'seller' && localJob?.buyer?.id !== user?.id;
 
   const buyer = localJob?.buyer || {};
-  const country = buyer?.country || '—';
   const budget = localJob?.budget ?? localJob?.estimatedBudget;
   const priceType = localJob?.budgetType === 'hourly' ? t('page.hourly') : t('page.fixedPrice');
+  const country = buyer?.country || '—';
   const buyerName = localJob?.buyer?.username || '—';
 
 
@@ -829,7 +829,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
                     {/* Client */}
                     <section>
-                      <Client name={buyerName} subtitle={country} />
+                      <Client isVerifed={localJob?.buyer?.isIdentityVerified} name={buyerName} subtitle={country} />
 
                       <div className='mt-3 space-y-2 text-sm'>
                         <div className='flex items-center gap-2'>

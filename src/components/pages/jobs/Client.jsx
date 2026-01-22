@@ -1,9 +1,10 @@
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { useTranslations } from 'next-intl';
+import IdentityStatus from "@/components/atoms/IdentityStatus";
 
 
-export default function Client({ name, subtitle, id }) {
+export default function Client({ name, isVerifed, subtitle, id }) {
     const t = useTranslations('Client');
     const router = useRouter()
     const Initials = useMemo(
@@ -28,8 +29,12 @@ export default function Client({ name, subtitle, id }) {
                     <span className='text-sm font-semibold'>{Initials}</span>
                 </div>
                 <div>
-                    <div className={`text-sm font-semibold text-slate-900 flex items-center gap-2 
+                    <div className="flex gap-2 items-center">
+
+                        <div className={`text-sm font-semibold text-slate-900 flex items-center gap-2 
                         ${id && 'cursor-pointer hover:underline'}`} onClick={handleOnClick}>{name}</div>
+                        <IdentityStatus user={{ isVerifed }} size="sm" />
+                    </div>
                     <div className='text-sm text-slate-500'>{subtitle}</div>
                 </div>
             </div>

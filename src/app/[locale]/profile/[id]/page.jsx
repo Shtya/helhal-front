@@ -11,6 +11,7 @@ import { resolveUrl } from '@/utils/helper';
 import { formatResponseTime } from '@/utils/profile';
 import { FiClipboard } from 'react-icons/fi';
 import { Link } from '@/i18n/navigation';
+import IdentityStatus from '@/components/atoms/IdentityStatus';
 
 export default function ProfilePageClient() {
   const t = useTranslations('Profile.public');
@@ -73,6 +74,7 @@ export default function ProfilePageClient() {
             <div className='flex-1 min-w-0'>
               <div className='flex items-center flex-wrap gap-3'>
                 <h1 className='text-2xl sm:text-3xl font-semibold tracking-tight truncate drop-shadow'>{toTitle(name)}</h1>
+                <IdentityStatus user={buyer} />
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ring-1 ring-white/30 bg-white/15`}>
                   <Shield className='h-3.5 w-3.5' /> {toTitle(role)}
                 </span>

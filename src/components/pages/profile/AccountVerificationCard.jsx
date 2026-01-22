@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Mail, Phone, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Card, Divider } from '@/components/UI/ui';
 import { Modal } from '@/components/common/Modal';
@@ -18,7 +18,8 @@ import toast from 'react-hot-toast';
 import { maskEmail } from '@/utils/helper';
 import { validatPhone } from '@/utils/profile';
 import z from 'zod';
-
+import { useSocket } from '@/context/SocketContext';
+import { motion } from 'framer-motion';
 const defaultCountryCode = { code: 'SA', dial_code: '+966' };
 
 // Email form schema
@@ -28,7 +29,7 @@ const emailSchema = z.object({
 
 // NAFAZ form schema
 const nafazSchema = z.object({
-    nationalId: z.string().regex(/^[12][0-9]{9}$/, 'National ID must be 10 digits starting with 1 or 2'),
+    nationalId: z.string().regex(/^[12][0-9]{9}$/, 'errors.invalidNationalId'),
 });
 
 function AccountVerificationCard({ loading, user }) {
@@ -41,7 +42,7 @@ function AccountVerificationCard({ loading, user }) {
     // Email verification status (mock - replace with actual user data)
     const emailVerified = !!user?.email || false;
     const phoneVerified = user?.isPhoneVerified || false;
-    const nafazVerified = user?.nafazVerified || false;
+    const nafazVerified = user?.isIdentityVerified || false;
 
     return (
         <Card className='lg:sticky lg:top-30'>
@@ -119,6 +120,7 @@ function AccountVerificationCard({ loading, user }) {
             {/* NAFAZ Modal */}
             {nafazOpen && (
                 <NafazEditModal
+                    user={user}
                     onClose={() => setNafazOpen(false)}
                 />
             )}
@@ -334,6 +336,15 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
     const [seconds, setSeconds] = useState(0);
     const [resending, setResending] = useState(false);
 
+    const canSave = useMemo(() => {
+        return (
+            phoneData.phone.trim() !== user?.phone.trim() ||
+            phoneData.countryCode.dial_code !== user?.countryCode.dial_code || !user?.isPhoneVerified
+
+        );
+    }, [phoneData, user?.phone, user?.countryCode.dial_code, user?.isPhoneVerified]);
+
+
     useEffect(() => {
         if (seconds <= 0) return;
         const timer = setTimeout(() => setSeconds(prev => prev - 1), 1000);
@@ -463,6 +474,7 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
                             <Button
                                 name={saving ? '' : t('saveChanges')}
                                 loading={saving}
+                                disabled={!canSave}
                                 color='green'
                                 onClick={handleSavePhone}
                                 className='!w-auto !px-4'
@@ -546,63 +558,266 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
     );
 }
 
-function NafazEditModal({ onClose }) {
-    const t = useTranslations('Profile.accountVerification');
-    const [saving, setSaving] = useState(false);
 
+const DotLoader = () => {
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex gap-2 mt-4 justify-center"
+        >
+            {[0, 1, 2].map((i) => (
+                <motion.div
+                    key={i}
+                    className="w-2 h-2 rounded-full bg-main-500 "
+                    animate={{
+                        y: [0, -8, 0],
+                        opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                    }}
+                />
+            ))}
+        </motion.div>
+    );
+};
+
+function NafazEditModal({ user, onClose }) {
+    const t = useTranslations('Profile.accountVerification');
+    const { socket } = useSocket();
+
+    const [step, setStep] = useState('edit');
+    const [saving, setSaving] = useState(false);
+    const [waiting, setWaiting] = useState(false);
+    const { setCurrentUser } = useAuth();
+    const [requestId, setRequestId] = useState(null);
+    const [random, setRandom] = useState(null);
+
+    const timeoutRef = useRef(null);
+    const [isCancelling, setIsCancelling] = useState(false);
     const {
         register,
         handleSubmit,
         formState: { errors },
+        watch
     } = useForm({
         resolver: zodResolver(nafazSchema),
+        defaultValues: {
+            nationalId: user.nationalId || ''
+        }
     });
 
+    const nationalId = watch('nationalId')
+    const canSave = useMemo(() => {
+        return (
+            (nationalId?.trim() !== (user?.nationalId || '').trim()) || !user?.isIdentityVerified
+        );
+    }, [nationalId, user?.nationalId, user?.isIdentityVerified]);
+
+
+    const [inlineMessage, setInlineMessage] = useState('');
+
+
+    /* ----------------------------------
+       SUBMIT NATIONAL ID
+    -----------------------------------*/
     const onSubmit = handleSubmit(async ({ nationalId }) => {
         setSaving(true);
         try {
-            // Mock API call - replace with actual endpoint
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            toast.success(t('nationalIdUpdated'));
-            onClose();
+            const res = await api.post('/auth/nafath-mfa', { nationalId });
+            setCurrentUser(prev => ({
+                ...prev,
+                nationalId: nationalId,
+                isIdentityVerified: false
+            }));
+
+            setRequestId(res.data.requestId);
+            setRandom(res.data.random);
+
+            setStep('waiting');
+            setWaiting(true);
+
+            // ⏱ Auto timeout after 2 minutes
+            timeoutRef.current = setTimeout(() => {
+                if (user?.isIdentityVerified) return;
+                setInlineMessage(t('nafath.timeout'));
+                setWaiting(false);
+            }, 2 * 60 * 1000);
+
         } catch (err) {
-            toast.error(t('failedToUpdateNationalId'));
+            toast.error(err?.response?.data?.message || t('nafath.failed'));
         } finally {
             setSaving(false);
         }
     });
 
+    useEffect(() => {
+
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                console.log('Nafath timeout cleared on modal close');
+            }
+        };
+    }, []);
+    /* ----------------------------------
+       CANCEL NAFATH REQUEST
+    -----------------------------------*/
+    const cancelRequest = async () => {
+        // Prevent multiple clicks if already loading
+        if (isCancelling) return;
+
+        setIsCancelling(true);
+        try {
+            await api.post('/auth/nafath-mfa/cancel');
+            toast.success(t('nafath.cancelled'));
+
+            // Final cleanup and closing the UI
+            cleanup();
+            onClose();
+        } catch (error) {
+            toast.error(t('nafath.cancelFailed'));
+            console.error('Nafath Cancel Error:', error);
+        } finally {
+            // Ensure loading state is reset even if the request fails
+            setIsCancelling(false);
+        }
+    };
+
+    /* ----------------------------------
+       SOCKET LISTENER
+    -----------------------------------*/
+    useEffect(() => {
+        if (!socket) return;
+
+        const handler = (data) => {
+            const { status, message } = data;
+
+            switch (status) {
+                case 'WAITING':
+                    setWaiting(true);
+                    setInlineMessage('');
+                    break;
+
+                case 'COMPLETED':
+                    toast.success(t('nafath.completed'));
+                    cleanup();
+                    onClose();
+
+                    setCurrentUser(prev => ({
+                        ...prev,
+                        isIdentityVerified: true
+                    }));
+                    break;
+
+                case 'REJECTED':
+                    setInlineMessage(t('nafath.rejected'));
+                    setWaiting(false);
+                    break;
+
+                case 'EXPIRED':
+                case 'TIMEOUT':
+                    setInlineMessage(t('nafath.expired'));
+                    setWaiting(false);
+                    break;
+
+                default:
+                    setInlineMessage(message || t('nafath.error'));
+                    setWaiting(false);
+            }
+        };
+
+        socket.on('nafath_status_update', handler);
+
+        return () => {
+            socket.off('nafath_status_update', handler);
+        };
+    }, [socket, setCurrentUser]);
+
+    const cleanup = () => {
+        setWaiting(false);
+        setStep('edit');
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+
+    /* ----------------------------------
+       UI
+    -----------------------------------*/
     return (
         <Modal title={t('editNationalID')} onClose={onClose}>
-            <form onSubmit={onSubmit} className='space-y-4'>
-                <div>
+            {step === 'edit' ? (
+                <form onSubmit={onSubmit} className="space-y-4">
                     <Input
                         label={t('nationalId')}
+                        error={errors.nationalId?.message ? t(errors.nationalId.message) : null}
                         placeholder={t('nationalIdPlaceholder')}
-                        error={errors.nationalId?.message}
                         {...register('nationalId')}
                     />
-                    <p className='text-xs text-gray-500 mt-1'>{t('nationalIdHint')}</p>
-                </div>
 
-                <div className='flex gap-3 justify-end'>
-                    <Button
-                        name={t('cancel')}
-                        color='gray'
-                        onClick={onClose}
-                        className='!w-auto !px-4'
-                    />
-                    <Button
-                        name={saving ? '' : t('saveChanges')}
-                        loading={saving}
-                        color='green'
-                        type='submit'
-                        className='!w-auto !px-4'
-                    />
+                    <div className="flex justify-end gap-3">
+                        <Button name={t('cancel')} color="gray" onClick={onClose} />
+                        <Button
+                            name={saving ? '' : t('saveChanges')}
+                            loading={saving}
+                            disabled={!canSave}
+                            type="submit"
+                            color="green"
+                        />
+                    </div>
+                </form>
+            ) : (
+                <div className="space-y-6 text-center">
+                    <p className="text-green-600 font-medium">
+                        {t('nafath.requestSent')}
+                    </p>
+
+                    <div className="border rounded-lg p-4">
+                        <p className="text-gray-600 mb-2">
+                            {t('nafath.randomNumber')}
+                        </p>
+                        <p className="text-3xl font-bold">{random}</p>
+                    </div>
+
+                    <p className="text-sm text-gray-600">
+                        {t('nafath.openAppConfirm')}
+                    </p>
+
+                    {waiting && <DotLoader />}
+
+                    {inlineMessage && (
+                        <p className="text-red-600 font-medium">{inlineMessage}</p>
+                    )}
+
+                    <div className="flex justify-center gap-3">
+                        {inlineMessage ? (
+                            <Button
+                                name={saving ? '' : t('retry')}
+                                loading={saving}
+                                color="green"
+                                onClick={() => {
+                                    setInlineMessage('')
+                                    onSubmit()
+                                }}
+                            />
+                        ) : (
+                            <Button
+                                name={t('cancel')}
+                                loading={isCancelling}
+                                color="gray"
+                                onClick={cancelRequest}
+                            />
+                        )}
+                    </div>
+
                 </div>
-            </form>
+            )}
         </Modal>
     );
 }
+
 
 export default AccountVerificationCard;

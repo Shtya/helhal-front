@@ -1190,6 +1190,7 @@
       "editPhone": "Edit Phone",
       "editNationalID": "Edit National ID",
       "cancel": "Cancel",
+      "retry": "Retry again",
       "saveChanges": "Save Changes",
       "nationalId": "National ID",
       "nationalIdPlaceholder": "Enter your national ID",
@@ -1198,8 +1199,24 @@
       "failedToUpdatePhone": "Failed to update phone number",
       "nationalIdUpdated": "National ID information updated successfully",
       "failedToUpdateNationalId": "Failed to update national ID information",
+      "verifiedTooltip": "Identity verified via Nafath",
+      "unverifiedTooltip": "Identity not verified",
+      "nafath": {
+        "requestSent": "Verification request has been sent successfully. Please complete the process using the Nafath app.",
+        "openAppConfirm": "Please open the Nafath application and confirm the request by selecting the number above.",
+        "randomNumber": "Verification number",
+        "completed": "Verification completed successfully.",
+        "rejected": "The verification request was rejected.",
+        "expired": "The verification request has expired.",
+        "timeout": "The verification process timed out.",
+        "cancelled": "The verification request has been cancelled.",
+        "failed": "Failed to start the verification process.",
+        "error": "An error occurred during the verification process.",
+        "cancelFailed": "Failed to cancel the verification request."
+      },
       "errors": {
-        "inValidOptionalPhone": "Invalid phone number"
+        "inValidOptionalPhone": "Invalid phone number",
+        "invalidNationalId": "National ID must be 10 digits and start with 1 or 2"
       }
     }
   },
