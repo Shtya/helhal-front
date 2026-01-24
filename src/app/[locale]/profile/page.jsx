@@ -22,6 +22,7 @@ import InfoCard from '@/components/pages/profile/InfoCard';
 import AccountVerificationCard from '@/components/pages/profile/AccountVerificationCard';
 import { resolveUrl } from '@/utils/helper';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
+import TopRatedBadge from '@/components/atoms/TopRatedBadge';
 
 const EditIcon = ({ className }) => (
   <svg
@@ -97,11 +98,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
           <div className='flex flex-wrap items-center gap-2'>
             <Pill>{state?.type || '—'}</Pill>
             {state.sellerLevel ? <Pill>{t('level', { level: state.sellerLevel })}</Pill> : null}
-            {meta.topRated ? (
-              <Pill>
-                <Star className='mr-1 h-4 w-4' /> {t('topRated')}
-              </Pill>
-            ) : null}
+            <TopRatedBadge isTopRated={meta?.topRated} />
           </div>
 
           {/* Replace your <img> with this */}
@@ -393,11 +390,11 @@ function KPICard({ loading, stats }) {
   return (
     <>
       {/* <h3 className='mb-3 text-lg font-semibold'>Seller KPIs</h3> */}
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
         <StatCard title={t('ordersCompleted')} value={Number(stats.ordersCompleted || 0)} hint={t('allTime')} icon={CheckCircle2} gradient='from-main-500 via-teal-500 to-cyan-400' />
         <StatCard title={t('repeatBuyers')} value={Number(stats.repeatBuyers || 0)} hint={t('uniqueCustomers')} icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
-        {/* <StatCard title='Avg. Rating' value={stats.averageRating ? Number(stats.averageRating) : '—'}
-          hint={stats.averageRating > 0 ? `${stats.averageRating.toFixed(1)} / 5` : 'Not yet calculated'} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' /> */}
+        <StatCard title={t('avgRating')} value={stats.rating > 0 ? `${stats.rating.toFixed(1)} / 5` : '—'}
+          hint={stats.rating} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' />
         <StatCard
           title={t('responseTime')}
           value={formatResponseTime(stats.responseTime)}
@@ -899,6 +896,7 @@ export default function Overview() {
     totalSpent: 0,
     totalEarned: 0,
     reputationPoints: 0,
+    rating: 0,
     topRated: false, // derived
   });
 
@@ -971,8 +969,9 @@ export default function Overview() {
           reputationPoints: Number(user.reputationPoints ?? 0),
           ordersCompleted: Number(user?.ordersCompleted) || 0,
           repeatBuyers: Number(user?.repeatBuyers) || 0,
-          averageRating: Number(user?.averageRating) || 0,
+          rating: Number(user?.rating) || 0,
           responseTime: Number(user?.responseTime),
+          topRated: user.topRated, // derived
         }));
 
         setMeta({
@@ -1184,7 +1183,7 @@ export default function Overview() {
             stats={{
               ordersCompleted: state?.ordersCompleted || 0,
               repeatBuyers: state?.repeatBuyers || 0,
-              averageRating: state?.averageRating || 0,
+              rating: state?.rating || 0,
               responseTime: state?.responseTime,
             }}
           />

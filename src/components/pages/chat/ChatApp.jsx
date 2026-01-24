@@ -16,6 +16,7 @@ import { showNotification } from '@/utils/notifications';
 import { isErrorAbort } from '@/utils/helper';
 import { useValues } from '@/context/GlobalContext';
 import { useSocket } from '@/context/SocketContext';
+import TopRatedBadge from '@/components/atoms/TopRatedBadge';
 
 
 /** ───────────────────────────────── SOCKET REF ───────────────────────────────── */
@@ -999,11 +1000,7 @@ export function AboutPanel({ about = {} }) {
     <div className="w-full">
       <h2 className="text-2xl font-semibold flex flex-wrap items-center justify-between gap-2 min-w-0">
         <span className="truncate">{t('aboutPanel.about', { name: about.name || 'Contact' })}</span>
-        {about.topRated && (
-          <span className="shrink-0 text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
-            {t('aboutPanel.topRated')}
-          </span>
-        )}
+        <TopRatedBadge isTopRated={about.topRated} />
       </h2>
 
 

@@ -12,7 +12,7 @@ import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
 import api from '@/lib/axios';
-import { AlertTriangle, CheckCircle, CreditCard, FileText, FileWarning, MessageCircle, MessageSquare, Package, XCircle, Eye } from 'lucide-react';
+import { AlertTriangle, CheckCircle, CreditCard, FileText, FileWarning, MessageCircle, MessageSquare, Package, XCircle, Eye, Star } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Link, useRouter } from '@/i18n/navigation';
 import toast from 'react-hot-toast';
@@ -26,6 +26,8 @@ import ChangeRequestReviewModel from '@/components/pages/my-orders/ChangeRequest
 import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 import { isErrorAbort } from '@/utils/helper';
 import { useSearchParams } from 'next/navigation';
+import ReviewDetailsModal from '@/components/pages/my-orders/ReviewDetailsModal';
+
 
 // Animation
 export const tabAnimation = {
@@ -388,7 +390,7 @@ export default function Page() {
 
   const renderActions = useCallback((row) => {
     const s = row.status;
-
+    const order = row._raw;
     const hasOpenDispute = !!(s === 'Disputed' || s === 'in_review');
 
     const canSellerDeliver = isSeller && [OrderStatus.ACCEPTED, OrderStatus.CHANGES_REQUESTED].includes(s) && !hasOpenDispute;
@@ -399,6 +401,16 @@ export default function Page() {
     const isChangesRequested = s === OrderStatus.CHANGES_REQUESTED;
     const loadingAction = actionLoading[row.id]; // "deliver" | "receive" | "dispute" | "cancel" | null
     const isBusy = !!loadingAction;
+
+    // Logic for 14-day window 
+    const completedDate = order.completedAt ? new Date(order.completedAt) : null;
+    const now = new Date();
+    const diffDays = completedDate ? (now - completedDate) / (1000 * 60 * 60 * 24) : 0;
+    const isExpired = diffDays > 14;
+    const hasRate = !!order?.rating;
+    // Check if current user has already rated (from your backend logic)
+    const userHasRated = isBuyer ? !!order?.rating?.buyer_rated_at : !!order?.rating?.seller_rated_at;
+    const isPublic = order.rating?.isPublic;
 
     const options = [
       {
@@ -489,7 +501,21 @@ export default function Page() {
         disabled: isBusy || loadingAction === 'accept',
         hide: !(isSeller && [OrderStatus.WAITING].includes(s)),
         danger: true,
-      }
+      },
+      {
+        icon: <Star className="h-4 w-4" />,
+        label: t('actions.viewFeedback'),
+        onClick: () => handleOpenModal(row, 'view-feedback'),
+        hide: !(s === OrderStatus.COMPLETED && hasRate),
+      },
+
+      // Rule: If Completed and NOT Public and NOT 14 days passed, show Give/Edit [cite: 23, 29]
+      {
+        icon: <MessageSquare className="h-4 w-4" />,
+        label: userHasRated ? t('actions.editFeedback') : t('actions.giveFeedback'),
+        href: `/my-orders/${row.id}/feedback`,
+        hide: !(s === OrderStatus.COMPLETED && !isPublic && !isExpired),
+      },
     ];
 
     return <ActionsMenu options={options} align="right" />;
@@ -518,6 +544,12 @@ export default function Page() {
         open={openModal === 'details'}
         onClose={handleCloseModal}
         orderId={orderIdFromParams || selectedRow?.id}
+      />
+
+      <ReviewDetailsModal
+        open={openModal === 'view-feedback'}
+        onClose={handleCloseModal}
+        orderId={selectedRow?.id}
       />
     </div>
   );

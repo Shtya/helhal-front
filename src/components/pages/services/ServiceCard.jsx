@@ -9,6 +9,7 @@ import PriceTag from '@/components/atoms/priceTag';
 import { Clock, CheckCircle2, Zap, Star, CircleArrowOutUpRight } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
+import TopRatedBadge from '@/components/atoms/TopRatedBadge';
 
 export const Stars = ({ value = 0, size = 12, stroke = 'stroke-white', dim = 'stroke-slate-400' }) => {
   const full = Math.floor(Math.min(Math.max(value, 0), 5));
@@ -59,8 +60,8 @@ export default memo(function AmazingServiceCard({
 
   const deliveryTime = (Array.isArray(service?.packages) && service.packages.length ? Math.min(...service.packages.map(p => Number(p.deliveryTime || 0) || Number.POSITIVE_INFINITY)) : null) || service?.metadata?.deliveryTime || null;
 
-  const rating = typeof service?.rating === 'number' && Number.isFinite(service.rating) ? service.rating : 0;
-  const ratingText = typeof service?.rating === 'number' ? service.rating.toFixed(1) : '—';
+  const rating = service?.rating && Number.isFinite(service.rating) ? service.rating : 0;
+  const ratingText = service?.rating ? service.rating.toFixed(1) : '—';
   const ratingCount = service?.ratingCount ?? service?.ordersCount ?? 0;
   const categoryName = locale === 'ar' ? service?.category?.name_ar : service?.category?.name_en;
   const to = href || `/services/${service?.category?.slug}/${service?.slug}`;
@@ -80,6 +81,8 @@ export default memo(function AmazingServiceCard({
     in: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, delay: 0.05 * index, ease: 'easeOut' } },
     hover: { rotateX: 2, transition: { type: 'spring', stiffness: 220, damping: 18 } },
   };
+
+
 
   if (loading) {
     // ---------- SKELETON ----------
@@ -144,14 +147,27 @@ export default memo(function AmazingServiceCard({
 
             {/* Seller pill */}
             <div className='pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3'>
-              <div className='flex items-center gap-3 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1.5 text-white'>
-                <Img src={sellerAvatar} alt={sellerName} className='h-8 w-8 rounded-full object-cover border border-white/40' />
+              <div className='relative flex items-center gap-3 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1.5 text-white'>
+                <div className='relative'>
+                  <Img
+                    src={sellerAvatar}
+                    alt={sellerName}
+                    className='h-10 w-10 rounded-full object-cover border border-white/40'
+                  />
+
+                  {/* Badge positioned at bottom start (bottom-0) */}
+                  {service?.seller?.topRated && (
+                    <div className='absolute -bottom-1 -start-1'>
+                      <TopRatedBadge isTopRated={true} size='xs' />
+                    </div>
+                  )}
+                </div>
                 <div className='min-w-0'>
                   <div className='text-sm font-semibold truncate'>{sellerName}</div>
-                  {/* <div className='text-white flex items-center gap-1.5'>
-                  <span className='text-xs font-semibold'>{ratingText}</span>
-                  <Stars value={rating} ratingCount={ratingCount} size={16} stroke='stroke-white' dim='stroke-white/30' />
-                </div> */}
+                  <div className='text-white flex items-center gap-1.5'>
+                    {ratingText && <span className='text-xs font-semibold'>{ratingText}</span>}
+                    {rating ? <Stars value={rating} size={16} stroke='stroke-white' dim='stroke-white/30' /> : null}
+                  </div>
                 </div>
               </div>
             </div>
@@ -187,9 +203,9 @@ export default memo(function AmazingServiceCard({
 
         {/* Body */}
         <div className='p-4 space-y-3'>
-          <Link href={to} className='block focus:outline-none focus:ring-2 focus:ring-blue-500 rounded'>
+          <div className='block focus:outline-none focus:ring-2 focus:ring-blue-500 rounded'>
             <h3 className='text-[17px] font-semibold line-clamp-1  '>{serviceTitle}</h3>
-          </Link>
+          </div>
           {serviceBrief ? <p className='text-[13px] text-slate-600 line-clamp-2'>{serviceBrief}</p> : null}
 
           <div className='flex items-center justify-between'>

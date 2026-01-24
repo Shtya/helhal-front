@@ -12,6 +12,8 @@ import { formatResponseTime } from '@/utils/profile';
 import { FiClipboard } from 'react-icons/fi';
 import { Link } from '@/i18n/navigation';
 import IdentityStatus from '@/components/atoms/IdentityStatus';
+import TopRatedBadge from '@/components/atoms/TopRatedBadge';
+import Img from '@/components/atoms/Img';
 
 export default function ProfilePageClient() {
   const t = useTranslations('Profile.public');
@@ -44,9 +46,48 @@ export default function ProfilePageClient() {
     };
   }, [id, t]);
 
+
   const name = buyer?.username || t('unknown');
   const initials = useMemo(() => getInitials(name), [name]);
   const role = buyer?.role || 'buyer';
+
+  const [reviews, setReviews] = useState([]);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [loadingRates, setLoadingRates] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const fetchReviews = async (cursor = null) => {
+    try {
+      const params = {
+        limit: 5,
+        cursor: cursor
+      };
+      const res = await api.get(`/ratings/user/${id}/reviews`, { params });
+
+      if (cursor) {
+        setReviews(prev => [...prev, ...res.data.items]);
+      } else {
+        setReviews(res.data.items);
+      }
+      setNextCursor(res.data.nextCursor);
+    } catch (err) {
+      console.error("Failed to load reviews", err);
+    } finally {
+      setLoadingRates(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) fetchReviews();
+  }, [id, role]);
+
+  const handleLoadMore = () => {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    fetchReviews(nextCursor);
+  };
+
 
   if (loading) return <SkeletonPage />;
   if (error) {
@@ -64,7 +105,7 @@ export default function ProfilePageClient() {
   return (
     <main className='container !my-10'>
       {/* ===== Hero / Header ===== */}
-      <section className='relative overflow-hidden rounded-3xl border border-main-200 bg-white shadow-lg'>
+      <section className='relative rounded-3xl border border-main-200 bg-white shadow-lg'>
         <div className='absolute inset-0 bg-gradient-to-r from-main-500 to-main-400 opacity-95' />
         <div className='relative p-6 sm:p-8 text-white'>
           <div className='flex flex-col sm:flex-row items-start sm:items-center gap-5'>
@@ -75,6 +116,7 @@ export default function ProfilePageClient() {
               <div className='flex items-center flex-wrap gap-3'>
                 <h1 className='text-2xl sm:text-3xl font-semibold tracking-tight truncate drop-shadow'>{toTitle(name)}</h1>
                 <IdentityStatus user={buyer} />
+                <TopRatedBadge isTopRated={buyer?.topRated} />
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ring-1 ring-white/30 bg-white/15`}>
                   <Shield className='h-3.5 w-3.5' /> {toTitle(role)}
                 </span>
@@ -101,9 +143,15 @@ export default function ProfilePageClient() {
           </div>
 
           {/* KPIs */}
-          <div className='mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3'>
+          <div className='mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3'>
             {/* <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-main-500 via-teal-500 to-cyan-400' /> */}
-
+            <StatCard
+              gradient='from-yellow-400 via-amber-500 to-orange-400'
+              icon={Star}
+              title={t('rating')}
+              value={buyer?.rating ? `${Number(buyer?.rating || 0).toFixed(1)} / 5` : '—'}
+            // hint={`${buyer?.reviewsCount || 0} ${t('rating')}`}
+            />
             <StatCard gradient='from-main-500 via-teal-500 to-cyan-400' icon={Star} title={t('orders')} value={buyer?.ordersCompleted ?? 0} />
             <StatCard gradient='from-amber-400 via-orange-500 to-rose-500' icon={Repeat} title={t('repeatBuyers')} value={buyer?.repeatBuyers ?? 0} />
             <StatCard
@@ -244,7 +292,37 @@ export default function ProfilePageClient() {
               )}
             </Card>
           )}
+          {loadingRates ? (
+            <RatingSkeleton />
+          ) : (
+            <Card title={t('rates')}>
 
+              {/* List Container - Always grid-cols-1 */}
+              <div className="grid grid-cols-1 gap-4">
+                {reviews.length > 0 ? reviews.map((review) => (
+                  <ReviewItem
+                    key={review.id}
+                    review={review}
+                    profileId={id}
+                    t={t}
+                  />
+                )) : <EmptyState text={t('noReviews')} />}
+              </div>
+
+              {/* Load More Button */}
+              {nextCursor && (
+                <div className="pt-4 text-center">
+                  <button
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="inline-flex items-center px-6 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                  >
+                    {loadingMore ? t('loading') : t('loadMore')}
+                  </button>
+                </div>
+              )}
+            </Card>
+          )}
         </div>
       </section>
     </main>
@@ -273,6 +351,31 @@ function SkeletonPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function RatingSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm animate-pulse">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-slate-200" />
+              <div className="space-y-2">
+                <div className="h-3 w-24 bg-slate-200 rounded" />
+                <div className="h-2 w-16 bg-slate-100 rounded" />
+              </div>
+            </div>
+            <div className="h-4 w-20 bg-slate-200 rounded" />
+          </div>
+          <div className="space-y-2">
+            <div className="h-3 w-full bg-slate-100 rounded" />
+            <div className="h-3 w-5/6 bg-slate-100 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -451,6 +554,103 @@ function JobCard({ job }) {
   );
 }
 
+const RatingStars = ({ score }) => (
+  <div className="flex gap-0.5">
+    {[1, 2, 3, 4, 5].map((s) => (
+      <Star
+        key={s}
+        className={`w-3.5 h-3.5 ${s <= Math.round(score) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-200'}`}
+      />
+    ))}
+  </div>
+);
+
+function ReviewItem({ review, profileId }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const t = useTranslations('Profile.public');
+
+  if (!profileId) return;
+  // If the profileId matches the sellerId, the profile owner is the seller.
+  // This means we show the BUYER'S review of them.
+  const isProfileOwnerSeller = review.seller.id === profileId;
+
+  const reviewer = isProfileOwnerSeller ? review.buyer : review.seller;
+  const score = isProfileOwnerSeller ? review.buyer_total_score : review.seller_total_score;
+  const text = isProfileOwnerSeller ? review.buyer_review_text : review.seller_review_text;
+  const ratedAt = isProfileOwnerSeller ? review.buyer_rated_at : review.seller_rated_at;
+
+
+  const hasText = !!text && text.trim().length > 0;
+  const shouldTruncate = text?.length > 200;
+  const displayText = isExpanded ? text : `${text?.substring(0, 200)}...`;
+
+  return (
+    <div className="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:border-indigo-100">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {/* Reviewer Image */}
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-100 bg-slate-50">
+            <Img
+              src={reviewer?.profileImage}
+              fallback='/public/no-user.png'
+              alt={reviewer?.username}
+              className="h-full w-full object-cover"
+            />
+          </div>
+
+          {/* Reviewer Name & Date */}
+          <div className="min-w-0">
+            <Link
+              href={`/profile/${reviewer?.id}`}
+              className="block font-bold text-slate-900 hover:text-indigo-600 truncate transition-colors"
+            >
+              {reviewer?.username}
+            </Link>
+            <div className="text-[10px] font-medium text-slate-400">
+              {ratedAt ? new Date(ratedAt).toLocaleDateString() : ''}
+            </div>
+          </div>
+        </div>
+
+        {/* Total Score */}
+        <div className="flex flex-col items-end gap-1">
+          <RatingStars score={score} />
+          <span className="text-xs font-bold text-slate-700">{score?.toFixed(1)}</span>
+        </div>
+      </div>
+
+      {/* Review Text */}
+      <div className="mt-4 text-sm leading-relaxed">
+        {hasText ? (
+          <>
+            <p className="whitespace-pre-wrap text-slate-600">
+              {shouldTruncate ? displayText : text}
+            </p>
+
+            {shouldTruncate && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-2 flex items-center gap-1 text-xs font-bold text-indigo-600 hover:underline"
+              >
+                {isExpanded ? (
+                  <>{t('showLess')} <ChevronUp className="h-3 w-3" /></>
+                ) : (
+                  <>{t('showMore')} <ChevronDown className="h-3 w-3" /></>
+                )}
+              </button>
+            )}
+          </>
+        ) : (
+          /* Fallback message for empty text */
+          <p className="text-slate-400 italic">
+            {t('noTextFeedback')}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Metric({ icon: Icon, label, value }) {
   return (
     <div className='rounded-lg border border-slate-200 bg-slate-50/60 px-2.5 py-2'>
@@ -558,3 +758,5 @@ function pickPrice(pkgs) {
   if (!prices.length) return 0;
   return Math.min(...prices);
 }
+
+

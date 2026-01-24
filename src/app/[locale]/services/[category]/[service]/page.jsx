@@ -26,6 +26,8 @@ import { resolveUrl } from '@/utils/helper';
 import toast from 'react-hot-toast';
 import CountryFlag from '@/components/common/CountryFlag';
 import IdentityStatus from '@/components/atoms/IdentityStatus';
+import TopRatedBadge from '@/components/atoms/TopRatedBadge';
+import Tooltip from '@/components/atoms/Tooltip';
 
 /* ===================== HELPERS ===================== */
 const buildOrderPayload = ({ serviceData, selectedPackage, requirementAnswers, notes }) => {
@@ -261,10 +263,11 @@ export default function ServiceDetailsPage({ params }) {
             <AboutSeller serviceData={serviceData} />
 
             {!!serviceData.faq?.length && (
-              <div className='bg-white rounded-xl  border border-slate-200  shadow-custom  md:py-12 py-6 '>
+              <div className='bg-white rounded-xl  border border-slate-200  shadow-custom  md:py-12 py-6 mb-6'>
                 <FAQSection className='!my-0' faqs={serviceData.faq} showTitle={true} />
               </div>
             )}
+            <ServiceRatings serviceSlug={service} />
           </div>
 
           {/* Sidebar */}
@@ -302,7 +305,7 @@ export const Divider = ({ className = '' }) => <div className={`my-8 h-px w-full
 const Separator = () => <span aria-hidden className='h-4 w-px bg-slate-200' />;
 
 const Stat = ({ icon: Icon, value, label, title }) => (
-  <div className='flex items-center gap-2' title={title || label}>
+  <div className='flex items-center gap-2' title={title}>
     <Icon className='h-4 w-4 text-slate-700' />
     <span className='font-semibold text-slate-900'>{value}</span>
     <span className='text-slate-500'>{label}</span>
@@ -329,7 +332,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
   const rating = Number(serviceData?.rating ?? 0);
   const ratingFmt = rating.toFixed(1);
   const reviewsCount = serviceData?.reviews?.length ?? 0;
-  const ordersCount = serviceData?.ordersCount ?? 0;
+  const ordersCount = seller?.ordersCompleted ?? 0;
   const serviceCountry = serviceData?.country ?? 0;
   const state = serviceData?.state ?? 0;
   const country = seller?.country;
@@ -390,7 +393,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} className='relative mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white p-5 shadow-custom hover:shadow-md'>
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} className='relative mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-custom hover:shadow-md'>
 
       {/* ✅ Preview Tag */}
       {serviceData?.seller?.id === user?.id && serviceData?.status !== 'Active' && (
@@ -411,15 +414,21 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
           {/* Meta */}
           <div className='mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-700'>
-            {!!rating && <span className='inline-flex items-center' aria-label={`Rating ${ratingFmt} out of 5`} title='Rating'>
-              <Star className='mr-1 h-4 w-4 text-amber-500 fill-current' />
-              <span className='font-semibold'>{ratingFmt}</span>
-              <span className='ml-1 text-slate-500'>({reviewsCount})</span>
-            </span>}
+            {!!rating && (
+              <Tooltip text={t('serviceRating')}>
+                <span className='inline-flex items-center cursor-default' aria-label={`Rating ${ratingFmt} out of 5`}>
+                  <Star className='me-1 h-3.5 w-3.5 text-amber-500 fill-current drop-shadow-sm' />
+                  <span className='font-bold text-sm text-slate-700'>{ratingFmt}</span>
+                </span>
+              </Tooltip>
+            )}
+            {/* <span className='ml-1 text-slate-500'>({reviewsCount})</span> */}
+
 
             <Separator />
-
-            <Stat icon={ShieldCheck} value={ordersCount} label={t('ordersCompleted')} title={t('ordersCompleted')} />
+            <Tooltip text={t('sellerOrdersCompleted')}>
+              <Stat icon={ShieldCheck} value={ordersCount} label={t('ordersCompleted')} />
+            </Tooltip>
 
             {hasLocation && (
               <>
@@ -1302,6 +1311,7 @@ function AboutSeller({ serviceData }) {
                 {seller?.username || 'Unknown Seller'}
               </Link>
               <IdentityStatus user={seller} />
+              <TopRatedBadge isTopRated={seller?.topRated} size='xs' />
               {!!seller?.sellerLevel && (
                 <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
                   <BadgeCheck className='h-3 w-3 text-main-600' />
@@ -1316,8 +1326,8 @@ function AboutSeller({ serviceData }) {
 
         {/* quick stats */}
         <div className='mt-4 flex flex-wrap items-center gap-2 text-xs'>
-          {!!serviceData?.rating && <StatPill icon={<Star className='h-3.5 w-3.5 text-amber-600' />} label='Rating' value={(serviceData?.rating ?? 0).toFixed(1)} />}
-          <StatPill icon={<Calendar className='h-3.5 w-3.5' />} label={t('seller.orders')} value={String(serviceData?.ordersCount ?? 0)} />
+          {!!seller?.rating && <StatPill icon={<Star className='h-3.5 w-3.5 text-amber-600' />} label={t('rating')} value={(seller?.rating ?? 0).toFixed(1)} />}
+          <StatPill icon={<Calendar className='h-3.5 w-3.5' />} label={t('seller.orders')} value={String(seller?.ordersCompleted ?? 0)} />
         </div>
       </div>
 
@@ -1909,4 +1919,169 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
 
 function BgShapes() {
   return <div aria-hidden='true' className='pointer-events-none absolute inset-0 rounded-xl' style={{ background: 'radial-gradient(1200px 400px at 0% 0%, rgba(16,185,129,.06), transparent 60%), radial-gradient(1200px 400px at 100% 0%, rgba(59,130,246,.06), transparent 60%)' }} />;
+}
+
+
+function RatingSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2].map((i) => (
+        <div key={i} className="p-5 rounded-2xl border border-slate-100 bg-white animate-pulse">
+          <div className="flex justify-between mb-4">
+            <div className="flex gap-3">
+              <div className="w-10 h-10 rounded-full bg-slate-100" />
+              <div className="space-y-2"><div className="h-3 w-24 bg-slate-100 rounded" /><div className="h-2 w-16 bg-slate-50 rounded" /></div>
+            </div>
+            <div className="h-4 w-16 bg-slate-100 rounded" />
+          </div>
+          <div className="h-3 w-full bg-slate-50 rounded" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ServiceRatings({ serviceSlug }) {
+  const t = useTranslations('Profile.public'); // Reuse the same keys
+  const [reviews, setReviews] = useState([]);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const fetchReviews = async (cursor = null) => {
+    try {
+      const { data } = await api.get(`/ratings/service/${serviceSlug}/reviews`, {
+        params: { limit: 5, cursor }
+      });
+      setReviews(prev => cursor ? [...prev, ...data.items] : data.items);
+      setNextCursor(data.nextCursor);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    if (serviceSlug) fetchReviews();
+  }, [serviceSlug]);
+
+  const handleLoadMore = () => {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    fetchReviews(nextCursor);
+  };
+
+  if (loading) return <RatingSkeleton />;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4">
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <ReviewItem key={review.id} review={review} />
+          ))
+        ) : (
+          <div className="text-center py-8 text-slate-400 text-sm">
+            {t('noReviews')}
+          </div>
+        )}
+      </div>
+
+      {nextCursor && (
+        <div className="pt-4 text-center">
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="px-6 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all disabled:opacity-50"
+          >
+            {loadingMore ? t('loading') : t('loadMore')}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const RatingStars = ({ score }) => (
+  <div className="flex gap-0.5">
+    {[1, 2, 3, 4, 5].map((s) => (
+      <Star
+        key={s}
+        className={`w-3.5 h-3.5 ${s <= Math.round(score) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-200'}`}
+      />
+    ))}
+  </div>
+);
+
+function ReviewItem({ review }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const t = useTranslations('Profile.public'); // Reuse the same keys
+  // For service reviews, the reviewer is always the buyer
+  const reviewer = review.buyer;
+  const score = review.buyer_total_score;
+  const text = review.buyer_review_text;
+  const ratedAt = review.buyer_rated_at;
+
+  const hasText = !!text && text.trim().length > 0;
+  const shouldTruncate = hasText && text.length > 200;
+  const displayText = isExpanded ? text : `${text?.substring(0, 200)}...`;
+
+  return (
+    <div className="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:border-main-100">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-100 bg-slate-50">
+            <Img
+              src={reviewer?.profileImage}
+              fallback='/public/no-user.png'
+              alt={reviewer?.username}
+              className="h-full w-full object-cover"
+            />
+          </div>
+          <div className="min-w-0">
+            <Link
+              href={`/profile/${reviewer?.id}`}
+              className="block font-bold text-slate-900 hover:text-main-600 truncate transition-colors"
+            >
+              {reviewer?.username || t('unknown')}
+            </Link>
+            <div className="text-[10px] font-medium text-slate-400">
+              {ratedAt ? new Date(ratedAt).toLocaleDateString() : ''}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-end gap-1">
+          <RatingStars score={score} />
+          <span className="text-xs font-bold text-slate-700">{score?.toFixed(1)}</span>
+        </div>
+      </div>
+
+      <div className="mt-4 text-sm leading-relaxed">
+        {hasText ? (
+          <>
+            <p className="whitespace-pre-wrap text-slate-600">
+              {shouldTruncate ? displayText : text}
+            </p>
+            {shouldTruncate && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="mt-2 flex items-center gap-1 text-xs font-bold text-main-600 hover:underline"
+              >
+                {isExpanded ? (
+                  <>{t('showLess')} <ChevronUp className="h-3 w-3" /></>
+                ) : (
+                  <>{t('showMore')} <ChevronDown className="h-3 w-3" /></>
+                )}
+              </button>
+            )}
+          </>
+        ) : (
+          <p className="text-slate-400 italic text-xs">{t('noTextFeedback')}</p>
+        )}
+      </div>
+    </div>
+  );
 }

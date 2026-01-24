@@ -645,9 +645,10 @@
       "all": "الكل",
       "priceLowHigh": "السعر: من الأقل إلى الأعلى",
       "priceHighLow": "السعر: من الأعلى إلى الأقل",
-      "rating": "التقييم",
+      "rating": "الأعلى تقييماً",
       "newest": "الأحدث"
     },
+    "trustedSeller": "موثوق",
     "searchPlaceholder": "ابحث...",
     "results": "نتيجة/نتائج",
     "noServices": "لم يتم العثور على خدمات",
@@ -1010,8 +1011,10 @@
         "business": "عمل تجاري (بيزنس)",
         "individual": "فردي"
       },
+      "avgRating": "متوسط التقييم",
       "search": "ابحث...",
       "level": "المستوى {level}",
+      "topRatedBadge": "الأعلى تقييماً",
       "topRated": "مميز",
       "username": "اسم المستخدم",
       "from": "من",
@@ -1075,6 +1078,13 @@
       "addImagesSubtitle": "أضف حتى 6 صور."
     },
     "public": {
+      "noReviews": "لا توجد مراجعات لهذا المستخدم حتى الآن.",
+      "loadMore": "تحميل المزيد من المراجعات",
+      "loading": "جارٍ التحميل...",
+      "showMore": "عرض المزيد",
+      "rates": "التقييمات",
+      "showLess": "عرض أقل",
+      "noTextFeedback": "لا توجد رسالة ملاحظات",
       "referralCode": "رمز الإحالة",
       "ordersCount": "عدد الطلبات",
       "failedToLoad": "فشل تحميل المستخدم. حاول مرة أخرى.",
@@ -1683,6 +1693,21 @@
     "loadOlderMessages": "تحميل الرسائل الأقدم"
   },
   "MyOrders": {
+    "feedbackPage": {
+      "giveFeedback": "تقديم تقييم",
+      "editFeedback": "تعديل التقييم",
+      "yourReview": "رأيك المكتوب",
+      "placeholder": "شاركنا تجربتك في العمل على هذا الطلب...",
+      "submitBtn": "إرسال التقييم",
+      "saving": "جاري الحفظ...",
+      "errorAllDimensions": "يرجى تقديم تقييم بالنجوم لجميع الفئات.",
+      "submitSuccess": "تم إرسال تقييمك بنجاح!",
+      "subtitle": "شارك تجربتك للمساعدة في بناء الثقة في مجتمعنا",
+      "ratingsTitle": "قيّم تجربتك",
+      "reviewDescription": "شارك تفاصيل تجربتك",
+      "orderLabel": "الطلب الجاري تقييمه",
+      "orderTitlePlaceholder": "عنوان الطلب"
+    },
     "page": {
       "title": "إدارة الطلبات",
       "searchPlaceholder": "البحث بعنوان الطلب",
@@ -1733,7 +1758,10 @@
         "rejectOrder": "رفض الطلب",
         "rejecting": "جاري الرفض...",
         "acceptOrder": "قبول الطلب",
-        "accepting": "جاري القبول..."
+        "accepting": "جاري القبول...",
+        "giveFeedback": "إضافة تقييم",
+        "editFeedback": "تعديل التقييم",
+        "viewFeedback": "عرض التقييم"
       },
       "errors": {
         "failedToLoad": "فشل تحميل الطلبات.",
@@ -1745,6 +1773,38 @@
       "paymentCanceled": "تم إلغاء الدفع"
     },
     "modals": {
+      "feedback": {
+        "title": "تفاصيل التقييم",
+        "header": "تجربة الطلب",
+        "buyerReview": "تقييم المشتري للبائع",
+        "sellerReview": "تقييم البائع للمشتري",
+        "showMore": "قراءة المزيد",
+        "showLess": "عرض أقل",
+        "error": "فشل تحميل تفاصيل التقييم",
+        "pending": "في انتظار التقييم",
+        "noFeedbackYet": "هذا المستخدم لم يقم بتقديم تقييمه لهذا الطلب بعد.",
+        "noFeedback": "هذا المستخدم لم يقم بتقديم تقييمه لهذا الطلب",
+        "noData": "بيانات التقييم غير متوفرة حالياً.",
+        "waitingStatus": "في انتظار النشر",
+        "notRatedYet": "لم يتم التقييم بعد",
+        "notRate": "لم يتم التقييم",
+        "hiddenStatus": "مخفي",
+        "hiddenUntilPublic": "التقييم خاص حالياً ولن يظهر إلا بعد قيام الطرفين بتقديم تقييماتهما.",
+        "rateNow": "قدم تقييمك الآن",
+        "privacyNote": {
+          "title": "ملاحظة حول الخصوصية",
+          "description": "ستظل التقييمات مخفية لمدة 14 يوماً أو حتى يقوم الطرفان بتقديم تقييماتهما. هذا يضمن الحصول على تعليقات صادقة وغير منحازة."
+        },
+        "dimensions": {
+          "quality": "الجودة",
+          "communication": "التواصل",
+          "skills": "الخبرة",
+          "availability": "التواجد",
+          "cooperation": "التعاون",
+          "clarity": "وضوح المتطلبات",
+          "payment": "سرعة الدفع"
+        }
+      },
       "notifications": {
         "title": "الإشعارات",
         "markAllAsRead": "قراءة الكل",
@@ -3366,6 +3426,9 @@
   },
   "ServiceDetails": {
     "ordersCompleted": "الطلبات المكتملة",
+    "sellerOrdersCompleted": "طلبات البائع المكتملة",
+    "rating": "التقييم",
+    "serviceRating": "تقييم الخدمة",
     "preview": {
       "message": "هذه الصفحة في وضع المعاينة ولم تُنشر. مرئية فقط لك."
     },

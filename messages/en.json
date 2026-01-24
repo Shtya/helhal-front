@@ -645,9 +645,10 @@
       "all": "All",
       "priceLowHigh": "Price: Low → High",
       "priceHighLow": "Price: High → Low",
-      "rating": "Rating",
+      "rating": "Top Rated",
       "newest": "Newest"
     },
+    "trustedSeller": "Trusted",
     "searchPlaceholder": "Search...",
     "results": "result(s)",
     "noServices": "No services found",
@@ -1010,9 +1011,11 @@
         "business": "Business",
         "individual": "Individual"
       },
+      "avgRating": "Avg. Rating",
       "search": "Search...",
       "level": "Level {level}",
       "topRated": "Top Rated",
+      "topRatedBadge": "Highest Rated",
       "username": "Username",
       "from": "From",
       "memberSince": "Member Since",
@@ -1075,6 +1078,13 @@
       "addImagesSubtitle": "Add up to 6 images."
     },
     "public": {
+      "noReviews": "No reviews yet for this user.",
+      "loadMore": "Load More Reviews",
+      "loading": "Loading...",
+      "showMore": "Show More",
+      "showLess": "Show Less",
+      "rates": "Rates",
+      "noTextFeedback": "No feedback message.",
       "referralCode": "Referral Code",
       "ordersCount": "Orders Count",
       "failedToLoad": "Failed to load user. Try again.",
@@ -1684,6 +1694,21 @@
     "loadOlderMessages": "Load older messages"
   },
   "MyOrders": {
+    "feedbackPage": {
+      "giveFeedback": "Give Feedback",
+      "editFeedback": "Edit Feedback",
+      "yourReview": "Your Written Review",
+      "placeholder": "Share your experience working on this order...",
+      "submitBtn": "Submit Feedback",
+      "saving": "Saving...",
+      "errorAllDimensions": "Please provide a star rating for all categories.",
+      "submitSuccess": "Your feedback has been submitted successfully!",
+      "subtitle": "Share your experience to help build trust in our community",
+      "ratingsTitle": "Rate Your Experience",
+      "reviewDescription": "Share details about your experience",
+      "orderLabel": "Order Being Rated",
+      "orderTitlePlaceholder": "Order Title"
+    },
     "page": {
       "title": "Manage Orders",
       "searchPlaceholder": "Search by order title",
@@ -1734,7 +1759,10 @@
         "rejectOrder": "Reject Order",
         "rejecting": "Rejecting...",
         "acceptOrder": "Accept Order",
-        "accepting": "Accepting..."
+        "accepting": "Accepting...",
+        "giveFeedback": "Give Feedback",
+        "editFeedback": "Edit Feedback",
+        "viewFeedback": "View Feedback"
       },
       "errors": {
         "failedToLoad": "Failed to load orders.",
@@ -1746,6 +1774,38 @@
       "paymentCanceled": "Payment canceled"
     },
     "modals": {
+      "feedback": {
+        "title": "Feedback Details",
+        "header": "Order Experience",
+        "buyerReview": "Buyer's Rating of Seller",
+        "sellerReview": "Seller's Rating of Buyer",
+        "showMore": "Read more",
+        "showLess": "Show less",
+        "error": "Failed to load feedback details",
+        "pending": "Waiting for feedback",
+        "noFeedbackYet": "This user has not submitted their review for this order yet.",
+        "noFeedback": "This user has not submitted their review for this order.",
+        "noData": "Review data is currently unavailable.",
+        "waitingStatus": "WAITING FOR RELEASE",
+        "notRatedYet": "Not Rated Yet",
+        "notRate": "Not Rated",
+        "hiddenStatus": "Hidden",
+        "hiddenUntilPublic": "Feedback is private until both parties submit their review.",
+        "rateNow": "Submit your rating now",
+        "privacyNote": {
+          "title": "Privacy Note",
+          "description": "Feedback remains hidden for 14 days or until both parties have submitted their ratings. This ensures honest and unbiased feedback."
+        },
+        "dimensions": {
+          "quality": "Quality",
+          "communication": "Communication",
+          "skills": "Expertise",
+          "availability": "Availability",
+          "cooperation": "Cooperation",
+          "clarity": "Requirement Clarity",
+          "payment": "Payment Promptness"
+        }
+      },
       "notifications": {
         "title": "Notifications",
         "markAllAsRead": "Read all",
@@ -3367,6 +3427,9 @@
   },
   "ServiceDetails": {
     "ordersCompleted": "Orders Completed",
+    "sellerOrdersCompleted": "Seller's Completed Orders",
+    "rating": "Rating",
+    "serviceRating": "Service Rating",
     "preview": {
       "message": "This page is in preview mode and not published. Only visible to you."
     },

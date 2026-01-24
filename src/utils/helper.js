@@ -1,5 +1,7 @@
 import { routing } from "@/i18n/routing";
 import { baseImg } from "@/lib/axios";
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 
 
@@ -81,4 +83,9 @@ export function isErrorAbort(error) {
     const isAbort = error?.name === 'AbortError' || error?.code === 'ERR_CANCELED' || error?.message?.toLowerCase?.().includes('canceled');
 
     return isAbort;
+}
+
+
+export function cn(...inputs) {
+    return twMerge(clsx(inputs))
 }

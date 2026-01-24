@@ -15,7 +15,7 @@ import SellerDetailsDropdown from '@/components/common/Filters/SellerDetailsDrop
 import SellerBudgetDropdown from '@/components/common/Filters/SellerBudgetDropdown';
 import DeliveryTimeDropdown from '@/components/common/Filters/DeliveryTimeDropdown';
 import { motion } from 'framer-motion';
-import { SlidersHorizontal } from 'lucide-react';
+import { BadgeCheck, Check, SlidersHorizontal } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { isErrorAbort, updateUrlParams } from '@/utils/helper';
@@ -39,6 +39,7 @@ const defaultFilters = {
     additionalRevision: false,
     country: '',
     state: '',
+    trusted: false,
 };
 
 function buildQuery(formData, pagination) {
@@ -62,6 +63,8 @@ function buildQuery(formData, pagination) {
         ...(formData.additionalRevision && { additionalRevision: formData.additionalRevision }),
         ...(formData.country && { country: formData.country }),
         ...(formData.state && { state: formData.state }),
+
+        ...(formData.trusted && { trusted: 'true' }),
     };
 }
 
@@ -88,7 +91,7 @@ export default function FilterServices({ category = 'all' }) {
         { id: 's0', name: t('sort.newest') },
         { id: 's1', name: t('sort.priceLowHigh') },
         { id: 's2', name: t('sort.priceHighLow') },
-        // { id: 's3', name: t('sort.rating') },
+        { id: 's3', name: t('sort.rating') },
         // { id: 's4', name: t('sort.newest') },
     ];
 
@@ -117,6 +120,8 @@ export default function FilterServices({ category = 'all' }) {
             additionalRevision: params.additionalRevision === 'true',
             country: params.country || '',
             state: params.country ? params.state || '' : '',
+
+            trusted: params.trusted === 'true',
         };
     });
 
@@ -209,7 +214,7 @@ export default function FilterServices({ category = 'all' }) {
         if (formData.additionalRevision) params.set('additionalRevision', 'true'); else params.delete('additionalRevision')
         if (formData.country) params.set('country', formData.country); else params.delete('country')
         if (formData.state) params.set('state', formData.state); else params.delete('state')
-
+        if (formData.trusted) params.set('trusted', 'true'); else params.delete('trusted');
         updateUrlParams(pathname, params, locale);
     }, [formData]);
 
@@ -349,14 +354,20 @@ export default function FilterServices({ category = 'all' }) {
                             onChange={val => handleSelectChange('rating', val)}
                         /> */}
 
-                        <Select
+                        {/* <Select
                             options={revisionsOptions}
                             placeholder={t('revisions')}
                             cnPlaceholder='!text-gray-900'
                             value={formData?.revisions?.id}
                             onChange={val => handleSelectChange('revisions', val)}
-                        />
+                        /> */}
 
+
+                        <TrustedFilter
+                            checked={formData.trusted}
+                            onChange={(val) => handleSelectChange('trusted', val)}
+                            label={t('trustedSeller') || "Trusted Seller"}
+                        />
 
                         <Select
                             options={sortByOptions}
@@ -366,16 +377,14 @@ export default function FilterServices({ category = 'all' }) {
                             onChange={val => handleSelectChange('sortBy', val)}
                         />
 
-                        <Input
+                        {/* <Input
                             placeholder={t('searchPlaceholder')}
                             iconLeft={'/icons/search.svg'}
                             // actionIcon={'/icons/send-arrow.svg'}
                             value={search}
-                            onAction={() => {
-                                /* optional: trigger fetch immediately */
-                            }}
+                           
                             onChange={e => setSearch(e.target.value)}
-                        />
+                        /> */}
                     </div>
                 </motion.div>
             </div>
@@ -393,3 +402,38 @@ export default function FilterServices({ category = 'all' }) {
 }
 
 
+
+
+const TrustedFilter = ({ checked, onChange, label }) => {
+    return (
+        <button
+            type='button'
+            onClick={() => onChange(!checked)}
+            className={`
+                h-[40px] cursor-pointer w-full flex items-center justify-between rounded-md border px-4 py-2 text-sm transition
+                focus:outline-none focus:ring-2 focus:ring-main-600/50
+                ${checked
+                    ? 'border-main-600 bg-main-50/30 text-main-700 ring-1 ring-main-600/20'
+                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-main-600/70'
+                }
+            `}
+        >
+            <div className="flex items-center gap-2 overflow-hidden">
+                {/* Optional: Icon to make it stand out */}
+                <BadgeCheck className={`h-4 w-4 shrink-0 ${checked ? 'text-main-600' : 'text-gray-400'}`} />
+
+                <span className={`truncate ${checked ? 'font-semibold' : 'font-medium'}`}>
+                    {label}
+                </span>
+            </div>
+
+            {/* Checkmark indicator */}
+            <div className={`
+                flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors
+                ${checked ? 'bg-main-600 border-main-600' : 'border-gray-300 bg-white'}
+            `}>
+                {checked && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+            </div>
+        </button>
+    );
+};
