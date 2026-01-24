@@ -1976,7 +1976,7 @@ function ServiceRatings({ serviceSlug }) {
   if (loading) return <RatingSkeleton />;
 
   return (
-    <div className="space-y-4">
+    <div className="bg-white rounded-xl shadow-custom  border border-slate-200  space-y-4">
       <div className="grid grid-cols-1 gap-4">
         {reviews.length > 0 ? (
           reviews.map((review) => (
@@ -1984,7 +1984,7 @@ function ServiceRatings({ serviceSlug }) {
           ))
         ) : (
           <div className="text-center py-8 text-slate-400 text-sm">
-            {t('noReviews')}
+            {t('noServiceReviews')}
           </div>
         )}
       </div>
