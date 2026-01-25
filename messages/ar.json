@@ -1589,30 +1589,44 @@
     },
     "billingInformation": {
       "title": "معلومات الفوترة",
-      "fullName": "الاسم الكامل",
-      "fullNamePlaceholder": "جون دو",
-      "state": "الولاية",
-      "statePlaceholder": "جدة",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "أدخل اسمك الأول",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "أدخل اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "example@domain.com",
+      "phoneNumber": "رقم الهاتف",
+      "phonePlaceholder": "مثال: 0000 000 50 966+",
       "country": "الدولة",
       "selectCountry": "اختر الدولة",
-      "saudiResident": "هل أنت مواطن / مقيم في المملكة العربية السعودية",
+      "state": "المنطقة / الولاية",
+      "selectState": "اختر المنطقة",
+      "saudiResident": "هل أنت مقيم في السعودية؟",
       "select": "اختر",
       "yes": "نعم",
       "no": "لا",
       "invoices": "الفواتير",
-      "invoicesDesc": "ستجد فواتيرك في تبويب سجل الفواتير",
-      "inboxMessages": "رسائل البريد الوارد",
+      "invoicesDesc": "اختر كيف ترغب في استلام فواتير الدفع وتحديثات الفوترة الخاصة بك.",
+      "inboxMessages": "أرغب في استلام الفواتير عبر البريد الإلكتروني",
       "saveChanges": "حفظ التغييرات",
       "saving": "جاري الحفظ...",
-      "loading": "جاري التحميل...",
+      "success": "تم تحديث معلومات الفوترة بنجاح!",
       "errors": {
-        "fullNameTooShort": "يجب أن يكون الاسم الكامل 3 أحرف على الأقل",
-        "stateTooShort": "يجب أن تكون الولاية حرفين على الأقل",
-        "countryRequired": "يرجى اختيار الدولة",
-        "loading": "خطأ في تحميل معلومات الفوترة",
-        "updating": "خطأ في تحديث معلومات الفوترة"
+        "loading": "حدث خطأ أثناء تحميل معلومات الفوترة.",
+        "updating": "فشل تحديث معلومات الفوترة، يرجى المحاولة مرة أخرى."
       },
-      "success": "تم تحديث معلومات الفوترة بنجاح!"
+      "validation": {
+        "firstNameRequired": "الاسم الأول مطلوب",
+        "lastNameRequired": "اسم العائلة مطلوب",
+        "nameMin": "يجب أن يكون الاسم حرفين على الأقل",
+        "nameMax": "لا يمكن أن يتجاوز الاسم {max} حرفاً",
+        "emailRequired": "البريد الإلكتروني مطلوب",
+        "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح",
+        "phoneRequired": "رقم الهاتف مطلوب",
+        "phoneInvalid": "صيغة رقم الهاتف غير صحيحة",
+        "countryRequired": "يرجى اختيار الدولة",
+        "residencyRequired": "يرجى تحديد حالة الإقامة"
+      }
     },
     "paymentMethods": {
       "title": "معلومات الحساب البنكي",
@@ -2390,6 +2404,14 @@
       "failedToLoad": "فشل تحميل تفاصيل الطلب"
     },
     "page": {
+      "card": "بطاقة",
+      "redirecting": "جاري تحويلك إلى بوابة الدفع...",
+      "paymentAndBilling": "معلومات الدفع والفواتير",
+      "wallet": "المحفظة الإلكترونية",
+      "creditCard": "بطاقة ائتمان",
+      "confirmAndPay": "تأكيد ودفع",
+      "back": "رجوع",
+      "continue": "استمرار",
       "termsTitle": "شروط الخدمة",
       "acceptTerms": "أوافق على",
       "terms": " الشروط والأحكام",
@@ -2411,10 +2433,15 @@
       "processing": "جاري المعالجة…",
       "cancel": "إلغاء",
       "noOrderFound": "لم يتم العثور على طلب.",
+      "paymentStatus": {
+        "pending": "قيد الانتظار",
+        "paid": "تم الدفع",
+        "failed": "فشلت العملية"
+      },
       "toast": {
         "mustAcceptTerms": "يجب الموافقة على الشروط قبل الدفع",
         "paymentSuccessful": "تم الدفع بنجاح!",
-        "failedToMarkPaid": "فشل تمييز الطلب كمدفوع",
+        "failedToMarkPaid": "فشل بدء عملية الدفع",
         "paymentCanceled": "تم إلغاء الدفع",
         "failedToCancel": "فشل إلغاء الطلب",
         "failedToLoad": "فشل تحميل الطلب"

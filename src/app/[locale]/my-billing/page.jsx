@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Tabs from '@/components/common/Tabs';
 import InputDate from '@/components/atoms/InputDate';
@@ -12,7 +12,7 @@ import Select from '@/components/atoms/Select';
 import { Wallet, CreditCard, DollarSign, Icon, ShieldCheck } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { isErrorAbort } from '@/utils/helper';
 import { useValues } from '@/context/GlobalContext';
 import toast from 'react-hot-toast';
@@ -20,10 +20,13 @@ import { useAuth } from '@/context/AuthContext';
 import OTPInput from 'react-otp-input';
 import { Link } from '@/i18n/navigation';
 import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
-const accountingAPI = {
+export const accountingAPI = {
   // Billing Information
   getBillingInformation: async () => {
     const response = await api.get('/accounting/billing-information');
@@ -339,138 +342,390 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
 };
 
 
+function createBillingValidationSchema(t) {
+  return yup.object({
+    firstName: yup
+      .string()
+      .trim()
+      .required(t('validation.firstNameRequired'))
+      .min(2, t('validation.nameMin'))
+      .max(100, t('validation.nameMax', { max: 100 })), // Set to 100
+
+    lastName: yup
+      .string()
+      .trim()
+      .required(t('validation.lastNameRequired'))
+      .min(2, t('validation.nameMin'))
+      .max(100, t('validation.nameMax', { max: 100 })),
+
+    // email: yup
+    //   .string()
+    //   .email(t('validation.emailInvalid'))
+    //   .required(t('validation.emailRequired')),
+
+    // phoneNumber: yup
+    //   .string()
+    //   .required(t('validation.phoneRequired'))
+    //   .matches(/^[0-9+\-\s()]*$/, t('validation.phoneInvalid')), // Basic phone regex
+
+    countryId: yup
+      .string()
+      .required(t('validation.countryRequired')),
+
+    stateId: yup
+      .string()
+      .nullable()
+      // You can make this required if every country has states
+      .optional(),
+
+    isSaudiResident: yup
+      .boolean()
+      .nullable()
+      .required(t('validation.residencyRequired')),
+
+    agreeToInvoiceEmails: yup
+      .boolean()
+  });
+}
+
 const BillingInformation = () => {
   const t = useTranslations('MyBilling.billingInformation');
-  const { countries: countriesOptions, countryLoading, } = useValues();
-
-  const [billingInfo, setBillingInfo] = useState({
-    fullName: '',
-    countryId: null,
-    state: '',
-    isSaudiResident: null,
-    agreeToInvoiceEmails: false,
-  });
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const { user } = useAuth();
+  const { countries: countriesOptions, countryLoading } = useValues();
+  const [statesOptions, setStatesOptions] = useState([]);
+  const [statesLoading, setStatesLoading] = useState(false);
+  const locale = useLocale();
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [message, setMessage] = useState('');
 
+  // 1. Setup React Hook Form
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(createBillingValidationSchema(t)),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      // email: '',
+      // phoneNumber: '',
+      countryId: '',
+      stateId: '',
+      isSaudiResident: null, // or false
+      agreeToInvoiceEmails: false,
+    },
+    mode: 'onChange',
+  });
 
-  const fetchBillingInfo = async () => {
-    setLoading(true);
-    try {
-      const response = await accountingAPI.getBillingInformation();
-      setBillingInfo(response);
-    } catch (error) {
-      console.error('Error fetching billing information:', error);
-      setMessage(t('errors.loading'));
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [fetchedBillingInfo, setFetchedBillingInfo] = useState(null);
+  // 2. Fetch Initial Data
+  useEffect(() => {
+    const fetchBillingInfo = async () => {
+      setIsLoadingData(true);
+      try {
+        const data = await accountingAPI.getBillingInformation();
+        // Reset form with fetched data
+        setFetchedBillingInfo(data);
+        reset({
+          firstName: data.firstName || user?.username || '',
+          lastName: data.lastName || '',
+          // email: data.email || user?.email || '',
+          // phoneNumber: data.phoneNumber || user?.phone || '',
+          countryId: data.country?.id || data.countryId || user?.countryId || '',
+          stateId: data.state?.id || data.stateId || '',
+          isSaudiResident: data.isSaudiResident,
+          agreeToInvoiceEmails: data.agreeToInvoiceEmails || false,
+        });
+      } catch (error) {
+        console.error('Error fetching billing info:', error);
+        setMessage({ type: 'error', text: t('errors.loading') });
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchBillingInfo();
+  }, [reset, t]);
+
 
   useEffect(() => {
-    fetchBillingInfo();
-  }, []);
+    if (user && !fetchedBillingInfo) {
+      reset({
+        firstName: user?.username || '',
+        // email: user?.email || '',
+        // phoneNumber: user?.phone || '',
+        countryId: user?.countryId || '',
+      })
+    }
+  }, [user, fetchedBillingInfo, reset]);
 
-  const handleSave = async () => {
-    if (!billingInfo.fullName || billingInfo.fullName.trim().length < 3) {
-      setMessage(t('errors.fullNameTooShort'));
+
+  const selectedCountryId = watch('countryId');
+  const scopeKey = useMemo(() => `state:${selectedCountryId || 'root'}`, [selectedCountryId]);
+  const cacheRef = useRef(new Map());
+
+  useEffect(() => {
+    // If no country is selected, clear states and stop
+    if (!selectedCountryId) {
+      setStatesOptions([]);
       return;
     }
 
-    // validation: state min length 2
-    if (!billingInfo.state || billingInfo.state.trim().length < 2) {
-      setMessage(t('errors.stateTooShort'));
-      return;
-    }
+    const fetchStates = async () => {
+      // Check Cache first
+      if (cacheRef.current.has(scopeKey)) {
+        setStatesOptions(cacheRef.current.get(scopeKey));
+        return;
+      }
 
-    // You can also add country required
-    if (!billingInfo.country) {
-      setMessage(t('errors.countryRequired'));
-      return;
-    }
+      setStatesLoading(true);
+      try {
+        // Your dynamic URL logic
+        const res = await api.get(`/states/by-country/${selectedCountryId}`);
 
-    setSaving(true);
+        // Handle array or wrapped records
+        const records = Array.isArray(res?.data) ? res.data : (res?.data?.records || []);
+
+        // Set state and update cache
+        setStatesOptions(records);
+        cacheRef.current.set(scopeKey, records);
+      } catch (e) {
+        console.error('Error fetching states:', e);
+        setStatesOptions([]);
+
+      } finally {
+        setStatesLoading(false);
+      }
+    };
+
+    fetchStates();
+  }, [selectedCountryId, scopeKey, t]);
+  // 4. Handle Submit
+  const onSubmit = async (data) => {
     setMessage('');
     try {
-      await accountingAPI.updateBillingInformation(billingInfo);
-      setMessage(t('success'));
+      await accountingAPI.updateBillingInformation(data);
+      setMessage({ type: 'success', text: t('success') });
     } catch (error) {
       console.error('Error updating billing information:', error);
-      setMessage(t('errors.updating'));
-    } finally {
-      setSaving(false);
+      setMessage({ type: 'error', text: t('errors.updating') });
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setBillingInfo(prev => ({
-      ...prev,
-      [field]: value,
+  // 1. Memoized Country Options
+  const localizedCountries = useMemo(() => {
+    if (!countriesOptions) return [];
+    return countriesOptions.map(country => ({
+      id: country.id,
+      // Use name_ar if locale is 'ar', otherwise use name
+      name: (locale === 'ar' ? country.name_ar : country.name) || country.name
     }));
-  };
+  }, [countriesOptions, locale]);
 
-  if (loading || countryLoading) {
+  // 2. Memoized State Options
+  const localizedStates = useMemo(() => {
+    if (!statesOptions) return [];
+    return statesOptions.map(state => ({
+      id: state.id,
+      name: (locale === 'ar' ? state.name_ar : state.name) || state.name
+    }));
+  }, [statesOptions, locale]);
+
+  // Loading Skeleton
+  if (isLoadingData || countryLoading) {
     return (
       <div className='max-w-[800px] w-full mx-auto mb-12'>
         <Skeleton className='h-8 w-64 mb-6' />
-
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          <Skeleton className='h-12 w-full' />
-          <Skeleton className='h-12 w-full' />
-          <Skeleton className='h-12 w-full' />
-          <Skeleton className='h-12 w-full' />
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className='h-12 w-full' />
+          ))}
         </div>
-
-        <Skeleton className='h-6 w-40 mt-8' />
-        <Skeleton className='h-4 w-72 mt-2 mb-6' />
-
-        <Skeleton className='h-5 w-56 mt-4' />
-        <Skeleton className='h-10 w-40 mt-6' />
       </div>
     );
   }
 
-
   return (
     <div className='max-w-[800px] w-full mx-auto mb-12'>
       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
+        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>
+          {t('title')}
+        </h1>
       </div>
 
-      {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-main-100 text-main-700'}`}>{message}</div>}
+      {/* Message Display */}
+      {message && (
+        <div
+          className={`mb-4 p-3 rounded ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' // Adjusted colors for success
+            }`}
+        >
+          {message.text}
+        </div>
+      )}
 
-      <div className='max-w-[800px] w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
-        <Input cnInput={'!border-[var(--color-main-600)]'} label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={billingInfo.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
-        <Input cnInput={'!border-[var(--color-main-600)]'} label={t('state')} placeholder={t('statePlaceholder')} value={billingInfo.state} onChange={e => handleInputChange('state', e.target.value)} />
-        <Select showSearch cnSelect={'!border-[var(--color-main-600)]'} label={t('country')} placeholder={t('selectCountry')} options={countriesOptions} isLoading={countryLoading} value={billingInfo.countryId} onChange={value => handleInputChange('country', value?.id)} />
-        <Select
-          cnSelect={'!border-[var(--color-main-600)]'}
-          label={t('saudiResident')}
-          placeholder={t('select')}
-          options={[
-            { id: 'yes', name: t('yes') },
-            { id: 'no', name: t('no') },
-          ]}
-          value={billingInfo.isSaudiResident}
-          onChange={value => handleInputChange('isSaudiResident', value === 'yes')}
-        />
-      </div>
+      {/* Form Start */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className='max-w-[800px] w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
 
-      <h1 className='h2 mt-6'>{t('invoices')}</h1>
-      <p className='p mb-6'>{t('invoicesDesc')}</p>
+          {/* First Name */}
+          <Controller
+            name="firstName"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                cnInput={'!border-[var(--color-main-600)]'}
+                label={t('firstName')}
+                placeholder={t('firstNamePlaceholder')}
+                error={errors.firstName?.message} // Pass error to Input if supported
+              />
+            )}
+          />
 
-      <div className='flex items-center gap-3'>
-        <AnimatedCheckbox checked={billingInfo.agreeToInvoiceEmails} onChange={checked => handleInputChange('agreeToInvoiceEmails', checked)} />
-        <span className='text-sm text-gray-700'>{t('inboxMessages')}</span>
-      </div>
+          {/* Last Name */}
+          <Controller
+            name="lastName"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                cnInput={'!border-[var(--color-main-600)]'}
+                label={t('lastName')}
+                placeholder={t('lastNamePlaceholder')}
+                error={errors.lastName?.message}
+              />
+            )}
+          />
 
-      <div className='max-w-[250px] mt-6'>
-        <Button name={saving ? t('saving') : t('saveChanges')} color='green' onClick={handleSave} disabled={saving} />
-      </div>
+          {/* Email */}
+          {/* <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                cnInput={'!border-[var(--color-main-600)]'}
+                label={t('email')}
+                placeholder={t('emailPlaceholder')}
+                error={errors.email?.message}
+              />
+            )}
+          /> */}
+
+          {/* Phone Number */}
+          {/* <Controller
+            name="phoneNumber"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                cnInput={'!border-[var(--color-main-600)]'}
+                label={t('phoneNumber')}
+                placeholder={t('phonePlaceholder')}
+                error={errors.phoneNumber?.message}
+              />
+            )} 
+          />*/}
+
+          {/* Country Select */}
+          <Controller
+            name="countryId"
+            control={control}
+            render={({ field }) => (
+              <Select
+                showSearch
+                cnSelect={'!border-[var(--color-main-600)]'}
+                label={t('country')}
+                placeholder={t('selectCountry')}
+                options={localizedCountries}
+                isLoading={countryLoading}
+                value={field.value}
+                onChange={(opt) => {
+                  field.onChange(opt?.id);
+                  setValue('stateId', null); // Reset state when country changes
+                }}
+                error={errors.countryId?.message}
+              />
+            )}
+          />
+
+          {/* State Select */}
+          <Controller
+            name="stateId"
+            control={control}
+            render={({ field }) => (
+              <Select
+                showSearch
+                cnSelect={'!border-[var(--color-main-600)]'}
+                label={t('state')}
+                placeholder={t('selectState')}
+                options={localizedStates} // You need to populate this
+                isLoading={statesLoading}
+                disabled={!selectedCountryId}
+                value={field.value}
+                onChange={(opt) => field.onChange(opt?.id)}
+                error={errors.stateId?.message}
+              />
+            )}
+          />
+
+          {/* Saudi Resident (Yes/No) */}
+          <Controller
+            name="isSaudiResident"
+            control={control}
+            render={({ field }) => (
+              <Select
+                cnSelect={'!border-[var(--color-main-600)]'}
+                label={t('saudiResident')}
+                placeholder={t('select')}
+                options={[
+                  { id: true, name: t('yes') },
+                  { id: false, name: t('no') },
+                ]}
+                value={field.value}
+                onChange={(opt) => field.onChange(opt?.id)}
+                error={errors.isSaudiResident?.message}
+              />
+            )}
+          />
+        </div>
+
+        <h1 className='h2 mt-6'>{t('invoices')}</h1>
+        <p className='p mb-6'>{t('invoicesDesc')}</p>
+
+        {/* Invoice Emails Checkbox */}
+        <div className='flex items-center gap-3'>
+          <Controller
+            name="agreeToInvoiceEmails"
+            control={control}
+            render={({ field }) => (
+              <AnimatedCheckbox
+                checked={field.value}
+                onChange={(checked) => field.onChange(checked)}
+              />
+            )}
+          />
+          <span className='text-sm text-gray-700'>{t('inboxMessages')}</span>
+        </div>
+        {errors.agreeToInvoiceEmails && <p className="text-red-500 text-sm">{errors.agreeToInvoiceEmails.message}</p>}
+
+        <div className='max-w-[250px] mt-6'>
+          <Button
+            name={isSubmitting ? t('saving') : t('saveChanges')}
+            color='green'
+            type="submit" // Trigger form submission
+            disabled={isSubmitting}
+          />
+        </div>
+      </form>
     </div>
   );
 };
+
 
 const PaymentMethods = () => {
   const t = useTranslations('MyBilling.paymentMethods');

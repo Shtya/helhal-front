@@ -1590,30 +1590,44 @@
     },
     "billingInformation": {
       "title": "Billing Information",
-      "fullName": "Full name",
-      "fullNamePlaceholder": "John Doe",
-      "state": "State",
-      "statePlaceholder": "Gadah",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "email": "Email Address",
+      "emailPlaceholder": "example@domain.com",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "e.g. +966 50 000 0000",
       "country": "Country",
-      "selectCountry": "Select Country",
-      "saudiResident": "Are you a citizen / resident of Saudi Arabia",
-      "select": "Select",
+      "selectCountry": "Select your country",
+      "state": "State / Region",
+      "selectState": "Select your state",
+      "saudiResident": "Are you a Saudi resident?",
+      "select": "Select an option",
       "yes": "Yes",
       "no": "No",
       "invoices": "Invoices",
-      "invoicesDesc": "You will find your invoices under the billing history tab",
-      "inboxMessages": "Inbox Messages",
+      "invoicesDesc": "Choose how you would like to receive your payment invoices and billing updates.",
+      "inboxMessages": "I want to receive invoices via email",
       "saveChanges": "Save Changes",
       "saving": "Saving...",
-      "loading": "Loading...",
+      "success": "Billing information updated successfully!",
       "errors": {
-        "fullNameTooShort": "Full name must be at least 3 characters",
-        "stateTooShort": "State must be at least 2 characters",
-        "countryRequired": "Please select a country",
-        "loading": "Error loading billing information",
-        "updating": "Error updating billing information"
+        "loading": "Error loading billing information.",
+        "updating": "Failed to update billing information. Please try again."
       },
-      "success": "Billing information updated successfully!"
+      "validation": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "nameMin": "Name must be at least 2 characters",
+        "nameMax": "Name cannot exceed {max} characters",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "phoneRequired": "Phone number is required",
+        "phoneInvalid": "Invalid phone number format",
+        "countryRequired": "Please select a country",
+        "residencyRequired": "Please specify your residency status"
+      }
     },
     "paymentMethods": {
       "title": "Bank Account Information",
@@ -2391,6 +2405,14 @@
       "failedToLoad": "Failed to load order details"
     },
     "page": {
+      "card": "Card",
+      "redirecting": "Redirecting to payment gateway...",
+      "paymentAndBilling": "Payment & Billing Information",
+      "wallet": "Wallet",
+      "creditCard": "Credit Card",
+      "confirmAndPay": "Confirm and Pay",
+      "back": "Back",
+      "continue": "Continue",
       "termsTitle": "Terms of Service",
       "acceptTerms": "I agree to",
       "terms": "the terms and conditions",
@@ -2412,10 +2434,15 @@
       "processing": "Processing…",
       "cancel": "Cancel",
       "noOrderFound": "No order found.",
+      "paymentStatus": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "failed": "Failed"
+      },
       "toast": {
         "mustAcceptTerms": "You must accept the terms before payment",
         "paymentSuccessful": "Payment successful!",
-        "failedToMarkPaid": "Failed to mark order paid",
+        "failedToMarkPaid": "Payment initialization failed",
         "paymentCanceled": "Payment canceled",
         "failedToCancel": "Failed to cancel order",
         "failedToLoad": "Failed to load order"
