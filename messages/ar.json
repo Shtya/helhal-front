@@ -3623,5 +3623,41 @@
     "noOptions": "لا توجد خيارات متاحة",
     "selectOption": "اختر خياراً",
     "placeholder": "اختر خيارًا"
+  },
+  "chatbot": {
+    "title": "مساعد هلهال",
+    "subtitle": "متصل",
+    "open": "فتح المحادثة",
+    "close": "إغلاق المحادثة",
+    "minimize": "تصغير المحادثة",
+    "maximize": "تكبير المحادثة",
+    "clearChat": "مسح المحادثة",
+    "welcome": "مرحباً!",
+    "welcomeMessage": "مرحباً! كيف يمكنني مساعدتك اليوم؟",
+    "placeholder": "اكتب رسالتك...",
+    "send": "إرسال الرسالة",
+    "you": "أنت",
+    "voiceMessage": "رسالة صوتية",
+    "enableVoice": "تفعيل الوضع الصوتي",
+    "disableVoice": "إيقاف الوضع الصوتي",
+    "voiceModeActive": "الوضع الصوتي مفعّل",
+    "startRecording": "اضغط للتحدث",
+    "stopRecording": "إيقاف التسجيل",
+    "recording": "جاري التسجيل...",
+    "speaking": "جاري التحدث...",
+    "noResponse": "لا يوجد رد",
+    "errorSending": "فشل إرسال الرسالة",
+    "errorMessage": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+    "errorPlayingAudio": "فشل تشغيل الرد الصوتي",
+    "voiceConnected": "تم الاتصال بالوضع الصوتي",
+    "voiceDisconnected": "تم قطع الاتصال بالوضع الصوتي",
+    "voiceConnectionError": "خطأ في اتصال الصوت",
+    "microphoneError": "فشل الوصول إلى الميكروفون",
+    "recordingStarted": "بدأ التسجيل - تحدث الآن!",
+    "errors": {
+      "loadFailed": "فشل تحميل مساعد هلهال. يرجى المحاولة مرة أخرى.",
+      "sendFailed": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+      "voiceNotSupported": "المتصفح لا يدعم التعرف على الصوت."
+    }
   }
 }

@@ -111,7 +111,9 @@ export default async function RootLayout({ children, params }) {
     <html lang={locale} dir={locale == 'en' ? 'ltr' : 'rtl'} suppressHydrationWarning>
       <body className={`bg-[#fff] scroll ${arabicSans.variable} ${englishSans.variable}`}>
         <NextIntlClientProvider locale={locale}>
-          <Layout>{children}</Layout>
+          <Layout>
+            {children}
+          </Layout>
         </NextIntlClientProvider>
       </body>
     </html>

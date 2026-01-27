@@ -3624,5 +3624,41 @@
     "noOptions": "No options available",
     "selectOption": "Select an option",
     "placeholder": "Select an option"
+  },
+  "chatbot": {
+    "title": "Helhal Assistant",
+    "subtitle": "Online",
+    "open": "Open chat",
+    "close": "Close chat",
+    "minimize": "Minimize chat",
+    "maximize": "Maximize chat",
+    "clearChat": "Clear chat",
+    "welcome": "Welcome!",
+    "welcomeMessage": "Hi! How can I help you today?",
+    "placeholder": "Type your message...",
+    "send": "Send message",
+    "you": "You",
+    "voiceMessage": "Voice message",
+    "enableVoice": "Enable voice mode",
+    "disableVoice": "Disable voice mode",
+    "voiceModeActive": "Voice mode active",
+    "startRecording": "Press to speak",
+    "stopRecording": "Stop recording",
+    "recording": "Recording...",
+    "speaking": "Speaking...",
+    "noResponse": "No response",
+    "errorSending": "Failed to send message",
+    "errorMessage": "Failed to send message. Please try again.",
+    "errorPlayingAudio": "Failed to play audio response",
+    "voiceConnected": "Voice mode connected",
+    "voiceDisconnected": "Voice mode disconnected",
+    "voiceConnectionError": "Voice connection error",
+    "microphoneError": "Failed to access microphone",
+    "recordingStarted": "Recording started - speak now!",
+    "errors": {
+      "loadFailed": "Failed to load chat. Please try again.",
+      "sendFailed": "Failed to send message. Please try again.",
+      "voiceNotSupported": "Voice mode is not supported in this browser."
+    }
   }
 }

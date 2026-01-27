@@ -11,6 +11,7 @@ import { useAuthInterceptor } from '@/hooks/useAuthInterceptor';
 import { useEffect } from 'react';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { SocketProvider } from '@/context/SocketContext';
+import ChatbotWrapper from './chatbot/ChatbotWrapper';
 
 export default function Layout({ children, params }) {
 
@@ -41,7 +42,10 @@ export default function Layout({ children, params }) {
                 shallowRouting
               >
                 {!isAuthRoute && <Header />}
-                <div className='  ' >{children}</div>
+                <div className='  ' >
+                  {children}
+                  <ChatbotWrapper />
+                </div>
                 {!isAuthRoute && <Footer />}
                 <ConfigAos />
                 <Toaster position='top-center' />
