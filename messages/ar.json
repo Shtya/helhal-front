@@ -1536,6 +1536,12 @@
       "paymentMethods": "طرق الدفع"
     },
     "billingHistory": {
+      "statuses": {
+        "pending": "قيد الانتظار",
+        "completed": "مكتمل",
+        "failed": "فشل",
+        "refunded": "مسترجع"
+      },
       "title": "سجل المعاملات",
       "searchByDate": "البحث حسب التاريخ",
       "searchByOrder": "البحث حسب رقم الطلب",
@@ -1546,7 +1552,8 @@
         "type": "النوع",
         "order": "الطلب",
         "currency": "العملة",
-        "total": "المجموع"
+        "total": "المجموع",
+        "status": "الحالة"
       }
     },
     "availableBalances": {

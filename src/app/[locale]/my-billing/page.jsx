@@ -149,6 +149,21 @@ export default function Page() {
   );
 }
 
+const getStatusStyles = (status) => {
+  switch (status) {
+    case 'completed':
+      return 'bg-green-50 text-green-700 border-green-200'; // Success green
+    case 'pending':
+      return 'bg-orange-50 text-orange-700 border-orange-200'; // Warning orange
+    case 'failed':
+      return 'bg-red-50 text-red-700 border-red-200'; // Danger red
+    case 'refunded':
+      return 'bg-blue-50 text-blue-700 border-blue-200'; // Info blue
+    default:
+      return 'bg-slate-50 text-slate-700 border-slate-200';
+  }
+};
+
 const BillingHistory = () => {
   const t = useTranslations('MyBilling.billingHistory');
   const [data, setData] = useState([]);
@@ -159,6 +174,21 @@ const BillingHistory = () => {
     { key: 'created_at', label: t('columns.date') },
     { key: 'description', label: t('columns.document') },
     { key: 'type', label: t('columns.type') },
+    {
+      key: 'status',
+      label: t('columns.status'),
+      render: (row) => {
+        const status = row.status;
+        const localizedLabel = t(`statuses.${status}`) || status;
+        const styleClasses = getStatusStyles(status);
+
+        return (
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${styleClasses}`}>
+            {localizedLabel}
+          </span>
+        );
+      }
+    },
     { key: 'orderId', label: t('columns.order') },
     { key: 'currencyId', label: t('columns.currency') },
     { key: 'amount', label: t('columns.total'), type: 'price' },

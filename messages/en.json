@@ -1537,6 +1537,12 @@
       "paymentMethods": "Payment Methods"
     },
     "billingHistory": {
+      "statuses": {
+        "pending": "Pending",
+        "completed": "Completed",
+        "failed": "Failed",
+        "refunded": "Refunded"
+      },
       "title": "Transaction History",
       "searchByDate": "Search by date",
       "searchByOrder": "Search by order number",
@@ -1547,7 +1553,8 @@
         "type": "Type",
         "order": "Order",
         "currency": "Currency",
-        "total": "Total"
+        "total": "Total",
+        "status": "Status"
       }
     },
     "availableBalances": {

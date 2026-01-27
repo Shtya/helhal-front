@@ -29,8 +29,23 @@ const formatMoney = (n, currency = 'SAR') => {
     maximumFractionDigits: 2,
   }).format(value);
 };
+const getStatusStyles = (status) => {
+  switch (status) {
+    case 'completed':
+      return 'bg-green-50 text-green-700 border-green-200'; // Success green
+    case 'pending':
+      return 'bg-orange-50 text-orange-700 border-orange-200'; // Warning orange
+    case 'failed':
+      return 'bg-red-50 text-red-700 border-red-200'; // Danger red
+    case 'refunded':
+      return 'bg-blue-50 text-blue-700 border-blue-200'; // Info blue
+    default:
+      return 'bg-slate-50 text-slate-700 border-slate-200';
+  }
+};
 
 export default function WithdrawManagement() {
+  const tBilling = useTranslations('MyBilling.billingHistory');
   const t = useTranslations('Dashboard.finance');
   const transactionTypes = getTransactionTypes(t);
   const [loading, setLoading] = useState(true);
@@ -169,17 +184,18 @@ export default function WithdrawManagement() {
       },
       {
         key: 'status',
-        title: t('columns.status'),
-        render: v => (
-          <span className={`px-2 py-1 rounded-full text-xs ${v === 'completed'
-            ? 'bg-main-100 text-main-800'
-            : v === 'pending'
-              ? 'bg-yellow-100 text-yellow-800'
-              : 'bg-red-100 text-red-800'
-            }`}>
-            {v?.toLowerCase?.()}
-          </span>
-        ),
+        label: t('columns.status'),
+        render: (value) => {
+          const status = value;
+          const localizedLabel = tBilling(`statuses.${status}`) || status;
+          const styleClasses = getStatusStyles(status);
+
+          return (
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${styleClasses}`}>
+              {localizedLabel}
+            </span>
+          );
+        }
       },
       { key: 'description', title: t('columns.description'), render: v => <span className='text-slate-600'>{v || '—'}</span> },
       { key: 'created_at', title: t('columns.date'), render: v => new Date(v).toLocaleString() },
