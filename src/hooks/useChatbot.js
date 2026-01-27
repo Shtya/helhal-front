@@ -75,7 +75,6 @@ export const useChatbot = (personalData = null) => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      toast.error(t('errorSending'));
 
       const errorMessage = {
         id: messageIdRef.current++,
@@ -243,7 +242,6 @@ export const useChatbot = (personalData = null) => {
             } else if (data.error) {
               // Error from server
               console.error('Server error:', data.error);
-              toast.error(data.error);
             }
           } catch (error) {
             // If not JSON, might be binary data (though backend seems to send JSON)
