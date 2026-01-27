@@ -7,16 +7,30 @@ import api from '@/lib/axios';
 import { Bell, Check, ChevronRight, TypeIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
+import { getNotificationConfig } from '@/app/[locale]/notifications/page';
 
-export const getLink = (relatedEntityType, relatedEntityId) => {
+export const getLink = (relatedEntityType, relatedEntityId, subType) => {
   if (relatedEntityType === 'proposal') {
     return `/my-jobs/${relatedEntityId}/proposals`; // Proposal link
   } else if (relatedEntityType === 'order') {
-    return `/my-orders?orderId=${relatedEntityId}`; // Order link (adjust this route as necessary)
-  } else {
+    if (subType === 'rating') {
+      return `/my-orders/${relatedEntityId}/feedback`; // Order rating link
+    }
+    else if (subType === 'rating_published') {
+      return `/my-orders?orderId=${relatedEntityId}&mode=view-feedback`;
+    }
+    else
+      return `/my-orders?orderId=${relatedEntityId}`; // Order link (adjust this route as necessary)
+  }
+  else if (relatedEntityType === 'transaction') {
+    return `/my-billing?tab=transactions`;
+  }
+  else {
     return null; // Return null if no matching type is found
   }
 };
+
+
 const RowSkeleton = () => (
   <div className='px-4 py-3 flex items-start gap-3'>
     <div className='h-8 w-8 rounded-lg bg-slate-200 animate-pulse' />
@@ -181,8 +195,9 @@ const NotificationPopup = ({ admin = false }) => {
                   <div className='text-sm'>{t('allCaughtUp')}</div>
                 </div>
               ) : (
-                notifications.map(n => (
-                  <div
+                notifications.map(n => {
+                  const { Icon, color } = getNotificationConfig(n.type, n.relatedEntityType);
+                  return (<div
                     key={n.id}
                     data-notification-id={`${n.id}`}
                     className={`px-4 py-3 hover:bg-slate-50 transition ${!n.isRead ? 'bg-main-50/30' : ''}`}
@@ -190,9 +205,10 @@ const NotificationPopup = ({ admin = false }) => {
                     <div className="flex items-start gap-3">
 
                       {/* icon */}
-                      <div className="grid h-8 w-8 place-items-center rounded-lg bg-main-50">
-                        <TypeIcon type={n.type} />
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${color}`}>
+                        <Icon className='w-5 h-5' aria-hidden="true" />
                       </div>
+
 
                       <div className="min-w-0 flex-1">
 
@@ -201,9 +217,9 @@ const NotificationPopup = ({ admin = false }) => {
                           <div className="truncate text-sm font-medium text-slate-900">{n.title}</div>
 
                           <div className="flex items-center gap-3 shrink-0">
-                            {getLink(n.relatedEntityType, n.relatedEntityId) && (
+                            {getLink(n.relatedEntityType, n.relatedEntityId, n.type) && (
                               <Link
-                                href={getLink(n.relatedEntityType, n.relatedEntityId)}
+                                href={getLink(n.relatedEntityType, n.relatedEntityId, n.type)}
                                 className="text-[11px] text-blue-600 hover:text-blue-700 font-medium"
                               >
                                 {t('view')}
@@ -237,10 +253,10 @@ const NotificationPopup = ({ admin = false }) => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  </div>)
+                }))
 
-              )}
+              }
             </div>
 
             {/* Footer */}

@@ -18,11 +18,12 @@ import { useValues } from '@/context/GlobalContext';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import OTPInput from 'react-otp-input';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useSearchParams } from 'next/navigation';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
@@ -98,44 +99,46 @@ export const accountingAPI = {
     return response.data;
   },
 };
-
 export default function Page() {
   const t = useTranslations('MyBilling');
-  const [activeTab, setActiveTab] = useState('billing-history');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // 2. Initial state from search params (with fallback)
+  const [activeTab, setActiveTab] = useState(() => {
+    return searchParams.get('tab') || 'billing-history';
+  });
+
+  // 1. When state changes, set search params based on it
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', activeTab);
+
+    // Update the URL without a full page refresh
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [activeTab, pathname, router, searchParams]);
 
   const tabs = [
-    {
-      label: t('tabs.billingHistory'),
-      value: 'billing-history',
-      // icon: <History className='w-4 h-4' />,
-    },
-    {
-      label: t('tabs.billingInformation'),
-      value: 'billing-information',
-      // icon: <CreditCard className='w-4 h-4' />,
-    },
-    {
-      label: t('tabs.availableBalances'),
-      value: 'available-balances',
-      // icon: <Wallet className='w-4 h-4' />,
-    },
-    {
-      label: t('tabs.paymentMethods'),
-      value: 'payment-methods',
-      // icon: <CircleDollarSign className='w-4 h-4' />,
-    },
+    { label: t('tabs.billingHistory'), value: 'billing-history' },
+    { label: t('tabs.billingInformation'), value: 'billing-information' },
+    { label: t('tabs.availableBalances'), value: 'available-balances' },
+    { label: t('tabs.paymentMethods'), value: 'payment-methods' },
   ];
-
-  const handleTabChange = tab => {
-    setActiveTab(tab);
-  };
 
   return (
     <main className='container !mt-6'>
-      <Tabs tabs={tabs} setActiveTab={handleTabChange} activeTab={activeTab} />
+      <Tabs tabs={tabs} setActiveTab={setActiveTab} activeTab={activeTab} />
 
       <div className='py-6 md:py-10'>
-        <motion.div data-aos='fade-up' data-aos-delay='100'>
+        {/* 3. Use the 'key' prop on motion.div so framer-motion 
+               re-triggers animations when the tab changes */}
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           {activeTab === 'billing-history' && <BillingHistory />}
           {activeTab === 'billing-information' && <BillingInformation />}
           {activeTab === 'available-balances' && <AvailableBalances />}

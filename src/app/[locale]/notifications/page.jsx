@@ -12,6 +12,62 @@ import NoResults from '@/components/common/NoResults';
 import TabsPagination from '@/components/common/TabsPagination';
 import { useNotifications } from '@/context/NotificationContext';
 import { isErrorAbort } from '@/utils/helper';
+import {
+  ShoppingBag,
+  AlertCircle,
+  Wallet,
+  Star,
+  Briefcase,
+  Bell
+} from 'lucide-react';
+
+export const getNotificationConfig = (type, entityType) => {
+  // 1. DISPUTE & SYSTEM Group (Critical items)
+  if (entityType === 'dispute' || type.includes('rejected') || type.includes('reversed')) {
+    return {
+      Icon: AlertCircle,
+      color: 'bg-red-100 text-red-600',
+    };
+  }
+
+  // 2. ORDER & PAYMENT Group (Transactional)
+  if (entityType === 'order' || entityType === 'transaction' || type === 'payment') {
+    return {
+      Icon: ShoppingBag,
+      color: 'bg-main-100 text-main-600',
+    };
+  }
+
+  // 3. JOB & PROPOSAL Group (Professional)
+  if (entityType === 'job' || entityType === 'proposal' || type === 'new_proposal') {
+    return {
+      Icon: Briefcase,
+      color: 'bg-blue-100 text-blue-600',
+    };
+  }
+
+  // 4. REVIEW Group (Feedback)
+  if (type.includes('review') || type === 'rating_published') {
+    return {
+      Icon: Star,
+      color: 'bg-yellow-100 text-yellow-600',
+    };
+  }
+
+  // 5. USER & WALLET Group
+  if (entityType === 'user' || type === 'referral_signup') {
+    return {
+      Icon: Wallet,
+      color: 'bg-purple-100 text-purple-600',
+    };
+  }
+
+  // DEFAULT
+  return {
+    Icon: Bell,
+    color: 'bg-gray-100 text-gray-600',
+  };
+};
 
 const NotificationsPage = () => {
   const t = useTranslations('Notifications.page');
@@ -120,35 +176,7 @@ const NotificationsPage = () => {
     });
   };
 
-  const getNotificationIcon = type => {
-    switch (type) {
-      case 'message':
-        return '/icons/message.svg';
-      case 'order':
-        return '/icons/shopping-bag.svg';
-      case 'system':
-        return '/icons/system.svg';
-      case 'promotion':
-        return '/icons/discount.svg';
-      default:
-        return '/icons/notification.svg';
-    }
-  };
 
-  const getNotificationColor = type => {
-    switch (type) {
-      case 'message':
-        return 'bg-blue-100 text-blue-600';
-      case 'order':
-        return 'bg-main-100 text-main-600';
-      case 'system':
-        return 'bg-purple-100 text-purple-600';
-      case 'promotion':
-        return 'bg-yellow-100 text-yellow-600';
-      default:
-        return 'bg-gray-100 text-gray-600';
-    }
-  };
 
   const handlePageChange = page => {
     setPagination(prev => ({
@@ -203,40 +231,60 @@ const NotificationsPage = () => {
       ) : (
         <div className='bg-white shadow-sm rounded-lg overflow-hidden'>
           <div className='divide-y divide-gray-200'>
-            {pageNotifications.map(notification => (
-              <div key={notification.id} data-notification-id={notification.id} className={`p-4 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}>
-                <div className='flex gap-4'>
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${getNotificationColor(notification.type)}`}>
-                    <img src={getNotificationIcon(notification.type)} alt={notification.type} className='w-5 h-5' />
-                  </div>
-                  <div className='flex-1 min-w-0'>
-                    <div className='flex flex-col xs:flex-row items-start justify-between'>
-                      <h3 className='text-sm font-medium text-gray-900'>{notification.title}</h3>
-                      <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2'>{formatDate(notification.created_at)}</span>
+            {pageNotifications.map(notification => {
+              const { Icon, color } = getNotificationConfig(notification.type, notification.relatedEntityType);
+
+              return (
+                <div
+                  key={notification.id}
+                  data-notification-id={notification.id}
+                  className={`p-4 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}
+                >
+                  <div className='flex gap-4'>
+                    {/* 1. THE ICON COLUMN - Fixed scope */}
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${color}`}>
+                      <Icon className='w-5 h-5' aria-hidden="true" />
                     </div>
-                    <p className='text-sm text-gray-600 mt-2'>{notification.message}</p>
-                    {getLink(notification.relatedEntityType, notification.relatedEntityId) && (
-                      <div className='mt-3'>
-                        <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>
-                          <span className='text-xs'>{notification.relatedEntityType === 'proposal' ? t('viewProposal') : t('viewOrder')}</span>
-                          <span className='text-blue-600 text-sm'>
-                            {' '}
-                            <MoveRight size={16} />{' '}
-                          </span>
-                        </Link>
+
+                    {/* 2. THE CONTENT COLUMN */}
+                    <div className='flex-1 min-w-0'>
+                      <div className='flex flex-col xs:flex-row items-start justify-between'>
+                        <h3 className='text-sm font-medium text-gray-900'>{notification.title}</h3>
+                        <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2'>
+                          {formatDate(notification.created_at)}
+                        </span>
                       </div>
-                    )}
+
+                      <p className='text-sm text-gray-600 mt-2'>{notification.message}</p>
+
+                      {/* Actions: Link and Mark as Read */}
+                      <div className='flex items-center justify-between mt-3'>
+                        {getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type) && (
+                          <Link
+                            href={getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type)}
+                            className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all shadow-sm'
+                          >
+                            <span className='text-xs'>
+                              {notification.relatedEntityType === 'proposal' ? t('viewProposal') : t('viewOrder')}
+                            </span>
+                            <MoveRight size={16} />
+                          </Link>
+                        )}
+
+                        {!notification.isRead && (
+                          <button
+                            onClick={() => markOneAsRead(notification.id)}
+                            className='text-xs text-blue-600 hover:text-blue-800 font-medium'
+                          >
+                            {t('markAsRead')}
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                {!notification.isRead && (
-                  <div className='mt-3'>
-                    <button onClick={() => markOneAsRead(notification.id)} className='text-xs text-blue-600 hover:text-blue-800 font-medium'>
-                      {t('markAsRead')}
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl'; // Add this
-import { Eye, Edit, RefreshCw, Clock, CheckCircle, XCircle, Truck, Package } from 'lucide-react';
+import { Eye, Edit, RefreshCw, Clock, CheckCircle, XCircle, Truck, Package, ShieldCheck } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -19,6 +19,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Permissions } from '@/constants/permissions';
 import { has } from '@/utils/permissions';
 import { OrderStatus } from '@/constants/order';
+import { Modal } from '@/components/common/Modal';
 
 
 export default function AdminOrdersDashboard() {
@@ -200,6 +201,30 @@ export default function AdminOrdersDashboard() {
     { key: 'orderDate', label: t('columns.orderDate'), type: 'date' },
   ];
 
+  const [finalizeModal, setFinalizeModal] = useState({ open: false, orderId: null });
+  const [finalizeLoading, setFinalizeLoading] = useState(false);
+
+  const handleFinalizePayment = async () => {
+    try {
+      setFinalizeLoading(true);
+      // Calls the endpoint we created earlier
+      await api.post('/orders/admin/finalize-payment', {
+        orderId: finalizeModal.orderId
+        // shouldCalcEscrow is removed/defaulted to true as requested
+      });
+
+      toast.success(t('adminActions.successFinalize'));
+      setFinalizeModal({ open: false, orderId: null });
+
+      // Refresh the table
+      await fetchOrders();
+    } catch (error) {
+      toast.error(error.response?.data?.message || t('adminActions.errorFinalize'));
+    } finally {
+      setFinalizeLoading(false);
+    }
+  };
+
   const Actions = ({ row }) => {
     const currentStatus = row.status;
 
@@ -207,6 +232,7 @@ export default function AdminOrdersDashboard() {
     const currentPermissions = currentUser?.permissions;
     const canChangeStatus = isAdmin || has(currentPermissions?.['orders'], Permissions.Orders.ChangeStatus)
 
+    const canFinalize = isAdmin && currentStatus === OrderStatus.PENDING;
     const validTransitions = {
       [OrderStatus.PENDING]: [OrderStatus.ACCEPTED, OrderStatus.CANCELLED, OrderStatus.REJECTED],
       [OrderStatus.ACCEPTED]: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],
@@ -250,7 +276,15 @@ export default function AdminOrdersDashboard() {
         >
           <Eye size={16} />
         </button>
-
+        {canFinalize && (
+          <button
+            onClick={() => setFinalizeModal({ open: true, orderId: row.id })}
+            className="p-2 text-amber-600 hover:bg-amber-50 rounded-full transition-colors"
+            title={t('adminActions.finalizePayment')}
+          >
+            <ShieldCheck size={16} />
+          </button>
+        )}
         {/* {canChangeStatus && <Select
           value={currentStatus}
           onChange={opt => {
@@ -309,10 +343,68 @@ export default function AdminOrdersDashboard() {
           onClose={() => setModalOpen(false)}
           orderId={current?.id}
         />
+
+        <FinalizePaymentModal
+          open={finalizeModal.open}
+          onClose={() => setFinalizeModal({ open: false, orderId: null })}
+          onConfirm={handleFinalizePayment}
+          loading={finalizeLoading}
+
+        />
       </div>
     </div>
   );
 }
+
+const FinalizePaymentModal = ({ open, onClose, onConfirm, loading }) => {
+  const t = useTranslations('Dashboard.orders');
+
+  if (!open) return null;
+
+  return (
+    <Modal
+      title={t('adminActions.finalizeTitle')} // "Finalize Payment Manually"
+      onClose={onClose}
+      className="!max-w-md"
+    >
+      <div className="p-4">
+        {/* Warning Icon & Message */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+            <ShieldCheck className="w-6 h-6 text-amber-600" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {t('adminActions.confirmTitle')} {/* "Are you sure?" */}
+          </h3>
+          <p className="text-sm text-gray-500">
+            {/* "The order price will be calculated to the system balance (Escrow) and the order will be marked as PAID immediately." */}
+            {t('adminActions.finalizeWarning')}
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-3 justify-center pt-2">
+          <Button
+            type="button"
+            color="gray" // or "red" based on preference for Cancel
+            name={t('adminActions.cancel')}
+            disabled={loading}
+            onClick={onClose}
+            className="!w-fit"
+          />
+          <Button
+            type="button"
+            color="green"
+            name={t('adminActions.markAsPaid')} // "Mark as Paid"
+            loading={loading}
+            onClick={onConfirm}
+            className="!w-fit"
+          />
+        </div>
+      </div>
+    </Modal>
+  );
+};
 
 function OrderView({ value, onClose, t }) {
   if (!value) return null;

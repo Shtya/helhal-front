@@ -1531,13 +1531,13 @@
   },
   "MyBilling": {
     "tabs": {
-      "billingHistory": "Billing History",
+      "billingHistory": "Transaction History",
       "billingInformation": "Billing Information",
       "availableBalances": "Available Balances",
       "paymentMethods": "Payment Methods"
     },
     "billingHistory": {
-      "title": "Billing History",
+      "title": "Transaction History",
       "searchByDate": "Search by date",
       "searchByOrder": "Search by order number",
       "loading": "Loading...",
@@ -2404,7 +2404,40 @@
       "backToHome": "Back to Home",
       "failedToLoad": "Failed to load order details"
     },
+    "fail": {
+      "title": "Payment Failed",
+      "description": "Unfortunately, your payment could not be processed. Please try again or contact support if the problem persists.",
+      "orderSummary": "Order Details",
+      "orderId": "Order ID:",
+      "titleLabel": "Title:",
+      "amount": "Amount:",
+      "status": "Status:",
+      "buyer": "Buyer:",
+      "seller": "Seller:",
+      "invoice": "Invoice:",
+      "tryAgain": "Try Again",
+      "goToMyOrders": "Go to My Orders",
+      "backToHome": "Back to Home",
+      "needHelp": "Need help?",
+      "contactSupport": "Contact Support",
+      "errors": {
+        "secure_verification_failed": "Payment verification failed. For security reasons, this transaction could not be validated. Please try again or contact support.",
+        "payment_declined": "Your payment was declined by the payment gateway. Please check your payment details and try again.",
+        "insufficient_funds": "Insufficient funds. Please check your account balance and try again.",
+        "expired_card": "Your card has expired. Please use a different payment method.",
+        "invalid_card": "Invalid card details. Please check your information and try again.",
+        "transaction_timeout": "The transaction timed out. Please try again.",
+        "network_error": "A network error occurred. Please check your connection and try again.",
+        "authentication_problem": "Authentication failed. Please try again or contact support.",
+        "fraud_suspected": "The transaction was blocked due to suspected fraud. Please contact your bank or use another payment method.",
+        "processor_declined": "The payment processor declined this transaction. Please try another card or payment method.",
+        "default": "An error occurred during payment processing. Please try again or use a different payment method."
+      }
+    },
     "page": {
+      "agreeAndPay": "Agree and Pay",
+      "billingInformation": "Billing Information",
+      "orderSummary": "Order Summary",
       "card": "Card",
       "redirecting": "Redirecting to payment gateway...",
       "paymentAndBilling": "Payment & Billing Information",
@@ -3018,6 +3051,16 @@
       }
     },
     "orders": {
+      "adminActions": {
+        "finalizeTitle": "Manual Payment Finalization",
+        "confirmTitle": "Are you sure?",
+        "finalizeWarning": "This will mark the order as PAID. The order price will be calculated into the system escrow balance immediately. This action cannot be undone.",
+        "markAsPaid": "Mark as Paid",
+        "finalizePayment": "Force Finalize Payment",
+        "successFinalize": "Order marked as PAID successfully.",
+        "errorFinalize": "Error marking order as PAID.",
+        "cance": "Cancel"
+      },
       "tabs": {
         "all": "All Orders",
         "pending": "Pending",

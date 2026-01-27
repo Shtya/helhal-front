@@ -215,9 +215,9 @@ const NotificationController = () => {
                                             <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2'>{formatDate(notification.created_at)}</span>
                                         </div>
                                         <p className='text-sm text-gray-600 mt-2'>{notification.message}</p>
-                                        {getLink(notification.relatedEntityType, notification.relatedEntityId) && (
+                                        {getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type) && (
                                             <div className='mt-3'>
-                                                <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>
+                                                <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>
                                                     <span className='text-xs'>{notification.relatedEntityType === 'proposal' ? t('viewProposal') : t('viewOrder')}</span>
                                                     <span className='text-blue-600 text-sm'>
                                                         {' '}

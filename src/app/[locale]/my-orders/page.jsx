@@ -65,6 +65,7 @@ export default function Page() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderIdFromParams = searchParams.get('orderId');
+  const modeFromParams = searchParams.get('mode');
 
   const TABS = [
     { label: t('tabs.all'), value: 'all' },
@@ -287,6 +288,9 @@ export default function Page() {
     if (model === 'details' && row?.id) {
       router.push(`/my-orders?orderId=${row.id}`, { scroll: false });
     }
+    if (model === 'view-feedback' && row?.id) {
+      router.push(`/my-orders?orderId=${row.id}&mode=view-feedback`, { scroll: false });
+    }
   }
 
 
@@ -307,18 +311,18 @@ export default function Page() {
       const orderInList = orders.find(o => o.id === orderIdFromParams);
       if (orderInList) {
         setSelectedRow(orderInList);
-        setOpenModal('details');
+        setOpenModal(modeFromParams || 'details');
       } else {
         // Order not in current list, fetch it
         setSelectedRow({ id: orderIdFromParams });
-        setOpenModal('details');
+        setOpenModal(modeFromParams || 'details');
       }
-    } else if (openModal === 'details') {
+    } else if (openModal === 'details' || openModal === modeFromParams) {
       // If orderId removed from params but modal is still open, close it
       setSelectedRow(null);
       setOpenModal(null);
     }
-  }, [orderIdFromParams, orders]);
+  }, [orderIdFromParams, modeFromParams, orders]);
 
 
 
