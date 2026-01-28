@@ -53,7 +53,7 @@ export default function Chatbot({ personalData = null }) {
   const [inputValue, setInputValue] = useState('');
   const lastProcessedId = useRef(null);
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+
 
   const {
     messages,
@@ -63,7 +63,7 @@ export default function Chatbot({ personalData = null }) {
     isSpeaking,
     unreadCount,
     isConnecting,
-    setIsConnecting,
+    inputRef,
     setUnreadCount,
     sendTextMessage,
     startRecording,
@@ -84,16 +84,16 @@ export default function Chatbot({ personalData = null }) {
     if (isOpen) {
       setUnreadCount(0);
       lastProcessedId.current = lastMessage.id; // Mark as counted
+      return
     }
 
 
     // Only increment if it's a BOT message we haven't counted yet
-    if (lastMessage.type === 'bot' && lastMessage.id !== lastProcessedId.current) {
+    if ((lastMessage.type === 'bot' || lastMessage.type === 'error') && lastMessage.id !== lastProcessedId.current) {
       setUnreadCount(prev => prev + 1);
       lastProcessedId.current = lastMessage.id; // Mark as counted
     }
   }, [messages, isOpen]);
-
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -101,6 +101,12 @@ export default function Chatbot({ personalData = null }) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isMinimized]);
+
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
+  }, [isOpen]);
+
 
   // Focus input when opened
   useEffect(() => {
@@ -167,8 +173,9 @@ export default function Chatbot({ personalData = null }) {
             <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
 
             {/* Pulse animation */}
-            <span className="absolute inset-0 rounded-full bg-main-400 animate-ping opacity-20" />
-
+            {unreadCount > 0 && (
+              <span className="absolute inset-0 rounded-full bg-main-400 animate-ping opacity-25" />
+            )}
             {/* Unread badge */}
             {unreadCount > 0 && (
               <motion.span
@@ -278,8 +285,6 @@ export default function Chatbot({ personalData = null }) {
                   ) : (
                     <motion.div
                       variants={staggerContainer}
-                      initial="hidden"
-                      animate="show"
                       className="space-y-4"
                     >
                       {messages.map((message) => (
@@ -422,6 +427,8 @@ function MessageBubble({ message, t }) {
   return (
     <motion.div
       variants={slideUp}
+      initial="hidden" // Bubbles added after mount will use this
+      animate="show"
       className={`flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-2`}
     >
       {!isUser && (

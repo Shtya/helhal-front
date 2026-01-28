@@ -15,6 +15,7 @@ export const useChatbot = (personalData = null) => {
   const [conversationId, setConversationId] = useState(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isConnecting, setIsConnecting] = useState(false);
+  const inputRef = useRef(null);
 
   const wsRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -73,6 +74,9 @@ export const useChatbot = (personalData = null) => {
       };
 
       setMessages(prev => [...prev, botMessage]);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
     } catch (error) {
       console.error('Error sending message:', error);
 
@@ -84,6 +88,9 @@ export const useChatbot = (personalData = null) => {
       };
 
       setMessages(prev => [...prev, errorMessage]);
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
     } finally {
       setIsLoading(false);
     }
@@ -415,6 +422,7 @@ export const useChatbot = (personalData = null) => {
     isSpeaking,
     unreadCount,
     isConnecting,
+    inputRef,
     setIsConnecting,
     setUnreadCount,
     sendTextMessage,
