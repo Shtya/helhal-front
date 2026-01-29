@@ -217,16 +217,14 @@ export function Footer() {
             <div className='flex flex-col sm:flex-row gap-6 sm:items-center'>
               {/* Social icons */}
               <div className='flex gap-4'>
-                {SOCIAL_LINKS.map(item => {
-                  // Show placeholder skeleton while loading
-                  if (loadingSettings) {
-                    return (
-                      <div
-                        key={item.name}
-                        className="w-9 h-9 bg-slate-200 rounded-full animate-pulse"
-                      />
-                    );
-                  }
+                {loadingSettings ? (
+                  Array.from({ length: 3 }).map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="w-9 h-9 bg-slate-200 rounded-full animate-pulse"
+                    />
+                  ))
+                ) : SOCIAL_LINKS.map(item => {
                   // After load, only show if link exists
                   if (!item.href) return null;
                   return (

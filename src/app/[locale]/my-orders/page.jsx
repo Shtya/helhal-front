@@ -487,7 +487,7 @@ export default function Page() {
         label: loadingAction === 'cancel' ? t('actions.cancelling') : t('actions.cancelOrder'),
         onClick: () => handleCancel(row),
         disabled: isBusy || loadingAction === 'cancel',
-        hide: !(isBuyer && [OrderStatus.PENDING, OrderStatus.ACCEPTED].includes(s)),
+        hide: !(isBuyer && [OrderStatus.PENDING, OrderStatus.WAITING].includes(s)),
         danger: true,
       },
       {

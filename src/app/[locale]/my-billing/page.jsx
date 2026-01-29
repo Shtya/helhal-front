@@ -9,7 +9,7 @@ import Table from '@/components/common/Table';
 import { AnimatedCheckbox } from '@/components/atoms/CheckboxAnimation';
 import Input from '@/components/atoms/Input';
 import Select from '@/components/atoms/Select';
-import { Wallet, CreditCard, DollarSign, Icon, ShieldCheck } from 'lucide-react';
+import { Wallet, CreditCard, DollarSign, RotateCcw } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
 import { useLocale, useTranslations } from 'next-intl';
@@ -24,6 +24,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useSearchParams } from 'next/navigation';
+import Currency from '@/components/common/Currency';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
@@ -283,30 +284,43 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
     fetchBalances();
   }, []);
 
-  const cardsData = [
+  // Define all possible cards
+  const allCards = [
     {
-      title: t('earningsToDate.title'),
-      amount: balances?.earningsToDate || '0.00',
-      currency: '﷼',
-      description: t('earningsToDate.description'),
-      icon: Wallet,
-      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
-    },
-    {
+      id: 'available',
       title: t('availableBalance.title'),
-      amount: balances?.availableBalance || '0.00',
-      currency: '﷼',
+      amount: balances?.availableBalance || 0,
       description: t('availableBalance.description'),
       icon: CreditCard,
       iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
+      show: true, // Always show spendable balance
     },
     {
-      title: t('credits.title'),
-      amount: balances?.credits || '0.00',
-      currency: '﷼',
-      description: t('credits.description'),
+      id: 'earnings',
+      title: t('earningsToDate.title'),
+      amount: balances?.earningsToDate || 0,
+      description: t('earningsToDate.description'),
+      icon: Wallet,
+      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
+      show: user?.role === 'seller', // SELLER ONLY
+    },
+    {
+      id: 'promo',
+      title: t('promoCredits.title'),
+      amount: balances?.promoCredits || 0,
+      description: t('promoCredits.description'),
       icon: DollarSign,
       iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
+      show: true, // Show to everyone
+    },
+    {
+      id: 'cancelled',
+      title: t('cancelledOrdersCredit.title'),
+      amount: balances?.cancelledOrdersCredit || 0,
+      description: t('cancelledOrdersCredit.description'),
+      icon: RotateCcw, // Suggesting a "Reverse" or "Refund" icon
+      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
+      show: user?.role === 'buyer', // BUYER ONLY
     },
   ];
 
@@ -341,22 +355,30 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       </div>
 
       <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
-        {cardsData.map((card, idx) => {
+        {allCards.map((card) => {
           const Icon = card.icon;
+          if (!card.show) return null;
           return (
-            <div key={idx} className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
+            <div
+              key={card.id} // Use card.id instead of index for better React performance
+              className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'
+            >
               <div className='flex justify-between items-start'>
                 <p className='text-lg text-gray-600 font-medium'>{card.title}</p>
                 <span className={`w-9 h-9 flex items-center justify-center rounded-full ${card.iconBg}`}>
                   <Icon className='w-5 h-5' />
                 </span>
               </div>
+
               <div className='mt-4'>
-                <p className='text-4xl font-extrabold text-gray-900'>
-                  {card.amount} <span className='text-xl font-semibold'>{card.currency}</span>
-                </p>
+                <div className='flex gap-2 items-center text-4xl font-extrabold text-gray-900'>
+                  {/* Formats amount to 2 decimal places for a professional look */}
+                  <span>{Number(card.amount).toFixed(2)}</span>
+                  <span><Currency size={24} /></span>
+                </div>
               </div>
-              <p className='mt-2 text-base font-[600]'>{card.description}</p>
+
+              <p className='mt-2 text-base font-[600] text-gray-500'>{card.description}</p>
             </div>
           );
         })}

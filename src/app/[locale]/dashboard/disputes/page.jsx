@@ -313,36 +313,36 @@ export default function DisputesPage() {
     return setStatus(row, DisputeStatus.IN_REVIEW);
   }
 
-  async function submitProposalOnly() {
-    if (!selected) return;
-    const inv = orderDetail?.invoices?.[0];
-    const subtotal = Number(inv?.subtotal || 0);
-    const sAmt = Number(sellerAmount || 0);
-    const bRef = Number(buyerRefund || 0);
-    if (!inv) return setResError(t('Dashboard.disputes.modals.noInvoice'));
-    if (sAmt < 0 || bRef < 0) return setResError(t('Dashboard.disputes.modals.amountsMustBePositive'));
-    if (Number((sAmt + bRef).toFixed(2)) !== Number(subtotal.toFixed(2))) {
-      return setResError(t('Dashboard.disputes.modals.amountsMustEqual', { subtotal }));
-    }
-    setResSubmitting(true);
-    setResError('');
-    try {
-      const resolution = JSON.stringify({ sellerAmount: sAmt, buyerRefund: bRef, note: resNote || '' });
-      const res = await api.put(`/disputes/${selected._raw.id}/resolution`, { resolution });
-      if (res?.status >= 200 && res?.status < 300) {
-        patchRow(selected.id, r => ({
-          ...r,
-          status: DisputeStatus.IN_REVIEW,
-          _raw: { ...r._raw, status: DisputeStatus.IN_REVIEW, resolution },
-        }));
-        closeAllModals();
-      }
-    } catch (e) {
-      setResError(e?.response?.data?.message || t('Dashboard.disputes.modals.failedToSave'));
-    } finally {
-      setResSubmitting(false);
-    }
-  }
+  // async function submitProposalOnly() {
+  //   if (!selected) return;
+  //   const inv = orderDetail?.invoices?.[0];
+  //   const subtotal = Number(inv?.subtotal || 0);
+  //   const sAmt = Number(sellerAmount || 0);
+  //   const bRef = Number(buyerRefund || 0);
+  //   if (!inv) return setResError(t('Dashboard.disputes.modals.noInvoice'));
+  //   if (sAmt < 0 || bRef < 0) return setResError(t('Dashboard.disputes.modals.amountsMustBePositive'));
+  //   if (Number((sAmt + bRef).toFixed(2)) !== Number(subtotal.toFixed(2))) {
+  //     return setResError(t('Dashboard.disputes.modals.amountsMustEqual', { subtotal }));
+  //   }
+  //   setResSubmitting(true);
+  //   setResError('');
+  //   try {
+  //     const resolution = JSON.stringify({ sellerAmount: sAmt, buyerRefund: bRef, note: resNote || '' });
+  //     const res = await api.put(`/disputes/${selected._raw.id}/resolution`, { resolution });
+  //     if (res?.status >= 200 && res?.status < 300) {
+  //       patchRow(selected.id, r => ({
+  //         ...r,
+  //         status: DisputeStatus.IN_REVIEW,
+  //         _raw: { ...r._raw, status: DisputeStatus.IN_REVIEW, resolution },
+  //       }));
+  //       closeAllModals();
+  //     }
+  //   } catch (e) {
+  //     setResError(e?.response?.data?.message || t('Dashboard.disputes.modals.failedToSave'));
+  //   } finally {
+  //     setResSubmitting(false);
+  //   }
+  // }
 
   async function resolveAndPayoutNow() {
     if (!selected) return;
@@ -456,8 +456,8 @@ export default function DisputesPage() {
       { icon: <Eye className='h-4 w-4' />, label: t('Dashboard.disputes.actions.view'), onClick: () => openDetails(row), disabled: busy },
       { icon: <Activity className='h-4 w-4' />, label: t('Dashboard.disputes.actions.activity'), onClick: () => openActivity(row), disabled: busy, hide: !canChat },
       { icon: <FilePlus className='h-4 w-4' />, label: t('Dashboard.disputes.actions.propose'), onClick: () => openResolution(row), disabled: busy, hide: !canPropose },
-      { icon: <MdOutlineLockOpen className='h-4 w-4' />, label: t('Dashboard.disputes.actions.openAgain'), onClick: () => setStatus(row, DisputeStatus.OPEN), disabled: busy, hide: s === DisputeStatus.OPEN || !canChangeStatus },
-      { icon: <Search className='h-4 w-4' />, label: t('Dashboard.disputes.actions.markInReview'), onClick: () => setStatus(row, DisputeStatus.IN_REVIEW), disabled: busy, hide: s === DisputeStatus.IN_REVIEW || !canChangeStatus },
+      // { icon: <MdOutlineLockOpen className='h-4 w-4' />, label: t('Dashboard.disputes.actions.openAgain'), onClick: () => setStatus(row, DisputeStatus.OPEN), disabled: busy, hide: s === DisputeStatus.OPEN || !canChangeStatus },
+      { icon: <Search className='h-4 w-4' />, label: t('Dashboard.disputes.actions.markInReview'), onClick: () => setStatus(row, DisputeStatus.IN_REVIEW), disabled: busy, hide: s !== DisputeStatus.OPEN || !canChangeStatus },
       { icon: <CheckCircle className='h-4 w-4' />, label: busy ? t('Dashboard.disputes.actions.closing') : t('Dashboard.disputes.actions.closeOrder'), onClick: () => setStatus(row, DisputeStatus.CLOSED_NO_PAYOUT), disabled: busy, hide: !canPropose },
       { icon: <XCircle className='h-4 w-4' />, label: busy ? t('Dashboard.disputes.actions.rejecting') : t('Dashboard.disputes.actions.reject'), onClick: () => setStatus(row, DisputeStatus.REJECTED), disabled: busy, danger: true, hide: !canPropose },
     ];

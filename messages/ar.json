@@ -1571,6 +1571,14 @@
         "title": "الاعتمادات",
         "description": "احصل على اعتمادات Upphoto."
       },
+      "promoCredits": {
+        "title": "رصيد ترويجي",
+        "description": "رصيد مكافآت غير قابل للسحب"
+      },
+      "cancelledOrdersCredit": {
+        "title": "مستردات الطلبات",
+        "description": "إجمالي المبالغ المستردة من طلبات ملغاة"
+      },
       "phoneVerification": {
         "alreadyVerified": "رقم هاتفك تم التحقق منه بالفعل.",
         "missingPhoneData": "للتأكد من رقم هاتفك، يرجى إضافة رقم الهاتف وكود الدولة أولاً.",
@@ -2939,6 +2947,12 @@
     },
     "finance": {
       "title": "المالية",
+      "admin": {
+        "totalEscrow": "إجمالي رصيد الضمان",
+        "escrowDescription": "الأموال النشطة المحتفظ بها في النظام",
+        "platformProfit": "أرباح المنصة",
+        "profitDescription": "صافي الإيرادات من رسوم العمليات"
+      },
       "kpis": {
         "availableBalance": "الرصيد المتاح",
         "readyToWithdraw": "جاهز للسحب",

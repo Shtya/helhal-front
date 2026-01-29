@@ -1572,6 +1572,14 @@
         "title": "Credits",
         "description": "Earn Upphoto Credits."
       },
+      "promoCredits": {
+        "title": "Promo Credits",
+        "description": "Non-withdrawable promotional balance"
+      },
+      "cancelledOrdersCredit": {
+        "title": "Refunded Credits",
+        "description": "Total amount refunded from cancelled orders"
+      },
       "phoneVerification": {
         "alreadyVerified": "Your phone number is already verified.",
         "missingPhoneData": "To verify your phone, please add your phone number and country code first.",
@@ -2940,6 +2948,12 @@
     },
     "finance": {
       "title": "Finance",
+      "admin": {
+        "totalEscrow": "Total Escrow",
+        "escrowDescription": "Active funds held in the system",
+        "platformProfit": "Platform Profit",
+        "profitDescription": "Net revenue from transaction fees"
+      },
       "kpis": {
         "availableBalance": "Available Balance",
         "readyToWithdraw": "Ready to withdraw",

@@ -53,10 +53,9 @@ export default function WithdrawManagement() {
 
   // wallet summary
   const [balance, setBalance] = useState({
-    availableBalance: 0,
-    credits: 0,
-    earningsToDate: 0,
-    cancelledOrdersCredit: 0,
+    totalEscrowBalance: 0,
+    platformProfit: 0,
+    currency: "SAR",
   });
 
   // filters for table
@@ -106,7 +105,7 @@ export default function WithdrawManagement() {
 
   // ---- fetchers ----
   const fetchBalance = async () => {
-    const res = await api.get('/accounting/balance');
+    const res = await api.get('/admin/wallet');
     setBalance(res.data || {});
   };
 
@@ -207,10 +206,22 @@ export default function WithdrawManagement() {
     <div>
       {/* KPIs */}
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <KpiCard icon={Wallet} label={t('kpis.availableBalance')} value={formatMoney(balance.availableBalance)} hint={t('kpis.readyToWithdraw')} iconBg='bg-main-50 text-main-600' />
-        <KpiCard icon={Banknote} label={t('kpis.credits')} value={formatMoney(balance.credits)} hint={t('kpis.refundCredits')} iconBg='bg-blue-50 text-blue-600' />
-        <KpiCard icon={ArrowUpRight} label={t('kpis.earningsToDate')} value={formatMoney(balance.earningsToDate)} hint={t('kpis.lifetimeGross')} iconBg='bg-purple-50 text-purple-600' />
-        <KpiCard icon={Clock} label={t('kpis.cancelledOrdersCredit')} value={formatMoney(balance.cancelledOrdersCredit)} hint={t('kpis.holdbacks')} iconBg='bg-rose-50 text-rose-600' />
+        <KpiCard
+          icon={Wallet}
+          label={t('admin.totalEscrow')}
+          value={formatMoney(balance.totalEscrowBalance)}
+          hint={t('admin.escrowDescription')}
+          iconBg='bg-main-50 text-main-600'
+        />
+
+        {/* PLATFORM PROFIT: The actual revenue the app has made */}
+        <KpiCard
+          icon={ArrowUpRight}
+          label={t('admin.platformProfit')}
+          value={formatMoney(balance.platformProfit)}
+          hint={t('admin.profitDescription')}
+          iconBg='bg-purple-50 text-purple-600'
+        />
       </div>
 
       {/* Filters */}
