@@ -1987,7 +1987,7 @@
     },
     "stepTitles": {
       "createGig": "Create Your Gig",
-      "editGig": "Edit Your Gig",
+      "editGig": "Edit the Gig",
       "packagesPricing": "Packages & Pricing",
       "faq": "Frequently Asked Questions.",
       "buyerRequirements": "Buyer Requirements",
@@ -1996,16 +1996,21 @@
     },
     "stepDescriptions": {
       "overview": "Let's start by choosing a category for your service",
+      "overviewEdit": "Let's start by choosing a category for The service",
       "pricing": "Set up your service packages and pricing options",
+      "pricingEdit": "Set up The service packages and pricing options",
       "faq": "Provide the answer frequently asked questions.",
       "requirements": "Specify what information you need from buyers to get started",
       "gallery": "Showcase your previous work to attract new buyers.",
-      "publish": "Finalize and publish your project."
+      "galleryEdit": "Showcase The previous work to attract new buyers.",
+      "publish": "Finalize and publish your project.",
+      "publishEdit": "Finalize and publish The project."
     },
     "step1": {
       "noteServiceFee": "A {fee}% platform fee will be deducted from each order created from this service",
       "title": "Basic Details",
       "subtitle": "Set a compelling foundation for your gig.",
+      "subtitleEdit": "Set a compelling foundation for The gig.",
       "gigTitle": "Gig title",
       "gigTitleDesc": "Clear, searchable, and specific. Include your main keyword.",
       "gigBrief": "Gig brief",
@@ -2160,12 +2165,15 @@
     "step5": {
       "images": "Images (up to 3)",
       "imagesDesc": "Get noticed by the right buyers with visual examples of your services.",
+      "imagesDescEdit": "Get noticed by the right buyers with visual examples of The services.",
       "browseImages": "Browse Images",
       "video": "Video (One Only)",
       "videoDesc": "Get noticed by the right buyers with visual examples of your services.",
+      "videoDescEdit": "Get noticed by the right buyers with visual examples of The services.",
       "browseVideo": "Browse video",
       "document": "Document (up to 2)",
       "documentDesc": "Get noticed by the right buyers with visual examples of your services.",
+      "documentDescEdit": "Get noticed by the right buyers with visual examples of The services.",
       "browseDocuments": "Browse documents",
       "back": "Back",
       "continue": "Continue",
@@ -2181,16 +2189,18 @@
     },
     "step6": {
       "congratulations": "Congratulations!",
-      "almostDoneCreate": "You're almost done with your first Gig.",
-      "almostDoneUpdate": "You're almost done updating your Gig.",
-      "phoneVerification": "Before you start selling on UpPhoto, there is one last thing we need you to do: The security of your account is important to us. Therefore, we require all our sellers to verify their phone number before we can publish their first Gig.",
+      "almostDoneCreate": "You're almost done with your Gig.",
+      "almostDoneUpdate": "You're almost done updating The Gig.",
+      "phoneVerification": "Before you start selling, there is one last thing we need you to do: The security of your account is important to us. Therefore, we require all our sellers to verify their phone number before we can publish their first Gig.",
       "phonePrivacy": "Your phone number remains private and is not used for marketing purposes. See more in our Privacy Policy.",
+      "EditNotice": "You are reviewing and editing this Gig.",
+      "EditHint": "Please ensure the Gig details comply with platform guidelines before publishing.",
       "backToEdit": "Back to Edit",
       "updateGig": "Update Gig",
       "publishGig": "Publish Gig"
     },
     "loading": {
-      "loadingGigCreator": "Loading your gig creator",
+      "loadingGigCreator": "Loading The gig creator",
       "gettingReady": "Getting everything ready for you..."
     },
     "toast": {
@@ -3463,6 +3473,7 @@
           "update_level": "Update Level",
           "top_toggle": "Top Toggle",
           "popular_toggle": "Popular Toggle",
+          "mark_as_paid": "Manual Payment Finalization",
           "chat": "Chat",
           "propose": "Propose",
           "update": "Update"

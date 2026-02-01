@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Eye, Trash2, Plus, Folder, Star, ImageIcon, RefreshCw } from 'lucide-react';
+import { Eye, Trash2, Plus, Folder, Star, ImageIcon, RefreshCw, Pencil } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -239,6 +239,7 @@ export default function AdminServicesDashboard() {
     const currentPermissions = currentUser?.permissions;
 
     const canPopulate = isAdmin || has(currentPermissions?.['services'], Permissions.Services.PopularToggle)
+    const canEdit = isAdmin || has(currentPermissions?.['services'], Permissions.Services.Edit)
     const canChangeStatus = isAdmin || has(currentPermissions?.['services'], Permissions.Services.ChangeStatus)
 
 
@@ -272,6 +273,10 @@ export default function AdminServicesDashboard() {
       >
         <Star size={16} fill={isPopular ? 'currentColor' : 'none'} />
       </button>}
+
+      {canEdit && <Link href={`/dashboard/services/${row.slug}`} className={`w-8 h-8 flex items-center justify-center rounded-md transition cursor-pointer text-main-600 hover:bg-main-100 hover:text-main-800`} >
+        <Pencil className='w-4 h-4' />
+      </Link>}
     </div>)
   }
 

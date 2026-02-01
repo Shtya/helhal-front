@@ -25,14 +25,13 @@ import CategorySelect from '@/components/atoms/CategorySelect';
 import FormErrorMessage from '@/components/atoms/FormErrorMessage';
 import { useDebounce } from '@/hooks/useDebounce';
 import LocationSelect from '@/components/atoms/LocationSelect';
-import { useValues } from '@/context/GlobalContext';
 
 const normalizeFile = (file) => ({
   ...file,
   filename: file.filename || file.fileName || '',
 });
 
-export const useGigCreation = () => {
+export const useGigCreation = ({ gigSlug, isAdmin }) => {
   const t = useTranslations('CreateGig.toast');
   const [step, setStep] = useState(1);
   const searchParams = useSearchParams();
@@ -66,8 +65,6 @@ export const useGigCreation = () => {
 
   useEffect(() => {
     const fetchGigData = async () => {
-      // const gigSlug = searchParams.get('slug');
-      const gigSlug = '';
       const savedData = sessionStorage.getItem('gigCreationData');
       const savedStep = sessionStorage.getItem('gigCreationStep');
 
@@ -132,7 +129,6 @@ export const useGigCreation = () => {
 
 
   useEffect(() => {
-    const gigSlug = searchParams.get('slug');
     if (!gigSlug) {
       loadSavedData();
     }
@@ -165,7 +161,6 @@ export const useGigCreation = () => {
   const prevStep = () => step > 1 && setStep(step - 1);
 
   const handleSubmit = async () => {
-    const gigSlug = searchParams.get('slug');
 
     try {
       setLoadingServices(true);
@@ -184,8 +179,8 @@ export const useGigCreation = () => {
           ...formData.video.map(vid => ({ type: 'video', url: vid.url, fileName: vid.filename, assetId: vid.id })),
           ...formData.documents.map(doc => ({ type: 'document', url: doc.url, fileName: doc.filename, assetId: doc.id }))],
         requirements: formData.questions,
-        countryId: formData.country || null,
-        stateId: formData.state || null,
+        countryId: typeof formData.country === 'object' ? formData.country?.id : formData.country || null,
+        stateId: typeof formData.state === 'object' ? formData.state?.id : formData.state || null,
         // fastDelivery: formData.extraFastDelivery,
         // additionalRevision: formData.additionalRevision,
       };
@@ -205,7 +200,10 @@ export const useGigCreation = () => {
         sessionStorage.removeItem('gigCreationData');
         sessionStorage.removeItem('gigCreationStep');
       }
-      router.push('/my-gigs');
+      if (isAdmin)
+        router.push('/dashboard/services');
+      else
+        router.push('/my-gigs');
     } catch (error) {
       const meg = error?.message;
       toast.error(meg || t('failedToCreate'));
@@ -234,8 +232,29 @@ const getStep1Schema = (t) => yup.object({
   brief: yup.string().trim().required(t('validation.briefRequired')).min(10, t('validation.briefMin')).max(500, t('validation.briefMax')),
   category: yup.object().required(t('validation.categoryRequired')),
   subcategory: yup.object().nullable().notRequired(),
-  country: yup.string().required(t('validation.countryRequired')),
-  state: yup.string().nullable().notRequired(),
+  country: yup
+    .mixed()
+    .test(
+      'country-object-or-string',
+      t('validation.countryRequired'),
+      value =>
+        typeof value === 'string' ||
+        (typeof value === 'object' && value !== null)
+    )
+    .required(t('validation.countryRequired')),
+
+  state: yup
+    .mixed()
+    .nullable()
+    .test(
+      'state-object-or-string',
+      t('validation.countryRequired'),
+      value =>
+        value == null ||
+        typeof value === 'string' ||
+        (typeof value === 'object' && value !== null)
+    ),
+
   tags: yup.array()
     .of(
       yup.string()
@@ -404,20 +423,21 @@ const getStep5Schema = (t) => yup.object({
     .max(2, t('validation.documentsMax')),
 });
 
-export default function GigCreationWizard() {
-  const { step, formData, loadingServices, setFormData, loading, error, nextStep, prevStep, handleSubmit } = useGigCreation();
+export default function GigCreationWizard({ gigSlug = '', isAdmin = false }) {
+  const { step, formData, loadingServices, setFormData, loading, error, nextStep, prevStep, handleSubmit } = useGigCreation({ gigSlug, isAdmin });
   const searchParams = useSearchParams()
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [step]);
 
+  const isEditMode = Boolean(gigSlug);
   const renderStep = () => {
     if (loading) return <SkeletonLoading />;
     if (error) return <div className='text-red-500 text-center py-12'>{error}</div>;
 
     switch (step) {
       case 1:
-        return <Step1 formData={formData} setFormData={setFormData} nextStep={nextStep} />;
+        return <Step1 isEditMode={isEditMode} formData={formData} setFormData={setFormData} nextStep={nextStep} gigSlug={gigSlug} />;
       case 2:
         return <Step2 formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
       case 3:
@@ -425,29 +445,28 @@ export default function GigCreationWizard() {
       case 4:
         return <Step4 formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
       case 5:
-        return <Step5 formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
+        return <Step5 isEditMode={isEditMode} formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
       case 6:
-        return <Step6 formData={formData} handleSubmit={handleSubmit} prevStep={prevStep} loading={loadingServices} />;
+        return <Step6 isEditMode={isEditMode} formData={formData} handleSubmit={handleSubmit} prevStep={prevStep} loading={loadingServices} />;
       default:
-        return <Step1 formData={formData} setFormData={setFormData} nextStep={nextStep} />;
+        return <Step1 formData={formData} setFormData={setFormData} nextStep={nextStep} gigSlug={gigSlug} />;
     }
   };
 
   const t = useTranslations('CreateGig');
-  const gigSlug = searchParams.get('slug');
-  const isEditMode = Boolean(gigSlug);
+
 
   // Base steps
   const steps = [
     {
       label: t('steps.overview'),
       title: isEditMode ? t('stepTitles.editGig') : t('stepTitles.createGig'),
-      description: t('stepDescriptions.overview')
+      description: isEditMode ? t('stepDescriptions.overviewEdit') : t('stepDescriptions.overview')
     },
     { label: t('steps.pricing'), title: t('stepTitles.packagesPricing'), description: t('stepDescriptions.pricing') },
     { label: t('steps.descriptionFaq'), title: t('stepTitles.faq'), description: t('stepDescriptions.faq') },
     { label: t('steps.requirements'), title: t('stepTitles.buyerRequirements'), description: t('stepDescriptions.requirements') },
-    { label: t('steps.gallery'), title: t('stepTitles.galleryMedia'), description: t('stepDescriptions.gallery') },
+    { label: t('steps.gallery'), title: t('stepTitles.galleryMedia'), description: isEditMode ? t('stepDescriptions.galleryEdit') : t('stepDescriptions.gallery') },
     { label: t('steps.publish'), title: t('stepTitles.publishTitle'), description: t('stepDescriptions.publish') },
   ];
 
@@ -495,7 +514,7 @@ const Field = ({ title, desc, required, error, hint, className = '', children })
 };
 
 // ---------- Step 1 (refreshed UI) ----------
-function Step1({ formData, setFormData, nextStep }) {
+function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
 
   const t = useTranslations('CreateGig.step1');
   const {
@@ -544,7 +563,7 @@ function Step1({ formData, setFormData, nextStep }) {
       setTitleStatus(prev => ({ ...prev, loading: true }));
 
       try {
-        const res = await api.get(`/services/check-title/${debouncedTitle}`);
+        const res = await api.get(`/services/check-title/${debouncedTitle}?slug=${gigSlug}`);
 
         if (cancelled) return;
         const { isUnique, ownedByCurrentUser } = res.data;
@@ -652,13 +671,16 @@ function Step1({ formData, setFormData, nextStep }) {
       return { ...prev, tags: updatedTags };
     });
   };
+
+  const country = watch('country');
+  const state = watch('state');
   return (
     <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 bg-white/60 p-6 md:p-10'>
       {/* Header */}
       <div className="mb-8 flex flex-col gap-2">
         <div>
           <h2 className="text-2xl font-semibold text-slate-900">{t("title")}</h2>
-          <p className="mt-1 text-sm text-slate-500">{t("subtitle")}</p>
+          <p className="mt-1 text-sm text-slate-500">{isEditMode ? t("subtitleEdit") : t("subtitle")}</p>
         </div>
         {/* Note about platform fee (improved UI) */}
 
@@ -720,7 +742,7 @@ function Step1({ formData, setFormData, nextStep }) {
           <div className='grid gap-4 md:grid-cols-2'>
             <LocationSelect
               type='country'
-              value={formData?.country}
+              value={typeof country === 'object' ? country?.id : country}
               // cnPlaceholder='!text-gray-900'
               error={errors?.country?.message}
               label={t('country')}
@@ -732,8 +754,8 @@ function Step1({ formData, setFormData, nextStep }) {
 
             <LocationSelect
               type='state'
-              parentId={watch('country')} // Pass selected countryId here
-              value={formData?.state}
+              parentId={typeof country === 'object' ? country?.id : country}
+              value={typeof state === 'object' ? state?.id : state}
               error={errors?.state?.message}
               // cnPlaceholder='!text-gray-900'
               label={t('state')}
@@ -1569,7 +1591,7 @@ const getFirstFileError = (errors, type) => {
 };
 
 
-function Step5({ formData, setFormData, nextStep, prevStep }) {
+function Step5({ isEditMode, formData, setFormData, nextStep, prevStep }) {
   const t = useTranslations('CreateGig.step5');
   const {
     register,
@@ -1636,10 +1658,10 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       <div>
 
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('images')} desc={t('imagesDesc')}>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('images')} desc={isEditMode ? t('imagesDescEdit') : t('imagesDesc')}>
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.images?.map((e, i) => (
-              <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
+              <div key={i} className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
                 {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
 
                 <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]' title={e?.filename}>{e?.filename}</h4>
@@ -1664,7 +1686,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
 
       <div>
 
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('video')} desc={t('videoDesc')}>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('video')} desc={isEditMode ? t('videoDescEdit') : t('videoDesc')}>
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.video?.map((e, i) => (
               <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
@@ -1691,7 +1713,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
       </div>
 
       <div>
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('document')} desc={t('documentDesc')}>
+        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('document')} desc={isEditMode ? t('documentDescEdit') : t('documentDesc')}>
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.documents?.map((e, i) => (
               <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
@@ -1725,7 +1747,7 @@ function Step5({ formData, setFormData, nextStep, prevStep }) {
   );
 }
 
-function Step6({ formData, handleSubmit, prevStep, loading }) {
+function Step6({ isEditMode, formData, handleSubmit, prevStep, loading }) {
   const t = useTranslations('CreateGig.step6');
   const searchParams = useSearchParams();
   const gigSlug = searchParams.get('slug'); // check if gigSlug exists
@@ -1740,11 +1762,11 @@ function Step6({ formData, handleSubmit, prevStep, loading }) {
           <img src='/icons/congratlation.png' alt='' className='w-[300px]' />
         </div>
         <h1 className='text-3xl font-bold text-gray-900 mb-2'>{t('congratulations')}</h1>
-        <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{isUpdate ? t('almostDoneUpdate') : t('almostDoneCreate')}</p>
+        <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{isEditMode ? t('almostDoneUpdate') : t('almostDoneCreate')}</p>
         {!isUpdate && (
           <>
-            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{t('phoneVerification')}</p>
-            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{t('phonePrivacy')}</p>
+            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{!isEditMode && t('phoneVerification')}</p>
+            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{isEditMode ? t('EditHint') : t('phonePrivacy')}</p>
           </>
         )}
       </div>

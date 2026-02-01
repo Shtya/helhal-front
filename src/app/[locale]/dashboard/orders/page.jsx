@@ -231,8 +231,9 @@ export default function AdminOrdersDashboard() {
     const isAdmin = currentUser?.role === 'admin';
     const currentPermissions = currentUser?.permissions;
     const canChangeStatus = isAdmin || has(currentPermissions?.['orders'], Permissions.Orders.ChangeStatus)
+    const canAMarkAsPayed = isAdmin || has(currentPermissions?.['orders'], Permissions.Orders.MarkAsPayout)
 
-    const canFinalize = isAdmin && currentStatus === OrderStatus.PENDING;
+    const canFinalize = canAMarkAsPayed && currentStatus === OrderStatus.PENDING;
     const validTransitions = {
       [OrderStatus.PENDING]: [OrderStatus.ACCEPTED, OrderStatus.CANCELLED, OrderStatus.REJECTED],
       [OrderStatus.ACCEPTED]: [OrderStatus.DELIVERED, OrderStatus.CANCELLED],

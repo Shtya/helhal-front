@@ -35,7 +35,8 @@ export const Permissions = {
 
     Orders: {
         View: 1 << 0,       // 0001 (1)
-        ChangeStatus: 1 << 1 // 0010 (2)
+        ChangeStatus: 1 << 1, // 0010 (2)
+        MarkAsPayout: 1 << 2, // 000100 (3)
     },
 
     Invoices: {
@@ -129,6 +130,7 @@ export const PERMISSION_DOMAINS = [
         actions: [
             { labelKey: 'view', value: Permissions.Orders.View },
             { labelKey: 'change_status', value: Permissions.Orders.ChangeStatus },
+            { labelKey: 'mark_as_paid', value: Permissions.Orders.MarkAsPayout },
         ],
     },
     {
