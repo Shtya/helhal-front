@@ -12,9 +12,9 @@ import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
 import z from 'zod';
 import Img from '@/components/atoms/Img';
+import { Modal } from '@/components/common/Modal';
 
-export default function FeedbackPage({ params }) {
-    const { orderId } = use(params);
+export default function GiveReviewModal({ orderId, onClose, open }) {
     const t = useTranslations('MyOrders.feedbackPage');
     const router = useRouter();
     const { user, role } = useAuth();
@@ -27,13 +27,8 @@ export default function FeedbackPage({ params }) {
             try {
                 const { data } = await api.get(`/ratings/order/${orderId}`);
                 // Rule: If already public, redirect to modal view
-                if (data.isPublic) {
-                    router.push(`/my-orders`);
-                    return;
-                }
                 setRating(data);
             } catch (err) {
-                router.push('/my-orders');
             } finally {
                 setLoading(false);
             }
@@ -86,20 +81,24 @@ export default function FeedbackPage({ params }) {
             </div>
         );
     }
+    if (!open) return null;
 
     return (
-        <div className="container py-10 max-w-3xl">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2 text-slate-900 mt-3">
-                    {userHasRated ? t('editFeedback') : t('giveFeedback')}
-                </h1>
-                <p className="text-slate-600">{t('subtitle')}</p>
+        <Modal title={userHasRated ? t('editFeedback') : t('giveFeedback')} onClose={onClose} className="!max-w-2xl">
+            <div className="container py-10 max-w-3xl">
+                <div className="mb-8">
+                    {/* <h1 className="text-3xl font-bold mb-2 text-slate-900 mt-3">
+                        {userHasRated ? t('editFeedback') : t('giveFeedback')}
+                    </h1> */}
+                    <p className="text-slate-600">{t('subtitle')}</p>
+                </div>
+                <RatingForm
+                    onClose={onClose}
+                    initialData={rating}
+                    orderId={orderId}
+                />
             </div>
-            <RatingForm
-                initialData={rating}
-                orderId={orderId}
-            />
-        </div>
+        </Modal>
     );
 }
 
@@ -108,7 +107,7 @@ const schema = z.object({
     // Ratings are validated in the state below
 });
 
-function RatingForm({ orderId, initialData }) {
+function RatingForm({ orderId, initialData, onClose }) {
 
     const { role } = useAuth()
     const tOrder = useTranslations('MyOrders.modals.feedback');
@@ -163,7 +162,7 @@ function RatingForm({ orderId, initialData }) {
                 reviewText: data.reviewText.trim() // [2025-12-24] Remember to trim.
             });
             toast.success(t('submitSuccess'));
-            router.push(`/my-orders`);
+            onClose()
         } catch (err) {
             toast.error(err.response?.data?.message || 'Error');
         } finally {
@@ -172,8 +171,8 @@ function RatingForm({ orderId, initialData }) {
     };
 
 
-    console.log(initialData?.order)
     return (
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
 
@@ -257,5 +256,6 @@ function RatingForm({ orderId, initialData }) {
                 />
             </div>
         </form>
+
     );
 }

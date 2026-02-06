@@ -1804,6 +1804,16 @@
       "paymentCanceled": "Payment canceled"
     },
     "modals": {
+      "congratulations": {
+        "title": "Order Completed!",
+        "heading": "Congratulations!",
+        "description": "Your order has been successfully completed and received.",
+        "order": "Order",
+        "seller": "Seller",
+        "amount": "Amount",
+        "paymentInfo": "The payment will be released to the seller shortly.",
+        "continue": "Continue"
+      },
       "feedback": {
         "title": "Feedback Details",
         "header": "Order Experience",

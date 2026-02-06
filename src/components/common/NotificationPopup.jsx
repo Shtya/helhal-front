@@ -14,7 +14,7 @@ export const getLink = (relatedEntityType, relatedEntityId, subType) => {
     return `/my-jobs/${relatedEntityId}/proposals`; // Proposal link
   } else if (relatedEntityType === 'order') {
     if (subType === 'rating') {
-      return `/my-orders/${relatedEntityId}/feedback`; // Order rating link
+      return `/my-orders?orderId=${relatedEntityId}&mode=give-feedback`;
     }
     else if (subType === 'rating_published') {
       return `/my-orders?orderId=${relatedEntityId}&mode=view-feedback`;

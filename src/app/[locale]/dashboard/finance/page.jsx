@@ -105,7 +105,7 @@ export default function WithdrawManagement() {
 
   // ---- fetchers ----
   const fetchBalance = async () => {
-    const res = await api.get('/admin/wallet');
+    const res = await api.get('/accounting/admin/wallet');
     setBalance(res.data || {});
   };
 

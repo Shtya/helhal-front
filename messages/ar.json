@@ -1803,6 +1803,16 @@
       "paymentCanceled": "تم إلغاء الدفع"
     },
     "modals": {
+      "congratulations": {
+        "title": "تم إكمال الطلب!",
+        "heading": "تهانينا!",
+        "description": "تم إكمال واستلام طلبك بنجاح.",
+        "order": "الطلب",
+        "seller": "البائع",
+        "amount": "المبلغ",
+        "paymentInfo": "سيتم تحرير الدفع للبائع قريباً.",
+        "continue": "متابعة"
+      },
       "feedback": {
         "title": "تفاصيل التقييم",
         "header": "تجربة الطلب",

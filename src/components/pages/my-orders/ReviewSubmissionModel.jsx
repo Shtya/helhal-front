@@ -9,6 +9,7 @@ import AttachmentList from '@/components/common/AttachmentList';
 import { formatDate } from '@/utils/date';
 import toast from 'react-hot-toast';
 import { useTranslations } from 'next-intl';
+import CongratulationsModal from './Congratulationsmodal';
 
 export default function ReviewSubmissionModel({
     open,
@@ -16,7 +17,8 @@ export default function ReviewSubmissionModel({
     selectedRow,
     patchOrderRow,
     setRowLoading,
-    readOnly
+    readOnly,
+    showCongratulations
 }) {
     const t = useTranslations('MyOrders.modals.reviewSubmission');
     const [loading, setLoading] = useState(true);
@@ -58,7 +60,8 @@ export default function ReviewSubmissionModel({
                 }));
 
                 toast.success(t('success'));
-                onClose();
+                // onClose();
+                showCongratulations();
             }
         } catch (e) {
             alert(e?.response?.data?.message || t('error'));
@@ -72,9 +75,9 @@ export default function ReviewSubmissionModel({
 
     const orderTitle = selectedRow?._raw?.title;
     const sellerName = selectedRow?._raw?.seller?.username;
+    const amount = selectedRow?._raw?.totalAmount ? Number(selectedRow?._raw?.totalAmount).toFixed(2) : "—";
     const deliveredAt = new Date(submission?.created_at);
     const releaseDate = new Date(deliveredAt.getTime() + 14 * 86400000);
-    const amount = selectedRow?._raw?.totalAmount ? Number(selectedRow?._raw?.totalAmount).toFixed(2) : "—";
 
     return (
         <>
@@ -150,6 +153,8 @@ export default function ReviewSubmissionModel({
                     selectedRow={selectedRow}
                 />
             )}
+
+
         </>
     );
 }

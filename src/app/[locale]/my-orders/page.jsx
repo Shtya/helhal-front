@@ -12,7 +12,7 @@ import InputSearch from '@/components/atoms/InputSearch';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/common/Table';
 import api from '@/lib/axios';
-import { AlertTriangle, CheckCircle, CreditCard, FileText, FileWarning, MessageCircle, MessageSquare, Package, XCircle, Eye, Star } from 'lucide-react';
+import { AlertTriangle, CheckCircle, CreditCard, FileText, FileWarning, MessageCircle, MessageSquare, Package, XCircle, Eye, Star, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Link, useRouter } from '@/i18n/navigation';
 import toast from 'react-hot-toast';
@@ -27,6 +27,8 @@ import OrderDetailsModal from '@/components/pages/my-orders/OrderDetailsModal';
 import { isErrorAbort } from '@/utils/helper';
 import { useSearchParams } from 'next/navigation';
 import ReviewDetailsModal from '@/components/pages/my-orders/ReviewDetailsModal';
+import GiveReviewModal from '@/components/pages/my-orders/GiveReviewModal';
+import CongratulationsModal from '@/components/pages/my-orders/Congratulationsmodal';
 
 
 // Animation
@@ -78,7 +80,6 @@ export default function Page() {
     { label: t('tabs.disputed'), value: 'disputed' },
     { label: t('tabs.canceled'), value: 'canceled' },
   ];
-
 
 
   function onPageChange(page) {
@@ -291,6 +292,9 @@ export default function Page() {
     if (model === 'view-feedback' && row?.id) {
       router.push(`/my-orders?orderId=${row.id}&mode=view-feedback`, { scroll: false });
     }
+    if (model === 'give-feedback' && row?.id) {
+      router.push(`/my-orders?orderId=${row.id}&mode=give-feedback`, { scroll: false });
+    }
   }
 
 
@@ -499,12 +503,11 @@ export default function Page() {
         danger: true,
       },
       {
-        icon: <XCircle className="h-4 w-4" />,
+        icon: <CheckCircle2 className="h-4 w-4" />,
         label: loadingAction === 'accept' ? t('actions.accepting') : t('actions.acceptOrder'),
         onClick: () => handleAccept(row),
         disabled: isBusy || loadingAction === 'accept',
         hide: !(isSeller && [OrderStatus.WAITING].includes(s)),
-        danger: true,
       },
       {
         icon: <Star className="h-4 w-4" />,
@@ -517,7 +520,7 @@ export default function Page() {
       {
         icon: <MessageSquare className="h-4 w-4" />,
         label: userHasRated ? t('actions.editFeedback') : t('actions.giveFeedback'),
-        href: `/my-orders/${row.id}/feedback`,
+        onClick: () => handleOpenModal(row, 'give-feedback'),
         hide: !(s === OrderStatus.COMPLETED && !isPublic && !isExpired),
       },
     ];
@@ -542,7 +545,14 @@ export default function Page() {
       </AnimatePresence>
       <DisputeModal open={openModal === 'dispute'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
       <DeliverModel open={openModal === 'deliver'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
-      <ReviewSubmissionModel open={openModal === 'receive' || openModal === 'submission'} readOnly={openModal === 'submission'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
+      <ReviewSubmissionModel open={openModal === 'receive' || openModal === 'submission'} showCongratulations={() => handleOpenModal(selectedRow, 'congratulation')} readOnly={openModal === 'submission'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
+      <CongratulationsModal
+        open={openModal === 'congratulation'}
+        onClose={() => {
+          handleOpenModal(selectedRow, 'give-feedback')
+        }}
+        selectedRow={selectedRow}
+      />
       <ChangeRequestReviewModel open={openModal === 'changes-requested'} onClose={handleCloseModal} selectedRow={selectedRow} />
       <OrderDetailsModal
         open={openModal === 'details'}
@@ -553,6 +563,15 @@ export default function Page() {
       <ReviewDetailsModal
         open={openModal === 'view-feedback'}
         onClose={handleCloseModal}
+        orderId={selectedRow?.id}
+      />
+
+      <GiveReviewModal
+        open={openModal === 'give-feedback'}
+        onClose={() => {
+          handleCloseModal()
+          fetchOrders()
+        }}
         orderId={selectedRow?.id}
       />
     </div>
