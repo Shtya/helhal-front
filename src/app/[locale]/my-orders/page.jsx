@@ -568,10 +568,8 @@ export default function Page() {
 
       <GiveReviewModal
         open={openModal === 'give-feedback'}
-        onClose={() => {
-          handleCloseModal()
-          fetchOrders()
-        }}
+        onClose={handleCloseModal}
+        fetchOrders={fetchOrders}
         orderId={selectedRow?.id}
       />
     </div>

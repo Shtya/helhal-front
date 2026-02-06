@@ -250,7 +250,7 @@ function EmailEditModal({ user, onClose, onUpdate }) {
     }
 
     return (
-        <Modal title={t('editEmail')} onClose={onClose}>
+        <Modal title={t('editEmail')} onClose={onClose} className={"overflow-hidden"}>
             <div className='space-y-4'>
                 {pendingEmail && (
                     <div className='p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>

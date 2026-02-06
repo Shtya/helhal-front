@@ -14,7 +14,7 @@ import z from 'zod';
 import Img from '@/components/atoms/Img';
 import { Modal } from '@/components/common/Modal';
 
-export default function GiveReviewModal({ orderId, onClose, open }) {
+export default function GiveReviewModal({ orderId, onClose, open, fetchOrders }) {
     const t = useTranslations('MyOrders.feedbackPage');
     const router = useRouter();
     const { user, role } = useAuth();
@@ -93,6 +93,7 @@ export default function GiveReviewModal({ orderId, onClose, open }) {
                     <p className="text-slate-600">{t('subtitle')}</p>
                 </div>
                 <RatingForm
+                    fetchOrders={fetchOrders}
                     onClose={onClose}
                     initialData={rating}
                     orderId={orderId}
@@ -107,7 +108,7 @@ const schema = z.object({
     // Ratings are validated in the state below
 });
 
-function RatingForm({ orderId, initialData, onClose }) {
+function RatingForm({ orderId, initialData, onClose, fetchOrders }) {
 
     const { role } = useAuth()
     const tOrder = useTranslations('MyOrders.modals.feedback');
@@ -163,6 +164,7 @@ function RatingForm({ orderId, initialData, onClose }) {
             });
             toast.success(t('submitSuccess'));
             onClose()
+            fetchOrders()
         } catch (err) {
             toast.error(err.response?.data?.message || 'Error');
         } finally {
