@@ -16,8 +16,8 @@ export default function OrderOptions({ isSidebarOpen, setIsSidebarOpen, serviceD
   // Body scroll lock + Esc to close + autofocus
   useEffect(() => {
     if (isSidebarOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+      // const prev = document.body.style.overflow;
+      // document.body.style.overflow = 'hidden';
       firstFocusRef.current?.focus();
       const onKey = e => {
         if (e.key === 'Escape') setIsSidebarOpen(false);

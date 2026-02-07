@@ -79,6 +79,7 @@ const LocationSelect = forwardRef(({
         }
     }), [items]);
 
+
     function customSearch(term, oldOptions) {
         if (!term) return oldOptions;
 

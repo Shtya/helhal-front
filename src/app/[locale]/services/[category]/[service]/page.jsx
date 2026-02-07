@@ -1809,15 +1809,15 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
 
   useEffect(() => {
     if (isSidebarOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+      // const prev = document.body.style.overflow;
+      // document.body.style.overflow = 'hidden';
       firstFocusRef.current?.focus();
       const onKey = e => {
         if (e.key === 'Escape') setIsSidebarOpen(false);
       };
       window.addEventListener('keydown', onKey);
       return () => {
-        document.body.style.overflow = prev;
+        // document.body.style.overflow = prev;
         window.removeEventListener('keydown', onKey);
       };
     }

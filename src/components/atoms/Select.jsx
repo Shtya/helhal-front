@@ -41,12 +41,14 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
   }, [value, options]);
 
   // Close on outside click / ESC, and mark touched once
+  console.log("options outside onDoc Click and it useEffect", options)
   useEffect(() => {
     const onDocClick = e => {
       if (buttonRef.current?.contains(e.target) || menuRef.current?.contains(e.target)) {
         return;
       }
       if (open) {
+        console.log("options from onDoc Click", options)
         setOptions(options);
         setOpen(false)
         onOpenToggle?.(false)
@@ -69,7 +71,7 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
       document.removeEventListener('mousedown', onDocClick);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open, touched, onBlur]);
+  }, [open, touched, onBlur, options]);
 
   const handleSelect = option => {
     setSelected(option);
@@ -205,7 +207,7 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
           {isLoading ? (
             <div className='p-3 space-y-2'>
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className='h-4 bg-slate-200 rounded animate-pulse w-3/4' />
+                <div key={i} className='h-4 bg-slate-200 rounded animate-pulse' />
               ))}
             </div>)
             : internalOptions.length === 0 ? (

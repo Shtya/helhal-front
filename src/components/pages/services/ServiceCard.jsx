@@ -93,7 +93,7 @@ export default memo(function AmazingServiceCard({
             <Sk className='absolute inset-0' />
             {/* Seller pill skeleton */}
             <div className='pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3'>
-              <div className='flex items-center gap-3 bg-black/30 backdrop-blur-sm rounded-full px-2.5 py-1.5 text-white'>
+              <div className='flex items-center gap-3 bg-black/30 backdrop-blur-sm rounded-full px-2 md:px-2.5 py-1.5 text-white'>
                 <SkAvatar />
                 <div className='min-w-0'>
                   <SkLine w='w-28' h='h-3.5' />
@@ -150,12 +150,12 @@ export default memo(function AmazingServiceCard({
 
               {/* Seller pill */}
               <div className='pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3'>
-                <div className='relative flex items-center gap-3 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1.5 text-white'>
+                <div className='relative flex items-center gap-3 bg-black/45 backdrop-blur-sm rounded-full px-1.5 md:px-2.5  py-1.5 text-white'>
                   <div className='relative'>
                     <Img
                       src={sellerAvatar}
                       alt={sellerName}
-                      className='h-10 w-10 rounded-full object-cover border border-white/40'
+                      className='w-8 h-8 md:h-10 md:w-10 rounded-full object-cover border border-white/40'
                     />
 
                     {/* Badge positioned at bottom start (bottom-0) */}
@@ -166,10 +166,10 @@ export default memo(function AmazingServiceCard({
                     )}
                   </div>
                   <div className='min-w-0'>
-                    <div className='text-sm font-semibold truncate'>{sellerName}</div>
+                    <div className='text-xs md:text-sm font-semibold truncate'>{sellerName}</div>
                     <div className='text-white flex items-center gap-1.5'>
                       {ratingText && <span className='text-xs font-semibold'>{ratingText}</span>}
-                      {rating ? <Stars value={rating} size={16} stroke='stroke-white' dim='stroke-white/30' /> : null}
+                      {rating ? <Stars value={rating} size={16} stroke='stroke-white' dim='stroke-white/30' className="max-md:w-1! max-md:h-1!" /> : null}
                     </div>
                   </div>
                 </div>

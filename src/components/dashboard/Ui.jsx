@@ -122,8 +122,8 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
   useEffect(() => {
     if (!open) return;
 
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // const prevOverflow = document.body.style.overflow;
+    // document.body.style.overflow = 'hidden';
 
     const prevActive = document.activeElement;
 
@@ -160,7 +160,7 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
 
     return () => {
       cancelAnimationFrame(id);
-      document.body.style.overflow = prevOverflow;
+      // document.body.style.overflow = prevOverflow;
       document.removeEventListener('keydown', handleKey);
       prevActive?.focus?.();
     };

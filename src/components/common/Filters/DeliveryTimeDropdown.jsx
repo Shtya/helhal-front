@@ -50,12 +50,12 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
   }, [open]);
 
   // lock scroll when open
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => (document.body.style.overflow = prev);
-  }, [open]);
+  // useEffect(() => {
+  //   if (!open) return;
+  //   const prev = document.body.style.overflow;
+  //   document.body.style.overflow = 'hidden';
+  //   return () => (document.body.style.overflow = prev);
+  // }, [open]);
 
   const activeLabel = () => {
     if (selectedDeliveryTime === 'custom' && customDeliveryTime) return t('deliveryWithDays', { days: customDeliveryTime });

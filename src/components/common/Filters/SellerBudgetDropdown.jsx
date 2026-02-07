@@ -94,12 +94,12 @@ export default function SellerBudgetDropdown({
   }, [open, selectedId, customValue]);
 
   // lock scroll when open
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => (document.body.style.overflow = prev);
-  }, [open]);
+  // useEffect(() => {
+  //   if (!open) return;
+  //   const prev = document.body.style.overflow;
+  //   document.body.style.overflow = 'hidden';
+  //   return () => (document.body.style.overflow = prev);
+  // }, [open]);
 
   // ---- Derived label
   const activeLabel = () => {
