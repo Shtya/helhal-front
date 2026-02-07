@@ -259,7 +259,37 @@
     "loadingReferralData": "جاري تحميل بيانات الإحالة...",
     "notAuthenticated": "يجب عليك تسجيل الدخول لعرض هذا المحتوى.",
     "copyFailed": "فشلت عملية النسخ. يرجى المحاولة يدوياً.",
-    "unknownError": "حدث خطأ غير معروف."
+    "unknownError": "حدث خطأ غير معروف.",
+    "image_dialog": {
+      "title": "إدراج صورة",
+      "url_label": "رابط الصورة",
+      "upload_text": "اضغط لرفع صورة",
+      "alt_text_label": "النص البديل",
+      "width_label": "العرض (بكسل)",
+      "placeholders": {
+        "alt_text": "وصف للصورة لسهولة الوصول",
+        "url": "https://example.com/image.jpg"
+      }
+    },
+    "editor": {
+      "placeholder": "ابدأ الكتابة هنا...",
+      "legal_notice": "يرجى التأكد من أن المحتوى يطابق المعايير القانونية الرسمية.",
+      "link_dialog": {
+        "url_label": "رابط الصفحة",
+        "apply": "تطبيق الرابط",
+        "unlink": "إزالة الرابط"
+      }
+    },
+    "edit": "تعديل",
+    "delete": "حذف",
+    "insert": "إدراج",
+    "upload": "رفع",
+    "reset_default": "إعادة التعيين للافتراضي",
+    "retry": "إعادة المحاولة",
+    "errorTitle": "عذرًا، حدث خطأ ما",
+    "errorLoading": "فشل في تحميل البيانات",
+    "cancel": "إلغاء",
+    "save": "حفظ"
   },
   "GlobalSearch": {
     "scopes": {
@@ -2663,6 +2693,15 @@
     }
   },
   "Chat": {
+    "messages": "الرسائل",
+    "conversations": "المحادثات",
+    "details": "التفاصيل",
+    "aria": {
+      "showConversations": "إظهار المحادثات",
+      "showDetails": "إظهار التفاصيل",
+      "closeMenu": "إغلاق القائمة",
+      "closeSidebar": "إغلاق الشريط الجانبي"
+    },
     "received": "تم الاستلام ✅",
     "save": "حفظ",
     "star": "مفضلة",
@@ -2718,6 +2757,7 @@
     "pin": "تثبيت",
     "unpin": "إلغاء التثبيت",
     "about": "حول {name}",
+    "about_title": "حول",
     "contact": "جهة الاتصال",
     "topRated": "الأعلى تقييماً",
     "lastMessage": "آخر رسالة",

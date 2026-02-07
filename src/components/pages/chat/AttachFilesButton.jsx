@@ -212,19 +212,44 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
         {/* body */}
         <div className='max-h-[65vh] overflow-auto p-3 sm:p-4'>
           <div className='grid grid-cols-3 sm:grid-cols-4 gap-3'>
-            {attachments.map(asset => {
+            {loading && Array.from({ length: 8 }).map((_, i) => (
+              <div key={`skeleton-${i}`} className='relative rounded-lg border border-slate-100 p-2 bg-white'>
+                {/* File/Image Square Placeholder */}
+                <div className='mx-auto aspect-square w-[88px] bg-slate-100 rounded animate-pulse' />
+
+                {/* Filename Text Placeholder */}
+                <div className='mt-2 h-3 w-3/4 mx-auto bg-slate-100 rounded animate-pulse' />
+              </div>
+            ))}
+
+            {/* 2. Actual Data State */}
+            {!loading && attachments.map(asset => {
               const isSelected = selectedFiles.some(f => f.id === asset.id);
               const absolute = asset.url ? (asset.url.startsWith('http') ? asset.url : baseImg + asset.url) : '';
               const isImage = asset.mimeType?.startsWith?.('image/');
-              return (
-                <div key={asset.id} onClick={() => handleFileSelect(asset)} className={['relative group cursor-pointer rounded-lg border p-2', 'border-slate-200 hover:border-main-400 transition', isSelected ? 'ring-2 ring-main-500/60 border-main-300 bg-main-50/40' : 'bg-white'].join(' ')}>
-                  {/* <button onClick={e => handleDeleteFile(asset.id, e)} aria-label='Delete file' className='absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity'>
-                    <span className='grid h-6 w-6 place-items-center rounded-full bg-red-500 text-white'>
-                      <FiX className='h-3 w-3' />
-                    </span>
-                  </button> */}
 
-                  {isImage ? <img src={absolute} alt={asset.filename} className='mx-auto aspect-square w-[88px] object-contain rounded' loading='lazy' /> : <div className='mx-auto aspect-square w-[88px] grid place-items-center rounded bg-slate-50'>{getFileIcon(asset.mimeType)}</div>}
+              return (
+                <div
+                  key={asset.id}
+                  onClick={() => handleFileSelect(asset)}
+                  className={[
+                    'relative group cursor-pointer rounded-lg border p-2',
+                    'border-slate-200 hover:border-main-400 transition',
+                    isSelected ? 'ring-2 ring-main-500/60 border-main-300 bg-main-50/40' : 'bg-white'
+                  ].join(' ')}
+                >
+                  {isImage ? (
+                    <img
+                      src={absolute}
+                      alt={asset.filename}
+                      className='mx-auto aspect-square w-[88px] object-contain rounded'
+                      loading='lazy'
+                    />
+                  ) : (
+                    <div className='mx-auto aspect-square w-[88px] grid place-items-center rounded bg-slate-50'>
+                      {getFileIcon(asset.mimeType)}
+                    </div>
+                  )}
                   <p className='mt-1.5 text-[11px] text-slate-600 text-center truncate' title={asset.filename}>
                     {asset.filename}
                   </p>

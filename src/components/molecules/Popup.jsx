@@ -23,7 +23,7 @@ export function Popup({ isOpen, onClose, children, title }) {
                         transition={{ duration: 0.25, ease: 'easeInOut' }}>
                         <div className='flex justify-between items-center mb-4'>
                             <h3 className='text-lg text-black font-semibold'>{title}</h3>
-                            <Button cn=" !p-[1px] " innerCn={"!gap-0 !justify-center !items-center !flex !w-[35px] !h-[35px] !px-[5px] "}  onclick={onClose} icon={<X className='w-5 h-5 text-gray-600' />} />
+                            <Button cn=" !p-[1px] " innerCn={"!gap-0 !justify-center !items-center !flex !w-[35px] !h-[35px] !px-[5px] "} onclick={onClose} icon={<X className='w-5 h-5 text-gray-600' />} />
                         </div>
                         <div>{children}</div>
                     </motion.div>

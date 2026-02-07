@@ -135,90 +135,95 @@ export default memo(function AmazingServiceCard({
 
   // ---------- REAL CARD ----------
   return (
-    <Link href={to}>
+    <div className='relative'>
+
+
 
       <motion.article className={`${isHoverScale ? 'hover:scale-[1.05]' : 'hover:scale-[1.01]'} relative  h-full group service-card !rounded-[10px] !overflow-hidden bg-white text-black border border-slate-200 shadow-sm transition-all duration-300 will-change-transform`} variants={cardVariants} initial='initial' animate='in' whileHover='hover' role='article'>
         {/* Cover */}
-        <div className='relative group'>
-          <div className='relative w-full aspect-[16/10] overflow-hidden rounded-[10px_10px_0_0]'>
-            {/* Image + subtle zoom on group hover */}
-            <Img src={cover} alt={serviceTitle} className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]' />
-            <Img src={cover} alt='' aria-hidden='true' className='absolute inset-0 blur-[80px] scale-110 opacity-40 object-cover pointer-events-none' />
+        <Link href={to}>
+          <div className='relative group'>
+            <div className='relative w-full aspect-[16/10] overflow-hidden rounded-[10px_10px_0_0]'>
+              {/* Image + subtle zoom on group hover */}
+              <Img src={cover} alt={serviceTitle} className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]' />
+              <Img src={cover} alt='' aria-hidden='true' className='absolute inset-0 blur-[80px] scale-110 opacity-40 object-cover pointer-events-none' />
 
-            {/* Seller pill */}
-            <div className='pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3'>
-              <div className='relative flex items-center gap-3 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1.5 text-white'>
-                <div className='relative'>
-                  <Img
-                    src={sellerAvatar}
-                    alt={sellerName}
-                    className='h-10 w-10 rounded-full object-cover border border-white/40'
-                  />
+              {/* Seller pill */}
+              <div className='pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3'>
+                <div className='relative flex items-center gap-3 bg-black/45 backdrop-blur-sm rounded-full px-2.5 py-1.5 text-white'>
+                  <div className='relative'>
+                    <Img
+                      src={sellerAvatar}
+                      alt={sellerName}
+                      className='h-10 w-10 rounded-full object-cover border border-white/40'
+                    />
 
-                  {/* Badge positioned at bottom start (bottom-0) */}
-                  {service?.seller?.topRated && (
-                    <div className='absolute -bottom-1 -start-1'>
-                      <TopRatedBadge isTopRated={true} size='xs' />
+                    {/* Badge positioned at bottom start (bottom-0) */}
+                    {service?.seller?.topRated && (
+                      <div className='absolute -bottom-1 -start-1'>
+                        <TopRatedBadge isTopRated={true} size='xs' />
+                      </div>
+                    )}
+                  </div>
+                  <div className='min-w-0'>
+                    <div className='text-sm font-semibold truncate'>{sellerName}</div>
+                    <div className='text-white flex items-center gap-1.5'>
+                      {ratingText && <span className='text-xs font-semibold'>{ratingText}</span>}
+                      {rating ? <Stars value={rating} size={16} stroke='stroke-white' dim='stroke-white/30' /> : null}
                     </div>
-                  )}
+                  </div>
                 </div>
-                <div className='min-w-0'>
-                  <div className='text-sm font-semibold truncate'>{sellerName}</div>
-                  <div className='text-white flex items-center gap-1.5'>
-                    {ratingText && <span className='text-xs font-semibold'>{ratingText}</span>}
-                    {rating ? <Stars value={rating} size={16} stroke='stroke-white' dim='stroke-white/30' /> : null}
+              </div>
+
+              {/* Hover overlay */}
+              <div className='absolute inset-0 text-white p-4 flex flex-col justify-end backdrop-blur-xs bg-gradient-to-t from-black/70 via-black/30 to-transparent translate-y-full opacity-0 transition-all duration-400 ease-out group-hover:translate-y-0 group-hover:opacity-100 overflow-hidden'>
+                <ul className='space-y-2 max-h-[50%] overflow-hidden pr-1'>
+                  {(featureBullets?.length ? featureBullets.slice(0, 4) : ['No details provided']).map((b, i) => (
+                    <li key={i} className='flex items-start gap-2 text-sm leading-snug'>
+                      <CheckCircle2 className='text-main-500 w-4 h-4 mt-0.5 flex-none' />
+                      <span className='whitespace-nowrap truncate'>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className='mt-3 flex items-center justify-between text-xs opacity-95'>
+                  <div className='flex items-center gap-2'>
+                    <Clock className='w-4 h-4' />
+                    {deliveryTime ? `${deliveryTime} day${deliveryTime > 1 ? 's' : ''}` : '—'}
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <Zap className='w-4 h-4' />
+                    {service?.fastDelivery ? 'Fast' : 'Standard'}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Hover overlay */}
-            <div className='absolute inset-0 text-white p-4 flex flex-col justify-end backdrop-blur-xs bg-gradient-to-t from-black/70 via-black/30 to-transparent translate-y-full opacity-0 transition-all duration-400 ease-out group-hover:translate-y-0 group-hover:opacity-100 overflow-hidden'>
-              <ul className='space-y-2 max-h-[50%] overflow-hidden pr-1'>
-                {(featureBullets?.length ? featureBullets.slice(0, 4) : ['No details provided']).map((b, i) => (
-                  <li key={i} className='flex items-start gap-2 text-sm leading-snug'>
-                    <CheckCircle2 className='text-main-500 w-4 h-4 mt-0.5 flex-none' />
-                    <span className='whitespace-nowrap truncate'>{b}</span>
-                  </li>
-                ))}
-              </ul>
+            {/* Favorite / seller level */}
 
-              <div className='mt-3 flex items-center justify-between text-xs opacity-95'>
-                <div className='flex items-center gap-2'>
-                  <Clock className='w-4 h-4' />
-                  {deliveryTime ? `${deliveryTime} day${deliveryTime > 1 ? 's' : ''}` : '—'}
-                </div>
-                <div className='flex items-center gap-2'>
-                  <Zap className='w-4 h-4' />
-                  {service?.fastDelivery ? 'Fast' : 'Standard'}
-                </div>
+            <SellerLevelBadge level={service?.seller?.sellerLevel} />
+          </div>
+
+          {/* Body */}
+          <div className='p-4 space-y-3'>
+            <div className='block focus:outline-none focus:ring-2 focus:ring-blue-500 rounded'>
+              <h3 className='text-[17px] font-semibold line-clamp-1  '>{serviceTitle}</h3>
+            </div>
+            {serviceBrief ? <p className='text-[13px] text-slate-600 line-clamp-2'>{serviceBrief}</p> : null}
+
+            <div className='flex items-center justify-between'>
+              <div className='text-[14px] text-slate-700'>{categoryName || '—'}</div>
+              <div className='text-[14px] font-semibold'>
+                {t('from')} <PriceTag price={minPrice ?? 0} />
               </div>
             </div>
           </div>
-
-          {/* Favorite / seller level */}
-          <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' />
-          <SellerLevelBadge level={service?.seller?.sellerLevel} />
-        </div>
-
-        {/* Body */}
-        <div className='p-4 space-y-3'>
-          <div className='block focus:outline-none focus:ring-2 focus:ring-blue-500 rounded'>
-            <h3 className='text-[17px] font-semibold line-clamp-1  '>{serviceTitle}</h3>
-          </div>
-          {serviceBrief ? <p className='text-[13px] text-slate-600 line-clamp-2'>{serviceBrief}</p> : null}
-
-          <div className='flex items-center justify-between'>
-            <div className='text-[14px] text-slate-700'>{categoryName || '—'}</div>
-            <div className='text-[14px] font-semibold'>
-              {t('from')} <PriceTag price={minPrice ?? 0} />
-            </div>
-          </div>
-        </div>
+        </Link>
 
         {/* <Button icon={<CircleArrowOutUpRight className='-mb-1' size={18} />} className='absolute bottom-[10px] !w-[calc(100%-20px)] mx-[10px]' name={t('discovery.showMore')} href={to} /> */}
+        <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' />
       </motion.article>
-    </Link>
+    </div>
   );
 });
 

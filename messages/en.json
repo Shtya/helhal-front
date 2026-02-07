@@ -259,7 +259,38 @@
     "loadingReferralData": "Loading referral data...",
     "notAuthenticated": "You must be logged in to view this content.",
     "copyFailed": "Failed to copy. Please try manually.",
-    "unknownError": "An unknown error occurred."
+    "unknownError": "An unknown error occurred.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "insert": "Insert",
+    "upload": "Upload",
+    "reset_default": "Reset to Default",
+    "image_dialog": {
+      "title": "Insert Image",
+      "url_label": "Image URL",
+      "upload_text": "Click to upload image",
+      "alt_text_label": "Alt Text",
+      "width_label": "Width (px)",
+      "placeholders": {
+        "alt_text": "Description for accessibility",
+        "url": "https://example.com/image.jpg"
+      }
+    },
+    "datePlaceholder": "Select Date Range",
+    "editor": {
+      "placeholder": "Start typing here...",
+      "legal_notice": "Please ensure the content matches official legal standards.",
+      "link_dialog": {
+        "url_label": "Link URL",
+        "apply": "Apply Link",
+        "unlink": "Remove Link"
+      }
+    },
+    "retry": "Retry",
+    "errorTitle": "Oops, something went wrong",
+    "errorLoading": "Failed to load data",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "GlobalSearch": {
     "scopes": {
@@ -2665,6 +2696,15 @@
     }
   },
   "Chat": {
+    "messages": "Messages",
+    "conversations": "Conversations",
+    "details": "Details",
+    "aria": {
+      "showConversations": "Show conversations",
+      "showDetails": "Show details",
+      "closeMenu": "Close menu",
+      "closeSidebar": "Close sidebar"
+    },
     "received": "Received ✅",
     "save": "Save",
     "star": "Star",
@@ -2695,10 +2735,10 @@
       "archived": "Archived"
     },
     "placeholders": {
-      "search": "Search conversations",
-      "message": "Write a message…",
       "selectConversation": "Select a conversation to start chatting",
-      "searchUsers": "Or search for users above to start a new chat"
+      "searchUsers": "Search users to start a new conversation",
+      "search": "Search conversations",
+      "message": "Write a message…"
     },
     "clear": "Clear",
     "searching": "Searching…",
@@ -2720,6 +2760,7 @@
     "pin": "Pin",
     "unpin": "Unpin",
     "about": "About {name}",
+    "about_title": "About",
     "contact": "Contact",
     "topRated": "Top Rated",
     "lastMessage": "Last message",

@@ -457,7 +457,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className={`z-[100] absolute start-0 mt-1 w-[max(800px,90vw)] max-w-screen-xl border border-slate-200 bg-white shadow-xl rounded-xl overflow-hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
+            className={`z-[100] absolute start-0 mt-1 max-w-[calc(100vw-2rem)] w-[95vw] md:w-[700px] lg:w-[max(800px,70vw)] xl:w-[max(1000px,70vw)] border border-slate-200 bg-white shadow-xl rounded-xl overflow-hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
           >
             <div className='px-4 py-5'>
               {loadingTopCategories ? (

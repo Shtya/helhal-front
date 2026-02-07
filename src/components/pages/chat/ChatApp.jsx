@@ -928,57 +928,215 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
   const { threads, adminLoading, messagesPaginationByThread, userPagination, setUserPagination, loadingMessagesId, loadingOlderThreads, loadOlderMessages, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, onCloseSearchMenu, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin } = useChat();
 
   const activeThread = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
-
+  const [showConversationsSidebar, setShowConversationsSidebar] = useState()
+  const [showAboutSidebar, setShowAboutSidebar] = useState()
+  const breakpoint = swapEarly ? "2xl" : "xl";
+  // Handle thread selection - close sidebar on mobile
+  const handleThreadSelect = (threadId) => {
+    selectThread(threadId);
+    setShowConversationsSidebar(false);
+  };
   return (
     <div className='divider'>
-      <div className={`container  grid gap-6 ${swapEarly ? "2xl:grid-cols-[350px_minmax(0,1fr)_350px]" : "xl:grid-cols-[350px_minmax(0,1fr)_350px]"} md:grid-cols-1`}>
-        {/* Left Panel - Conversations List */}
-        <div className=' '>
+      <div className="container relative">
+        {/* Desktop Layout - 3 Column Grid */}
+        <div className={`hidden ${breakpoint}:grid gap-6 ${swapEarly ? "2xl:grid-cols-[350px_minmax(0,1fr)_350px]" : "xl:grid-cols-[350px_minmax(0,1fr)_350px]"}`}>
+          {/* Left Panel - Conversations */}
           <Panel className="h-full" cdCard="h-full !p-0">
-            <AllMessagesPanel showContactAdmin={showContactAdmin} adminLoading={adminLoading} userPagination={userPagination} setUserPagination={onCloseSearchMenu} items={threads} onSearch={handleSearch} query={query} onSelect={selectThread} t={t} searchResults={searchResults} onCloseSearchMenu={onCloseSearchMenu} showSearchResults={showSearchResults} isSearching={isSearching} onSearchResultClick={handleSearchResultClick} activeTab={activeTab} setActiveTab={setActiveTab} toggleFavorite={toggleFavorite} togglePin={togglePin} toggleArchive={toggleArchive} favoriteThreads={favoriteThreads} pinnedThreads={pinnedThreads} archivedThreads={archivedThreads} currentUser={currentUser} loading={loading} onRefresh={() => fetchConversations()} onContactAdmin={contactAdmin} />
+            <AllMessagesPanel
+              showContactAdmin={showContactAdmin}
+              adminLoading={adminLoading}
+              userPagination={userPagination}
+              setUserPagination={onCloseSearchMenu}
+              items={threads}
+              onSearch={handleSearch}
+              query={query}
+              onSelect={selectThread}
+              t={t}
+              searchResults={searchResults}
+              onCloseSearchMenu={onCloseSearchMenu}
+              showSearchResults={showSearchResults}
+              isSearching={isSearching}
+              onSearchResultClick={handleSearchResultClick}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              toggleFavorite={toggleFavorite}
+              togglePin={togglePin}
+              toggleArchive={toggleArchive}
+              favoriteThreads={favoriteThreads}
+              pinnedThreads={pinnedThreads}
+              archivedThreads={archivedThreads}
+              currentUser={currentUser}
+              loading={loading}
+              onRefresh={() => fetchConversations()}
+              onContactAdmin={contactAdmin}
+            />
+          </Panel>
+
+          {/* Middle Panel - Chat */}
+          <Panel cdCard="flex items-stretch h-full" className="h-full">
+            {activeThreadId && activeThread ? (
+              <ChatThread
+                key={activeThread.id}
+                loadingMessagesId={loadingMessagesId}
+                loadingOlder={loadingOlderThreads.has(activeThreadId)}
+                onLoadOlder={() => loadOlderMessages(activeThreadId)}
+                thread={activeThread}
+                pagination={messagesPaginationByThread.get(activeThreadId) || {}}
+                messages={messagesByThread.get(activeThreadId) || []}
+                onSend={(msg, files) => sendMessage(activeThreadId, msg, files)}
+                t={t}
+                isFavorite={favoriteThreads.has(activeThreadId)}
+                isPinned={pinnedThreads.has(activeThreadId)}
+                isArchived={archivedThreads.has(activeThreadId)}
+                toggleFavorite={() => toggleFavorite(activeThreadId)}
+                togglePin={() => togglePin(activeThreadId)}
+                toggleArchive={() => toggleArchive(activeThreadId)}
+                isConnected={isConnected}
+                currentUser={currentUser}
+              />
+            ) : (
+              <EmptyState t={t} MessageSkeletonBubble={MessageSkeletonBubble} />
+            )}
+          </Panel>
+
+          {/* Right Panel - About */}
+          <Panel cdCard="!p-0">
+            <AboutPanel about={aboutUser} t={t} />
           </Panel>
         </div>
 
-        {/* Middle Panel - Chat Thread */}
-        <Panel cdCard="flex items-stretch h-full" className="h-full">
-          {activeThreadId && activeThread ? (
-            <ChatThread
-              key={activeThread.id}
-              loadingMessagesId={loadingMessagesId}
-              loadingOlder={loadingOlderThreads.has(activeThreadId)}
-              onLoadOlder={() => loadOlderMessages(activeThreadId)}
-              thread={activeThread}
-              pagination={messagesPaginationByThread.get(activeThreadId) || {}}
-              messages={messagesByThread.get(activeThreadId) || []}
-              onSend={(msg, files) => sendMessage(activeThreadId, msg, files)}
-              t={t}
-              isFavorite={favoriteThreads.has(activeThreadId)}
-              isPinned={pinnedThreads.has(activeThreadId)}
-              isArchived={archivedThreads.has(activeThreadId)}
-              toggleFavorite={() => toggleFavorite(activeThreadId)}
-              togglePin={() => togglePin(activeThreadId)}
-              toggleArchive={() => toggleArchive(activeThreadId)}
-              isConnected={isConnected}
-              currentUser={currentUser}
-            />
-          ) : (
-            <div className='flex-1  max-h-[540px] h-full flex flex-col items-center justify-center p-6 text-center'>
-              <Image src='/icons/chat-placeholder.png' alt='Start a conversation' width={200} height={200} />
-              <p className='text-gray-600 text-lg -mt-4 mb-1'>{t('placeholders.selectConversation')}</p>
-              <p className='text-gray-400 text-sm'>{t('placeholders.searchUsers')}</p>
-              <div className='w-full max-w-xl mt-8 space-y-4'>
-                <MessageSkeletonBubble />
-                <MessageSkeletonBubble me />
-              </div>
-            </div>
-          )}
-        </Panel>
+        {/* Mobile/Tablet Layout - Full Width with Sidebars */}
+        <div className={`${breakpoint}:hidden`}>
+          {/* Main Chat View */}
+          <Panel cdCard="flex items-stretch h-full !p-0" className="h-full">
+            {activeThreadId && activeThread ? (
+              <div className="flex flex-col w-full h-full">
+                {/* Mobile Header */}
+                <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white rounded-t-xl">
+                  <button
+                    onClick={() => setShowConversationsSidebar(true)}
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    aria-label="Show conversations"
+                  >
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
 
-        {/* Right Panel - About (Hidden on mobile) */}
-        <div className=' '>
-          <Panel>
-            <AboutPanel about={aboutUser} t={t} />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 truncate">
+                      {activeThread.otherUser?.username || activeThread.title}
+                    </h3>
+                    {activeThread.otherUser?.email && (
+                      <p className="text-xs text-gray-500 truncate">
+                        {activeThread.otherUser.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setShowAboutSidebar(true)}
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    aria-label="Show details"
+                  >
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Chat Content */}
+                <div className="overflow-hidden p-6">
+                  <ChatThread
+                    key={activeThread.id}
+                    loadingMessagesId={loadingMessagesId}
+                    loadingOlder={loadingOlderThreads.has(activeThreadId)}
+                    onLoadOlder={() => loadOlderMessages(activeThreadId)}
+                    thread={activeThread}
+                    pagination={messagesPaginationByThread.get(activeThreadId) || {}}
+                    messages={messagesByThread.get(activeThreadId) || []}
+                    onSend={(msg, files) => sendMessage(activeThreadId, msg, files)}
+                    t={t}
+                    isFavorite={favoriteThreads.has(activeThreadId)}
+                    isPinned={pinnedThreads.has(activeThreadId)}
+                    isArchived={archivedThreads.has(activeThreadId)}
+                    toggleFavorite={() => toggleFavorite(activeThreadId)}
+                    togglePin={() => togglePin(activeThreadId)}
+                    toggleArchive={() => toggleArchive(activeThreadId)}
+                    isConnected={isConnected}
+                    currentUser={currentUser}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="w-full">
+                {/* Empty State Header */}
+                <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white rounded-t-xl">
+                  <button
+                    onClick={() => setShowConversationsSidebar(true)}
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                  >
+                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                  <h3 className="font-semibold text-gray-900">{t('messages') || 'Messages'}</h3>
+                </div>
+
+                <EmptyState t={t} MessageSkeletonBubble={MessageSkeletonBubble} />
+              </div>
+            )}
           </Panel>
+
+          {/* Left Sidebar - Conversations (Slide in from left) */}
+          <Sidebar
+            isOpen={showConversationsSidebar}
+            onClose={() => setShowConversationsSidebar(false)}
+            title={t('conversations') || 'Conversations'}
+            position="left"
+          >
+            <AllMessagesPanel
+              showContactAdmin={showContactAdmin}
+              adminLoading={adminLoading}
+              userPagination={userPagination}
+              setUserPagination={onCloseSearchMenu}
+              items={threads}
+              onSearch={handleSearch}
+              query={query}
+              onSelect={handleThreadSelect}
+              t={t}
+              searchResults={searchResults}
+              onCloseSearchMenu={onCloseSearchMenu}
+              showSearchResults={showSearchResults}
+              isSearching={isSearching}
+              onSearchResultClick={handleSearchResultClick}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              toggleFavorite={toggleFavorite}
+              togglePin={togglePin}
+              toggleArchive={toggleArchive}
+              favoriteThreads={favoriteThreads}
+              pinnedThreads={pinnedThreads}
+              archivedThreads={archivedThreads}
+              currentUser={currentUser}
+              loading={loading}
+              onRefresh={() => fetchConversations()}
+              onContactAdmin={contactAdmin}
+            />
+          </Sidebar>
+
+          {/* Right Sidebar - About (Slide in from right) */}
+          <Sidebar
+            isOpen={showAboutSidebar}
+            onClose={() => setShowAboutSidebar(false)}
+            title={t('about_title') || 'Details'}
+            position="right"
+          >
+            <div className=''>
+              <AboutPanel about={aboutUser} t={t} />
+            </div>
+          </Sidebar>
         </div>
       </div>
     </div>
@@ -994,41 +1152,222 @@ export function Panel({ children, cdCard, className }) {
 }
 
 /* ------------------------------- ABOUT ------------------------------- */
+
+
 export function AboutPanel({ about = {} }) {
   const t = useTranslation('Chat');
+
   return (
-    <div className="w-full">
-      <h2 className="text-2xl font-semibold flex flex-wrap items-center justify-between gap-2 min-w-0">
-        <span className="truncate">{t('aboutPanel.about', { name: about.name || 'Contact' })}</span>
-        <TopRatedBadge isTopRated={about.topRated} />
-      </h2>
+    <div className="w-full p-3">
+      {/* Header Section */}
+      <div className="mb-3 lg:mb-6 p-3">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {about.name || 'Contact'}
+          </h2>
+          <TopRatedBadge isTopRated={about.topRated} />
+        </div>
+        {about.email && (
+          <p className="text-sm text-gray-500 break-all">{about.email}</p>
+        )}
+      </div>
 
+      {/* Stats Grid - Mobile Optimized */}
+      <div className="grid grid-cols-1 gap-x-3">
+        {about.from && (
+          <InfoCard
+            icon={<MessageIcon />}
+            label={t('aboutPanel.lastMessage')}
+            value={about.from}
+          />
+        )}
 
-      <div className="mt-3 h-px w-full bg-slate-200" />
-      <dl className="mt-4 space-y-4">
-        <Row label={t('aboutPanel.lastMessage')} value={about.from || '—'} />
-        <Row label={t('aboutPanel.onPlatform')} value={about.onPlatform || '—'} />
-        <Row label={t('aboutPanel.languages')} value={about.languages || '—'} />
-        <Row label={t('aboutPanel.level')} value={about.level || '—'} />
-        <Row label={t('aboutPanel.responseRate')} value={about.responseRate || '—'} />
-        <Row label={t('aboutPanel.ordersCompleted')} value={about.ordersCompleted ?? '—'} />
-        <Row label={t('aboutPanel.role')} value={about.role || '—'} />
-      </dl>
+        {about.onPlatform && (
+          <InfoCard
+            icon={<CalendarIcon />}
+            label={t('aboutPanel.onPlatform')}
+            value={about.onPlatform}
+          />
+        )}
+
+        {about.languages && (
+          <InfoCard
+            icon={<LanguageIcon />}
+            label={t('aboutPanel.languages')}
+            value={about.languages}
+          />
+        )}
+
+        {about.level && (
+          <InfoCard
+            icon={<StarIcon />}
+            label={t('aboutPanel.level')}
+            value={about.level}
+          />
+        )}
+
+        {about.responseRate && (
+          <InfoCard
+            icon={<ChartIcon />}
+            label={t('aboutPanel.responseRate')}
+            value={about.responseRate}
+          />
+        )}
+
+        {(about.ordersCompleted !== null && about.ordersCompleted !== undefined) && (
+          <InfoCard
+            icon={<CheckIcon />}
+            label={t('aboutPanel.ordersCompleted')}
+            value={about.ordersCompleted}
+          />
+        )}
+
+        {about.role && (
+          <InfoCard
+            icon={<UserIcon />}
+            label={t('aboutPanel.role')}
+            value={about.role}
+          />
+        )}
+      </div>
     </div>
   );
 }
 
-
-function Row({ label, value }) {
+function InfoCard({ icon, label, value }) {
   return (
-    <div className='grid grid-cols-[1fr_auto] items-center gap-6 py-2'>
-      <dt className='text-sm font-medium text-gray-600 whitespace-nowrap '>{label}</dt>
-      <dd title={typeof value === 'string' ? value : undefined} className='text-sm text-gray-900 whitespace-nowrap truncate'>
-        {value}
-      </dd>
+    <div className='flex items-start gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors'>
+      <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white rounded-lg border border-slate-200">
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <dt className='text-xs font-medium text-gray-500 uppercase tracking-wide mb-1'>
+          {label}
+        </dt>
+        <dd
+          title={typeof value === 'string' ? value : undefined}
+          className='text-sm font-semibold text-gray-900 break-words'
+        >
+          {value}
+        </dd>
+      </div>
     </div>
   );
 }
+
+// Icon Components (using inline SVG for simplicity)
+function MessageIcon() {
+  return (
+    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  );
+}
+
+function LanguageIcon() {
+  return (
+    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+    </svg>
+  );
+}
+
+function ChartIcon() {
+  return (
+    <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  );
+}
+// Empty State Component
+const EmptyState = ({ t, MessageSkeletonBubble }) => (
+  <div className='flex-1 max-h-[540px] h-full flex flex-col items-center justify-center p-6 text-center'>
+    <Image src='/icons/chat-placeholder.png' alt='Start a conversation' width={200} height={200} />
+    <p className='text-gray-600 text-lg -mt-4 mb-1'>{t('placeholders.selectConversation')}</p>
+    <p className='text-gray-400 text-sm'>{t('placeholders.searchUsers')}</p>
+    <div className='w-full max-w-xl mt-8 space-y-4'>
+      <MessageSkeletonBubble />
+      <MessageSkeletonBubble me />
+    </div>
+  </div>
+);
+
+const Sidebar = ({ isOpen, onClose, title, children, position = 'left' }) => {
+  return (
+    <>
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          }`}
+        onClick={onClose}
+      />
+
+      {/* Sidebar Panel */}
+      <div
+        className={`fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen
+          ? 'translate-x-0'
+          : position === 'left'
+            ? '-translate-x-full'
+            : 'translate-x-full'
+          }`}
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Close sidebar"
+          >
+            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Sidebar Content */}
+        <div className="h-[calc(100%-73px)] overflow-y-auto">
+          {children}
+        </div>
+      </div>
+    </>
+  );
+};
+
+
+
 
 function Rating({ value }) {
   return (

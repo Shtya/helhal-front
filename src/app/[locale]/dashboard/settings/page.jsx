@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Save, RefreshCw, DollarSign, Shield, Globe, Mail, Phone, Image as ImageIcon, Wallet, Info, Share2, Percent } from 'lucide-react';
 
 import api from '@/lib/axios';
@@ -14,6 +14,9 @@ import { useTranslations } from 'next-intl';
 import { FaFacebook, FaInstagram, FaLinkedin, FaPinterest, FaTiktok, FaTwitter } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Currency from '@/components/common/Currency';
+import { Controller } from 'react-hook-form';
+import RichTextEditor from '@/components/molecules/editor/RichTextEditor';
+import RichTextRenderer from '@/components/molecules/editor/RichTextRenderer';
 
 const getSettingsSchema = (t) => z.object({
   contactEmail: z
@@ -181,10 +184,10 @@ export default function AdminSettingsDashboard() {
     // Flags (no affiliate)
     jobsRequireApproval: true,
     // Legal
-    privacyPolicy_en: '',
-    privacyPolicy_ar: '',
-    termsOfService_en: '',
-    termsOfService_ar: '',
+    privacyPolicy_en: null,
+    privacyPolicy_ar: null,
+    termsOfService_en: null,
+    termsOfService_ar: null,
     sellerFaqs_en: [],
     sellerFaqs_ar: [],
     inviteFaqs_en: [],
@@ -225,6 +228,12 @@ export default function AdminSettingsDashboard() {
   useEffect(() => {
     fetchSettings();
   }, []);
+  // Inside your SettingsForm component
+  const privacyEnRef = useRef(null);
+  const privacyArRef = useRef(null);
+  const termsEnRef = useRef(null);
+  const termsArRef = useRef(null);
+
 
   const handleSave = async () => {
     try {
@@ -235,6 +244,10 @@ export default function AdminSettingsDashboard() {
         ...settings,
         platformPercent: Number(settings.platformPercent) || 0,
         defaultCurrency: Number(settings.defaultCurrency) || 1,
+        privacyPolicy_en: privacyEnRef.current ? privacyEnRef.current.toJSON() : data.privacyPolicy_en,
+        privacyPolicy_ar: privacyArRef.current ? privacyArRef.current.toJSON() : data.privacyPolicy_ar,
+        termsOfService_en: termsEnRef.current ? termsEnRef.current.toJSON() : data.termsOfService_en,
+        termsOfService_ar: termsArRef.current ? termsArRef.current.toJSON() : data.termsOfService_ar,
       };
 
       // Validate with Zod
@@ -290,21 +303,6 @@ export default function AdminSettingsDashboard() {
   const [activeLegalTab, setActiveLegalTab] = useState('privacy'); // 'privacy' | 'terms'
   const [showPreview, setShowPreview] = useState(false);
 
-  const { privacyCharsEn, privacyWordsEn, termsCharsEn, termsWordsEn, privacyCharsAr, privacyWordsAr, termsCharsAr, termsWordsAr } = useMemo(() => {
-
-    const privacyCharsEn = settings.privacyPolicy_en?.length || 0;
-    const privacyWordsEn = countWords(settings.privacyPolicy_en);
-
-    const termsCharsEn = settings.termsOfService_en?.length || 0;
-    const termsWordsEn = countWords(settings.termsOfService_en);
-
-    const privacyCharsAr = settings.privacyPolicy_ar?.length || 0;
-    const privacyWordsAr = countWords(settings.privacyPolicy_ar);
-
-    const termsCharsAr = settings.termsOfService_ar?.length || 0;
-    const termsWordsAr = countWords(settings.termsOfService_ar);
-    return { privacyCharsEn, privacyWordsEn, termsCharsEn, termsWordsEn, privacyCharsAr, privacyWordsAr, termsCharsAr, termsWordsAr }
-  })
 
   if (loading) {
     return (
@@ -680,98 +678,67 @@ export default function AdminSettingsDashboard() {
 
             {/* Editors */}
             {activeLegalTab === 'privacy' ? (
-              <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+              /* Add a unique key to the container */
+              <div key="privacy-tab-container" className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
                 {/* English */}
-                <div>
+                <div key="privacy-en-section">
                   <h3 className='text-sm font-medium mb-2'>{t('privacyPolicyEn')}</h3>
                   {!showPreview ? (
-                    <>
-                      <Textarea
-                        value={settings.privacyPolicy_en}
-                        onChange={e => updateField('privacyPolicy_en', e.target.value)}
-                        rows={12}
-                        placeholder={t('privacyPolicyPlaceholder')}
-                      />
-                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
-                        <span>
-                          {privacyCharsEn} {t('chars')} • {privacyWordsEn} {t('words')}
-                        </span>
-                        <span>{t('privacyTip')}</span>
-                      </div>
-                    </>
+                    <RichTextEditor
+                      key={`editor-privacy-en-${settings.id}`} // Unique key ensures fresh init
+                      value={privacyEnRef.current || settings.privacyPolicy_en || ''}
+                      editorStateRef={privacyEnRef}
+                      minHeight="400px"
+                    />
                   ) : (
-                    <PreviewBox text={settings.privacyPolicy_en} />
+                    <PreviewBox content={privacyEnRef.current || settings.privacyPolicy_en} />
                   )}
                 </div>
 
                 {/* Arabic */}
-                <div dir='rtl'>
+                <div key="privacy-ar-section" dir='rtl'>
                   <h3 className='text-sm font-medium mb-2'>{t('privacyPolicyAr')}</h3>
                   {!showPreview ? (
-                    <>
-                      <Textarea
-                        value={settings.privacyPolicy_ar}
-                        onChange={e => updateField('privacyPolicy_ar', e.target.value)}
-                        rows={12}
-                        placeholder={t('privacyPolicyPlaceholderAr')}
-                      />
-                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
-                        <span>
-                          {privacyCharsAr} {t('chars')} • {privacyWordsAr} {t('words')}
-                        </span>
-                        <span>{t('privacyTipAr')}</span>
-                      </div>
-                    </>
+                    <RichTextEditor
+                      key={`editor-privacy-ar-${settings.id}`}
+                      value={privacyArRef.current || settings.privacyPolicy_ar || ''}
+                      editorStateRef={privacyArRef}
+                      minHeight="400px"
+                    />
                   ) : (
-                    <PreviewBox text={settings.privacyPolicy_ar} />
+                    <PreviewBox content={privacyArRef.current || settings.privacyPolicy_ar} />
                   )}
                 </div>
               </div>
             ) : (
-              <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                {/* English */}
-                <div>
+              <div key="terms-tab-container" className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+                {/* English Terms */}
+                <div key="terms-en-section">
                   <h3 className='text-sm font-medium mb-2'>{t('termsOfServiceEn')}</h3>
                   {!showPreview ? (
-                    <>
-                      <Textarea
-                        value={settings.termsOfService_en}
-                        onChange={e => updateField('termsOfService_en', e.target.value)}
-                        rows={12}
-                        placeholder={t('termsOfServicePlaceholder')}
-                      />
-                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
-                        <span>
-                          {termsCharsEn} {t('chars')} • {termsWordsEn} {t('words')}
-                        </span>
-                        <span>{t('termsTip')}</span>
-                      </div>
-                    </>
+                    <RichTextEditor
+                      key={`editor-terms-en-${settings.id}`}
+                      value={termsEnRef.current || settings.termsOfService_en || ''}
+                      editorStateRef={termsEnRef}
+                      minHeight="400px"
+                    />
                   ) : (
-                    <PreviewBox text={settings.termsOfService_en} />
+                    <PreviewBox content={termsEnRef.current || settings.termsOfService_en} />
                   )}
                 </div>
 
-                {/* Arabic */}
-                <div dir='rtl'>
+                {/* Arabic Terms */}
+                <div key="terms-ar-section" dir='rtl'>
                   <h3 className='text-sm font-medium mb-2'>{t('termsOfServiceAr')}</h3>
                   {!showPreview ? (
-                    <>
-                      <Textarea
-                        value={settings.termsOfService_ar}
-                        onChange={e => updateField('termsOfService_ar', e.target.value)}
-                        rows={12}
-                        placeholder={t('termsOfServicePlaceholderAr')}
-                      />
-                      <div className='mt-1 flex items-center justify-between text-[11px] text-slate-500'>
-                        <span>
-                          {termsCharsAr} {t('chars')} • {termsWordsAr} {t('words')}
-                        </span>
-                        <span>{t('termsTipAr')}</span>
-                      </div>
-                    </>
+                    <RichTextEditor
+                      key={`editor-terms-ar-${settings.id}`}
+                      value={termsArRef.current || settings.termsOfService_ar || ''}
+                      editorStateRef={termsArRef}
+                      minHeight="400px"
+                    />
                   ) : (
-                    <PreviewBox text={settings.termsOfService_ar} />
+                    <PreviewBox content={termsArRef.current || settings.termsOfService_ar} />
                   )}
                 </div>
               </div>
@@ -793,13 +760,13 @@ export default function AdminSettingsDashboard() {
 }
 
 /* ------------------------------ Preview ------------------------------ */
-function PreviewBox({ text }) {
-  if (!text?.trim()) {
+function PreviewBox({ content }) {
+  if (!content) {
     return <div className='rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-slate-500'>Nothing to preview yet.</div>;
   }
   return (
     <div className='prose max-w-none rounded-lg border border-slate-200 bg-white p-4 whitespace-pre-line'>
-      {text}
+      <RichTextRenderer content={content} />
     </div>
   );
 }
