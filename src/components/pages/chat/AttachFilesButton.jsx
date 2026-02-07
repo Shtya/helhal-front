@@ -227,7 +227,17 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
               const isSelected = selectedFiles.some(f => f.id === asset.id);
               const absolute = asset.url ? (asset.url.startsWith('http') ? asset.url : baseImg + asset.url) : '';
               const isImage = asset.mimeType?.startsWith?.('image/');
+              const name = asset.filename;
+              const lastDotIndex = name.lastIndexOf('.');
 
+              // If no dot is found, lastIndex will be -1
+              const extension = lastDotIndex !== -1 ? name.slice(lastDotIndex + 1) : '';
+              const baseName = lastDotIndex !== -1 ? name.slice(0, lastDotIndex) : name;
+
+              // Trim logic
+              const finalName = baseName.length > 10
+                ? `${baseName.substring(0, 10)}...${extension}`
+                : name;
               return (
                 <div
                   key={asset.id}
@@ -241,7 +251,7 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
                   {isImage ? (
                     <img
                       src={absolute}
-                      alt={asset.filename}
+                      alt={finalName}
                       className='mx-auto aspect-square w-[88px] object-contain rounded'
                       loading='lazy'
                     />

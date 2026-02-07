@@ -2696,6 +2696,7 @@
     }
   },
   "Chat": {
+    "about_user": "About User",
     "messages": "Messages",
     "conversations": "Conversations",
     "details": "Details",

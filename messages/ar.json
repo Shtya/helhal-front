@@ -2693,6 +2693,7 @@
     }
   },
   "Chat": {
+    "about_user": "عن المستخدم",
     "messages": "الرسائل",
     "conversations": "المحادثات",
     "details": "التفاصيل",

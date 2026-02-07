@@ -467,7 +467,7 @@ const useChat = () => {
       if (!isErrorAbort(error)) {
 
         console.error('Error fetching conversations:', error);
-        showNotification('Failed to load conversations', 'error');
+        showNotification(error?.response?.data?.message || 'Failed to load conversations', 'error');
       }
     } finally {
       // Only clear loading if THIS request is still the active one
@@ -594,7 +594,7 @@ const useChat = () => {
 
     } catch (error) {
       console.error('Error searching users:', error);
-      showNotification('Failed to search users', 'error');
+      showNotification(error?.response?.data?.message || 'Failed to search users', 'error');
     } finally {
       setIsSearching(false);
     }
@@ -702,7 +702,7 @@ const useChat = () => {
         return updated;
       });
 
-      showNotification('Failed to send message', 'error');
+      showNotification(error?.response?.data?.message || 'Failed to send message', 'error');
     }
   };
 
@@ -740,7 +740,7 @@ const useChat = () => {
       return data;
     } catch (error) {
       console.error('Error creating conversation:', error);
-      showNotification('Failed to create conversation', 'error', toastId);
+      showNotification(error?.response?.data?.message || 'Failed to create conversation', 'error', toastId);
       return null;
     }
   };
@@ -767,7 +767,7 @@ const useChat = () => {
         { id: toastId });
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      toast.error(`Failed to update favorite for ${name}`, { id: toastId });
+      toast.error(error?.response?.data?.message || `Failed to update favorite for ${name}`, { id: toastId });
     }
   };
 
@@ -840,7 +840,7 @@ const useChat = () => {
       }
     } catch (error) {
       console.error('Error contacting admin:', error);
-      showNotification('Failed to contact admin', 'error');
+      showNotification(error?.response?.data?.message || 'Failed to contact admin', 'error');
     }
   };
 
@@ -1163,7 +1163,7 @@ export function AboutPanel({ about = {} }) {
       <div className="mb-3 lg:mb-6 p-3">
         <div className="flex items-start justify-between gap-3 mb-2">
           <h2 className="text-xl font-semibold text-gray-900">
-            {about.name || 'Contact'}
+            {about.name || t('about_user')}
           </h2>
           <TopRatedBadge isTopRated={about.topRated} />
         </div>
@@ -1174,61 +1174,54 @@ export function AboutPanel({ about = {} }) {
 
       {/* Stats Grid - Mobile Optimized */}
       <div className="grid grid-cols-1 gap-x-3">
-        {about.from && (
-          <InfoCard
-            icon={<MessageIcon />}
-            label={t('aboutPanel.lastMessage')}
-            value={about.from}
-          />
-        )}
 
-        {about.onPlatform && (
-          <InfoCard
-            icon={<CalendarIcon />}
-            label={t('aboutPanel.onPlatform')}
-            value={about.onPlatform}
-          />
-        )}
+        <InfoCard
+          icon={<MessageIcon />}
+          label={t('aboutPanel.lastMessage')}
+          value={about.from}
+        />
 
-        {about.languages && (
-          <InfoCard
-            icon={<LanguageIcon />}
-            label={t('aboutPanel.languages')}
-            value={about.languages}
-          />
-        )}
 
-        {about.level && (
-          <InfoCard
-            icon={<StarIcon />}
-            label={t('aboutPanel.level')}
-            value={about.level}
-          />
-        )}
+        <InfoCard
+          icon={<CalendarIcon />}
+          label={t('aboutPanel.onPlatform')}
+          value={about.onPlatform}
+        />
 
-        {about.responseRate && (
-          <InfoCard
-            icon={<ChartIcon />}
-            label={t('aboutPanel.responseRate')}
-            value={about.responseRate}
-          />
-        )}
 
-        {(about.ordersCompleted !== null && about.ordersCompleted !== undefined) && (
-          <InfoCard
-            icon={<CheckIcon />}
-            label={t('aboutPanel.ordersCompleted')}
-            value={about.ordersCompleted}
-          />
-        )}
+        <InfoCard
+          icon={<LanguageIcon />}
+          label={t('aboutPanel.languages')}
+          value={about.languages}
+        />
 
-        {about.role && (
-          <InfoCard
-            icon={<UserIcon />}
-            label={t('aboutPanel.role')}
-            value={about.role}
-          />
-        )}
+
+        <InfoCard
+          icon={<StarIcon />}
+          label={t('aboutPanel.level')}
+          value={about.level}
+        />
+
+
+        <InfoCard
+          icon={<ChartIcon />}
+          label={t('aboutPanel.responseRate')}
+          value={about.responseRate}
+        />
+
+
+        <InfoCard
+          icon={<CheckIcon />}
+          label={t('aboutPanel.ordersCompleted')}
+          value={about.ordersCompleted}
+        />
+
+
+        <InfoCard
+          icon={<UserIcon />}
+          label={t('aboutPanel.role')}
+          value={about.role}
+        />
       </div>
     </div>
   );
@@ -1248,7 +1241,7 @@ function InfoCard({ icon, label, value }) {
           title={typeof value === 'string' ? value : undefined}
           className='text-sm font-semibold text-gray-900 break-words'
         >
-          {value}
+          {value || '—'}
         </dd>
       </div>
     </div>
