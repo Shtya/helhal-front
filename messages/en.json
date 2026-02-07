@@ -1566,7 +1566,7 @@
       },
       "availableBalance": {
         "title": "Available Balance",
-        "description": "Use for purchases."
+        "description": "You can withdraw once your balance is greater than 112 SAR."
       },
       "reservedBalance": {
         "title": "Reserved Balance",

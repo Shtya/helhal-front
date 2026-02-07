@@ -1565,7 +1565,7 @@
       },
       "availableBalance": {
         "title": "الرصيد المتاح",
-        "description": "استخدم للمشتريات."
+        "description": "يمكنك سحب رصيدك عندما يتجاوز المبلغ 112 ريال."
       },
       "reservedBalance": {
         "title": "الرصيد المحجوز",

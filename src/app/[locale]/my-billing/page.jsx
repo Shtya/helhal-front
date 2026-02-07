@@ -473,7 +473,7 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
               {card.hasAction && (
                 <button
                   onClick={() => handleWithdraw(card.amount)}
-                  disabled={withdrawLoading || card.amount < 112}
+                  disabled={withdrawLoading || card.amount < 112 || balances?.reservedBalance > 0}
                   className='mt-4 w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[var(--color-main-600)] hover:bg-[var(--color-main-700)] text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                   {withdrawLoading ? (
