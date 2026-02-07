@@ -41,14 +41,12 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
   }, [value, options]);
 
   // Close on outside click / ESC, and mark touched once
-  console.log("options outside onDoc Click and it useEffect", options)
   useEffect(() => {
     const onDocClick = e => {
       if (buttonRef.current?.contains(e.target) || menuRef.current?.contains(e.target)) {
         return;
       }
       if (open) {
-        console.log("options from onDoc Click", options)
         setOptions(options);
         setOpen(false)
         onOpenToggle?.(false)
