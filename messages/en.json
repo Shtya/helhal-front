@@ -1568,6 +1568,10 @@
         "title": "Available Balance",
         "description": "Use for purchases."
       },
+      "reservedBalance": {
+        "title": "Reserved Balance",
+        "description": "Funds on hold, awaiting bank approval for transfer."
+      },
       "credits": {
         "title": "Credits",
         "description": "Earn Upphoto Credits."
@@ -1579,6 +1583,13 @@
       "cancelledOrdersCredit": {
         "title": "Refunded Credits",
         "description": "Total amount refunded from cancelled orders"
+      },
+      "withdrawButton": "Withdraw Funds",
+      "messages": {
+        "withdrawSuccess": "Withdrawal initiated successfully! Your funds are being processed."
+      },
+      "errors": {
+        "minAmount": "Minimum withdrawal amount is 112 SAR"
       },
       "phoneVerification": {
         "alreadyVerified": "Your phone number is already verified.",
@@ -1645,6 +1656,69 @@
       }
     },
     "paymentMethods": {
+      "validation": {
+        "fullNameRequired": "Full name is required",
+        "nameMin": "Must be at least {min} characters",
+        "nameMax": "Must be less than {max} characters",
+        "ibanRequired": "IBAN is required",
+        "ibanMin": "IBAN must be at least {min} characters",
+        "ibanMax": "IBAN must be at most {max} characters",
+        "ibanInvalid": "Invalid IBAN format",
+        "bankRequired": "Please select a bank"
+      },
+      "bank_codes": {
+        "bank_name": "Bank Name",
+        "select_bank": "Select Bank",
+        "banks": {
+          "aaib": "Arab African International Bank",
+          "abe": "ABE Bank",
+          "abk": "Al Ahli Bank of Kuwait – Egypt",
+          "adcb": "Abu Dhabi Commercial Bank – Egypt",
+          "aib": "Arab Investment Bank",
+          "aibank": "aiBANK",
+          "aub": "Ahli United Bank",
+          "bdc": "Banque Du Caire",
+          "cae": "Credit Agricole Egypt S.A.E",
+          "cbe": "Central Bank Of Egypt",
+          "cib": "Commercial International Bank - Egypt S.A.E",
+          "citibank": "Citibank",
+          "ealb": "Egyptian Arab Land Bank",
+          "ebe": "Export Development Bank of Egypt",
+          "enbd": "Emirates National Bank of Dubai",
+          "fab": "First Abu Dhabi Bank",
+          "faib": "Faisal Islamic Bank of Egypt",
+          "hdb": "Housing And Development Bank",
+          "hsbc": "HSBC Bank Egypt S.A.E",
+          "idb": "Industrial Development Bank",
+          "mcdr": "Misr Credit & Development",
+          "midbank": "MIDBANK",
+          "nbe": "National Bank of Egypt",
+          "nbg": "National Bank of Greece",
+          "nbk": "National Bank of Kuwait – Egypt",
+          "nsbq": "Nasser Social Bank",
+          "qnb": "Qatar National Bank Alahli",
+          "saib": "Societe Arabe Internationale De Banque",
+          "ub": "The United Bank",
+          "abrk": "Al Baraka Bank Egypt B.S.C",
+          "arab": "Arab Bank PLC",
+          "bbe": "Attijariwafa Bank",
+          "abc": "Arab Banking Corporation - Egypt S.A.E",
+          "misr": "Banque Misr",
+          "egb": "Egyptian Gulf Bank (EG-Bank)",
+          "post": "Egypt Post",
+          "mash": "Mashreq Bank",
+          "nib": "National Investment Bank",
+          "scb": "Suez Canal Bank",
+          "boa": "Alex Bank Egypt",
+          "adib": "Abu Dhabi Islamic Bank – Egypt"
+        }
+      },
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "updateAccount": "Update Account",
+      "updating": "Updating...",
+      "editAccountTitle": "Edit Bank Account Details",
+      "addAccountTitle": "Add New Bank Account",
       "title": "Bank Account Information",
       "yourBankAccounts": "Your Bank Accounts",
       "iban": "IBAN:",
@@ -1671,11 +1745,13 @@
       "errors": {
         "loading": "Error loading bank accounts",
         "adding": "Error adding bank account",
+        "updating": "Error updating bank account",
         "deleting": "Error deleting bank account",
         "settingDefault": "Error setting default bank account"
       },
       "success": {
         "added": "Bank account added successfully!",
+        "updated": "Bank account updated successfully!",
         "deleted": "Bank account deleted successfully!",
         "defaultUpdated": "Default bank account updated successfully!"
       }

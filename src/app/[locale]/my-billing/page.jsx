@@ -6,10 +6,9 @@ import Tabs from '@/components/common/Tabs';
 import InputDate from '@/components/atoms/InputDate';
 import InputSearch from '@/components/atoms/InputSearch';
 import Table from '@/components/common/Table';
-import { AnimatedCheckbox } from '@/components/atoms/CheckboxAnimation';
 import Input from '@/components/atoms/Input';
 import Select from '@/components/atoms/Select';
-import { Wallet, CreditCard, DollarSign, RotateCcw } from 'lucide-react';
+import { Wallet, CreditCard, DollarSign, RotateCcw, Hourglass, ArrowUpRight, Loader2 } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
 import { useLocale, useTranslations } from 'next-intl';
@@ -27,6 +26,50 @@ import { useSearchParams } from 'next/navigation';
 import Currency from '@/components/common/Currency';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
+
+export const BANKS = [
+  { code: "AAIB", key: "aaib" },
+  { code: "ABE", key: "abe" },
+  { code: "ABK", key: "abk" },
+  { code: "ADCB", key: "adcb" },
+  { code: "AIB", key: "aib" },
+  { code: "AIBANK", key: "aibank" },
+  { code: "AUB", key: "aub" },
+  { code: "BDC", key: "bdc" },
+  { code: "CAE", key: "cae" },
+  { code: "CBE", key: "cbe" },
+  { code: "CIB", key: "cib" },
+  { code: "CITIBANK", key: "citibank" },
+  { code: "EALB", key: "ealb" },
+  { code: "EBE", key: "ebe" },
+  { code: "ENBD", key: "enbd" },
+  { code: "FAB", key: "fab" },
+  { code: "FAIB", key: "faib" },
+  { code: "HDB", key: "hdb" },
+  { code: "HSBC", key: "hsbc" },
+  { code: "IDB", key: "idb" },
+  { code: "MCDR", key: "mcdr" },
+  { code: "MIDBANK", key: "midbank" },
+  { code: "NBE", key: "nbe" },
+  { code: "NBG", key: "nbg" },
+  { code: "NBK", key: "nbk" },
+  { code: "NSBQ", key: "nsbq" },
+  { code: "QNB", key: "qnb" },
+  { code: "SAIB", key: "saib" },
+  { code: "UB", key: "ub" },
+  { code: "ABRK", key: "abrk" },
+  { code: "ARAB", key: "arab" },
+  { code: "BBE", key: "bbe" },
+  { code: "ABC", key: "abc" },
+  { code: "MISR", key: "misr" },
+  { code: "EGB", key: "egb" },
+  { code: "POST", key: "post" },
+  { code: "MASH", key: "mash" },
+  { code: "NIB", key: "nib" },
+  { code: "SCB", key: "scb" },
+  { code: "BOA", key: "boa" },
+  { code: "ADIB", key: "adib" }
+];
 
 export const accountingAPI = {
   // Billing Information
@@ -80,6 +123,12 @@ export const accountingAPI = {
     return response.data;
   },
 
+
+  withdrawFunds: async (amount) => {
+    const response = await api.post('/accounting/withdraw', { amount });
+    return response.data;
+  },
+
   getPaymentMethods: async () => {
     const response = await api.get('/accounting/payment-methods');
     return response.data;
@@ -95,10 +144,6 @@ export const accountingAPI = {
     return response.data;
   },
 
-  withdrawFunds: async data => {
-    const response = await api.post('/accounting/withdraw', data);
-    return response.data;
-  },
 };
 export default function Page() {
   const t = useTranslations('MyBilling');
@@ -262,12 +307,13 @@ const BillingHistory = () => {
   );
 };
 
+
 const AvailableBalances = ({ userPhone, userCountryCode }) => {
   const t = useTranslations('MyBilling.availableBalances');
   const { user } = useAuth();
   const [balances, setBalances] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const [phoneVerified, setPhoneVerified] = useState(user?.phoneVerified);
+  const [withdrawLoading, setWithdrawLoading] = useState(false);
 
   const fetchBalances = async () => {
     try {
@@ -284,7 +330,26 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
     fetchBalances();
   }, []);
 
-  // Define all possible cards
+  const handleWithdraw = async (amount) => {
+    if (!amount || amount < 112) {
+      return toast.error(t('errors.minAmount') || 'Minimum withdrawal is 112 SAR');
+    }
+
+    setWithdrawLoading(true);
+    try {
+      await accountingAPI.withdrawFunds(amount);
+      toast.success(t('messages.withdrawSuccess') || 'Withdrawal initiated successfully!');
+
+      // Refetch balances to show updated Available vs Reserved amounts
+      await fetchBalances();
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || 'Withdrawal failed';
+      toast.error(errorMsg);
+    } finally {
+      setWithdrawLoading(false);
+    }
+  };
+
   const allCards = [
     {
       id: 'available',
@@ -293,7 +358,17 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       description: t('availableBalance.description'),
       icon: CreditCard,
       iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
-      show: true, // Always show spendable balance
+      show: true,
+      hasAction: true, // Specific flag for the withdraw button
+    },
+    {
+      id: 'reserved', // Fixed duplicate ID
+      title: t('reservedBalance.title'),
+      amount: balances?.reservedBalance || 0,
+      description: t('reservedBalance.description'),
+      icon: Hourglass,
+      iconBg: 'bg-amber-100 text-amber-600',
+      show: true,
     },
     {
       id: 'earnings',
@@ -301,8 +376,8 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       amount: balances?.earningsToDate || 0,
       description: t('earningsToDate.description'),
       icon: Wallet,
-      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
-      show: user?.role === 'seller', // SELLER ONLY
+      iconBg: 'bg-emerald-100 text-emerald-600',
+      show: user?.role === 'seller',
     },
     {
       id: 'promo',
@@ -310,44 +385,59 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       amount: balances?.promoCredits || 0,
       description: t('promoCredits.description'),
       icon: DollarSign,
-      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
-      show: true, // Show to everyone
+      iconBg: 'bg-blue-100 text-blue-600',
+      show: true,
     },
     {
       id: 'cancelled',
       title: t('cancelledOrdersCredit.title'),
       amount: balances?.cancelledOrdersCredit || 0,
       description: t('cancelledOrdersCredit.description'),
-      icon: RotateCcw, // Suggesting a "Reverse" or "Refund" icon
-      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
-      show: user?.role === 'buyer', // BUYER ONLY
+      icon: RotateCcw,
+      iconBg: 'bg-red-100 text-red-600',
+      show: user?.role === 'buyer',
     },
   ];
 
   if (loading) {
     return (
       <div className='mb-12'>
+        {/* Title Skeleton */}
         <div className='mb-6'>
-          <div className='h-7 w-64 bg-gray-200 rounded animate-pulse' />
+          <div className='h-8 w-48 bg-gray-200 rounded-lg animate-pulse' />
         </div>
+
+        {/* Cards Grid Skeleton */}
         <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className='rounded-2xl border border-gray-200 bg-white shadow-sm p-6'>
-              <div className='flex justify-between items-start'>
-                <div className='h-5 w-36 bg-gray-200 rounded animate-pulse' />
-                <div className='w-9 h-9 bg-gray-200 rounded-full animate-pulse' />
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className='rounded-2xl border border-gray-100 bg-white p-6 shadow-sm'
+            >
+              <div className='flex justify-between items-start mb-4'>
+                <div className='space-y-3 flex-grow'>
+                  {/* Title text line */}
+                  <div className='h-4 w-24 bg-gray-200 rounded animate-pulse' />
+                  {/* Amount text line */}
+                  <div className='h-10 w-32 bg-gray-200 rounded-lg animate-pulse' />
+                </div>
+                {/* Icon circle */}
+                <div className='w-10 h-10 bg-gray-200 rounded-xl animate-pulse' />
               </div>
-              <div className='mt-4'>
-                <div className='h-9 w-28 bg-gray-200 rounded animate-pulse' />
-              </div>
-              <div className='mt-2 h-4 w-40 bg-gray-200 rounded animate-pulse' />
+
+              {/* Description line */}
+              <div className='h-4 w-full bg-gray-100 rounded animate-pulse mt-2' />
+
+              {/* Optional: If the card has an action button, add a skeleton for it */}
+              {i === 1 && (
+                <div className='mt-5 h-11 w-full bg-gray-200 rounded-xl animate-pulse' />
+              )}
             </div>
           ))}
         </div>
       </div>
     );
   }
-
   return (
     <div className='mb-12'>
       <div className='mb-6'>
@@ -358,39 +448,45 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
         {allCards.map((card) => {
           const Icon = card.icon;
           if (!card.show) return null;
+
           return (
             <div
-              key={card.id} // Use card.id instead of index for better React performance
-              className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'
+              key={card.id}
+              className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col'
             >
-              <div className='flex justify-between items-start'>
-                <p className='text-lg text-gray-600 font-medium'>{card.title}</p>
-                <span className={`w-9 h-9 flex items-center justify-center rounded-full ${card.iconBg}`}>
+              <div className='flex justify-between items-start mb-4'>
+                <div>
+                  <p className='text-sm text-gray-500 font-semibold uppercase tracking-wider'>{card.title}</p>
+                  <div className='flex gap-2 items-center text-3xl font-extrabold text-gray-900 mt-1'>
+                    <span>{Number(card.amount).toFixed(2)}</span>
+                    <span className='text-lg font-medium text-gray-400'>SAR</span>
+                  </div>
+                </div>
+                <span className={`w-10 h-10 flex items-center justify-center rounded-xl ${card.iconBg}`}>
                   <Icon className='w-5 h-5' />
                 </span>
               </div>
 
-              <div className='mt-4'>
-                <div className='flex gap-2 items-center text-4xl font-extrabold text-gray-900'>
-                  {/* Formats amount to 2 decimal places for a professional look */}
-                  <span>{Number(card.amount).toFixed(2)}</span>
-                  <span><Currency size={24} /></span>
-                </div>
-              </div>
+              <p className='text-sm text-gray-500 flex-grow'>{card.description}</p>
 
-              <p className='mt-2 text-base font-[600] text-gray-500'>{card.description}</p>
+              {/* Withdraw Button Integration */}
+              {card.hasAction && (
+                <button
+                  onClick={() => handleWithdraw(card.amount)}
+                  disabled={withdrawLoading || card.amount < 112}
+                  className='mt-4 w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[var(--color-main-600)] hover:bg-[var(--color-main-700)] text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                  {withdrawLoading ? (
+                    <Loader2 className='w-4 h-4 animate-spin' />
+                  ) : (
+                    <ArrowUpRight className='w-4 h-4' />
+                  )}
+                  {t('withdrawButton') || 'Withdraw Funds'}
+                </button>
+              )}
             </div>
           );
         })}
-
-        {/* Phone Verification Card */}
-        {/* <div className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col justify-between'>
-          <PhoneVerification
-            phone={user?.phone}
-            countryCode={user?.countryCode?.dial_code}
-          // onVerified={() => setPhoneVerified(true)}
-          />
-        </div> */}
       </div>
     </div>
   );
@@ -749,10 +845,9 @@ const BillingInformation = () => {
           />
         </div>
 
-        <h1 className='h2 mt-6'>{t('invoices')}</h1>
+        {/* <h1 className='h2 mt-6'>{t('invoices')}</h1>
         <p className='p mb-6'>{t('invoicesDesc')}</p>
 
-        {/* Invoice Emails Checkbox */}
         <div className='flex items-center gap-3'>
           <Controller
             name="agreeToInvoiceEmails"
@@ -765,7 +860,7 @@ const BillingInformation = () => {
             )}
           />
           <span className='text-sm text-gray-700'>{t('inboxMessages')}</span>
-        </div>
+        </div> */}
         {errors.agreeToInvoiceEmails && <p className="text-red-500 text-sm">{errors.agreeToInvoiceEmails.message}</p>}
 
         <div className='max-w-[250px] mt-6'>
@@ -782,23 +877,54 @@ const BillingInformation = () => {
 };
 
 
+function createPayoutSchema(t) {
+  return yup.object({
+    fullName: yup
+      .string()
+      .trim()
+      .required(t('validation.fullNameRequired'))
+      .min(3, t('validation.nameMin', { min: 3 }))
+      .max(100, t('validation.nameMax', { max: 200 })),
+
+    iban: yup
+      .string()
+      .trim()
+      .required(t('validation.ibanRequired'))
+      .min(16, t('validation.ibanMin', { min: 16 }))
+      .max(32, t('validation.ibanMax', { max: 32 }))
+      .matches(/^[0-9A-Z]{16,32}$/, t('validation.ibanInvalid')),
+
+    bankCode: yup
+      .string()
+      .required(t('validation.bankRequired')),
+  });
+}
+
 const PaymentMethods = () => {
   const t = useTranslations('MyBilling.paymentMethods');
   const [bankAccounts, setBankAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
-  const [formData, setFormData] = useState({
-    fullName: '',
-    iban: '',
-    clientId: '',
-    clientSecret: '',
-    country: '',
-    state: '',
-    mobileNumber: '',
+
+  // NEW: State to track which account is being edited
+  const [editingAccount, setEditingAccount] = useState(null);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(createPayoutSchema(t)),
+    defaultValues: {
+      fullName: '',
+      iban: '',
+      bankCode: '',
+    },
   });
 
-  const { countries: countriesOptions, countryLoading, } = useValues();
+  const locale = useLocale();
 
   const fetchBankAccounts = async () => {
     setLoading(true);
@@ -817,35 +943,53 @@ const PaymentMethods = () => {
     fetchBankAccounts();
   }, []);
 
-  const handleSave = async () => {
+  // NEW: Function to populate form for editing
+  const handleEditClick = (account) => {
+    setEditingAccount(account);
+    reset({
+      fullName: account.fullName,
+      iban: account.iban,
+      bankCode: account.bankCode,
+    });
+  };
+
+  // NEW: Function to cancel editing
+  const handleCancelEdit = () => {
+    setEditingAccount(null);
+    reset({
+      fullName: '',
+      iban: '',
+      bankCode: '',
+    });
+  };
+
+  const handleSave = async (data) => {
     setSaving(true);
     setMessage('');
     try {
-      await accountingAPI.createBankAccount(formData);
-      setMessage(t('success.added'));
-      setFormData({
+      if (editingAccount) {
+        // Update Logic
+        await accountingAPI.updateBankAccount(editingAccount.id, data);
+        setMessage(t('success.updated') || 'Account updated successfully');
+      } else {
+        // Create Logic
+        await accountingAPI.createBankAccount(data);
+        setMessage(t('success.added'));
+      }
+
+      setEditingAccount(null);
+      reset({
         fullName: '',
         iban: '',
-        clientId: '',
-        clientSecret: '',
-        country: '',
-        state: '',
-        mobileNumber: '',
+        bankCode: '',
       });
-      fetchBankAccounts(); // Refresh the list
+      fetchBankAccounts();
     } catch (error) {
-      console.error('Error adding bank account:', error);
-      setMessage(t('errors.adding'));
+      console.error('Error saving bank account:', error);
+      setMessage(editingAccount ? t('errors.updating') : t('errors.adding'));
     } finally {
       setSaving(false);
     }
-  };
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
   };
 
   const handleDeleteAccount = async id => {
@@ -853,7 +997,8 @@ const PaymentMethods = () => {
       try {
         await accountingAPI.deleteBankAccount(id);
         setMessage(t('success.deleted'));
-        fetchBankAccounts(); // Refresh the list
+        if (editingAccount?.id === id) handleCancelEdit();
+        fetchBankAccounts();
       } catch (error) {
         console.error('Error deleting bank account:', error);
         setMessage(t('errors.deleting'));
@@ -865,32 +1010,34 @@ const PaymentMethods = () => {
     try {
       await accountingAPI.setDefaultBankAccount(id);
       setMessage(t('success.defaultUpdated'));
-      fetchBankAccounts(); // Refresh the list
+      fetchBankAccounts();
     } catch (error) {
       console.error('Error setting default bank account:', error);
       setMessage(t('errors.settingDefault'));
     }
   };
 
-  if (loading || countryLoading) {
+  const bankOptions = useMemo(() => {
+    return BANKS.map(bank => ({
+      id: bank.code,
+      name: t(`bank_codes.banks.${bank.key}`)
+    })).sort((a, b) => a.name.localeCompare(b.name, locale));
+  }, [t, locale]);
+
+  if (loading) {
     return (
       <div className='max-w-[1400px] w-full mx-auto mb-12'>
         <Skeleton className='h-8 w-64 mb-6' />
-
         <Skeleton className='h-6 w-52 mb-4' />
         <Skeleton className='h-20 w-full mb-4' />
-        <Skeleton className='h-20 w-full mb-4' />
-
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4'>
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className='h-12 w-full' />
           ))}
-          <Skeleton className='h-12 w-48 lg:col-span-2 ml-auto' />
         </div>
       </div>
     );
   }
-
 
   return (
     <div className='max-w-[1400px] w-full mx-auto mb-12'>
@@ -898,72 +1045,115 @@ const PaymentMethods = () => {
         <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
       </div>
 
-      {message && <div className={`mb-4 p-3 rounded ${message.includes('Error') ? 'bg-red-100 text-red-700' : 'bg-main-100 text-main-700'}`}>{message}</div>}
+      {message && (
+        <div className={`mb-4 p-3 rounded ${message.includes('Error') || message.includes('failed') ? 'bg-red-100 text-red-700' : 'bg-main-100 text-main-700'}`}>
+          {message}
+        </div>
+      )}
 
-      {/* Existing Bank Accounts */}
       {bankAccounts.length > 0 && (
         <div className='mb-8'>
           <h2 className='text-xl font-semibold mb-4'>{t('yourBankAccounts')}</h2>
           <div className='grid gap-4'>
-            {bankAccounts.map(account => {
-              let country = account.country;
-
-              if (typeof country === "string") {
-                try {
-                  // only parse if it's a non-empty string
-                  country = country.trim() ? JSON.parse(country) : null;
-                } catch (err) {
-                  console.error("Failed to parse country JSON:", account.country, err);
-                  country = null;
-                }
-              }
-
-              return (
-                <div key={account.id} className='border rounded-lg p-4 flex justify-between items-center'>
-                  <div>
-                    <p className='font-semibold'>{account.fullName}</p>
-                    <p className='text-gray-600'>{t('iban')} {account.iban}</p>
-                    <p className='text-gray-600'>
-                      {country?.name} - {account.state}
-                    </p>
-                    {account.isDefault && <span className='inline-block bg-main-100 text-main-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
-                  </div>
-                  <div className='flex gap-2'>
-                    {!account.isDefault && (
-                      <>
-                        <button onClick={() => handleSetDefault(account.id)} className='text-blue-600 hover:text-blue-800 text-sm'>
-                          {t('setDefault')}
-                        </button>
-                        <button onClick={() => handleDeleteAccount(account.id)} className='text-red-600 hover:text-red-800 text-sm'>
-                          {t('delete')}
-                        </button>
-                      </>
-                    )}
-                  </div>
+            {bankAccounts.map(account => (
+              <div key={account.id} className={`border rounded-lg p-4 flex justify-between items-center ${editingAccount?.id === account.id ? 'border-main-600 bg-main-50' : ''}`}>
+                <div>
+                  <p className='font-semibold'>{account.fullName}</p>
+                  <p className='text-gray-600'>{t('iban')} {account.iban}</p>
+                  {account.isDefault && <span className='inline-block bg-main-100 text-main-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
                 </div>
-              )
-            })}
+                <div className='flex gap-3'>
+                  <button onClick={() => handleEditClick(account)} className='text-main-600 hover:text-main-800 text-sm font-medium'>
+                    {t('edit') || 'Edit'}
+                  </button>
+                  {!account.isDefault && (
+                    <>
+                      <button onClick={() => handleSetDefault(account.id)} className='text-blue-600 hover:text-blue-800 text-sm'>
+                        {t('setDefault')}
+                      </button>
+                      <button onClick={() => handleDeleteAccount(account.id)} className='text-red-600 hover:text-red-800 text-sm'>
+                        {t('delete')}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* Add New Bank Account Form */}
-      <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        <Input cnInput='!border-[var(--color-main-600)]' label={t('fullName')} placeholder={t('fullNamePlaceholder')} value={formData.fullName} onChange={e => handleInputChange('fullName', e.target.value)} />
-        <Input cnInput='!border-[var(--color-main-600)]' label={t('ibanLabel')} placeholder={t('ibanPlaceholder')} value={formData.iban} onChange={e => handleInputChange('iban', e.target.value)} />
-        <Input cnInput='!border-[var(--color-main-600)]' label={t('clientId')} placeholder={t('clientIdPlaceholder')} value={formData.clientId} onChange={e => handleInputChange('clientId', e.target.value)} />
-        <Input cnInput='!border-[var(--color-main-600)]' label={t('clientSecret')} placeholder={t('clientSecretPlaceholder')} type='password' value={formData.clientSecret} onChange={e => handleInputChange('clientSecret', e.target.value)} />
-        <Select cnSelect='!border-[var(--color-main-600)]' label={t('country')} placeholder={t('selectCountry')} showSearch isLoading={countryLoading} options={countriesOptions} value={formData.country} onChange={value => handleInputChange('country', value)} />
-        <Input cnInput='!border-[var(--color-main-600)]' label={t('state')} placeholder={t('statePlaceholder')} value={formData.state} onChange={e => handleInputChange('state', e.target.value)} />
-        <Input cnInput='!border-[var(--color-main-600)]' label={t('mobileNumber')} placeholder={t('mobileNumberPlaceholder')} value={formData.mobileNumber} onChange={e => handleInputChange('mobileNumber', e.target.value)} />
+      <div className='bg-gray-50 p-6 rounded-2xl border border-gray-100'>
+        <h3 className='text-lg font-bold mb-4'>
+          {editingAccount ? t('editAccountTitle') || 'Edit Bank Account' : t('addAccountTitle') || 'Add New Account'}
+        </h3>
+        <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          <Controller
+            name="fullName"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                cnInput='!border-[var(--color-main-600)]'
+                label={t('fullName')}
+                placeholder={t('fullNamePlaceholder')}
+                error={errors.fullName?.message}
+              />
+            )}
+          />
+          <Controller
+            name="iban"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                cnInput='!border-[var(--color-main-600)]'
+                label={t('ibanLabel')}
+                placeholder={t('ibanPlaceholder')}
+                error={errors.iban?.message}
+              />
+            )}
+          />
 
-        <Button className='lg:col-span-2 ml-auto mt-auto !h-[45px] !py-1 max-w-[250px]' name={saving ? t('adding') : t('addBankAccount')} color='green' onClick={handleSave} disabled={saving} />
+          <Controller
+            name="bankCode"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                cnSelect='!border-[var(--color-main-600)]'
+                label={t('bank_codes.bank_name')}
+                placeholder={t('bank_codes.select_bank')}
+                options={bankOptions}
+                value={field.value}
+                onChange={val => field.onChange(val?.id)}
+                error={errors.bankCode?.message}
+              />
+            )}
+          />
+
+          <div className='lg:col-span-3 flex justify-end gap-3 mt-4'>
+            {editingAccount && (
+              <Button
+                name={t('cancel') || 'Cancel'}
+                className='!h-[45px] max-w-[150px]'
+                color='gray'
+                onClick={handleCancelEdit}
+              />
+            )}
+            <Button
+              className='!h-[45px] !py-1 max-w-[250px]'
+              name={saving ? (editingAccount ? t('updating') : t('adding')) : (editingAccount ? t('updateAccount') : t('addBankAccount'))}
+              color='green'
+              onClick={handleSubmit(handleSave)}
+              disabled={saving}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
 };
-
-
 
 const PhoneVerification = ({ phone, countryCode, onVerified }) => {
   const t = useTranslations('MyBilling.availableBalances');
