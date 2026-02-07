@@ -3711,7 +3711,11 @@
       "anyFileType": "أي نوع ملف",
       "selected": "محدد",
       "fieldRequired": "هذا الحقل مطلوب",
-      "required": "هذا الحقل مطلوب"
+      "required": "هذا الحقل مطلوب",
+      "other": "آخر",
+      "otherText": "يرجى التحديد",
+      "otherPlaceholder": "اكتب التفاصيل هنا...",
+      "includeWithSelection": "سيتم إرسال هذا النص مع اختيارك"
     },
     "seller": {
       "orders": "الطلبات",

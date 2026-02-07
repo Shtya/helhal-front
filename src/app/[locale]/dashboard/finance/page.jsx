@@ -176,8 +176,8 @@ export default function WithdrawManagement() {
         title: t('columns.amount'),
         render: v => (
           <span className={`font-medium ${Number(v) < 0 ? 'text-amber-700' : 'text-main-700'}`}>
-            {formatMoney(Number(v < 0 ? -v : v))}
-            {Number(v) < 0 ? t('debit') : ''}
+            {formatMoney(Number(v))}
+            {/* {Number(v) < 0 ? t('debit') : ''} */}
           </span>
         ),
       },

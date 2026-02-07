@@ -3714,7 +3714,11 @@
       "anyFileType": "Any file type",
       "selected": "Selected",
       "fieldRequired": "This field is required",
-      "required": "This field is required"
+      "required": "This field is required",
+      "other": "Other",
+      "otherText": "Please specify",
+      "otherPlaceholder": "Type your details here...",
+      "includeWithSelection": "This text will be sent with your choice"
     },
     "seller": {
       "orders": "Orders",

@@ -1673,6 +1673,7 @@ function SkeletonPage() {
 }
 
 function MultipleChoiceFancy({ req, value, onSelect }) {
+  const t = useTranslations('ServiceDetails');
   const val = typeof value === 'string' ? value : value?.option;
   const { options = [], isRequired } = req || {};
   const containerRef = useRef(null);
