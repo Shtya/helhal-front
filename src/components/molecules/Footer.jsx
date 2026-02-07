@@ -195,7 +195,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className='relative mt-22'>
+    <footer className='relative mt-5  md:mt-10 lg:mt-16 xl:mt-22'>
       {/* Top gradient band */}
       <div className='absolute inset-x-0 -top-8 h-24 pointer-events-none'>
         <div className='mx-auto max-w-6xl h-full blur-2xl opacity-10 bg-gradient-to-r from-main-300 via-main-500 to-main-300 rounded-full' />

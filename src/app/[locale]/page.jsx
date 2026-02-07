@@ -327,9 +327,9 @@ export function CategorySwiper() {
           <Swiper
             breakpoints={{
               1199: { slidesPerView: 6, spaceBetween: 24 },
-              991: { slidesPerView: 4, spaceBetween: 16 },
-              640: { slidesPerView: 3, spaceBetween: 16 },
-              0: { slidesPerView: 2.1, spaceBetween: 8 },
+              991: { slidesPerView: 4, spaceBetween: 20 },
+              640: { slidesPerView: 3, spaceBetween: 18 },
+              0: { slidesPerView: 2.1, spaceBetween: 14 },
             }}
             pagination={{ clickable: true }}
             modules={[Pagination]}
@@ -442,14 +442,15 @@ export function PopularServicesSwiper() {
 
       <Swiper
         breakpoints={{
-          1024: { slidesPerView: 4, spaceBetween: 24 },
-          768: { slidesPerView: 3, spaceBetween: 16 },
-          557: { slidesPerView: 2, spaceBetween: 12 },
-          0: { slidesPerView: 1.15, spaceBetween: 10 },
+          1199: { slidesPerView: 6, spaceBetween: 24 },
+          991: { slidesPerView: 4, spaceBetween: 20 },
+          640: { slidesPerView: 3, spaceBetween: 18 },
+          0: { slidesPerView: 2.1, spaceBetween: 14 },
         }}
         pagination={{ clickable: true }}
         modules={[Pagination]}
-        className="popular-services-swiper"
+        className="popular-services-swiper !px-4 !py-8"
+
       >
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
@@ -514,10 +515,10 @@ export function WhyChoose() {
 
   return (
     <section className='container !px-4 sm:!px-6 lg:!px-8 !py-12'>
-      <div className='rounded-3xl bg-gradient-to-r from-main-50 to-white border border-main-100/70 p-6 md:p-10'>
-        <h2 className='text-3xl md:text-4xl font-extrabold mb-8'>{t('whyChoose.title')}</h2>
+      <div className='rounded-3xl bg-gradient-to-r from-main-50 to-white border border-main-100/70 p-4 md:p-6 lg:p-10'>
+        <h2 className='text-2xl md:text-3xl font-extrabold mb-4 md-:mb-6 lg:mb-8'>{t('whyChoose.title')}</h2>
         {/* Subtitle */}
-        <p className="text-lg text-slate-700 mb-8">
+        <p className="text-base md:text-lg text-slate-700 mb-4 md-:mb-6 lg:mb-8">
           {t('whyChoose.subtitle')}
         </p>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
@@ -543,7 +544,7 @@ export function ClientsExperiences() {
 
   return (
     <section className='container !px-4 sm:!px-6 lg:!px-8 !pt-12 !pb-8'>
-      <h2 className='text-3xl md:text-4xl font-extrabold mb-6'>{t('clientsExperiences.title')}</h2>
+      <h2 className='text-2xl md:text-3xl font-extrabold mb-6'>{t('clientsExperiences.title')}</h2>
 
       <Swiper
         modules={[Navigation]}
@@ -552,7 +553,7 @@ export function ClientsExperiences() {
         breakpoints={{
           1024: { slidesPerView: 3, spaceBetween: 24 },
           768: { slidesPerView: 2.15, spaceBetween: 20 },
-          0: { slidesPerView: 1, spaceBetween: 12 },
+          0: { slidesPerView: 1, spaceBetween: 16 },
         }}
         wrapperClass='items-stretch'>
         {experiences.map(item => (
@@ -677,16 +678,16 @@ export function CTAStrip() {
               {t('cta.subtitle')}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex max-md:w-full max-sm:flex-col items-center gap-3">
             <Link
               href={primaryHref}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-main-700 font-bold shadow-lg hover:shadow-xl transition"
+              className="inline-flex   max-md:w-full max-md:justify-center items-center gap-2 px-5 py-3 rounded-xl bg-white text-main-700 font-bold shadow-lg hover:shadow-xl transition"
             >
               {primaryLabel} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
             </Link>
             <Link
               href="/services/all"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition"
+              className="inline-flex  max-md:w-full max-md:justify-center items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition"
             >
               {t('cta.browse')}
             </Link>

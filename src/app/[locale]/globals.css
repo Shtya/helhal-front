@@ -88,24 +88,20 @@ body {
   background-color: #4f46e5;
 }
 
-.popular-services-swiper .swiper-wrapper {
+/* .popular-services-swiper .swiper-wrapper {
   padding-top: 20px;
   padding-bottom: 20px;
-}
+} */
 
 .popular-services-swiper .swiper-slide {
   height: auto;
-  padding: 8px;
 }
 
 .popular-services-swiper .swiper-pagination {
   bottom: 0;
 }
 
-.popular-services-swiper .swiper-pagination-bullet {
-  width: 6px;
-  height: 6px;
-}
+
 
 .popular-services-swiper .swiper-pagination-bullet-active {
   color: var(--color-main-500);
@@ -545,5 +541,66 @@ body {
 
   100% {
     background: white;
+  }
+}
+
+/* Base Styles (Small Screens / Mobile) */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 20px !important;
+  /* Small mobile size */
+  font-weight: bold;
+}
+
+/* Medium (md: 768px+) */
+@media (min-width: 768px) {
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 24px !important;
+  }
+}
+
+/* Large (lg: 1024px+) */
+@media (min-width: 1024px) {
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 28px !important;
+  }
+}
+
+/* Extra Large (xl: 1280px+) */
+@media (min-width: 1280px) {
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 56px !important;
+    /* Increased container to fit larger icon */
+    height: 56px !important;
+  }
+
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 34px !important;
+    /* Your requested size */
   }
 }
