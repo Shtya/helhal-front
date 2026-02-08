@@ -210,7 +210,7 @@ export default function Page() {
       const rows = list.map(o => {
         const invoice = o.invoices?.[0]
 
-        const subtotal = Number(invoice?.subtotal || 0);
+        const subtotal = Number(o?.totalAmount || 0 - invoice.platformPercent);
         const feePercent = Number(invoice?.sellerServiceFee || 0);
         const feeAmount = subtotal * (feePercent / 100);
 
@@ -222,7 +222,7 @@ export default function Page() {
           seller: o?.seller ? <UserMini user={o.seller} href={`profile/${o.seller.id}`} /> : '—',
           buyer: o?.buyer ? <UserMini user={o.buyer} href={`profile/${o.buyer.id}`} /> : '—',
           orderDate: fmtDate(o?.created_at),
-          total: fmtMoney(invoice?.totalAmount),
+          total: fmtMoney(o?.totalAmount),
           subtotal: fmtMoney(subtotal),
           sellerNetPay: fmtMoney(subtotal - feeAmount),
           status: o?.status || '',

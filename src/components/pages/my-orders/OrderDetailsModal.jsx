@@ -82,7 +82,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
   const invoice = order?.invoices?.[0]
 
   const sellerNetPay = invoice ? Number(invoice?.subtotal) - (Number(invoice?.subtotal) * (Number(invoice?.sellerServiceFee) / 100)) : 0;
-
+  const subtotal = Number(order?.totalAmount - invoice?.platformPercent);
   return (
     <Modal title={t('title')} onClose={onClose} className="!max-w-4xl max-h-[90vh] overflow-y-auto">
       {loading ? (
@@ -145,8 +145,8 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                   <p className="text-sm font-medium text-slate-700">{buyerView ? t('totalPaid') : t('orderPrice')}</p>
                   <p className="text-lg font-semibold text-slate-900 flex gap-1"><Currency />
                     {buyerView
-                      ? Number(invoice?.totalAmount).toFixed(2)  // Buyer sees full cost
-                      : Number(invoice?.subtotal).toFixed(2)     // Seller sees gig price
+                      ? Number(order?.totalAmount).toFixed(2)  // Buyer sees full cost
+                      : Number(subtotal).toFixed(2)     // Seller sees gig price
                     }
                   </p>
                 </div>
@@ -373,14 +373,14 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                             <span>- {(Number(invoice.subtotal) * (Number(invoice.sellerServiceFee) / 100)).toFixed(2)}</span>
                           </p>
                         </div>
-                        <div className="col-span-2 pt-2 border-t border-slate-200">
+                        {sellerNetPay ? (<div className="col-span-2 pt-2 border-t border-slate-200">
                           <p className="text-slate-600">{t('netEarnings')}</p>
                           <p className="text-lg font-semibold text-main-700 flex gap-1">
                             <span><Currency /> </span>
                             <span>{sellerNetPay.toFixed(2)}</span>
 
                           </p>
-                        </div>
+                        </div>) : null}
                       </>
                     )}
                     {invoice.paymentMethod && (

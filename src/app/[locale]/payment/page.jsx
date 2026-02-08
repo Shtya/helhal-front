@@ -290,6 +290,11 @@ export default function PaymentPage() {
 
   const invoice = order?.invoices?.[0];
   const currency = invoice?.currencyId || 'SAR';
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [loading]);
 
   if (loading) return <div className="container !py-12"><PaymentSkeleton /></div>;
 
@@ -336,10 +341,10 @@ export default function PaymentPage() {
                         <span className="text-slate-500">{t('status')}</span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${invoice.paymentStatus === 'pending'
-                              ? 'bg-amber-100 text-amber-700'
-                              : invoice.paymentStatus === 'paid'
-                                ? 'bg-main-100 text-main-700'
-                                : 'bg-slate-200 text-slate-600'
+                            ? 'bg-amber-100 text-amber-700'
+                            : invoice.paymentStatus === 'paid'
+                              ? 'bg-main-100 text-main-700'
+                              : 'bg-slate-200 text-slate-600'
                             }`}
                         >
                           {t(`paymentStatus.${invoice.paymentStatus}`)}
