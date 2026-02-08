@@ -321,7 +321,7 @@ export default function Page() {
         setSelectedRow({ id: orderIdFromParams });
         setOpenModal(modeFromParams || 'details');
       }
-    } else if (openModal === 'details' || openModal === modeFromParams) {
+    } else if (openModal === 'details' || openModal === "view-feedback" || openModal === "give-feedback") {
       // If orderId removed from params but modal is still open, close it
       setSelectedRow(null);
       setOpenModal(null);
