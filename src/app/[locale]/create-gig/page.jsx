@@ -5,7 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronLeft, Pencil, ArrowUp, ArrowDown, Search, Plus, Trash2, X, HelpCircle, ChevronRight } from 'lucide-react';
+import { Check, ChevronLeft, Pencil, ArrowUp, ArrowDown, Search, Plus, Trash2, X, HelpCircle, ChevronRight, Truck } from 'lucide-react';
 import ProgressBar from '@/components/pages/gig/ProgressBar';
 import InputList from '@/components/atoms/InputList';
 import Textarea from '@/components/atoms/Textarea';
@@ -49,6 +49,7 @@ export const useGigCreation = ({ gigSlug, isAdmin }) => {
     ],
     extraFastDelivery: false,
     additionalRevision: false,
+    payOnDelivery: false,
     description: '',
     faqs: [],
     questions: [],
@@ -96,6 +97,7 @@ export const useGigCreation = ({ gigSlug, isAdmin }) => {
           country: res.country || null,
           state: res.state || null,
           subcategory: res.subcategory,
+          payOnDelivery: res.payOnDelivery,
           tags: res.searchTags,
           title: res.title,
           brief: res.brief,
@@ -174,6 +176,7 @@ export const useGigCreation = ({ gigSlug, isAdmin }) => {
         status: 'Pending',
         faq: formData.faqs,
         packages: formData.packages,
+        payOnDelivery: formData.payOnDelivery,
         gallery: [
           ...formData.images.map(img => ({ type: 'image', fileName: img.filename, url: img.url, assetId: img.id })),
           ...formData.video.map(vid => ({ type: 'video', url: vid.url, fileName: vid.filename, assetId: vid.id })),
@@ -537,6 +540,7 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
       country: formData.country || null,
       state: formData.state || null,
       tags: formData.tags || [],
+      payOnDelivery: formData.payOnDelivery || false,
     }
   });
 
@@ -616,6 +620,7 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
       country: formData.country || null,
       state: formData.state || null,
       tags: formData.tags || [],
+      payOnDelivery: formData.payOnDelivery || false,
     });
   }, [formData, reset]);
 
@@ -674,6 +679,13 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
 
   const country = watch('country');
   const state = watch('state');
+  const isPOD = watch('payOnDelivery');
+
+  const togglePOD = () => {
+    const newValue = !isPOD;
+    setValue('payOnDelivery', newValue);
+    setFormData({ ...formData, payOnDelivery: newValue });
+  };
   return (
     <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 bg-white/60 p-6 md:p-10'>
       {/* Header */}
@@ -780,6 +792,52 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
               <span>{t('maxTags')}</span>
               <span>{(formData.tags || []).length}/5</span>
             </div>
+          </div>
+        </Field>
+        <Field
+          className='pt-8 border-t border-slate-200'
+          title={t('paymentMethod')}
+          desc={t('paymentMethodDesc')}
+        >
+          <div className="max-w-md">
+            <button
+              type='button'
+              onClick={togglePOD}
+              className={`
+        relative flex w-full items-center justify-between rounded-md bg-white p-3 transition border
+        ${isPOD
+                  ? 'border-main-600 ring-2 ring-main-600/20'
+                  : 'border-gray-300 hover:border-main-600/70'
+                }
+        focus:outline-none
+      `}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`
+          flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors
+          ${isPOD ? 'bg-main-50 text-main-600' : 'bg-slate-50 text-slate-400'}
+        `}>
+                  <Truck className="h-5 w-5" />
+                </div>
+
+                <div className="text-left">
+                  <p className={`text-sm font-semibold ${isPOD ? 'text-main-700' : 'text-slate-700'}`}>
+                    {t('payOnDelivery')}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {t('payOnDeliveryHint')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Checkmark indicator aligned with your input style */}
+              <div className={`
+        flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-all
+        ${isPOD ? 'bg-main-600 border-main-600' : 'border-gray-300 bg-white'}
+      `}>
+                {isPOD && <Check className="h-3.5 w-3.5 text-white" strokeWidth={4} />}
+              </div>
+            </button>
           </div>
         </Field>
       </div>

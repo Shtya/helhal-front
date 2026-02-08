@@ -3,7 +3,7 @@
 import { useEffect, useState, use, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Timer, FileText, Info, Tag as TagIcon, CheckCircle2, Crown, AlertCircle, UploadCloud, Table2, LayoutGrid, ChevronDown, MessageCircle, Zap, Repeat, Eye, MousePointer2, ShieldCheck, Gauge, Star, Clock, Box, Shield, ChevronRight, Globe, Calendar, MapPin, Award, ChevronLeft, Maximize2, X, GraduationCap, ExternalLink, Image as ImageIcon, Clock3, Globe2, BadgeCheck, FolderTree, Layers, Images, PlayCircle, Beaker } from 'lucide-react';
+import { Timer, FileText, Info, Tag as TagIcon, CheckCircle2, Crown, AlertCircle, UploadCloud, Table2, LayoutGrid, ChevronDown, MessageCircle, Zap, Repeat, Eye, MousePointer2, ShieldCheck, Gauge, Star, Clock, Box, Shield, ChevronRight, Globe, Calendar, MapPin, Award, ChevronLeft, Maximize2, X, GraduationCap, ExternalLink, Image as ImageIcon, Clock3, Globe2, BadgeCheck, FolderTree, Layers, Images, PlayCircle, Beaker, Truck } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import PriceTag from '@/components/atoms/priceTag';
 import Input from '@/components/atoms/Input';
@@ -359,6 +359,11 @@ function HeaderPanel({ serviceData = {}, Img }) {
           text: String(serviceData.seller.sellerLevel).toUpperCase(),
           classes: 'border-amber-200 bg-amber-50 text-amber-800',
         },
+        serviceData?.payOnDelivery && {
+          icon: <Truck className='h-3.5 w-3.5' />, // Or Banknote icon
+          text: t('payOnDelivery'),
+          classes: 'border-main-200 bg-main-50 text-main-700',
+        },
         // serviceData?.fastDelivery && {
         //   icon: <Zap className='h-3.5 w-3.5' />,
         //   text: 'Fast delivery',
@@ -379,7 +384,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
       title: t('features.topRated.title'),
       desc: t('features.topRated.desc'),
       Icon: (
-        <svg className='stroke-blue-600' width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <svg className='stroke-main-600' width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'>
           {' '}
           <path d='M26.5999 16.2202L29.2399 21.5002C29.5999 22.2202 30.5599 22.9402 31.3599 23.0602L36.1399 23.8602C39.1999 24.3802 39.9199 26.5802 37.7199 28.7802L33.9999 32.5002C33.3799 33.1202 33.0199 34.3402 33.2199 35.2202L34.28 39.8402C35.12 43.4802 33.18 44.9002 29.96 43.0002L25.4799 40.3402C24.6599 39.8602 23.34 39.8602 22.52 40.3402L18.0399 43.0002C14.8199 44.9002 12.8799 43.4802 13.7199 39.8402L14.78 35.2202C14.98 34.3602 14.6199 33.1402 13.9999 32.5002L10.28 28.7802C8.07996 26.5802 8.79992 24.3602 11.8599 23.8602L16.6399 23.0602C17.4399 22.9202 18.3999 22.2202 18.7599 21.5002L21.4 16.2202C22.82 13.3602 25.1799 13.3602 26.5999 16.2202Z' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' /> <path d='M12 18V4' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' /> <path d='M36 18V4' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' /> <path d='M24 8V4' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />{' '}
         </svg>
@@ -389,6 +394,25 @@ function HeaderPanel({ serviceData = {}, Img }) {
       iconWrap: 'bg-blue-100 text-blue-700',
       glow: ' ',
     })
+  }
+
+  if (serviceData?.payOnDelivery) {
+    features.push({
+      title: t('pod.title'),
+      desc: t('pod.desc'),
+      Icon: (
+        <svg className='stroke-main-600' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 16h6" />
+          <path d="M19 13v6" />
+          <rect width="20" height="12" x="2" y="5" rx="2" />
+          <path d="M12 12h.01" />
+          <path d="M8 12h.01" />
+        </svg>
+      ),
+      accent: 'from-main-50 to-teal-50',
+      border: 'border-main-100/80',
+      iconWrap: 'bg-main-100 text-main-700',
+    });
   }
 
 

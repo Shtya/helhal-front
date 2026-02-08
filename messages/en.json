@@ -2072,6 +2072,14 @@
         "notFound": "No change request found."
       },
       "orderDetails": {
+        "payOnDelivery": "Pay on Delivery",
+        "paymentDetails": "Payment Details",
+        "platformInvoice": "Platform Invoice",
+        "deliveryContract": "Delivery Contract",
+        "amountToPayAtDoor": "Amount to Pay at Door",
+        "cashOnDelivery": "Cash",
+        "paidOnline": "Paid Online",
+        "podLegalNotice": "This amount is a direct transaction between buyer and seller. The platform only tracks completion for security purposes.",
         "title": "Order Details",
         "orderId": "Order ID",
         "buyer": "Buyer",
@@ -2137,6 +2145,10 @@
       "publishEdit": "Finalize and publish The project."
     },
     "step1": {
+      "paymentMethod": "Payment Options",
+      "paymentMethodDesc": "Enable special payment terms for this service.",
+      "payOnDelivery": "Enable Pay on Delivery",
+      "payOnDeliveryHint": "Buyer pays you in person upon service completion.",
       "noteServiceFee": "A {fee}% platform fee will be deducted from each order created from this service",
       "title": "Basic Details",
       "subtitle": "Set a compelling foundation for your gig.",
@@ -3674,6 +3686,11 @@
     "sellerOrdersCompleted": "Seller's Completed Orders",
     "rating": "Rating",
     "serviceRating": "Service Rating",
+    "payOnDelivery": "Pay on Delivery",
+    "pod": {
+      "title": "Cash on Delivery",
+      "desc": "Pay the seller directly when the service is delivered."
+    },
     "preview": {
       "message": "This page is in preview mode and not published. Only visible to you."
     },

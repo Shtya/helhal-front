@@ -350,7 +350,7 @@ export default function DisputesPage() {
     const subtotal = Number(inv?.subtotal || 0);
     const sAmt = Number(sellerAmount || 0);
     const bRef = Number(buyerRefund || 0);
-    if (!inv || subtotal <= 0) return setResError(t('Dashboard.disputes.modals.cannotPayout'));
+    if (!inv || subtotal < 0) return setResError(t('Dashboard.disputes.modals.cannotPayout'));
     if (sAmt < 0 || bRef < 0) return setResError(t('Dashboard.disputes.modals.amountsMustBePositive'));
     if (Number((sAmt + bRef).toFixed(2)) !== Number(subtotal.toFixed(2))) {
       return setResError(t('Dashboard.disputes.modals.amountsMustEqual', { subtotal }));

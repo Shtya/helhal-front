@@ -4,7 +4,7 @@ import api from '@/lib/axios';
 import UserMini from '@/components/dashboard/UserMini';
 import { formatDate, formatDateTime } from '@/utils/date';
 import { OrderStatus } from '@/constants/order';
-import { Package, DollarSign, FileText, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Package, DollarSign, FileText, Clock, CheckCircle, XCircle, Truck, HandCoins, Banknote } from 'lucide-react';
 import OrderDeliveryTimer from './OrderDeliveryTimer';
 import { resolveUrl } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
@@ -312,6 +312,12 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           {invoice && (
             <div className="pt-4 border-t border-slate-200">
               <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('invoice')}</h4>
+              {invoice.payOnDelivery && (
+                <span className="w-fit flex items-center gap-1.5 px-3 py-1 rounded-lg bg-main-50 border border-main-200 text-main-700 text-xs font-bold uppercase tracking-wider">
+                  <Truck className="h-3.5 w-3.5" />
+                  {t('payOnDelivery')}
+                </span>
+              )}
               <div className="bg-slate-50 rounded-lg p-4 space-y-2">
                 <div className="bg-white rounded-lg p-3 border border-slate-200">
                   <div className="flex items-center justify-between mb-2">
@@ -377,12 +383,59 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                         </div>
                       </>
                     )}
+                    {invoice.paymentMethod && (
+                      <p className="text-xs text-slate-500 mt-2">{t('paymentMethod')} {invoice.paymentMethod}</p>
+                    )}
                   </div>
+                  {invoice.payOnDelivery && order?.offlineContract && (
+                    <div className="mt-4 relative overflow-hidden rounded-xl border-2 border-dashed border-main-200 bg-main-50/30 p-4">
+                      <div className="absolute -right-2 -top-2 opacity-10">
+                        <HandCoins size={80} />
+                      </div>
 
-                  {invoice.paymentMethod && (
-                    <p className="text-xs text-slate-500 mt-2">{t('paymentMethod')} {invoice.paymentMethod}</p>
+                      <div className="flex items-center gap-2 mb-3 text-main-800">
+                        <FileText className="h-4 w-4" />
+                        <h5 className="font-bold text-sm uppercase tracking-tight">{t('deliveryContract')}</h5>
+                      </div>
+
+                      <div className="bg-white/80 backdrop-blur-sm rounded-lg border border-main-100 p-3 shadow-sm">
+                        <div className="flex justify-between items-end">
+                          <div>
+                            <p className="text-xs text-main-700 font-medium mb-1">{t('amountToPayAtDoor')}</p>
+                            <div className="flex items-baseline gap-1 text-main-900">
+                              <span className="text-lg font-black"><Currency /></span>
+                              <span className="text-2xl font-black">
+                                {Number(order.offlineContract.amountToPayAtDoor).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            <div className="inline-flex items-center gap-1 rounded-md bg-main-600 px-2 py-1 text-white shadow-sm">
+                              <Banknote size={14} />
+                              <span className="text-xs font-bold">{t('cashOnDelivery')}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 pt-3 border-t border-main-100 flex justify-between items-center text-[11px]">
+                          <div className="text-slate-500">
+                            <span className="font-semibold">{t('seller')}:</span> {order.offlineContract.seller?.username}
+                          </div>
+                          <div className="text-slate-500">
+                            <span className="font-semibold">{t('buyer')}:</span> {order.offlineContract.buyer?.username}
+                          </div>
+                        </div>
+                      </div>
+
+                      <p className="mt-3 text-[10px] text-main-600/80 leading-relaxed italic">
+                        * {t('podLegalNotice')}
+                      </p>
+                    </div>
                   )}
                 </div>
+
+
               </div>
             </div>
           )}

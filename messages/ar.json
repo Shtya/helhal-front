@@ -2070,6 +2070,14 @@
         "notFound": "لم يتم العثور على طلب تعديل."
       },
       "orderDetails": {
+        "payOnDelivery": "الدفع عند الاستلام",
+        "paymentDetails": "تفاصيل الدفع",
+        "platformInvoice": "فاتورة المنصة",
+        "deliveryContract": "عقد الاستلام",
+        "amountToPayAtDoor": "المبلغ المستحق عند الاستلام",
+        "cashOnDelivery": "نقداً",
+        "paidOnline": "تم الدفع إلكترونياً",
+        "podLegalNotice": "هذا المبلغ يتم دفعه مباشرة بين البائع والمشتري. المنصة تتبع حالة الطلب فقط للأغراض الأمنية.",
         "title": "تفاصيل الطلب",
         "orderId": "رقم الطلب",
         "buyer": "المشتري",
@@ -2134,6 +2142,10 @@
       "publishEdit": "أكمل ونشر المشروع."
     },
     "step1": {
+      "paymentMethod": "خيارات الدفع",
+      "paymentMethodDesc": "تفعيل شروط دفع خاصة لهذه الخدمة.",
+      "payOnDelivery": "تفعيل الدفع عند الاستلام",
+      "payOnDeliveryHint": "يدفع المشتري لك نقداً عند اكمال الخدمة.",
       "noteServiceFee": "سيتم خصم {fee}٪ كرسوم من كل طلب يتم إنشاؤه من هذه الخدمة ",
       "title": "التفاصيل الأساسية",
       "subtitle": "ضع أساسًا مقنعًا لخدمتك.",
@@ -3667,6 +3679,11 @@
     "attachFiles": "إرفاق ملفات"
   },
   "ServiceDetails": {
+    "payOnDelivery": "الدفع عند الاستلام",
+    "pod": {
+      "title": "الدفع عند الاستلام",
+      "desc": "ادفع للبائع مباشرة عند استلام الخدمة."
+    },
     "ordersCompleted": "الطلبات المكتملة",
     "sellerOrdersCompleted": "طلبات البائع المكتملة",
     "rating": "التقييم",
