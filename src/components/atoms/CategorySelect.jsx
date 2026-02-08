@@ -215,7 +215,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
               {loading ? (
                 <div className='p-3 space-y-2'>
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className='h-4 bg-slate-200 rounded animate-pulse w-3/4' />
+                    <div key={i} className='h-4 bg-slate-200 rounded animate-pulse w-full' />
                   ))}
                 </div>
               ) : filtered?.length === 0 ? (

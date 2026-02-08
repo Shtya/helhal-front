@@ -8,7 +8,7 @@ import InputSearch from '@/components/atoms/InputSearch';
 import Table from '@/components/common/Table';
 import Input from '@/components/atoms/Input';
 import Select from '@/components/atoms/Select';
-import { Wallet, CreditCard, DollarSign, RotateCcw, Hourglass, ArrowUpRight, Loader2 } from 'lucide-react';
+import { Wallet, CreditCard, DollarSign, RotateCcw, Hourglass, ArrowUpRight, Loader2, Building2, AlertTriangle, Building2Icon } from 'lucide-react';
 import Button from '@/components/atoms/Button';
 import api from '@/lib/axios';
 import { useLocale, useTranslations } from 'next-intl';
@@ -24,51 +24,51 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useSearchParams } from 'next/navigation';
 import Currency from '@/components/common/Currency';
+import { Modal } from '@/components/common/Modal';
 
 const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
 
 export const BANKS = [
-  { code: "AAIB", key: "aaib" },
-  { code: "ABE", key: "abe" },
-  { code: "ABK", key: "abk" },
-  { code: "ADCB", key: "adcb" },
-  { code: "AIB", key: "aib" },
-  { code: "AIBANK", key: "aibank" },
-  { code: "AUB", key: "aub" },
-  { code: "BDC", key: "bdc" },
-  { code: "CAE", key: "cae" },
-  { code: "CBE", key: "cbe" },
-  { code: "CIB", key: "cib" },
-  { code: "CITIBANK", key: "citibank" },
-  { code: "EALB", key: "ealb" },
-  { code: "EBE", key: "ebe" },
-  { code: "ENBD", key: "enbd" },
-  { code: "FAB", key: "fab" },
-  { code: "FAIB", key: "faib" },
-  { code: "HDB", key: "hdb" },
-  { code: "HSBC", key: "hsbc" },
-  { code: "IDB", key: "idb" },
-  { code: "MCDR", key: "mcdr" },
-  { code: "MIDBANK", key: "midbank" },
-  { code: "NBE", key: "nbe" },
-  { code: "NBG", key: "nbg" },
-  { code: "NBK", key: "nbk" },
-  { code: "NSBQ", key: "nsbq" },
-  { code: "QNB", key: "qnb" },
-  { code: "SAIB", key: "saib" },
-  { code: "UB", key: "ub" },
-  { code: "ABRK", key: "abrk" },
-  { code: "ARAB", key: "arab" },
-  { code: "BBE", key: "bbe" },
-  { code: "ABC", key: "abc" },
-  { code: "MISR", key: "misr" },
-  { code: "EGB", key: "egb" },
-  { code: "POST", key: "post" },
-  { code: "MASH", key: "mash" },
-  { code: "NIB", key: "nib" },
-  { code: "SCB", key: "scb" },
-  { code: "BOA", key: "boa" },
-  { code: "ADIB", key: "adib" }
+  { code: "AUB" },
+  { code: "MIDB" },
+  { code: "BDC" },
+  { code: "HSBC" },
+  { code: "CAE" },
+  { code: "EGB" },
+  { code: "UB" },
+  { code: "QNB" },
+  { code: "ARAB" },
+  { code: "ENBD" },
+  { code: "ABK" },
+  { code: "NBK" },
+  { code: "ABC" },
+  { code: "FAB" },
+  { code: "ADIB" },
+  { code: "CIB" },
+  { code: "HDB" },
+  { code: "MISR" },
+  { code: "AAIB" },
+  { code: "EALB" },
+  { code: "EDBE" },
+  { code: "FAIB" },
+  { code: "BLOM" },
+  { code: "ADCB" },
+  { code: "BOA" },
+  { code: "SAIB" },
+  { code: "NBE" },
+  { code: "ABRK" },
+  { code: "POST" },
+  { code: "NSB" },
+  { code: "IDB" },
+  { code: "SCB" },
+  { code: "MASH" },
+  { code: "AIB" },
+  { code: "GASC" },
+  { code: "ARIB" },
+  { code: "PDAC" },
+  { code: "NBG" },
+  { code: "CBE" },
+  { code: "BBE" },
 ];
 
 export const accountingAPI = {
@@ -86,6 +86,11 @@ export const accountingAPI = {
   // Bank Accounts
   getBankAccounts: async () => {
     const response = await api.get('/accounting/bank-accounts');
+    return response.data;
+  },
+
+  getDefaultBankAccount: async () => {
+    const response = await api.get('/accounting/default-bank-account');
     return response.data;
   },
 
@@ -187,7 +192,7 @@ export default function Page() {
         >
           {activeTab === 'billing-history' && <BillingHistory />}
           {activeTab === 'billing-information' && <BillingInformation />}
-          {activeTab === 'available-balances' && <AvailableBalances />}
+          {activeTab === 'available-balances' && <AvailableBalances setActiveTab={setActiveTab} />}
           {activeTab === 'payment-methods' && <PaymentMethods />}
         </motion.div>
       </div>
@@ -308,7 +313,7 @@ const BillingHistory = () => {
 };
 
 
-const AvailableBalances = ({ userPhone, userCountryCode }) => {
+const AvailableBalances = ({ setActiveTab }) => {
   const t = useTranslations('MyBilling.availableBalances');
   const { user } = useAuth();
   const [balances, setBalances] = useState(null);
@@ -349,7 +354,19 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
       setWithdrawLoading(false);
     }
   };
+  // Modal State
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+  const [selectedWithdrawAmount, setSelectedWithdrawAmount] = useState(0);
 
+  const openWithdrawModal = (amount) => {
+    setSelectedWithdrawAmount(amount);
+    setIsWithdrawModalOpen(true);
+  };
+
+  const handleWithdrawSuccess = async () => {
+    // Refetch balances to show updated Available vs Reserved amounts
+    await fetchBalances();
+  };
   const allCards = [
     {
       id: 'available',
@@ -439,56 +456,62 @@ const AvailableBalances = ({ userPhone, userCountryCode }) => {
     );
   }
   return (
-    <div className='mb-12'>
-      <div className='mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
-      </div>
+    <>
 
-      <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
-        {allCards.map((card) => {
-          const Icon = card.icon;
-          if (!card.show) return null;
+      <div className='mb-12'>
+        <div className='mb-6'>
+          <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
+        </div>
 
-          return (
-            <div
-              key={card.id}
-              className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col'
-            >
-              <div className='flex justify-between items-start mb-4'>
-                <div>
-                  <p className='text-sm text-gray-500 font-semibold uppercase tracking-wider'>{card.title}</p>
-                  <div className='flex gap-2 items-center text-3xl font-extrabold text-gray-900 mt-1'>
-                    <span>{Number(card.amount).toFixed(2)}</span>
-                    <span className='text-lg font-medium text-gray-400'>SAR</span>
+        <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
+          {allCards.map((card) => {
+            const Icon = card.icon;
+            if (!card.show) return null;
+
+            return (
+              <div
+                key={card.id}
+                className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col'
+              >
+                <div className='flex justify-between items-start mb-4'>
+                  <div>
+                    <p className='text-sm text-gray-500 font-semibold uppercase tracking-wider'>{card.title}</p>
+                    <div className='flex gap-2 items-center text-3xl font-extrabold text-gray-900 mt-1'>
+                      <span>{Number(card.amount).toFixed(2)}</span>
+                      <span className='text-lg font-medium text-gray-400'>SAR</span>
+                    </div>
                   </div>
+                  <span className={`w-10 h-10 flex items-center justify-center rounded-xl ${card.iconBg}`}>
+                    <Icon className='w-5 h-5' />
+                  </span>
                 </div>
-                <span className={`w-10 h-10 flex items-center justify-center rounded-xl ${card.iconBg}`}>
-                  <Icon className='w-5 h-5' />
-                </span>
-              </div>
 
-              <p className='text-sm text-gray-500 flex-grow'>{card.description}</p>
+                <p className='text-sm text-gray-500 flex-grow'>{card.description}</p>
 
-              {/* Withdraw Button Integration */}
-              {card.hasAction && (
-                <button
-                  onClick={() => handleWithdraw(card.amount)}
-                  disabled={withdrawLoading || card.amount < 112 || balances?.reservedBalance > 0}
-                  className='mt-4 w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[var(--color-main-600)] hover:bg-[var(--color-main-700)] text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed'
-                >
-                  {withdrawLoading ? (
-                    <Loader2 className='w-4 h-4 animate-spin' />
-                  ) : (
+                {/* Withdraw Button Integration */}
+                {card.hasAction && (
+                  <button
+                    onClick={() => openWithdrawModal(card.amount)}
+                    disabled={card.amount < 112}
+                    className='mt-4 w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[var(--color-main-600)] hover:bg-[var(--color-main-700)] text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
                     <ArrowUpRight className='w-4 h-4' />
-                  )}
-                  {t('withdrawButton') || 'Withdraw Funds'}
-                </button>
-              )}
-            </div>
-          );
-        })}
+                    {t('withdrawButton') || 'Withdraw Funds'}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
+      <WithdrawModal
+        isOpen={isWithdrawModalOpen}
+        onClose={() => setIsWithdrawModalOpen(false)}
+        maxAmount={selectedWithdrawAmount}
+        onSuccess={handleWithdrawSuccess}
+        onMoveToPaymentMethods={() => setActiveTab("payment-methods")}
+      />
+    </>
   );
 };
 
@@ -1020,7 +1043,7 @@ const PaymentMethods = () => {
   const bankOptions = useMemo(() => {
     return BANKS.map(bank => ({
       id: bank.code,
-      name: t(`bank_codes.banks.${bank.key}`)
+      name: t(`bank_codes.banks.${bank.code}`)
     })).sort((a, b) => a.name.localeCompare(b.name, locale));
   }, [t, locale]);
 
@@ -1329,3 +1352,183 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
   );
 };
 
+
+
+export const WithdrawModal = ({ isOpen, onClose, maxAmount, onSuccess, onMoveToPaymentMethods }) => {
+  const formatValue = (val) => Number(Number(val).toFixed(2));
+  const tBank = useTranslations('MyBilling.paymentMethods');
+  const t = useTranslations('MyBilling.withdrawModal');
+  const [amount, setAmount] = useState(formatValue(maxAmount) || 0);
+  const [bankAccount, setBankAccount] = useState(null);
+  const [loadingBank, setLoadingBank] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Reset state when modal opens
+  // Sync state when modal opens or maxAmount changes
+  useEffect(() => {
+    if (isOpen) {
+      setAmount(formatValue(maxAmount));
+      fetchDefaultBank();
+    }
+  }, [isOpen, maxAmount]);
+
+  const fetchDefaultBank = async () => {
+    setLoadingBank(true);
+    setError(null);
+    try {
+      const data = await accountingAPI.getDefaultBankAccount();
+      setBankAccount(data);
+    } catch (err) {
+      console.error(err);
+      // If 404, it means no default bank (handled in UI)
+      setBankAccount(null);
+    } finally {
+      setLoadingBank(false);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    // Validation
+    if (amount < 112) {
+      toast.error(t('minAmountError'));
+      return;
+    }
+    if (amount > maxAmount) {
+      toast.error(t('maxAmountError'));
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await accountingAPI.withdrawFunds(amount);
+      toast.success(t('successMessage'));
+      onSuccess(); // Refresh parent data
+      onClose();   // Close modal
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Withdrawal failed';
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return;
+  return (
+    <Modal title={t('title')} isOpen={isOpen} onClose={onClose} className="!max-w-xl">
+      <div className="p-6">
+        {loadingBank ? (
+          <div className="space-y-4 animate-pulse">
+            <div className="h-24 bg-slate-100 rounded-xl" />
+            <div className="h-12 bg-slate-100 rounded-xl" />
+            <div className="h-10 w-1/3 bg-slate-100 rounded-xl" />
+          </div>
+        ) : !bankAccount ? (
+          // Case: No Default Bank Account
+          <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
+            <div className="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center">
+              <AlertTriangle className="w-8 h-8" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">{t('noBankTitle')}</h3>
+              <p className="text-gray-500 mt-1 max-w-xs mx-auto">{t('noBankMessage')}</p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={onMoveToPaymentMethods}
+              name={t('addBankLink')}
+              className='!w-fit'
+            />
+          </div>
+        ) : (
+          // Case: Has Bank Account - Show Form
+          <div className="space-y-6">
+
+            {/* Bank Details Card */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-3">
+                {t('bankLabel')}
+              </label>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
+                  <Building2Icon className="w-6 h-6 text-gray-600" />
+                </div>
+                <div className="flex-1">
+                  {/* 1. Localized Bank Name using Bank Code */}
+                  <p className="font-bold text-gray-900">
+                    {bankAccount.bankCode && tBank(`bank_codes.banks.${bankAccount.bankCode}`)}
+                  </p>
+
+                  {/* 2. Full Name / Account Holder */}
+                  <p className="text-sm font-medium text-gray-700 mt-0.5">
+                    {bankAccount.fullName}
+                  </p>
+
+                  {/* 3. IBAN with Mono font for readability */}
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-bold uppercase">
+                      {tBank('ibanLabel')}
+                    </span>
+                    <p className="text-sm text-gray-500 font-mono tracking-tighter">
+                      {bankAccount.iban}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Amount Input */}
+            <div>
+              {/* Label & Available Badge Header */}
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-sm font-medium text-slate-700">
+                  {t('amountLabel')}
+                </label>
+                <span className="text-xs font-medium text-[var(--color-main-600)] bg-[var(--color-main-50)] px-2 py-0.5 rounded-full">
+                  {t('available', { amount: Number(maxAmount).toFixed(2) })}
+                </span>
+              </div>
+
+              {/* Input Container with Relative Positioning for "SAR" */}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <span className="text-gray-500 sm:text-sm">SAR</span>
+                </div>
+
+                <Input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                  placeholder="0.00"
+                  min="112"
+                  max={maxAmount}
+                  // Add 'pl-12' to make room for the SAR prefix
+                  className="pl-12 !text-lg font-semibold"
+                // If you are using React Hook Form, replace value/onChange with: {...register('amount')}
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                onClick={handleWithdraw}
+                disabled={amount < 112 || amount > maxAmount}
+                name={t('confirm')}
+                loading={submitting}
+                className="flex-1"
+              />
+              <Button
+                color='gray'
+                onClick={onClose}
+                className="flex-1"
+                name={t('cancel')}
+                disabled={submitting}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </Modal>
+  );
+};
