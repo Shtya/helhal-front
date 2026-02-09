@@ -37,7 +37,7 @@ export default function StatisticsPage() {
   });
 
 
-  const [recent, setRecent] = useState({ orders: [], withdraws: [] });
+  const [recent, setRecent] = useState({ orders: [], withdrawals: [] });
   const controllerRef = useRef();
 
   async function fetchAll() {
@@ -242,7 +242,7 @@ export default function StatisticsPage() {
         </div>
         <div className='space-y-6'>
           <SectionHeader title={t('table.withdrawals.title')} />
-          <RecentTable rows={recent.withdraws} loading={recentLoading} empty={t('table.withdrawals.empty')} />
+          <RecentTable rows={recent.withdrawals} loading={recentLoading} empty={t('table.withdrawals.empty')} />
         </div>
       </section>
     </div>
@@ -281,11 +281,11 @@ function RecentTable({ rows, loading, empty }) {
           {rows.map((r, idx) => (
             <tr key={idx} className='border-t border-main-100 text-sm hover:bg-main-50/40'>
               <td className='px-4 py-3 text-nowrap font-medium text-slate-800'>{r.ref || r.id || '-'}</td>
-              <td className='px-4 py-3 text-nowrap text-slate-700'>{r.buyer.username || r.user.username || '-'}</td>
+              <td className='px-4 py-3 text-nowrap text-slate-700'>{r?.buyer?.username || r?.user?.username || '-'}</td>
               <td className='px-4 py-3 text-nowrap'>
                 <span className={`inline-flex text-nowrap items-center rounded-lg px-2 py-1 text-xs font-medium ${statusTone(r.status)}`}>{r.status || '-'}</span>
               </td>
-              <td className='px-4 py-3 text-nowrap text-slate-800'>{typeof (r.amount || r.totalAmount) === 'number' ? `$${formatNumber(r.amount || r.totalAmount)}` : (r.amount || r.totalAmount) || '-'}</td>
+              <td className='px-4 py-3 text-nowrap text-slate-800'>{typeof (r.amount || r.totalAmount) === 'number' ? `SAR ${formatNumber(r.amount || r.totalAmount)}` : (r.amount || r.totalAmount) || '-'}</td>
               <td className='px-4 py-3 text-nowrap text-slate-600'>{formatDate(r.created_at)}</td>
             </tr>
           ))}
