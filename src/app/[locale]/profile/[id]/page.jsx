@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video, CheckCircle2, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
 import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
 import { useAuth } from '@/context/AuthContext';
