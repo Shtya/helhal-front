@@ -44,34 +44,62 @@ function Pill({ children, className = '' }) {
 }
 
 /* ===================== LINKS SECTION (Accordion mobile / Columns desktop) ===================== */
+// LinksSection Component
 function LinksSection({ titleKey, links, directTexts = false }) {
   const t = useTranslations();
   const [expanded, setExpanded] = useState(false);
   const [showMore, setShowMore] = useState(false);
 
+  // Logic preserved as requested
   const visibleLinks = showMore ? links : links?.slice(0, 4);
 
   return (
     <div className='w-full md:w-auto flex-1 min-w-[200px]'>
       {/* Header */}
-      <button type='button' onClick={() => setExpanded(p => !p)} className='w-full py-4 md:py-2 flex items-center justify-between text-start md:cursor-default group' aria-expanded={expanded}>
-        <h3 className='font-extrabold text-lg md:text-xl text-gray-900 group-hover:text-main-700 transition'>{t(titleKey)}</h3>
-        <span className='md:hidden text-gray-500'>{expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</span>
+      <button
+        type='button'
+        onClick={() => setExpanded(p => !p)}
+        // Mobile: Reduced py-3 (was py-4)
+        className='w-full py-3 md:py-2 flex items-center justify-between text-start md:cursor-default group'
+        aria-expanded={expanded}
+      >
+        {/* Mobile: Reduced text-base (was text-lg) */}
+        <h3 className='font-extrabold text-base sm:text-lg md:text-xl text-gray-900 group-hover:text-main-700 transition'>
+          {t(titleKey)}
+        </h3>
+        <span className='md:hidden text-gray-500'>
+          {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </span>
       </button>
 
       {/* Mobile list */}
       <AnimatePresence initial={false}>
         {expanded && (
-          <motion.ul key='mobile-list' initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25 }} className='space-y-1 overflow-hidden md:hidden'>
+          <motion.ul
+            key='mobile-list'
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className='space-y-1 overflow-hidden md:hidden'
+          >
             {visibleLinks.map(item => (
               <li key={item.key}>
-                <Link href={item.href} className='text-[15px] py-2 text-gray-700 hover:text-main-700 hover:ps-1 transition block'>
+                <Link
+                  href={item.href}
+                  // Mobile: Reduced text-sm (was text-[15px])
+                  className='text-sm py-2 text-gray-700 hover:text-main-700 hover:ps-1 transition block'
+                >
                   {directTexts ? item.key : t(item.key)}
                 </Link>
               </li>
             ))}
             {links.length > 5 && (
-              <button onClick={() => setShowMore(!showMore)} className='text-sm  text-main-700 hover:text-main-800 mt-2 w-fullfont-semibold'>
+              <button
+                onClick={() => setShowMore(!showMore)}
+                // Fixed typo: 'w-fullfont' -> 'w-full font'
+                className='text-xs sm:text-sm text-main-700 hover:text-main-800 mt-2 w-full text-start font-semibold'
+              >
                 {showMore ? t('footer.showLess') : t('footer.showMore')}
               </button>
             )}
@@ -83,13 +111,19 @@ function LinksSection({ titleKey, links, directTexts = false }) {
       <ul className='hidden md:block space-y-1'>
         {visibleLinks.map(item => (
           <li key={item.key}>
-            <Link href={item.href} className='text-[15px] py-1.5 text-gray-700 hover:text-main-700 hover:ps-1 transition block'>
+            <Link
+              href={item.href}
+              className='text-[15px] py-1.5 text-gray-700 hover:text-main-700 hover:ps-1 transition block'
+            >
               {directTexts ? item.key : t(item.key)}
             </Link>
           </li>
         ))}
         {links.length > 5 && (
-          <button onClick={() => setShowMore(!showMore)} className='text-sm text-main-700 hover:text-main-800 mt-2 w-fullfont-semibold'>
+          <button
+            onClick={() => setShowMore(!showMore)}
+            className='text-sm text-main-700 hover:text-main-800 mt-2 w-full text-start font-semibold'
+          >
             {showMore ? t('footer.showLess') : t('footer.showMore')}
           </button>
         )}
@@ -119,7 +153,7 @@ function LanguageSwitcher() {
 function TrustRow() {
   const t = useTranslations('Home');
   return (
-    <div className='flex flex-wrap items-center gap-3'>
+    <div className='flex flex-wrap justify-center md:justify-start items-center gap-2 sm:gap-4 pt-1'>
       <Pill>{t('hero.trust.offers')}</Pill>
       <Pill>{t('hero.trust.pricing')}</Pill>
       <Pill>{t('hero.trust.safepay')}</Pill>
@@ -252,11 +286,15 @@ export function Footer() {
           </div>
 
           {/* Links grid */}
-          <div className='px-6 md:px-10 py-8'>
-            <div className='flex flex-col md:flex-row flex-wrap justify-between gap-6 md:gap-12'>
-              { }
+          <div className='px-4 sm:px-6 md:px-10 py-8'>
+            <div className='flex flex-col md:flex-row flex-wrap justify-between gap-8 md:gap-12'>
               {FOOTER_NAVIGATION_STRUCTURE.map((section, idx) => (
-                <LinksSection key={idx} titleKey={section.titleKey} links={section.links} directTexts={section?.directTexts} />
+                <LinksSection
+                  key={idx}
+                  titleKey={section.titleKey}
+                  links={section.links}
+                  directTexts={section?.directTexts}
+                />
               ))}
             </div>
           </div>

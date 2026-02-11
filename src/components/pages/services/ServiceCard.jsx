@@ -209,7 +209,11 @@ export default memo(function AmazingServiceCard({
             <div className='block focus:outline-none focus:ring-2 focus:ring-blue-500 rounded'>
               <h3 className='text-[17px] font-semibold line-clamp-1  '>{serviceTitle}</h3>
             </div>
-            {serviceBrief ? <p className='text-[13px] text-slate-600 line-clamp-2'>{serviceBrief}</p> : null}
+            {serviceBrief ? (
+              <p className='text-[13px] text-slate-600 line-clamp-2 [overflow-wrap:anywhere] [word-break:normal]'>
+                {serviceBrief}
+              </p>
+            ) : null}
 
             <div className='flex items-center justify-between'>
               <div className='text-[14px] text-slate-700'>{categoryName || '—'}</div>

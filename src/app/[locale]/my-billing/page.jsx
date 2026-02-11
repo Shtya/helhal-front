@@ -1073,28 +1073,49 @@ const PaymentMethods = () => {
           {message}
         </div>
       )}
-
       {bankAccounts.length > 0 && (
         <div className='mb-8'>
           <h2 className='text-xl font-semibold mb-4'>{t('yourBankAccounts')}</h2>
           <div className='grid gap-4'>
             {bankAccounts.map(account => (
-              <div key={account.id} className={`border rounded-lg p-4 flex justify-between items-center ${editingAccount?.id === account.id ? 'border-main-600 bg-main-50' : ''}`}>
-                <div>
-                  <p className='font-semibold'>{account.fullName}</p>
-                  <p className='text-gray-600'>{t('iban')} {account.iban}</p>
-                  {account.isDefault && <span className='inline-block bg-main-100 text-main-800 text-xs px-2 py-1 rounded mt-1'>{t('default')}</span>}
+              <div
+                key={account.id}
+                className={`border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center gap-3 ${editingAccount?.id === account.id ? 'border-main-600 bg-main-50' : ''
+                  }`}
+              >
+                {/* Info */}
+                <div className='flex-1 min-w-0'>
+                  <p className='font-semibold '>{account.fullName}</p>
+                  <p className='text-gray-600 text-sm break-words'>{t('iban')} {account.iban}</p>
+                  {account.isDefault && (
+                    <span className='inline-block bg-main-100 text-main-800 text-xs px-2 py-1 rounded mt-1'>
+                      {t('default')}
+                    </span>
+                  )}
                 </div>
-                <div className='flex gap-3'>
-                  <button onClick={() => handleEditClick(account)} className='text-main-600 hover:text-main-800 text-sm font-medium'>
+
+                {/* Actions */}
+                <div className='flex items-center gap-3 flex-shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0'>
+                  <button
+                    onClick={() => handleEditClick(account)}
+                    className='text-main-600 hover:text-main-800 text-sm font-medium'
+                  >
                     {t('edit') || 'Edit'}
                   </button>
                   {!account.isDefault && (
                     <>
-                      <button onClick={() => handleSetDefault(account.id)} className='text-blue-600 hover:text-blue-800 text-sm'>
+                      <span className='text-gray-300 text-xs'>|</span>
+                      <button
+                        onClick={() => handleSetDefault(account.id)}
+                        className='text-blue-600 hover:text-blue-800 text-sm'
+                      >
                         {t('setDefault')}
                       </button>
-                      <button onClick={() => handleDeleteAccount(account.id)} className='text-red-600 hover:text-red-800 text-sm'>
+                      <span className='text-gray-300 text-xs'>|</span>
+                      <button
+                        onClick={() => handleDeleteAccount(account.id)}
+                        className='text-red-600 hover:text-red-800 text-sm'
+                      >
                         {t('delete')}
                       </button>
                     </>
@@ -1445,31 +1466,32 @@ export const WithdrawModal = ({ isOpen, onClose, maxAmount, onSuccess, onMoveToP
           <div className="space-y-6">
 
             {/* Bank Details Card */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-3">
+
+            <div className='bg-slate-50 border border-slate-200 rounded-xl p-4'>
+              <label className='text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-3'>
                 {t('bankLabel')}
               </label>
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-white rounded-lg border border-gray-100 shadow-sm">
-                  <Building2Icon className="w-6 h-6 text-gray-600" />
+              <div className='flex items-start gap-3'>
+                <div className='p-2 bg-white rounded-lg border border-gray-100 shadow-sm flex-shrink-0'>
+                  <Building2Icon className='w-6 h-6 text-gray-600' />
                 </div>
-                <div className="flex-1">
-                  {/* 1. Localized Bank Name using Bank Code */}
-                  <p className="font-bold text-gray-900">
+                <div className='flex-1 min-w-0'>
+                  {/* Localized Bank Name */}
+                  <p className='font-bold text-gray-900 truncate'>
                     {bankAccount.bankCode && tBank(`bank_codes.banks.${bankAccount.bankCode}`)}
                   </p>
 
-                  {/* 2. Full Name / Account Holder */}
-                  <p className="text-sm font-medium text-gray-700 mt-0.5">
+                  {/* Account Holder */}
+                  <p className='text-sm font-medium text-gray-700 mt-0.5 truncate'>
                     {bankAccount.fullName}
                   </p>
 
-                  {/* 3. IBAN with Mono font for readability */}
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-bold uppercase">
+                  {/* IBAN */}
+                  <div className='mt-2 flex items-center gap-2 min-w-0'>
+                    <span className='flex-shrink-0 text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-bold uppercase'>
                       {tBank('ibanLabel')}
                     </span>
-                    <p className="text-sm text-gray-500 font-mono tracking-tighter">
+                    <p className='text-sm text-gray-500 font-mono tracking-tighter truncate'>
                       {bankAccount.iban}
                     </p>
                   </div>

@@ -143,7 +143,7 @@ export default function ProfilePageClient() {
           </div>
 
           {/* KPIs */}
-          <div className='mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3'>
+          <div className='mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3'>
             {/* <StatCard title='Orders Completed' value={Number(stats.ordersCompleted || 0)} hint='All-time' icon={CheckCircle2} gradient='from-main-500 via-teal-500 to-cyan-400' /> */}
             <StatCard
               gradient='from-yellow-400 via-amber-500 to-orange-400'

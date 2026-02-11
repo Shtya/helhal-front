@@ -922,7 +922,7 @@ export default function AuthPage() {
             <div className='flex justify-center items-center absolute top-10 start-10'>
               <Logo textHideMobile={false} />
             </div>
-            <motion.div className='w-full max-lg:p-8 lg:py-8'>
+            <motion.div className='w-full lg:py-8'>
               <div className='mb-4 w-full text-center md:text-start'>
                 <h4 className='text-sm font-semibold text-main-700'>{t('brandingTitle')}</h4>
                 <p className='text-xs text-slate-500 mt-1'>{t('brandingSubtitle')}</p>

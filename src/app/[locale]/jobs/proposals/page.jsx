@@ -207,7 +207,7 @@ function ProposalCard({ proposal, onOpenJob }) {
         {proposal?.coverLetter && (
           <div className="mt-2">
             <p
-              className={`text-slate-600 ${expanded ? '' : 'line-clamp-3'}`}
+              className={`text-slate-600 ${expanded ? '' : 'line-clamp-3'} [overflow-wrap:anywhere] [word-break:normal]`}
             >
               {proposal.coverLetter}
             </p>

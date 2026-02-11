@@ -294,7 +294,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
           <FileText className='h-4 w-4' />
           {t('coverLetter')}
         </div>
-        <p className='leading-relaxed text-slate-700'>{proposal.coverLetter}</p>
+        <p className='leading-relaxed text-slate-700 break-words'>{proposal.coverLetter}</p>
       </div>
 
       {!!proposal.attachments?.length && (

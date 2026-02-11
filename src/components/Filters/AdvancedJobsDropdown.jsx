@@ -78,12 +78,12 @@ export default function AdvancedJobsDropdown({
   );
 
   const Section = ({ title, subtitle, children }) => (
-    <div className='min-w-[330px] px-4'>
+    <div className='w-full sm:w-[350px] px-4'>
       <div className='flex items-baseline justify-between mb-2'>
         <h4 className='text-base font-bold text-slate-800'>{title}</h4>
         {subtitle && <span className='text-[10px] text-slate-400'>{subtitle}</span>}
       </div>
-      <div className='grid grid-cols-2 gap-1'>{children}</div>
+      <div className='grid  grid-cols-1 md:grid-cols-2 gap-1'>{children}</div>
       <div className='my-2 border-t border-slate-200' />
     </div>
   );

@@ -11,7 +11,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users, CheckCircle, ArrowLeft } from 'lucide-react';
+import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users, CheckCircle, ArrowLeft, TrendingUp } from 'lucide-react';
 import ReactPlayer from 'react-player';
 import { localImageLoader, resolveUrl } from '@/utils/helper';
 import api from '@/lib/axios';
@@ -203,72 +203,83 @@ function SearchBar({ className = '', large = false }) {
   );
 }
 
-
 function Hero() {
   const t = useTranslations('Home');
   const { role } = useAuth();
-
 
   const isBuyer = role === 'buyer';
   let primaryHref = isBuyer ? '/share-job-description' : '/auth?tab=login&redirect=/share-job-description';
 
   return (
-    <section className='relative min-h-[71vh] md:min-h-[76vh] w-full overflow-hidden'>
-      <Image priority loading='eager' src='/images/hero-background.jpg' alt={t('hero.alt')} fill className='object-cover object-center' />
+    <section className='relative w-full overflow-hidden'>
+      <div className='relative min-h-[85svh] md:min-h-[76vh] flex flex-col justify-center py-20 md:py-0'>
 
-      {/* Green gradient overlay */}
-      <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-main-900/35 to-black/60' />
+        <Image priority loading='eager' src='/images/hero-background.jpg' alt={t('hero.alt')} fill className='object-cover object-center -z-10' />
+        <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-main-900/35 to-black/60 -z-10' />
 
-      <div className='min-h-[71vh] md:min-h-[76vh] relative z-10 h-full flex items-center pt-4'>
         <div className='container !px-4 sm:!px-6 lg:!px-8'>
-          <div className='max-w-3xl text-white space-y-6'>
-            <span className='inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 border border-white/20 rounded-full px-3 py-1 backdrop-blur'>
-              <Zap className='w-4 h-4' /> {t('hero.badge')}
-            </span>
+          {/* Center-aligned on mobile, left on md+ */}
+          <div className='max-w-3xl mx-auto md:mx-0 text-white text-center md:text-start space-y-5 md:space-y-6'>
 
-            <h1 className='text-4xl md:text-6xl font-extrabold leading-[1.1] drop-shadow'>{t('hero.title')}</h1>
+            {/* Badge */}
+            <div className='flex justify-center md:justify-start'>
+              <span className='inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 border border-white/20 rounded-full px-3 py-1 backdrop-blur'>
+                <Zap className='w-3.5 h-3.5' /> {t('hero.badge')}
+              </span>
+            </div>
 
-            <p className='text-main-50/95 text-lg md:text-xl'>{t('hero.subtitle')}</p>
+            {/* Title + Subtitle */}
+            <div className='space-y-3'>
+              <h1 className='text-3xl sm:text-4xl md:text-6xl font-extrabold leading-[1.2] md:leading-[1.1] drop-shadow'>
+                {t('hero.title')}
+              </h1>
+              <p className='text-main-50/95 text-sm sm:text-lg md:text-xl max-w-xl mx-auto md:mx-0 leading-relaxed'>
+                {t('hero.subtitle')}
+              </p>
+            </div>
 
-            <SearchBar large className='mt-2' />
+            {/* Search */}
+            <div className='w-full max-w-xl mx-auto md:mx-0'>
+              <SearchBar large />
+            </div>
 
+            {/* CTAs */}
+            <div className='flex flex-col xs:flex-row justify-center md:justify-start items-stretch xs:items-center gap-3 w-full max-w-sm mx-auto md:mx-0 md:max-w-none'>
+              <Link
+                href={primaryHref}
+                className='inline-flex items-center justify-center h-12 md:h-12 px-6 rounded-xl bg-main-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-main-700 transition-all'
+              >
+                {t('hero.postOrder')}
+              </Link>
+              <Link
+                href='/freelance'
+                className='inline-flex items-center justify-center h-12 md:h-12 px-6 rounded-xl border border-main-700 text-main-700 text-sm md:text-base font-medium bg-main-50 hover:bg-main-100 transition-all'
+              >
+                {t('hero.search')}
+              </Link>
+            </div>
 
-
-            <div className='flex flex-wrap items-center gap-4 pt-4 text-main-50/90'>
+            {/* Trust Badges */}
+            <div className='flex flex-wrap justify-center md:justify-start items-center gap-2 sm:gap-4 pt-1 text-main-50/90'>
               <Badge icon={<CheckCircle className='w-4 h-4' />} label={t('hero.trust.offers')} />
               <Badge icon={<Stars className='w-4 h-4' />} label={t('hero.trust.pricing')} />
               <Badge icon={<ShieldCheck className='w-4 h-4' />} label={t('hero.trust.safepay')} />
             </div>
 
-            <p className='text-sm md:text-base text-main-50/80'>{t('hero.tagline')}</p>
+            {/* Tagline */}
+            <p className='text-xs sm:text-sm text-main-50/70'>
+              {t('hero.tagline')}
+            </p>
 
-            <div className="flex flex-wrap items-center gap-3 mt-4">
-              {/* Primary CTA: Post Your Request */}
-              <Link
-                href={primaryHref}
-                className="inline-flex items-center justify-center h-12 px-6 rounded-xl bg-main-600 text-white text-sm md:text-base font-medium hover:shadow-lg hover:bg-main-700 transition-all"
-              >
-                {t('hero.postOrder')}
-              </Link>
-
-              {/* Secondary CTA: Browse Services */}
-              <Link
-                href="/freelance"
-                className="inline-flex items-center justify-center h-12 px-6 rounded-xl border border-main-700 text-main-700 text-sm md:text-base font-medium bg-main-50 hover:bg-main-100 transition-all"
-              >
-                {t('hero.search')}
-              </Link>
-            </div>
           </div>
         </div>
-      </div>
 
-      {/* subtle bottom curve */}
-      <div className='absolute -bottom-8 left-0 right-0 h-16 bg-white rounded-t-[32px]' />
+        {/* Bottom curve */}
+        <div className='absolute -bottom-8 left-0 right-0 h-16 bg-white rounded-t-[32px]' />
+      </div>
     </section>
   );
 }
-
 function Badge({ icon, label }) {
   return (
     <span className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 backdrop-blur text-xs'>
@@ -445,7 +456,8 @@ export function PopularServicesSwiper() {
           1199: { slidesPerView: 6, spaceBetween: 24 },
           991: { slidesPerView: 4, spaceBetween: 20 },
           640: { slidesPerView: 3, spaceBetween: 18 },
-          0: { slidesPerView: 2.1, spaceBetween: 14 },
+          480: { slidesPerView: 2, spaceBetween: 14 },
+          0: { slidesPerView: 1, spaceBetween: 10 },
         }}
         pagination={{ clickable: true }}
         modules={[Pagination]}
@@ -499,7 +511,9 @@ export function PopularServicesSwiper() {
                     className="object-contain"
                   />
                 </div>
-                <span className="text-sm font-semibold text-gray-900 group-hover:text-main-700">{service.title}</span>
+                <span className="text-sm font-semibold text-gray-900 group-hover:text-main-700 line-clamp-2 text-ellipsis overflow-hidden">
+                  {service.title}
+                </span>
                 <span className="mt-2 text-xs text-main-700/80 font-medium opacity-0 group-hover:opacity-100 transition-opacity">{t('popularServices.bookNow')}</span>
               </Link>
             </SwiperSlide>)
@@ -655,39 +669,47 @@ export function CTAStrip() {
   const t = useTranslations('Home');
   const { role } = useAuth();
 
-
   const isBuyer = role === 'buyer';
 
   // Optional: hide CTA for admin
   if (role === 'admin' || role === 'seller') return null;
 
-  let primaryHref = isBuyer ? '/share-job-description' : '/auth?tab=login&redirect=/share-job-description';
+  const primaryHref = isBuyer ? '/share-job-description' : '/auth?tab=login&redirect=/share-job-description';
   let primaryLabel = t('cta.postOrder');
 
-
   return (
-    <section className="container !px-4 sm:!px-6 lg:!px-8 !pb-16">
-      <div className="relative overflow-hidden rounded-3xl border border-main-100/70 bg-gradient-to-r from-main-600 via-main-500 to-main-600">
+    // Mobile: Reduced bottom margin (!pb-8)
+    <section className="container !px-4 sm:!px-6 lg:!px-8 !pb-8 sm:!pb-16">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-main-100/70 bg-gradient-to-r from-main-600 via-main-500 to-main-600">
         <div className="absolute -inset-1 opacity-20 [mask-image:radial-gradient(closest-side,white,transparent)] bg-[conic-gradient(at_top_left,white,transparent_30%)]" />
-        <div className="relative p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6 text-white">
-          <div>
-            <h3 className="text-2xl md:text-3xl font-extrabold">
+
+        {/* Mobile: Reduced padding (p-5), reduced gap (gap-4) */}
+        <div className="relative p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 text-white">
+
+          {/* Mobile: Center text alignment for better balance */}
+          <div className="text-center md:text-start">
+            {/* Mobile: Smaller font (text-xl) */}
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold">
               {t('cta.title')}
             </h3>
-            <p className="text-main-50/90 mt-1">
+            {/* Mobile: Smaller font (text-sm) and tighter margin */}
+            <p className="text-main-50/90 mt-1.5 text-sm sm:text-base">
               {t('cta.subtitle')}
             </p>
           </div>
-          <div className="flex max-md:w-full max-sm:flex-col items-center gap-3">
+
+          <div className="flex w-full md:w-auto flex-col sm:flex-row items-center gap-3">
             <Link
               href={primaryHref}
-              className="inline-flex   max-md:w-full max-md:justify-center items-center gap-2 px-5 py-3 rounded-xl bg-white text-main-700 font-bold shadow-lg hover:shadow-xl transition"
+              // Mobile: Smaller text (text-sm), tighter padding (py-2.5)
+              className="inline-flex w-full sm:w-auto justify-center items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl bg-white text-main-700 text-sm sm:text-base font-bold shadow-lg hover:shadow-xl transition"
             >
-              {primaryLabel} <ArrowRight className="w-5 h-5 rtl:rotate-180" />
+              {primaryLabel} <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 rtl:rotate-180" />
             </Link>
+
             <Link
-              href="/services/all"
-              className="inline-flex  max-md:w-full max-md:justify-center items-center gap-2 px-5 py-3 rounded-xl border-2 border-white/80 text-white font-semibold hover:bg-white/10 transition"
+              href="/services"
+              className="inline-flex w-full sm:w-auto justify-center items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-xl border-2 border-white/80 text-white text-sm sm:text-base font-semibold hover:bg-white/10 transition"
             >
               {t('cta.browse')}
             </Link>

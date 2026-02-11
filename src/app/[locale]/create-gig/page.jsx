@@ -809,7 +809,7 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
                   ? 'border-main-600 ring-2 ring-main-600/20'
                   : 'border-gray-300 hover:border-main-600/70'
                 }
-        focus:outline-none
+        focus:outline-none gap-3
       `}
             >
               <div className="flex items-center gap-3">

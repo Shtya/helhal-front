@@ -212,7 +212,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
         <h4 className='text-base font-bold text-slate-800'>{title}</h4>
         {subtitle && <span className='text-[10px] text-slate-400'>{subtitle}</span>}
       </div>
-      <div className={`grid ${one ? 'grid-cols-1' : 'grid-cols-2'} gap-1`}>{children}</div>
+      <div className={`grid ${one ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'} gap-1`}>{children}</div>
       <div className='my-2 border-t border-slate-200' />
     </div>
   );
@@ -237,7 +237,7 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
 
         {/* Panel */}
         <div
-          className={` border border-main-700/40  absolute start-0 mt-2 w-[350px] rounded-xl bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
+          className={` border border-main-700/40  absolute start-0 mt-2 w-full sm:w-[350px] rounded-xl bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
           ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
         >
           <div className='py-4 max-h-[70vh] overflow-auto'>
