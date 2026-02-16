@@ -221,9 +221,11 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
               ) : filtered?.length === 0 ? (
                 <div className='p-3 text-sm text-gray-500'>{t('noFound', { type })}</div>
               ) : (
-                <ul className='divide-y divide-gray-100'>
+                <ul className='flex flex-col divide-y divide-gray-100'>
                   {filtered?.map(opt => {
                     const name = locale === 'ar' ? opt.name_ar : opt.name_en;
+                    // Check if it's Saudi Arabia
+
                     return <li key={opt.id}>
                       <button onClick={() => handleSelect(opt)} className={`w-full text-start px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-main-500 to-main-400 hover:text-white'}`}>
                         {name}

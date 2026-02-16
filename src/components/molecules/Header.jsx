@@ -289,9 +289,9 @@ export default function Header() {
             </>
           ) : (
             <>
-              <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-main-700 transition-colors rounded-xl'>
+              {/* <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-main-700 transition-colors rounded-xl'>
                 {tHeader('auth.signUp')}
-              </Link>
+              </Link> */}
               <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium bg-main-600 text-white rounded-xl hover:bg-main-700 transition-colors'>
                 {tHeader('auth.signIn')}
               </Link>

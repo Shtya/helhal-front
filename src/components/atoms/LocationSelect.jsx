@@ -105,6 +105,9 @@ const LocationSelect = forwardRef(({
                 onChange={onChange}
                 placeholder={placeholder}
                 isLoading={loading}
+                firstOne={(o) => {
+                    return o.iso2 === 'SA'
+                }}
                 showSearch={true}
                 disabled={disabled || (type === 'state' && !parentId)}
                 error={error}

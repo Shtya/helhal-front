@@ -135,11 +135,14 @@ export default function ProfilePageClient() {
               </div>
             </div>
 
-            <div className='flex items-center gap-2'>
-              {!isSameUser && <Link href={`/chat?userId=${buyer?.id || ''}`} className='px-4 py-2 text-sm font-semibold rounded-xl bg-white text-main-700 hover:bg-main-50 active:scale-95 transition shadow'>
-                {t('message')}
-              </Link>}
-            </div>
+            <Link
+              href={`/chat?userId=${buyer?.id || ''}`}
+              // Mobile: Full width, Desktop: auto width. Prominent main-600 background.
+              className='inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-bold rounded-xl bg-white text-main-700 hover:bg-main-50 active:scale-95 transition shadow-lg sm:min-w-[140px]'
+            >
+              <Mail className="w-5 h-5" />
+              {t('message') || 'Chat with Seller'}
+            </Link>
           </div>
 
           {/* KPIs */}

@@ -119,12 +119,13 @@ export default function PhoneInputWithCountry({
             />
             <Input
                 label={t('phoneLabel')}
+                type="tel"
                 placeholder={t('phoneLabelPlaceholder')}
                 value={internalPhone}
                 onChange={handlePhoneChange}
                 onBlur={handleBlur}
                 maxLength={14}
-                className="w-full"
+                className="w-full left-input"
             />
         </div>
 

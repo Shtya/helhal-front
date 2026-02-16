@@ -9,7 +9,7 @@ import FormErrorMessage from './FormErrorMessage';
 import { useTranslations } from 'next-intl';
 
 //options = [{ id: '1', name: 'Option 1' }, { id: '2', name: 'Option 2' }]
-const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder, label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, selectkey, hideIcon = false, ...props }, ref) => {
+const Select = forwardRef(({ firstOne, onOpenToggle, isVirtualized, VirtualizeWidth = 300, cnVirtualize, showSearch = false, customSearch, formatSelected, cnMenu, isLoading, options = [], placeholder, label, cnLabel, onChange, onBlur, className, cnPlaceholder, cnSelect, error = null, required = false, name, value, selectkey, hideIcon = false, ...props }, ref) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [touched, setTouched] = useState(false);
@@ -227,9 +227,9 @@ const Select = forwardRef(({ onOpenToggle, isVirtualized, VirtualizeWidth = 300,
 
               )
                 : (
-                  <ul className='divide-y divide-gray-100'>
+                  <ul className='flex flex-col divide-y divide-gray-100'>
                     {internalOptions.map(opt => (
-                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white option-selected'}`}>
+                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`${firstOne(opt) ? "order-first " : null} group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white option-selected'}`}>
                         {opt.name}
                       </li>
                     ))}

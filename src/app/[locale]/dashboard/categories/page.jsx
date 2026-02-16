@@ -241,13 +241,13 @@ export default function AdminCategoriesDashboard() {
         {canDelete && <button onClick={() => onDelete(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>
           <Trash2 size={16} />
         </button>}
-        {canToggleTop && <button
+        {/* {canToggleTop && <button
           onClick={() => openPopularModel(isTop ? 'edit-top' : 'mark-top', row)}
           className={`p-2 rounded-full ${isTop ? 'text-yellow-600 hover:bg-yellow-50' : 'text-slate-500 hover:bg-slate-100'}`}
           title={isTop ? t('actions.unmarkTop') : t('actions.markTop')}
         >
           <Star size={16} fill={isTop ? 'currentColor' : 'none'} />
-        </button>}
+        </button>} */}
         {/* Top خاص بالـFreelance */}
         {/* {canToggleTop && (
           <button
@@ -282,8 +282,8 @@ export default function AdminCategoriesDashboard() {
                   { id: 'oldest', name: t('sortOptions.oldest') },
                   { id: 'az', name: t('sortOptions.az') },
                   { id: 'za', name: t('sortOptions.za') },
-                  { id: 'top', name: t('sortOptions.top') },
-                  { id: 'freelanceTop', name: t('sortOptions.freelanceTop') }
+                  // { id: 'top', name: t('sortOptions.top') },
+                  // { id: 'freelanceTop', name: t('sortOptions.freelanceTop') }
                 ]}
               />
               {canAdd && <Button name={t('addCategory')} onClick={openCreate} className='!w-fit' leftIcon={<Plus size={16} />} />}

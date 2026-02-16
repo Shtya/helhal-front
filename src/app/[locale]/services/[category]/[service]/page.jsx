@@ -1552,7 +1552,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
 
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
-                <Button name={t('sidebar.continue')} className='flex-1' disabled={!canOrder} onClick={onTryOpenOrderOptions} />
+                <Button href={!canOrder ? "/auth?tab=ligin" : null} name={t('sidebar.continue')} className='flex-1' onClick={onTryOpenOrderOptions} />
                 {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-main-500'>
                   <MessageCircle size={18} />
                 </Link>}

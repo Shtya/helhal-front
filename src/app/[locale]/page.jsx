@@ -17,6 +17,7 @@ import { localImageLoader, resolveUrl } from '@/utils/helper';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useValues } from '@/context/GlobalContext';
 
 
 // ========================= PAGE =========================
@@ -25,8 +26,7 @@ export default function ExplorePage() {
   return (
     <main className='relative'>
       <Hero />
-
-      <CategorySwiper />
+      {/* <CategorySwiper /> */}
       <PopularServicesSwiper />
       <WhyChoose />
       <ClientsExperiences />
@@ -600,6 +600,8 @@ export function VideoSlider() {
   const userExplicitlyPaused = React.useRef(new Set());
   const [activeVideoIndex, setActiveVideoIndex] = React.useState(0);
   const playerRefs = React.useRef(new Map());
+  const { settings, loadingSettings } = useValues()
+  const contactEmail = settings?.contactEmail;
 
   const handleSlideChange = React.useCallback(swiperInstance => {
     setActiveVideoIndex(swiperInstance.activeIndex);

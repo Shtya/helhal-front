@@ -253,16 +253,27 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
           </div>
         </div>
 
-        <div className='flex gap-1 items-center'>
-          <div className='inline-flex items-end gap-1'>
-            <DollarSign className='mb-0.5 h-5 w-5 text-main-600' />
-            <p className='text-2xl font-bold text-main-700'>{formatMoney(proposal.bidAmount)}</p>
-            <span className='text-sm text-slate-500'>/{proposal.bidType === 'hourly' ? t('bidType.hourly') : proposal.bidType === 'fixed' ? t('bidType.fixed') : t('bidType.bid')}</span>
+        <div className='flex gap-2 items-center'>
+
+          <div className='flex gap-1 items-center'>
+            <div className='inline-flex items-end gap-1'>
+              <DollarSign className='mb-0.5 h-5 w-5 text-main-600' />
+              <p className='text-2xl font-bold text-main-700'>{formatMoney(proposal.bidAmount)}</p>
+              <span className='text-sm text-slate-500'>/{proposal.bidType === 'hourly' ? t('bidType.hourly') : proposal.bidType === 'fixed' ? t('bidType.fixed') : t('bidType.bid')}</span>
+            </div>
+            <p className='mt-1 inline-flex items-center gap-1 text-sm text-slate-600'>
+              <Clock className='h-4 w-4' />
+              {t('daysDelivery', { days: proposal.estimatedTimeDays })}
+            </p>
           </div>
-          <p className='mt-1 inline-flex items-center gap-1 text-sm text-slate-600'>
-            <Clock className='h-4 w-4' />
-            {t('daysDelivery', { days: proposal.estimatedTimeDays })}
-          </p>
+          <Button
+            name={t('message')}
+            icon={<MessageSquare className="h-4 w-4" />}
+            href={`/chat?userId=${proposal.seller.id}`}
+            color="secondary"
+            className="!rounded-full !px-5 !py-2 !w-fit text-sm !font-bold !text-slate-700 !bg-white border border-slate-200 shadow-sm hover:!bg-slate-50 hover:border-main-300 transition-all active:scale-95"
+          />
+
         </div>
       </div>
 
@@ -333,13 +344,6 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
               />
             </>
           )}
-          <Button
-            name={t('message')}
-            icon={<MessageSquare className="h-4 w-4" />}
-            href={`/chat?userId=${proposal.seller.id}`}
-            color="secondary"
-            className="!px-4 !py-2 !w-fit text-sm !text-slate-700"
-          />
         </div>
       </div>
 

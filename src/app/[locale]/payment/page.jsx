@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'react-hot-toast';
 import api from '@/lib/axios';
 import Button from '@/components/atoms/Button';
-import { CreditCard, User, DollarSign, FileText, Loader2, AlertCircle, Check, Wallet, Wallet2 } from 'lucide-react';
+import { CreditCard, User, DollarSign, FileText, Loader2, AlertCircle, Check, Wallet, Wallet2, MessageCircle } from 'lucide-react';
 import { Modal } from '@/components/common/Modal';
 import Link from 'next/link';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -493,7 +493,7 @@ export default function PaymentPage() {
             setAcceptedTerms(false);
           }}
         >
-          <div className="space-y-4">
+          <div className="space-y-2">
             <p className="text-gray-700 leading-relaxed">{t('termsMessage')}</p>
             <div className="flex items-center gap-2">
               <input
@@ -507,6 +507,25 @@ export default function PaymentPage() {
                 {t('acceptTerms')} <Link href='/terms' target="_blank" className='text-main-600 underline'>{t("terms")}</Link>
               </label>
             </div>
+            {/* Contact Seller */}
+
+            <div className="mt-4 p-3 rounded-lg bg-gray-50 border border-gray-200 ">
+              <Link
+                href={`/chat?userId=${order?.sellerId || ''}`}
+                className="flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-2 text-sm font-medium text-main-600">
+                  <MessageCircle className="h-4 w-4 transition-transform group-hover:scale-110" />
+                  <span>{t('contactSeller')}</span>
+                </div>
+
+                <span className="text-xs text-gray-500 group-hover:text-main-600 transition">
+                  {t('askBeforePaying')}
+                </span>
+              </Link>
+            </div>
+
+
             <div className="flex gap-3 mt-4">
               <Button
                 name={paying ? t('processing') : t('agreeAndPay')}
@@ -528,6 +547,8 @@ export default function PaymentPage() {
                 disabled={paying}
                 className="flex-1"
               />
+
+
             </div>
           </div>
         </Modal>
