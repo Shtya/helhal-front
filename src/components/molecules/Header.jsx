@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransition } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransition, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useLocale, useTranslations } from 'next-intl';
@@ -59,146 +59,146 @@ export default function Header() {
 
   const toggleMobileNav = () => setIsMobileNavOpen(s => !s);
 
-  const buildNavLinks = u => {
+  const buildNavLinks = useCallback((u) => {
     const permissions = u?.permissions;
-    return useMemo(() => {
-      const common = [
-        // ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
+
+    const common = [
+      // ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
+      {
+        label: u?.role === 'seller' ? tHeader('navigation.myServices') : tHeader('navigation.services'),
+        icon: u?.role === 'seller' ? <LayoutGrid className="h-5 w-5" /> : <Package className="h-5 w-5" />,
+        href: u?.role === 'seller' ? '/my-gigs' : '/services',
+        useMegaMenu: u?.role !== 'seller',
+        // Only add children if the user is NOT a seller
+        ...(u?.role !== 'seller' ? {
+          children: [
+            /* your buyer/guest children here */
+          ]
+        } : {})
+      },
+
+    ];
+
+    //guest
+    const guest = [
+      // {
+      //   label: tHeader('navigation.jobs'),
+      //   icon: <Briefcase className='h-5 w-5' />,
+      //   children: [
+      //     { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+      //   ],
+      // },
+    ]
+    // Buyer-only
+    const buyer = [
+      {
+        label: tHeader('navigation.jobs'),
+        icon: <Briefcase className='h-5 w-5' />,
+        children: [
+          { href: '/share-job-description', label: tHeader('navigation.createJob'), icon: <FilePlus2 className='h-4 w-4' /> },
+          // { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+          { href: '/my-jobs', label: tHeader('navigation.myJobsBuyer'), icon: <ClipboardList className='h-4 w-4' /> },
+        ],
+      },
+    ];
+
+    // Seller-only
+    const seller = [
+      {
+        label: tHeader('navigation.jobs'),
+        icon: <Briefcase className='h-5 w-5' />,
+        children: [
+          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+          { href: '/jobs/proposals', label: tHeader('navigation.myProposals'), icon: <FileText className='h-4 w-4' /> },
+        ],
+      },
+
+      // Withdraw My Money - Direct to tab
+      {
+        href: '/my-billing', // Direct link to withdrawal tab
+        query: "tab=available-balances",
+        label: tHeader('userMenu.withdrawMoney'),
+        icon: <Banknote className='h-5 w-5' />,
+      },
+    ];
+
+    let hasAnyViewPermission = false;
+    if (permissions) {
+      hasAnyViewPermission = PERMISSION_DOMAINS.some(domain => {
+        return has(permissions?.[domain.key], domain.viewValue)
+      })
+
+    }
+    // Seller-only
+    const admin = [
+      {
+        label: tHeader('navigation.jobs'),
+        icon: <Briefcase className='h-5 w-5' />,
+        children: [
+          { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
+        ],
+      },
+
+    ];
+
+    let message = []
+    if (u) {
+      message = [
+        // My Billing - Main Item
         {
-          label: u?.role === 'seller' ? tHeader('navigation.myServices') : tHeader('navigation.services'),
-          icon: u?.role === 'seller' ? <LayoutGrid className="h-5 w-5" /> : <Package className="h-5 w-5" />,
-          href: u?.role === 'seller' ? '/my-gigs' : '/services',
-          useMegaMenu: u?.role !== 'seller',
-          // Only add children if the user is NOT a seller
-          ...(u?.role !== 'seller' ? {
-            children: [
-              /* your buyer/guest children here */
-            ]
-          } : {})
+          href: '/my-billing',
+          query: "tab=billing-history",
+          label: tHeader('userMenu.myBilling'),
+          icon: <CreditCard className='h-5 w-5' />,
         },
+        {
+          href: '/my-orders',
+          label: tHeader('userMenu.myOrders'),
+          icon: <ClipboardList className='h-5 w-5' />,
+        },
+        ...(u ? [{
+          href: '/chat', label: <div>
+            {tHeader('navigation.messages')}
+            {unreadChatCount > 0 && (
+              <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-main-600 text-white text-[11px] grid place-items-center font-semibold'>
+                {unreadChatCount > 99 ? '99+' : unreadChatCount}
+              </span>
+            )}
+          </div>, icon: <MessageCircle className='h-5 w-5 ' />
+        }] : []),
 
-      ];
-
-      //guest
-      const guest = [
-        // {
-        //   label: tHeader('navigation.jobs'),
-        //   icon: <Briefcase className='h-5 w-5' />,
-        //   children: [
-        //     { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-        //   ],
-        // },
       ]
-      // Buyer-only
-      const buyer = [
-        {
-          label: tHeader('navigation.jobs'),
-          icon: <Briefcase className='h-5 w-5' />,
-          children: [
-            { href: '/share-job-description', label: tHeader('navigation.createJob'), icon: <FilePlus2 className='h-4 w-4' /> },
-            // { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-            { href: '/my-jobs', label: tHeader('navigation.myJobsBuyer'), icon: <ClipboardList className='h-4 w-4' /> },
-          ],
-        },
-      ];
+    }
 
-      // Seller-only
-      const seller = [
-        {
-          label: tHeader('navigation.jobs'),
-          icon: <Briefcase className='h-5 w-5' />,
-          children: [
-            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-            { href: '/jobs/proposals', label: tHeader('navigation.myProposals'), icon: <FileText className='h-4 w-4' /> },
-          ],
-        },
+    let dashboard = []
+    // Determine if buyer already has related seller users
+    const hasRelatedSeller = u?.relatedUsers?.some(r => r.role === 'seller');
 
-        // Withdraw My Money - Direct to tab
-        {
-          href: '/my-billing', // Direct link to withdrawal tab
-          query: "tab=available-balances",
-          label: tHeader('userMenu.withdrawMoney'),
-          icon: <Banknote className='h-5 w-5' />,
-        },
-      ];
+    if (u?.role === 'admin' || hasAnyViewPermission) {
+      dashboard = [
+        { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
+      ]
+    }
+    // Conditional + common
+    if (isGuest) return [...common, ...guest]
 
-      let hasAnyViewPermission = false;
-      if (permissions) {
-        hasAnyViewPermission = PERMISSION_DOMAINS.some(domain => {
-          return has(permissions?.[domain.key], domain.viewValue)
-        })
-
-      }
-      // Seller-only
-      const admin = [
-        {
-          label: tHeader('navigation.jobs'),
-          icon: <Briefcase className='h-5 w-5' />,
-          children: [
-            { href: '/jobs', label: tHeader('navigation.browseJobs'), icon: <ListTree className='h-4 w-4' /> },
-          ],
-        },
-
-      ];
-
-      let message = []
-      if (u) {
-        message = [
-          // My Billing - Main Item
-          {
-            href: '/my-billing',
-            query: "tab=billing-history",
-            label: tHeader('userMenu.myBilling'),
-            icon: <CreditCard className='h-5 w-5' />,
-          },
-          {
-            href: '/my-orders',
-            label: tHeader('userMenu.myOrders'),
-            icon: <ClipboardList className='h-5 w-5' />,
-          },
-          ...(u ? [{
-            href: '/chat', label: <div>
-              {tHeader('navigation.messages')}
-              {unreadChatCount > 0 && (
-                <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-main-600 text-white text-[11px] grid place-items-center font-semibold'>
-                  {unreadChatCount > 99 ? '99+' : unreadChatCount}
-                </span>
-              )}
-            </div>, icon: <MessageCircle className='h-5 w-5 text-slate-600' />
-          }] : []),
-
-        ]
+    if (u?.role === 'buyer') {
+      const links = [...common, ...buyer, ...message];
+      if (!hasRelatedSeller) {
+        links.push({ href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> });
       }
 
-      let dashboard = []
-      // Determine if buyer already has related seller users
-      const hasRelatedSeller = u?.relatedUsers?.some(r => r.role === 'seller');
-
-      if (u?.role === 'admin' || hasAnyViewPermission) {
-        dashboard = [
-          { href: '/dashboard', label: tHeader('navigation.dashboard'), icon: <LucideLayoutDashboard className='h-4 w-4' /> },
-        ]
-      }
-      // Conditional + common
-      if (isGuest) return [...common, ...guest]
-
-      if (u?.role === 'buyer') {
-        const links = [...common, ...buyer, ...message];
-        if (!hasRelatedSeller) {
-          links.push({ href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> });
-        }
-
-        links.push(...dashboard)
-        return links;
-      }
+      links.push(...dashboard)
+      return links;
+    }
 
 
-      if (u?.role === 'seller') return [...common, ...seller, ...message, ...dashboard];
-      if (u?.role === 'admin') return [...common, ...admin, ...message, ...dashboard];
+    if (u?.role === 'seller') return [...common, ...seller, ...message, ...dashboard];
+    if (u?.role === 'admin') return [...common, ...admin, ...message, ...dashboard];
 
-      return [...common]; // fallback if no role
-    }, [u?.role, isGuest]);
-  };
+    return [...common]; // fallback if no role
+
+  }, [isGuest, unreadChatCount, tHeader]);
 
   const navLinks = buildNavLinks(user);
   const getNavItemsByRole = (role, user) => {
@@ -242,7 +242,8 @@ export default function Header() {
         label: tHeader('userMenu.myServices'),
         icon: <LayoutGrid size={18} className='text-gray-500' />,
         active: pathname.startsWith('/my-gigs'),
-        order: 14
+        order: 14,
+        mobile: false
       },
       { href: '/create-gig', label: tHeader('userMenu.createAService'), icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/create-gig'), order: 15 },
     ];
@@ -778,7 +779,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                               key={c.label + fullChildHref}
                               href={fullChildHref}
                               onClick={onClose}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-[15px] transition-colors ${isChildActive
+                              className={`relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-[15px] transition-colors ${isChildActive
                                 ? 'bg-main-50 text-main-700 font-semibold'
                                 : 'text-slate-700 hover:bg-slate-50 '
                                 }`}
@@ -802,6 +803,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                 <nav className='py-1 mx-2'>
                   {navItems.map((item, index) => {
                     if (item.divider) return <Divider key={`divider-${index}`} className='!my-0' />;
+                    if (item.mobile != undefined && !item.mobile) return null;
                     return (
                       <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 }}>
                         <Link href={item.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${pathname.startsWith(item.href) ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
