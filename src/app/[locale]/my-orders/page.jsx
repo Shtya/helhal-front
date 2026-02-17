@@ -523,6 +523,17 @@ export default function Page() {
         onClick: () => handleOpenModal(row, 'give-feedback'),
         hide: !(s === OrderStatus.COMPLETED && !isPublic && !isExpired),
       },
+      {
+        icon: <FileText className="h-4 w-4" />,
+        label: t('actions.viewContract'),
+        // Navigates to the contract page using the row ID
+        onClick: () => router.push(`/contracts/${row.id}`),
+        hide: [
+          OrderStatus.CANCELED,
+          OrderStatus.WAITING,
+          OrderStatus.PENDING
+        ].includes(s),
+      },
     ];
 
     return <ActionsMenu options={options} align="right" />;

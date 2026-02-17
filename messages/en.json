@@ -1885,6 +1885,7 @@
     "feedbackPage": {
       "giveFeedback": "Give Feedback",
       "editFeedback": "Edit Feedback",
+      "viewContract": "View Contract",
       "yourReview": "Your Written Review",
       "placeholder": "Share your experience working on this order...",
       "submitBtn": "Submit Feedback",
@@ -2912,6 +2913,70 @@
     "hours": "hours",
     "minutes": "minutes",
     "seconds": "seconds"
+  },
+  "ContractPage": {
+    "header": {
+      "backToOrders": "Back to Orders",
+      "orderId": "Order ID",
+      "fromJob": "From Job"
+    },
+    "stats": {
+      "projectPrice": "Project Price",
+      "platformFee": "Platform Fee",
+      "totalPaid": "Total Paid",
+      "orderAmount": "Order Amount",
+      "commission": "Commission",
+      "netEarnings": "Net Earnings"
+    },
+    "timeline": {
+      "title": "Activity Timeline",
+      "refresh": "Refresh",
+      "empty": "No activity yet — submissions and change requests will appear here.",
+      "loadMore": "Load earlier activity",
+      "submissionTitle": "Work Submitted",
+      "changeRequestTitle": "Changes Requested",
+      "attachments": "Attachments"
+    },
+    "actions": {
+      "title": "Next Steps",
+      "submitWork": "Submit Work",
+      "acceptDelivery": "Accept Delivery",
+      "requestChanges": "Request Changes",
+      "changesRequestedNote": "The client has requested changes. Please review and resubmit your work.",
+      "leaveFeedback": "Leave Feedback",
+      "editFeedback": "Edit Feedback",
+      "viewDispute": "View Dispute",
+      "message": "Message",
+      "delivering": "Submitting...",
+      "receiving": "Completing..."
+    },
+    "sidebar": {
+      "parties": "Parties",
+      "buyer": "Client",
+      "seller": "Freelancer",
+      "dates": "Order Details",
+      "ordered": "Ordered",
+      "accepted": "Accepted",
+      "delivered": "Delivered",
+      "completed": "Completed",
+      "packageType": "Package",
+      "quantity": "Quantity",
+      "invoice": "Invoice",
+      "payOnDelivery": "Pay on Delivery",
+      "servicePrice": "Service Price",
+      "platformFee": "Platform Fee",
+      "total": "Total",
+      "subtotal": "Subtotal",
+      "commission": "Selling Commission",
+      "netEarnings": "Net Earnings",
+      "deliveryContract": "Delivery Contract",
+      "cashOnDelivery": "Cash on Delivery",
+      "specialInstructions": "Special Instructions"
+    },
+    "errors": {
+      "fetchFailed": "Failed to load order details.",
+      "goBack": "Go back"
+    }
   },
   "Dashboard": {
     "overview": {

@@ -1883,6 +1883,7 @@
     "feedbackPage": {
       "giveFeedback": "تقديم تقييم",
       "editFeedback": "تعديل التقييم",
+      "viewContract": "عرض العقد",
       "yourReview": "رأيك المكتوب",
       "placeholder": "شاركنا تجربتك في العمل على هذا الطلب...",
       "submitBtn": "إرسال التقييم",
@@ -2909,6 +2910,70 @@
     "hours": "ساعات",
     "minutes": "دقائق",
     "seconds": "ثواني"
+  },
+  "ContractPage": {
+    "header": {
+      "backToOrders": "العودة إلى الطلبات",
+      "orderId": "رقم الطلب",
+      "fromJob": "من وظيفة"
+    },
+    "stats": {
+      "projectPrice": "سعر المشروع",
+      "platformFee": "رسوم المنصة",
+      "totalPaid": "إجمالي المدفوع",
+      "orderAmount": "قيمة الطلب",
+      "commission": "العمولة",
+      "netEarnings": "صافي الأرباح"
+    },
+    "timeline": {
+      "title": "سجل النشاط",
+      "refresh": "تحديث",
+      "empty": "لا يوجد نشاط حتى الآن — ستظهر التسليمات وطلبات التعديل هنا.",
+      "loadMore": "تحميل النشاط السابق",
+      "submissionTitle": "تم تسليم العمل",
+      "changeRequestTitle": "طلب تعديلات",
+      "attachments": "المرفقات"
+    },
+    "actions": {
+      "title": "الخطوات التالية",
+      "submitWork": "تسليم العمل",
+      "acceptDelivery": "قبول التسليم",
+      "requestChanges": "طلب تعديلات",
+      "changesRequestedNote": "طلب العميل إجراء تعديلات. يرجى مراجعة العمل وإعادة تسليمه.",
+      "leaveFeedback": "ترك تقييم",
+      "editFeedback": "تعديل التقييم",
+      "viewDispute": "عرض النزاع",
+      "message": "مراسلة",
+      "delivering": "جاري التسليم...",
+      "receiving": "جاري الإتمام..."
+    },
+    "sidebar": {
+      "parties": "الأطراف",
+      "buyer": "العميل",
+      "seller": "المستقل",
+      "dates": "تفاصيل الطلب",
+      "ordered": "تاريخ الطلب",
+      "accepted": "تاريخ القبول",
+      "delivered": "تاريخ التسليم",
+      "completed": "تاريخ الاكتمال",
+      "packageType": "نوع الباقة",
+      "quantity": "الكمية",
+      "invoice": "الفاتورة",
+      "payOnDelivery": "الدفع عند التسليم",
+      "servicePrice": "سعر الخدمة",
+      "platformFee": "رسوم المنصة",
+      "total": "الإجمالي",
+      "subtotal": "المجموع الجزئي",
+      "commission": "عمولة البيع",
+      "netEarnings": "صافي الأرباح",
+      "deliveryContract": "عقد التسليم",
+      "cashOnDelivery": "نقداً عند التسليم",
+      "specialInstructions": "تعليمات خاصة"
+    },
+    "errors": {
+      "fetchFailed": "فشل تحميل تفاصيل الطلب.",
+      "goBack": "العودة"
+    }
   },
   "Dashboard": {
     "overview": {
