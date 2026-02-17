@@ -345,7 +345,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation Drawer */}
-      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpenf(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
+      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
     </header>
   );
 }
@@ -738,53 +738,63 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               {/* Primary links */}
               <motion.nav variants={stagger} initial='hidden' animate='show' className='flex flex-col px-2 py-2'>
                 {navLinks.map(link => {
-                  let active = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
-                  if (link.query) {
-                    const [key, value] = link.query.split('='); // split "tab=value"
-                    const currentParamValue = searchParams.get(key); // get actual URL value
-                    active = active && currentParamValue === value;
-                  }
+                  // Check if we should use the Accordion/Dropdown style
+                  const showAsDropdown = link.useMegaMenu || (link.children && link.children.length > 0);
 
-                  const fullHref = link.query ? `${link.href}?${link.query}` : link.href;
                   return (
-                    <motion.div key={link.label + (fullHref || '')} variants={fadeIn}>
-                      {link.useMegaMenu ? (
-                        <MobileServicesMenu label={link.label} icon={link.icon} topCategories={topCategories} loadingTopCategories={loadingTopCategories} locale={locale} onClose={onClose} pathname={pathname} />
-                      ) : link.children?.length > 0 ? link.children.map(c => {
-                        // 1. Construct the full URL for the child
-                        const fullChildHref = c.query ? `${c.href}?${c.query}` : c.href;
+                    <motion.div key={link.label + (link.href || '')} variants={fadeIn}>
+                      {showAsDropdown ? (
+                        // --- CASE 1: Mega Menu or Dropdown Children ---
+                        <MobileServicesMenu
+                          label={link.label}
+                          icon={link.icon}
+                          // Pass global categories if it's a mega menu, otherwise pass the specific link's children
+                          topCategories={link.useMegaMenu ? topCategories : link.children}
+                          loadingTopCategories={link.useMegaMenu ? loadingTopCategories : false}
+                          locale={locale}
+                          onClose={onClose}
+                          pathname={pathname}
+                        />
+                      ) : (
+                        // --- CASE 2: Single Direct Link ---
+                        (() => {
+                          // We alias 'link' to 'c' to match your provided snippet perfectly
+                          const c = link;
 
-                        // 2. Determine if the child is active
-                        let isChildActive = false;
-                        if (c.query) {
-                          const [key, value] = c.query.split('=');
-                          isChildActive = pathname === c.href && searchParams.get(key) === value;
-                        } else {
-                          isChildActive = pathname === c.href || pathname.startsWith(c.href + '/');
-                        }
+                          // 1. Construct the full URL for the child
+                          const fullChildHref = c.query ? `${c.href}?${c.query}` : c.href;
 
-                        return (
-                          <Link
-                            key={c.label + fullChildHref}
-                            href={fullChildHref}
-                            onClick={onClose}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[15px] transition-colors ${isChildActive
-                              ? 'bg-main-50 text-main-700 font-semibold'
-                              : 'text-slate-700 hover:bg-slate-50 hover:text-main-700'
-                              }`}
-                          >
-                            <span className={isChildActive ? 'text-main-600' : 'text-slate-400'}>
-                              {c.icon}
-                            </span>
-                            {c.label}
-                          </Link>
-                        );
-                      }) : null}
+                          // 2. Determine if the child is active
+                          let isChildActive = false;
+                          if (c.query) {
+                            const [key, value] = c.query.split('=');
+                            isChildActive = pathname === c.href && searchParams.get(key) === value;
+                          } else {
+                            isChildActive = pathname === c.href || pathname.startsWith(c.href + '/');
+                          }
+
+                          return (
+                            <Link
+                              key={c.label + fullChildHref}
+                              href={fullChildHref}
+                              onClick={onClose}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-[15px] transition-colors ${isChildActive
+                                ? 'bg-main-50 text-main-700 font-semibold'
+                                : 'text-slate-700 hover:bg-slate-50 '
+                                }`}
+                            >
+                              <span className={isChildActive ? 'text-main-700' : 'text-slate-700'}>
+                                {c.icon}
+                              </span>
+                              {c.label}
+                            </Link>
+                          );
+                        })()
+                      )}
                     </motion.div>
                   );
                 })}
               </motion.nav>
-
               <Divider className='!my-0' />
 
               {/* Secondary (role) */}
@@ -864,10 +874,13 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
   const [open, setOpen] = useState(false);
 
   const getCategoryName = (category) => {
+    // Fallback to 'label' if name_ar/en are missing (handling standard links)
+    if (category.label) return category.label;
     return locale === 'ar' ? (category?.name_ar || category?.name_en || '') : (category?.name_en || category?.name_ar || '');
   };
 
   const getSubcategoryName = (subcategory) => {
+    if (subcategory.label) return subcategory.label;
     return locale === 'ar' ? (subcategory?.name_ar || subcategory?.name_en || '') : (subcategory?.name_en || subcategory?.name_ar || '');
   };
 
@@ -875,7 +888,7 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
 
   return (
     <div className='px-1'>
-      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-700 hover:bg-slate-100'}`}>
         <span className='inline-flex items-center gap-2'>
           {icon}
           {label}
@@ -902,7 +915,7 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
 
                   return (
                     <MobileCategoryItem
-                      key={category?.id || category?.slug}
+                      key={category?.id || category?.slug || category?.label}
                       category={category}
                       categoryName={categoryName}
                       children={children}
@@ -924,13 +937,16 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
 
 function MobileCategoryItem({ category, categoryName, children, hasChildren, getSubcategoryName, onClose, pathname }) {
   const [open, setOpen] = useState(false);
-  const isActive = pathname === `/services/${category?.slug}` || pathname.startsWith(`/services/${category?.slug}/`);
+
+  // Update logic: Handle both 'slug' (services) and direct 'href' (standard links)
+  const categoryLink = category.href ? category.href : `/services/${encodeURIComponent(category?.slug || '')}`;
+  const isActive = pathname === categoryLink || pathname.startsWith(categoryLink + '/');
 
   return (
     <div>
       <div className='flex items-center justify-between gap-2'>
         <Link
-          href={`/services/${encodeURIComponent(category?.slug || '')}`}
+          href={categoryLink}
           onClick={onClose}
           className={`flex-1 px-3 py-2 rounded-lg text-[15px] transition ${isActive ? 'bg-main-50 text-main-700 font-medium' : 'text-slate-700 hover:bg-main-50 hover:text-main-700'}`}
         >
@@ -952,11 +968,14 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
               <ul className='pl-4 space-y-1'>
                 {children.map(subcategory => {
                   const subcategoryName = getSubcategoryName(subcategory);
-                  const isSubActive = pathname === `/services/${subcategory?.slug}` || pathname.startsWith(`/services/${subcategory?.slug}/`);
+                  // Update logic: Handle both 'slug' and direct 'href'
+                  const subLink = subcategory.href ? subcategory.href : `/services/${encodeURIComponent(subcategory?.slug || '')}`;
+                  const isSubActive = pathname === subLink || pathname.startsWith(subLink + '/');
+
                   return (
-                    <li key={subcategory?.id || subcategory?.slug}>
+                    <li key={subcategory?.id || subcategory?.slug || subcategory?.label}>
                       <Link
-                        href={`/services/${encodeURIComponent(subcategory?.slug || '')}`}
+                        href={subLink}
                         onClick={onClose}
                         className={`block px-3 py-2 rounded-lg text-[14px] transition ${isSubActive ? 'bg-main-50 text-main-700 font-medium' : 'text-slate-600 hover:bg-main-50 hover:text-main-700'}`}
                       >
