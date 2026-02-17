@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/lib/axios';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, color } from 'framer-motion';
 import {
     Package, FileText, Clock, CheckCircle, XCircle,
     ChevronDown, Paperclip, Send,
@@ -92,7 +92,7 @@ function MoneyStatsBar({ order, invoice, buyerView, t }) {
         ]
         : [
             { label: t('stats.orderAmount'), value: fmtMoney(invoice?.subtotal ?? order?.totalAmount), accent: false },
-            { label: t('stats.commission'), value: `−\u202F${fmtMoney(Number(invoice?.subtotal) * (Number(invoice?.sellerServiceFee) / 100))}`, accent: false, danger: true },
+            { label: t('stats.commission'), value: `${fmtMoney(Number(invoice?.subtotal) * (Number(invoice?.sellerServiceFee) / 100))}`, accent: false, danger: true },
             { label: t('stats.netEarnings'), value: fmtMoney(sellerNetPay || order?.totalAmount), accent: true },
         ];
 
@@ -108,8 +108,8 @@ function MoneyStatsBar({ order, invoice, buyerView, t }) {
                     ].join(' ')}
                 >
                     <p className="text-[10px] font-semibold uppercase tracking-widest text-white/55 mb-0.5">{s.label}</p>
-                    <p className={`text-xl font-black tabular-nums leading-none ${s.danger ? 'text-rose-300' : 'text-white'}`}>
-                        <span className="text-sm font-medium mr-0.5 opacity-75">$</span>
+                    <p className={`flex gap-2 text-xl font-black tabular-nums leading-none ${s.danger ? 'text-rose-300' : 'text-white'}`}>
+                        <span className="text-sm font-medium mr-0.5 opacity-75"><Currency size={12} style={{ fill: "white" }} /> </span>
                         {s.value}
                     </p>
                 </div>
@@ -347,7 +347,7 @@ function OrderSidebarDetails({ order, invoice, buyerView, t }) {
                                 <span className="text-[10px] font-bold uppercase tracking-wider">{t('sidebar.deliveryContract')}</span>
                             </div>
                             <div className="flex items-baseline gap-0.5 text-teal-900">
-                                <span className="text-xs font-bold">$</span>
+                                <span className="text-xs font-bold"><Currency size={10} /> </span>
                                 <span className="text-2xl font-black tracking-tight">{fmtMoney(order.offlineContract.amountToPayAtDoor)}</span>
                             </div>
                             <div className="mt-1 inline-flex items-center gap-1 text-teal-600">
@@ -631,10 +631,10 @@ export default function ContractPage() {
                                 )}
                             </div>
                         </div>
-                        <div className="text-right shrink-0">
+                        {/* <div className="text-right shrink-0">
                             <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">{t('header.orderId')}</p>
                             <p className="text-[11px] font-mono text-white/55 mt-0.5 max-w-[180px] truncate">{order.id}</p>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Money stats */}
