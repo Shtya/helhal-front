@@ -1933,6 +1933,7 @@
       "actions": {
         "viewDetails": "View Details",
         "chat": "Chat",
+        "viewContract": "View Contract",
         "reviewSubmission": "Review Submission",
         "viewChangeRequest": "View Change Request",
         "deliver": "Deliver",

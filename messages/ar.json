@@ -1929,6 +1929,7 @@
       "orderRejected": "تم رفض الطلب بنجاح.",
       "orderAccepted": "تم قبول الطلب بنجاح!",
       "actions": {
+        "viewContract": "عرض العقد",
         "viewDetails": "عرض التفاصيل",
         "chat": "محادثة",
         "reviewSubmission": "مراجعة التسليم",
