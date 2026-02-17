@@ -229,7 +229,7 @@ const Select = forwardRef(({ firstOne, onOpenToggle, isVirtualized, VirtualizeWi
                 : (
                   <ul className='flex flex-col divide-y divide-gray-100'>
                     {internalOptions.map(opt => (
-                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`${firstOne(opt) ? "order-first " : null} group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white option-selected'}`}>
+                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`${firstOne?.(opt) ? "order-first " : null} group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white option-selected'}`}>
                         {opt.name}
                       </li>
                     ))}

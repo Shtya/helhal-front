@@ -3,7 +3,7 @@
 import { Link, usePathname } from '@/i18n/navigation';
 import { LayoutGroup, motion } from 'framer-motion';
 import { useMemo } from 'react';
-import { LayoutDashboard, Users, FolderTree, ShoppingBag, Package, Wallet, FileText, Settings, MessageSquare, Bell, Layers } from 'lucide-react';
+import { LayoutDashboard, Users, FolderTree, ShoppingBag, Package, Wallet, FileText, Settings, MessageSquare, Bell, Layers, Activity } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Permissions } from '@/constants/permissions';
@@ -21,6 +21,7 @@ export const getMenuItems = (t) => [
   { name: 'Disputes', href: '/dashboard/disputes', icon: Wallet, title: t('Dashboard.sidebar.menuItems.disputes'), desc: t('Dashboard.sidebar.descriptions.disputes'), domain: 'disputes', view: Permissions.Disputes.View },
   { name: 'Finance', href: '/dashboard/finance', icon: Wallet, title: t('Dashboard.sidebar.menuItems.finance'), desc: t('Dashboard.sidebar.descriptions.finance'), domain: 'finance', view: Permissions.Finance.View },
   { name: 'Chat', href: '/dashboard/chat', icon: MessageSquare, title: t('Dashboard.sidebar.menuItems.chat'), desc: t('Dashboard.sidebar.descriptions.chat') },
+  { name: 'Monitor Chats', href: '/dashboard/monitor', icon: Activity, title: t('Dashboard.sidebar.menuItems.monitor'), desc: t('Dashboard.sidebar.descriptions.monitor') },
   { name: 'notifications', href: '/dashboard/notifications', icon: Bell, title: t('Dashboard.sidebar.menuItems.notifications'), desc: t('Dashboard.sidebar.descriptions.notifications') },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings, title: t('Dashboard.sidebar.menuItems.settings'), desc: t('Dashboard.sidebar.descriptions.settings'), domain: 'settings', view: Permissions.Settings.Update },
 ];

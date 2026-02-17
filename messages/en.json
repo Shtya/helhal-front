@@ -320,6 +320,7 @@
   },
   "Header": {
     "navigation": {
+      "messages": "Messages",
       "noCategories": "No categories available",
       "explore": "Find Creatives",
       "services": "Services",
@@ -352,7 +353,8 @@
       "member": "member",
       "menu": "Menu",
       "myJobs": "My Jobs",
-      "becomeASeller": "Become a Seller"
+      "becomeASeller": "Become a Seller",
+      "withdrawMoney": "Withdraw Earnings"
     },
     "auth": {
       "signIn": "Sign In",
@@ -564,6 +566,29 @@
     "requestNewResetLink": "Request a New Reset Link"
   },
   "Home": {
+    "contact": {
+      "videoTitle": "See how it works",
+      "videoSubtitle": "Watch our platform in action and discover how we connect talent with opportunity",
+      "title": "Get in touch",
+      "subtitle": "We'd love to hear from you",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "your.email@example.com",
+      "messageLabel": "Your message",
+      "messagePlaceholder": "Tell us how we can help...",
+      "characters": "characters",
+      "sendMessage": "Send message",
+      "sending": "Sending...",
+      "orEmailUs": "Or email us directly at",
+      "responseTime": "24-hour response time",
+      "secureConnection": "Secure & private",
+      "errors": {
+        "emailRequired": "Please enter your email address",
+        "invalidEmail": "Please enter a valid email address",
+        "messageTooShort": "Message must be at least 10 characters",
+        "failedToSend": "Failed to send message. Please try again."
+      },
+      "successfullySent": "Message sent successfully! We'll get back to you soon."
+    },
     "hero": {
       "alt": "Helhal main background",
       "postOrder": "Post Your Request",
@@ -1166,7 +1191,15 @@
       "budget": "Budget",
       "copy": "Copy",
       "hourly": "Hourly",
-      "fixed": "Fixed"
+      "fixed": "Fixed",
+      "education": "Education",
+      "certifications": "Certifications",
+      "noEducation": "No education added",
+      "noCertifications": "No certifications added",
+      "degree": "Degree",
+      "institution": "Institution",
+      "year": "Year",
+      "issuingOrganization": "Issuing Organization"
     },
     "infoCard": {
       "description": "Description",
@@ -1360,6 +1393,7 @@
     }
   },
   "CreateJob": {
+    "edit_title": "Edit The Job",
     "selectCountryFirst": "Please select a country first",
     "steps": {
       "step1": "Project Details",
@@ -1376,6 +1410,7 @@
       "step3Subtitle": "This is where you start making final decisions."
     },
     "form": {
+      "editTitleLabel": "Give the project job a title",
       "titleLabel": "Give your project job a title",
       "titleHint": "Keep it short and simple - this will help us match you to the right category.",
       "titlePlaceholder": "Enter project title",
@@ -1402,6 +1437,7 @@
       "preferredDeliveryHint": "Estimated delivery time in days",
       "back": "Back",
       "next": "Next",
+      "editJob": "Edit Job",
       "publishJob": "Publish Job",
       "countryLabel": "Country",
       "selectCountry": "Select a country",
@@ -2930,6 +2966,7 @@
         "disputes": "Disputes",
         "finance": "Finance",
         "chat": "Chat",
+        "monitor": "Monitor Chats",
         "notifications": "Notifications",
         "settings": "Settings"
       },
@@ -2944,6 +2981,7 @@
         "disputes": "Request payouts, view balances, and payment history.",
         "finance": "Request payouts, view balances, and payment history.",
         "chat": "Conversations, support inbox, and real-time messages.",
+        "monitor": "Monitor conversations and manage interactions to ensure quality and compliance.",
         "notifications": "All notifications, messages, and support alerts in one place.",
         "settings": "Account, preferences, integrations, and system options."
       }
@@ -3524,6 +3562,27 @@
         "autoPublishDisabled": "Jobs now require admin approval before publishing.",
         "updateFailed": "Failed to update job approval setting."
       }
+    },
+    "monitor": {
+      "title": "Conversations Monitor",
+      "allConversations": "All conversations",
+      "searchConversations": "Search by name or email…",
+      "clear": "Clear",
+      "refresh": "Refresh",
+      "noConversations": "No conversations found",
+      "page": "Page {current} / {total}",
+      "buyer": "Buyer",
+      "seller": "Seller",
+      "conversation": "Conversation",
+      "about": "About",
+      "memberSince": "Member since",
+      "unknown": "Unknown",
+      "showConversations": "Show conversations",
+      "showDetails": "Show details",
+      "justNow": "Just now",
+      "timeAgoMinutes": "{count}m ago",
+      "timeAgoHours": "{count}h ago",
+      "timeAgoDays": "{count}d ago"
     },
     "users": {
       "title": "Users",

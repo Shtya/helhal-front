@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransi
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useLocale, useTranslations } from 'next-intl';
-import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard, Globe2, Wrench, Zap, Package, Layers } from 'lucide-react';
+import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard, Globe2, Wrench, Zap, Package, Layers, Banknote } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
 import { localImageLoader } from '@/utils/helper';
 import { useAuth } from '@/context/AuthContext';
@@ -65,21 +65,16 @@ export default function Header() {
       const common = [
         // ...(u?.role !== 'seller' ? [{ href: '/explore', label: tHeader('navigation.explore'), icon: <Compass className='h-5 w-5' /> }] : []),
         {
-          label: tHeader('navigation.services'),
-          icon: <Package className="h-5 w-5" />,
-          href: '/services', // fallback href
-          useMegaMenu: u?.role !== 'seller', // flag to use mega menu instead of dropdown
-          ...(u?.role === 'seller'
-            ? {
-              children: [
-                {
-                  href: '/my-gigs',
-                  label: tHeader('navigation.myServices'),
-                  icon: <LayoutGrid size={18} className="h-4 w-4" />,
-                },
-              ],
-            }
-            : {})
+          label: u?.role === 'seller' ? tHeader('navigation.myServices') : tHeader('navigation.services'),
+          icon: u?.role === 'seller' ? <LayoutGrid className="h-5 w-5" /> : <Package className="h-5 w-5" />,
+          href: u?.role === 'seller' ? '/my-gigs' : '/services',
+          useMegaMenu: u?.role !== 'seller',
+          // Only add children if the user is NOT a seller
+          ...(u?.role !== 'seller' ? {
+            children: [
+              /* your buyer/guest children here */
+            ]
+          } : {})
         },
 
       ];
@@ -117,6 +112,14 @@ export default function Header() {
             { href: '/jobs/proposals', label: tHeader('navigation.myProposals'), icon: <FileText className='h-4 w-4' /> },
           ],
         },
+
+        // Withdraw My Money - Direct to tab
+        {
+          href: '/my-billing', // Direct link to withdrawal tab
+          query: "tab=available-balances",
+          label: tHeader('userMenu.withdrawMoney'),
+          icon: <Banknote className='h-5 w-5' />,
+        },
       ];
 
       let hasAnyViewPermission = false;
@@ -138,6 +141,35 @@ export default function Header() {
 
       ];
 
+      let message = []
+      if (u) {
+        message = [
+          // My Billing - Main Item
+          {
+            href: '/my-billing',
+            query: "tab=billing-history",
+            label: tHeader('userMenu.myBilling'),
+            icon: <CreditCard className='h-5 w-5' />,
+          },
+          {
+            href: '/my-orders',
+            label: tHeader('userMenu.myOrders'),
+            icon: <ClipboardList className='h-5 w-5' />,
+          },
+          ...(u ? [{
+            href: '/chat', label: <div>
+              {tHeader('navigation.messages')}
+              {unreadChatCount > 0 && (
+                <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-main-600 text-white text-[11px] grid place-items-center font-semibold'>
+                  {unreadChatCount > 99 ? '99+' : unreadChatCount}
+                </span>
+              )}
+            </div>, icon: <MessageCircle className='h-5 w-5 text-slate-600' />
+          }] : []),
+
+        ]
+      }
+
       let dashboard = []
       // Determine if buyer already has related seller users
       const hasRelatedSeller = u?.relatedUsers?.some(r => r.role === 'seller');
@@ -151,7 +183,7 @@ export default function Header() {
       if (isGuest) return [...common, ...guest]
 
       if (u?.role === 'buyer') {
-        const links = [...common, ...buyer];
+        const links = [...common, ...buyer, ...message];
         if (!hasRelatedSeller) {
           links.push({ href: '/become-seller', label: tHeader('navigation.becomeSeller'), icon: <Store className='h-5 w-5' /> });
         }
@@ -161,8 +193,8 @@ export default function Header() {
       }
 
 
-      if (u?.role === 'seller') return [...common, ...seller, ...dashboard];
-      if (u?.role === 'admin') return [...common, ...admin, ...dashboard];
+      if (u?.role === 'seller') return [...common, ...seller, ...message, ...dashboard];
+      if (u?.role === 'admin') return [...common, ...admin, ...message, ...dashboard];
 
       return [...common]; // fallback if no role
     }, [u?.role, isGuest]);
@@ -179,9 +211,9 @@ export default function Header() {
 
     const common = [
       { href: '/profile', label: tHeader('userMenu.myProfile'), icon: <User size={18} className='text-gray-500' />, active: pathname === '/profile', order: 1 },
-      { href: '/my-orders', label: tHeader('userMenu.myOrders'), icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
+      // { href: '/my-orders', label: tHeader('userMenu.myOrders'), icon: <ClipboardList size={18} className='text-gray-500' />, active: pathname.startsWith('/my-orders'), order: 2 },
       { href: '/my-disputes', label: tHeader('userMenu.myDisputes'), icon: <Bell size={18} className='text-gray-500' />, active: pathname.startsWith('/my-disputes'), order: 4 },
-      { href: '/my-billing', label: tHeader('userMenu.myBilling'), icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
+      // { href: '/my-billing', label: tHeader('userMenu.myBilling'), icon: <CreditCard size={18} className='text-gray-500' />, active: pathname.startsWith('/my-billing'), order: 5 },
       { href: '/settings', label: tHeader('userMenu.settings'), icon: <Settings size={18} className='text-gray-500' />, active: pathname.startsWith('/settings'), order: 16 },
       { href: '/invite', label: tHeader('userMenu.inviteNewUser'), icon: <UserPlus size={18} className='text-gray-500' />, active: pathname.startsWith('/invite'), order: 17 },
       { divider: true, order: 8 },
@@ -205,7 +237,13 @@ export default function Header() {
     ];
 
     const seller = [
-      { href: '/my-gigs', label: tHeader('userMenu.myServices'), icon: <LayoutGrid size={18} className='text-gray-500' />, active: pathname.startsWith('/my-gigs'), order: 14 },
+      {
+        href: '/my-gigs',
+        label: tHeader('userMenu.myServices'),
+        icon: <LayoutGrid size={18} className='text-gray-500' />,
+        active: pathname.startsWith('/my-gigs'),
+        order: 14
+      },
       { href: '/create-gig', label: tHeader('userMenu.createAService'), icon: <FilePlus2 size={18} className='text-gray-500' />, active: pathname.startsWith('/create-gig'), order: 15 },
     ];
 
@@ -263,14 +301,14 @@ export default function Header() {
               <div className='max-lg:hidden '>
                 <SmallLanguageSwitcher />
               </div>
-              <Link href='/chat' aria-label='Go to chat' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
+              {/* <Link href='/chat' aria-label='Go to chat' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
                 <MessageCircle className='h-5 w-5 text-slate-600' />
                 {unreadChatCount > 0 && (
                   <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-main-600 text-white text-[11px] grid place-items-center font-semibold'>
                     {unreadChatCount > 99 ? '99+' : unreadChatCount}
                   </span>
                 )}
-              </Link>
+              </Link> */}
 
               <NotificationPopup />
 
@@ -292,10 +330,10 @@ export default function Header() {
               {/* <Link href='/auth?tab=register' className='px-3 md:px-4 py-2 text-sm font-medium text-slate-700 hover:text-main-700 transition-colors rounded-xl'>
                 {tHeader('auth.signUp')}
               </Link> */}
-              <Link href='/auth?tab=login' className='px-3 md:px-4 py-2 text-sm font-medium bg-main-600 text-white rounded-xl hover:bg-main-700 transition-colors'>
+              <Link href='/auth?tab=login' className='order-2 px-3 md:px-4 py-2 text-sm font-medium bg-main-600 text-white rounded-xl hover:bg-main-700 transition-colors'>
                 {tHeader('auth.signIn')}
               </Link>
-              <div className='order-2 max-lg:hidden s'>
+              <div className=' max-lg:hidden'>
                 <SmallLanguageSwitcher />
               </div>
               <div className='order-3'>
@@ -307,7 +345,7 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation Drawer */}
-      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
+      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpenf(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
     </header>
   );
 }
@@ -379,7 +417,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
             <Divider className='!my-0' />
 
-            <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-4 py-3 text-sm text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors' disabled={isLogoutLoading}>
+            <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-4 py-3 text-sm text-red-600 bg-red-50 transition-colors' disabled={isLogoutLoading}>
               <LogOut size={16} />
               {isLogoutLoading ? tHeader('userMenu.loggingOut') : tHeader('userMenu.logout')}
             </motion.button>
@@ -530,14 +568,22 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
    ========================================================= */
 function NavLinks({ links, topCategories, loadingTopCategories }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
 
   return (
     <motion.ul className='hidden lg:flex  items-center gap-1  ' variants={stagger} initial='hidden' animate='show'>
       {links.map(link => {
-        const isActive = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
+        let isActive = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
 
+        if (link.query) {
+          const [key, value] = link.query.split('='); // split "tab=value"
+          const currentParamValue = searchParams.get(key); // get actual URL value
+          isActive = isActive && currentParamValue === value;
+        }
+        const fullHref = link.query ? `${link.href}?${link.query}` : link.href;
         return (
-          <motion.li key={link.label + (link.href || '')} variants={fadeDown} className='relative'>
+          <motion.li key={link.label + (fullHref || '')} variants={fadeDown} className='relative'>
             {link.useMegaMenu ? (
               <ServicesMegaMenu label={link.label} icon={link.icon} active={isActive} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
             ) : link.children?.length ? (
@@ -545,7 +591,7 @@ function NavLinks({ links, topCategories, loadingTopCategories }) {
                 <DropdownPanel items={link.children} />
               </DropdownItem>
             ) : (
-              <TopLink href={link.href} label={link.label} icon={link.icon} active={isActive} />
+              <TopLink href={fullHref} label={link.label} icon={link.icon} active={isActive} />
             )}
           </motion.li>
         );
@@ -594,17 +640,44 @@ export function DropdownItem({ label, icon, active, children }) {
 }
 
 function DropdownPanel({ items = [] }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   return (
-    <ul className='p-2'>
-      <span className='bg-red-500 opacity-0 w-full  h-[20px] top-[-20px] block absolute inset-0'></span>
-      {items.map(it => (
-        <li key={it.href}>
-          <Link href={it.href} className='flex items-center gap-2 px-3 py-2 text-[14px] text-slate-700 hover:text-main-700 hover:bg-main-50'>
-            <span className='scale-125'>{it.icon}</span>
-            {it.label}
-          </Link>
-        </li>
-      ))}
+    <ul className='p-2 relative'>
+      {/* Invisible bridge to maintain hover state between button and panel */}
+      <span className='opacity-0 w-full h-[20px] top-[-20px] block absolute inset-x-0 pointer-events-none'></span>
+
+      {items.map((it) => {
+        // 1. Construct the full URL
+        const fullHref = it.query ? `${it.href}?${it.query}` : it.href;
+
+        // 2. Calculate Active State
+        let isActive = false;
+        if (it.query) {
+          const [key, value] = it.query.split('=');
+          isActive = pathname === it.href && searchParams.get(key) === value;
+        } else {
+          isActive = pathname === it.href || pathname.startsWith(it.href + '/');
+        }
+
+        return (
+          <li key={fullHref}>
+            <Link
+              href={fullHref}
+              className={`flex items-center gap-2 px-3 py-2 text-[14px] rounded-md transition-all ${isActive
+                ? 'bg-main-50 text-main-700 font-semibold'
+                : 'text-slate-700 hover:text-main-700 hover:bg-main-50'
+                }`}
+            >
+              <span className={`scale-125 ${isActive ? 'text-main-600' : 'text-slate-400'}`}>
+                {it.icon}
+              </span>
+              {it.label}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -617,7 +690,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
   const role = (user?.role || 'member').toLowerCase();
   const { chip } = roleStyles[role] || roleStyles.member;
   const locale = useLocale();
-
+  const searchParams = useSearchParams();
   const { isPending, toggleLocale } = useLangSwitcher()
 
   return (
@@ -665,28 +738,48 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               {/* Primary links */}
               <motion.nav variants={stagger} initial='hidden' animate='show' className='flex flex-col px-2 py-2'>
                 {navLinks.map(link => {
-                  const active = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
+                  let active = link.href ? pathname === link.href || pathname.startsWith(link.href + '/') : (link.children || []).some(c => pathname === c.href || pathname.startsWith(c.href + '/'));
+                  if (link.query) {
+                    const [key, value] = link.query.split('='); // split "tab=value"
+                    const currentParamValue = searchParams.get(key); // get actual URL value
+                    active = active && currentParamValue === value;
+                  }
+
+                  const fullHref = link.query ? `${link.href}?${link.query}` : link.href;
                   return (
-                    <motion.div key={link.label + (link.href || '')} variants={fadeIn}>
+                    <motion.div key={link.label + (fullHref || '')} variants={fadeIn}>
                       {link.useMegaMenu ? (
                         <MobileServicesMenu label={link.label} icon={link.icon} topCategories={topCategories} loadingTopCategories={loadingTopCategories} locale={locale} onClose={onClose} pathname={pathname} />
-                      ) : link.children?.length ? (
-                        <MobileCollapsible label={link.label} icon={link.icon}>
-                          <div className='py-1'>
-                            {link.children.map(c => (
-                              <Link key={c.href} href={c.href} onClick={onClose} className='flex items-center gap-2 px-3 py-2 rounded-lg text-[15px] text-slate-700 hover:bg-main-50 hover:text-main-700'>
-                                {c.icon}
-                                {c.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </MobileCollapsible>
-                      ) : (
-                        <Link href={link.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${active ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
-                          {link.icon}
-                          {link.label}
-                        </Link>
-                      )}
+                      ) : link.children?.length > 0 ? link.children.map(c => {
+                        // 1. Construct the full URL for the child
+                        const fullChildHref = c.query ? `${c.href}?${c.query}` : c.href;
+
+                        // 2. Determine if the child is active
+                        let isChildActive = false;
+                        if (c.query) {
+                          const [key, value] = c.query.split('=');
+                          isChildActive = pathname === c.href && searchParams.get(key) === value;
+                        } else {
+                          isChildActive = pathname === c.href || pathname.startsWith(c.href + '/');
+                        }
+
+                        return (
+                          <Link
+                            key={c.label + fullChildHref}
+                            href={fullChildHref}
+                            onClick={onClose}
+                            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[15px] transition-colors ${isChildActive
+                              ? 'bg-main-50 text-main-700 font-semibold'
+                              : 'text-slate-700 hover:bg-slate-50 hover:text-main-700'
+                              }`}
+                          >
+                            <span className={isChildActive ? 'text-main-600' : 'text-slate-400'}>
+                              {c.icon}
+                            </span>
+                            {c.label}
+                          </Link>
+                        );
+                      }) : null}
                     </motion.div>
                   );
                 })}
@@ -729,7 +822,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               {/* Logout */}
               {user && (
                 <div className='mx-2'>
-                  <motion.button onClick={onLogout} className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-slate-800 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
+                  <motion.button onClick={onLogout} className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-red-600 bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
                     <LogOut size={16} />
                     {isLogoutLoading ? tHeader('userMenu.loggingOut') : tHeader('userMenu.logout')}
                   </motion.button>

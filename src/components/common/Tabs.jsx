@@ -7,7 +7,7 @@ export default function Tabs({ tabs, activeTab, setActiveTab, className = '', id
   // Where the pill should be right now (hover preview or active)
   const pillTarget = useMemo(() => hoveredTab ?? activeTab, [hoveredTab, activeTab]);
 
-  const onChange = useCallback(val => setActiveTab?.(val), [setActiveTab]);
+  const onChange = setActiveTab;
 
   return (
     <LayoutGroup id={id}>

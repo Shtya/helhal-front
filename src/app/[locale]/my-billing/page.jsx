@@ -156,20 +156,16 @@ export default function Page() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // 2. Initial state from search params (with fallback)
-  const [activeTab, setActiveTab] = useState(() => {
-    return searchParams.get('tab') || 'billing-history';
-  });
-
-  // 1. When state changes, set search params based on it
-  useEffect(() => {
+  const activeTab = searchParams.get('tab') || 'billing-history';
+  console.log(searchParams.get('tab'))
+  const handleTabChange = (value) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', activeTab);
+    params.set('tab', value);
 
-    // Update the URL without a full page refresh
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [activeTab, pathname, router, searchParams]);
-
+    router.replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    });
+  };
   const tabs = [
     { label: t('tabs.billingHistory'), value: 'billing-history' },
     { label: t('tabs.billingInformation'), value: 'billing-information' },
@@ -179,7 +175,7 @@ export default function Page() {
 
   return (
     <main className='container !mt-6'>
-      <Tabs tabs={tabs} setActiveTab={setActiveTab} activeTab={activeTab} />
+      <Tabs tabs={tabs} setActiveTab={handleTabChange} activeTab={activeTab} />
 
       <div className='py-6 md:py-10'>
         {/* 3. Use the 'key' prop on motion.div so framer-motion 
@@ -192,7 +188,7 @@ export default function Page() {
         >
           {activeTab === 'billing-history' && <BillingHistory />}
           {activeTab === 'billing-information' && <BillingInformation />}
-          {activeTab === 'available-balances' && <AvailableBalances setActiveTab={setActiveTab} />}
+          {activeTab === 'available-balances' && <AvailableBalances setActiveTab={handleTabChange} />}
           {activeTab === 'payment-methods' && <PaymentMethods />}
         </motion.div>
       </div>

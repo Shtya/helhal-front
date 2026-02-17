@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Eye, Trash2, Settings as SettingsIcon } from 'lucide-react';
+import { Eye, Trash2, Settings as SettingsIcon, Pencil } from 'lucide-react';
 import Tabs from '@/components/common/Tabs';
 import Table from '@/components/dashboard/Table/Table';
 import api from '@/lib/axios';
@@ -20,6 +20,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Permissions } from '@/constants/permissions';
 import { has } from '@/utils/permissions';
 import CountryFlag from '@/components/common/CountryFlag';
+import { Link } from '@/i18n/navigation';
 
 export default function AdminJobsDashboard() {
   const t = useTranslations('Dashboard.jobs');
@@ -209,7 +210,7 @@ export default function AdminJobsDashboard() {
 
     const canDelete = isAdmin || has(currentPermissions?.['jobs'], Permissions.Jobs.Delete)
     const canChangeStatus = isAdmin || has(currentPermissions?.['jobs'], Permissions.Jobs.ChangeStatus)
-
+    const canEdit = isAdmin || has(currentPermissions?.['jobs'], Permissions.Jobs.Edit)
     return <div className='flex items-center gap-2'>
       <button onClick={() => openView(row)} className='p-2 text-blue-600 hover:bg-blue-50 rounded-full' title={t('actions.view')}>
         <Eye size={16} />
@@ -233,6 +234,10 @@ export default function AdminJobsDashboard() {
       {canDelete && <button onClick={() => deleteJob(row.id)} className='p-2 text-red-600 hover:bg-red-50 rounded-full' title={t('actions.delete')}>
         <Trash2 size={16} />
       </button>}
+
+      {canEdit && <Link href={`/dashboard/jobs/${row.id}`} className={`w-8 h-8 flex items-center justify-center rounded-md transition cursor-pointer text-main-600 hover:bg-main-100 hover:text-main-800`} >
+        <Pencil className='w-4 h-4' />
+      </Link>}
     </div>
   }
     ;

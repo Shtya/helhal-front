@@ -13,7 +13,7 @@ import Input from '@/components/atoms/Input';
 import Select from '@/components/atoms/Select';
 import { Pencil, Paperclip } from 'lucide-react';
 import HeaderCategoriesSwiper from '@/components/molecules/HeaderCategoriesSwiper';
-import { createJob, updateJob } from '@/services/jobService';
+import { createJob, updateJob, getJob } from '@/services/jobService';
 import { toast } from 'react-hot-toast';
 import InputList from '@/components/atoms/InputList';
 import AttachmentList from '@/components/common/AttachmentList';
@@ -71,16 +71,17 @@ function createJobValidationSchema(t) {
 
     attachments: yup
       .array()
-      .of(
-        yup.object({
-          id: yup.string().required(),
-          filename: yup.string().required(),
-          mimeType: yup.string().required(),
-          size: yup.number().required(),
-          type: yup.string().required(),
-          url: yup.string().required(),
-        })
-      ).max(10, t('validation.attachmentsMax')),
+      // .of(
+      //   yup.object({
+      //     id: yup.string().required(),
+      //     filename: yup.string().required(),
+      //     mimeType: yup.string().required(),
+      //     size: yup.number().required(),
+      //     type: yup.string().required(),
+      //     url: yup.string().required(),
+      //   })
+      // )
+      .max(10, t('validation.attachmentsMax')),
 
     additionalInfo: yup
       .string()
@@ -112,7 +113,7 @@ function createJobValidationSchema(t) {
 }
 
 
-export default function CreateJobPage() {
+export default function CreateJobPage({ jobId: propJobId, isAdmin } = {}) {
   const t = useTranslations('CreateJob');
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -201,6 +202,58 @@ export default function CreateJobPage() {
     loadSavedData();
   }, [reset]);
 
+  // If a jobId is provided via props or search params, load the job for editing
+  useEffect(() => {
+    const id = propJobId || (searchParams && (searchParams.get('id') || searchParams.get('jobId')));
+    if (!id) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setIsSubmitting(true);
+        const job = await getJob(id);
+        if (cancelled) return;
+
+        setExistingJobId(id);
+
+        const mapped = {
+          title: job.title || '',
+          description: job.description || '',
+          categoryId: (job.category && job.category.id) || job.categoryId || job.category || '',
+          subcategoryId: (job.subcategory && job.subcategory.id) || job.subcategoryId || job.subcategory || '',
+          countryId: (job.country && job.country.id) || job.countryId || job.country || '',
+          stateId: (job.state && job.state.id) || job.stateId || job.state || '',
+          skillsRequired: job.skillsRequired || job.skills || [],
+          attachments: (job.attachments || []).map(a => ({
+            id: a.id || a.key || a.name || a.filename,
+            filename: a.name || a.filename,
+            mimeType: a.mimeType || a.mime_type || '',
+            size: a.size || 0,
+            type: a.type || '',
+            url: a.url || a.path || ''
+          })),
+          additionalInfo: job.additionalInfo || job.additional_info || job.additional || '',
+          budget: job.budget != null ? String(job.budget) : '',
+          budgetType: job.budgetType || job.budget_type || 'fixed',
+          preferredDeliveryDays: job.preferredDeliveryDays != null ? String(job.preferredDeliveryDays) : '',
+          status: job.status || 'draft',
+        };
+
+        reset(mapped);
+        setIgnoreSave(true);
+      } catch (err) {
+        console.error('Failed to load job for editing:', err);
+      } finally {
+        setIsSubmitting(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [propJobId, searchParams, reset]);
+
   const handleToStep = async idx => {
     if (idx > currentStep) {
       let isValid = false;
@@ -250,6 +303,7 @@ export default function CreateJobPage() {
     router.replace('?step=0', { scroll: false });
   };
 
+
   const handleFileSelection = async files => {
     try {
       setIsSubmitting(true);
@@ -267,7 +321,7 @@ export default function CreateJobPage() {
 
 
   const onSubmit = async data => {
-    // setIsSubmitting(true);
+    setIsSubmitting(true);
 
     // Base payload
     const payload = {
@@ -287,48 +341,40 @@ export default function CreateJobPage() {
     delete payload.country;
     delete payload.state;
 
-    // Only send status on UPDATE; for CREATE let backend/setting decide
-    if (existingJobId) {
-      payload.status = 'published';
+    // For CREATE we don't send `status` (backend decides); for UPDATE include form status if provided
+    if (!existingJobId) {
+      delete payload.status;
+    } else if (data.status) {
+      payload.status = data.status;
     }
 
     try {
-      const action = existingJobId ? 'update' : 'create';
+      const isEdit = Boolean(existingJobId);
+      const actionLabel = isEdit ? 'updating' : 'creating';
 
-      const req = () => (existingJobId ? updateJob(existingJobId, payload) : createJob(payload));
+      const promise = isEdit ? updateJob(existingJobId, payload) : createJob(payload);
 
       const result = await toast.promise(
-        req(),
+        promise,
         {
-          loading: action === 'create' ? t('toast.creating') : t('toast.updating'),
+          loading: isEdit ? t('toast.updating') : t('toast.creating'),
           success: res => {
-            // Decide message based on actual backend status
             const status = String(res?.status || '').toLowerCase();
 
             // Clear persisted form state
             setIgnoreSave(true);
             sessionStorage.removeItem('jobFormData');
-            // sessionStorage.removeItem('jobFormPublishing');
 
-            if (!existingJobId) {
-              // CREATE
-              if (status === 'published') {
-                return t('toast.jobLive');
-              }
-              if (status === 'draft') {
-                return t('toast.submittedForReview');
-              }
+            if (!isEdit) {
+              if (status === 'published') return t('toast.jobLive');
+              if (status === 'draft') return t('toast.submittedForReview');
               return t('toast.jobCreated');
-            } else {
-              // UPDATE
-              if (status === 'published') {
-                return t('toast.jobPublished');
-              }
-              if (status === 'draft') {
-                return t('toast.draftUpdated');
-              }
-              return t('toast.jobUpdated');
             }
+
+            // Edit
+            if (status === 'published') return t('toast.jobPublished');
+            if (status === 'draft') return t('toast.draftUpdated');
+            return t('toast.jobUpdated');
           },
           error: err => {
             const msg = err?.response?.data?.message || err?.message || t('toast.somethingWentWrong');
@@ -340,14 +386,8 @@ export default function CreateJobPage() {
 
       // Navigate based on actual status
       const status = String(result?.status || '').toLowerCase();
-      if (!existingJobId) {
-        if (status === 'published') {
-          router.push('/my-jobs?tab=live');
-        } else if (status === 'draft') {
-          router.push('/my-jobs?tab=pending');
-        } else {
-          router.push('/my-jobs');
-        }
+      if (existingJobId) {
+        router.push('/dashboard/jobs');
       } else {
         // For updates, respect the status we got back
         if (status === 'published') {
@@ -374,23 +414,24 @@ export default function CreateJobPage() {
 
   return (
     <div className='container mx-auto px-4 py-6'>
-      <HeaderCategoriesSwiper />
+      {!isAdmin && <HeaderCategoriesSwiper />}
       <div className='mt-6 mb-8 max-lg:hidden' data-aos='fade-down'>
+        {isAdmin && <h2 className='h2 mt-6 mb-2'>{t("edit_title")}</h2>}
         <StepBreadcrumbs items={steps} activeIndex={currentStep} onItemClick={handleToStep} onReset={handleReset} resetLabel={t('reset')} />
       </div>
 
-      <div className='grid grid-cols-1 duration-300 lg:grid-cols-[450_1fr] xl:grid-cols-[590px_1fr] xl:gap-6 gap-6 mb-18 mt-12'>
-        <HeroCard currentStep={currentStep} className='lg:sticky lg:top-[100px]' />
+      <div className={`grid grid-cols-1 duration-300 ${!isAdmin && "lg:grid-cols-[450_1fr] xl:grid-cols-[590px_1fr]"} xl:gap-6 gap-6 mb-18 mt-12`}>
+        {!isAdmin && <HeroCard currentStep={currentStep} className='lg:sticky lg:top-[100px]' />}
 
         <div className='space-y-8'>
-          {currentStep === 0 && <ProjectForm getValues={getValues} key='step1' register={register} control={control} errors={errors} setValue={setValue} trigger={trigger} handleFileSelection={handleFileSelection} watch={watch} setCurrentStep={setCurrentStep} formValues={formValues} />}
+          {currentStep === 0 && <ProjectForm isAdmin={isAdmin} getValues={getValues} key='step1' register={register} control={control} errors={errors} setValue={setValue} trigger={trigger} handleFileSelection={handleFileSelection} watch={watch} setCurrentStep={setCurrentStep} formValues={formValues} />}
 
           {currentStep === 1 && <BudgetAndDelivery key='step2' register={register} control={control} errors={errors} trigger={trigger} budgetTypeOptions={budgetTypeOptions} setCurrentStep={setCurrentStep} />}
 
-          {currentStep === 2 && <ProjectReview key='step3' data={formValues} onEditProject={() => setCurrentStep(0)} onEditJob={() => setCurrentStep(1)} onBack={() => setCurrentStep(1)} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} errors={errors} />}
+          {currentStep === 2 && <ProjectReview isAdmin={isAdmin} key='step3' data={formValues} onEditProject={() => setCurrentStep(0)} onEditJob={() => setCurrentStep(1)} onBack={() => setCurrentStep(1)} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} errors={errors} />}
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
@@ -473,12 +514,12 @@ function HeroCard({ currentStep, className = '' }) {
   );
 }
 
-function ProjectForm({ register, getValues, control, errors, setValue, trigger, handleFileSelection, watch, setCurrentStep, formValues }) {
+function ProjectForm({ isAdmin, register, getValues, control, errors, setValue, trigger, handleFileSelection, watch, setCurrentStep, formValues }) {
   const t = useTranslations('CreateJob.form');
 
   const handleNext = async () => {
     const isValid = await trigger(['title', 'description', 'categoryId', 'skillsRequired', 'attachments', 'countryId', 'stateId']);
-    console.log(errors)
+
     if (isValid) {
       setCurrentStep(1);
     } else {
@@ -489,7 +530,7 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
 
   return (
     <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
-      <h2 className='h2 mt-6 mb-2'>{t('titleLabel')}</h2>
+      <h2 className='h2 mt-6 mb-2'>{!isAdmin ? t('titleLabel') : t('editTitleLabel')}</h2>
 
       <div className='mb-4'>
         <Input {...register('title')} cnLabel='!text-[15px]' label={t('titleHint')} placeholder={t('titlePlaceholder')} error={errors.title?.message} />
@@ -507,7 +548,7 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
             <CategorySelect
               type='category'
               label={t('categoryLabel')}
-              value={formValues?.category}
+              value={formValues?.categoryId}
               onChange={opt => {
                 field.onChange(opt.id);
                 setValue('category', opt);
@@ -530,7 +571,7 @@ function ProjectForm({ register, getValues, control, errors, setValue, trigger, 
               type='subcategory'
               parentId={watch('categoryId')}
               label={t('subcategoryLabel')}
-              value={formValues?.subcategory}
+              value={formValues?.subcategoryId}
               onChange={opt => {
                 field.onChange(opt.id);
                 setValue('subcategory', opt);
@@ -649,11 +690,11 @@ function BudgetAndDelivery({ register, control, errors, trigger, budgetTypeOptio
   );
 }
 
-function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onEditJob, onBack, onSubmit, isSubmitting, errors }) {
+function ProjectReview({ isAdmin, data, isPublishing, onPublishToggle, onEditProject, onEditJob, onBack, onSubmit, isSubmitting, errors }) {
+  const tForm = useTranslations('CreateJob.form');
   const t = useTranslations('CreateJob.review');
   const locale = useLocale()
   const isArabic = locale === 'ar';
-  const tForm = useTranslations('CreateJob.form');
   const hasFiles = useMemo(() => (data.attachments || []).length > 0, [data.attachments]);
 
   return (
@@ -733,7 +774,7 @@ function ProjectReview({ data, isPublishing, onPublishToggle, onEditProject, onE
         />
         <Button
           className="w-full sm:w-auto !max-w-full sm:!max-w-fit"
-          name={tForm('publishJob')}
+          name={isAdmin ? tForm('editJob') : tForm('publishJob')}
           onClick={onSubmit}
           color="green"
           loading={isSubmitting}

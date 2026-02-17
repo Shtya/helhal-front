@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video, CheckCircle2, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, DollarSign, Repeat, Star, Globe, ArrowRight, Sparkles, BadgeCheck, User, Receipt, FileText, Video, CheckCircle2, AlertCircle, ChevronUp, ChevronDown, GraduationCap } from 'lucide-react';
 import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
 import { useAuth } from '@/context/AuthContext';
@@ -189,23 +189,69 @@ export default function ProfilePageClient() {
               <InfoRow icon={Globe} label={t('country')} value={buyer?.country?.name || '—'} />
             </Card>
 
-            <Card title={t('account')}>
+            {buyer.role !== 'seller' && <Card title={t('account')}>
               <InfoRow icon={UserIcon} label={t('userId')} value={buyer?.id || '—'} copyable />
               <InfoRow icon={Calendar} label={t('created')} value={prettyDate(buyer?.created_at)} />
               <InfoRow icon={Clock} label={t('updated')} value={prettyDate(buyer?.updated_at)} />
               <InfoRow icon={Award} label={t('referralCode')} value={buyer?.referralCode || '—'} copyable />
-            </Card>
+            </Card>}
+
+            {buyer?.role === 'seller' && (
+              <Card title={t('education')}>
+                {Array.isArray(buyer?.education) && buyer.education.length > 0 ? (
+                  <div className="space-y-3">
+                    {buyer.education.map((ed, idx) => (
+                      <div key={idx} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+                        <div className="flex items-start gap-3">
+                          <GraduationCap className="h-5 w-5 text-main-500 shrink-0 mt-0.5" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-slate-900">{ed?.degree || '—'}</div>
+                            <div className="text-sm text-slate-600">{ed?.institution || '—'}</div>
+                            {ed?.year && <div className="text-xs text-slate-500 mt-1">{t('year')}: {ed.year}</div>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-4 text-slate-500 text-sm">{t('noEducation')}</div>
+                )}
+              </Card>
+            )}
+
+            {buyer?.role === 'seller' && (
+              <Card title={t('certifications')}>
+                {Array.isArray(buyer?.certifications) && buyer.certifications.length > 0 ? (
+                  <div className="space-y-3">
+                    {buyer.certifications.map((cert, idx) => (
+                      <div key={idx} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+                        <div className="flex items-start gap-3">
+                          <Award className="h-5 w-5 text-main-500 shrink-0 mt-0.5" />
+                          <div className="min-w-0">
+                            <div className="font-semibold text-slate-900">{cert?.name || '—'}</div>
+                            <div className="text-sm text-slate-600">{cert?.issuingOrganization || '—'}</div>
+                            {cert?.year && <div className="text-xs text-slate-500 mt-1">{t('year')}: {cert.year}</div>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-4 text-slate-500 text-sm">{t('noCertifications')}</div>
+                )}
+              </Card>
+            )}
           </div>
         </div>
 
         {/* Right column */}
         <div className='space-y-6 lg:col-span-2'>
-          <Card title={t('activity')}>
+          {buyer.role !== 'seller' && <Card title={t('activity')}>
             <InfoRow icon={Clock} label={t('lastActivity')} value={prettyDate(buyer?.lastActivity)} />
             <InfoRow icon={Clock} label={t('responseTime')} value={formatResponseTime(buyer?.responseTime)} />
             <InfoRow icon={Clock} label={t('deliveryTime')} value={buyer?.deliveryTime || '—'} />
             <InfoRow icon={Calendar} label={t('deactivatedAt')} value={prettyDate(buyer?.deactivatedAt)} />
-          </Card>
+          </Card>}
 
           {/* <Card title={t('introVideo')}>
             {buyer?.introVideoUrl ? <video src={resolveUrl(buyer?.introVideoUrl)} controls className='aspect-video w-full overflow-hidden rounded-2xl border border-slate-200 bg-black' />

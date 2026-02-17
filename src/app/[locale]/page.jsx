@@ -11,13 +11,15 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users, CheckCircle, ArrowLeft, TrendingUp } from 'lucide-react';
+import { ArrowRight, Search, ShieldCheck, Zap, Stars, Users, CheckCircle, ArrowLeft, TrendingUp, MessageSquare, Mail, Send } from 'lucide-react';
 import ReactPlayer from 'react-player';
 import { localImageLoader, resolveUrl } from '@/utils/helper';
 import api from '@/lib/axios';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useValues } from '@/context/GlobalContext';
+import Button from '@/components/atoms/Button';
+import toast from 'react-hot-toast';
 
 
 // ========================= PAGE =========================
@@ -30,7 +32,7 @@ export default function ExplorePage() {
       <PopularServicesSwiper />
       <WhyChoose />
       <ClientsExperiences />
-      <VideoSlider />
+      <VideoAndContactSection />
       <CTAStrip />
     </main>
   );
@@ -593,15 +595,25 @@ export function ClientsExperiences() {
   );
 }
 
-export function VideoSlider() {
+
+export function VideoAndContactSection() {
+  const t = useTranslations('Home.contact');
+  const { user } = useAuth();
+  const { settings, loadingSettings } = useValues();
+  const contactEmail = settings?.contactEmail;
+
+  // Video slider state
   const swiperRef = React.useRef(null);
   const sectionRef = React.useRef(null);
   const [isSectionInView, setIsSectionInView] = React.useState(false);
   const userExplicitlyPaused = React.useRef(new Set());
   const [activeVideoIndex, setActiveVideoIndex] = React.useState(0);
   const playerRefs = React.useRef(new Map());
-  const { settings, loadingSettings } = useValues()
-  const contactEmail = settings?.contactEmail;
+
+  // Contact form state
+  const [email, setEmail] = React.useState('');
+  const [message, setMessage] = React.useState('');
+  const [sending, setSending] = React.useState(false);
 
   const handleSlideChange = React.useCallback(swiperInstance => {
     setActiveVideoIndex(swiperInstance.activeIndex);
@@ -633,36 +645,191 @@ export function VideoSlider() {
     };
   }, [isSectionInView]);
 
+  const handleSendMessage = async () => {
+    // Validation
+    if (!user && !email.trim()) {
+      toast.error(t('errors.emailRequired'));
+      return;
+    }
+
+    if (!user && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error(t('errors.invalidEmail'));
+      return;
+    }
+
+    if (message.trim().length < 10) {
+      toast.error(t('errors.messageTooShort'));
+      return;
+    }
+
+    setSending(true);
+
+    try {
+      await api.post('/invite/contact', {
+        email: user ? user.email : email.trim(),
+        message: message.trim(),
+        senderName: user ? user.username : null,
+      });
+
+      toast.success(t('successfullySent'));
+      setMessage('');
+      if (!user) setEmail('');
+    } catch (e) {
+      toast.error(t('errors.failedToSend'));
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const canSend = user ? message.trim().length >= 10 : email.trim() && message.trim().length >= 10;
+
   return (
-    <section ref={sectionRef} className='container !px-4 sm:!px-6 lg:!px-8 !pt-6 !pb-12'>
-      <Swiper ref={swiperRef} slidesPerView={1} spaceBetween={24} navigation modules={[Navigation]} onSlideChange={handleSlideChange} className='video-slider'>
-        {VIDEO_SLIDER_ITEMS.map((video, index) => (
-          <SwiperSlide key={video.id}>
-            <div className='w-full mx-auto aspect-video relative'>
-              <ReactPlayer
-                ref={player => {
-                  playerRefs.current.set(index, player);
-                }}
-                src={video.url}
-                controls={true}
-                playing={isSectionInView && index === activeVideoIndex && !userExplicitlyPaused.current.has(index)}
-                muted={true}
-                loop={true}
-                width='100%'
-                height='100%'
-                onPlay={() => {
-                  userExplicitlyPaused.current.delete(index);
-                }}
-                onPause={() => {
-                  if (index === activeVideoIndex && isSectionInView && !userExplicitlyPaused.current.has(index)) {
-                    userExplicitlyPaused.current.add(index);
-                  }
-                }}
-              />
+    <section ref={sectionRef} className='container !px-4 sm:!px-6 lg:!px-8 !pt-12 !pb-8'>
+      <div className='bg-white rounded-2xl border border-slate-200 mx-auto px-6 py-8 shadow-xs hover:shadow-main-100/80 hover:shadow-sm'>
+        <div className='container !px-4 sm:!px-6 lg:!px-8'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center'>
+
+            {/* Left: Video Slider */}
+            <div className='order-2 lg:order-1'>
+              <div className='mb-6'>
+                <h2 className='text-3xl md:text-4xl font-bold text-slate-900 mb-3'>
+                  {t('videoTitle')}
+                </h2>
+                <p className='text-slate-600 text-lg'>
+                  {t('videoSubtitle')}
+                </p>
+              </div>
+
+              <Swiper
+                ref={swiperRef}
+                slidesPerView={1}
+                spaceBetween={24}
+                navigation
+                modules={[Navigation]}
+                onSlideChange={handleSlideChange}
+                className='video-slider rounded-2xl overflow-hidden shadow-xl border border-slate-200'
+              >
+                {VIDEO_SLIDER_ITEMS.map((video, index) => (
+                  <SwiperSlide key={video.id}>
+                    <div className='w-full aspect-video relative bg-slate-900'>
+                      <ReactPlayer
+                        ref={player => {
+                          playerRefs.current.set(index, player);
+                        }}
+                        src={video.url}
+                        controls={true}
+                        playing={isSectionInView && index === activeVideoIndex && !userExplicitlyPaused.current.has(index)}
+                        muted={true}
+                        loop={true}
+                        width='100%'
+                        height='100%'
+                        onPlay={() => {
+                          userExplicitlyPaused.current.delete(index);
+                        }}
+                        onPause={() => {
+                          if (index === activeVideoIndex && isSectionInView && !userExplicitlyPaused.current.has(index)) {
+                            userExplicitlyPaused.current.add(index);
+                          }
+                        }}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+
+            {/* Right: Contact Form */}
+            <div className='order-1 lg:order-2'>
+              <div className=''>
+                <div className='flex items-center gap-3 mb-6'>
+                  <div className='w-12 h-12 rounded-full bg-main-100 flex items-center justify-center'>
+                    <MessageSquare className='w-6 h-6 text-main-600' />
+                  </div>
+                  <div>
+                    <h3 className='text-2xl font-bold text-slate-900'>{t('title')}</h3>
+                    <p className='text-sm text-slate-500'>{t('subtitle')}</p>
+                  </div>
+                </div>
+
+                <div className='space-y-4'>
+                  {/* Show email input only for non-logged users */}
+                  {!user && (
+                    <div>
+                      <label className='block text-sm font-medium text-slate-700 mb-2'>
+                        {t('emailLabel')}
+                      </label>
+                      <div className='relative'>
+                        <Mail className='absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400' />
+                        <input
+                          type='email'
+                          value={email}
+                          onChange={e => setEmail(e.target.value)}
+                          placeholder={t('emailPlaceholder')}
+                          className='w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-500 focus:border-transparent transition-all'
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Message textarea for all users */}
+                  <div>
+                    <label className='block text-sm font-medium text-slate-700 mb-2'>
+                      {t('messageLabel')}
+                    </label>
+                    <textarea
+                      value={message}
+                      onChange={e => setMessage(e.target.value)}
+                      placeholder={t('messagePlaceholder')}
+                      rows={5}
+                      className='w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-500 focus:border-transparent transition-all resize-none'
+                    />
+                    <p className='text-xs text-slate-500 mt-1'>
+                      {message.length}/500 {t('characters')}
+                    </p>
+                  </div>
+
+                  {/* Send button */}
+                  <Button
+                    name={sending ? t('sending') : t('sendMessage')}
+                    onClick={handleSendMessage}
+                    disabled={!canSend || sending}
+                    loading={sending}
+                    color='green'
+                    className='w-full h-12 rounded-xl text-base font-semibold'
+                  >
+                    <Send className='w-4 h-4 mr-2' />
+                  </Button>
+
+                  {/* Contact email display */}
+                  {contactEmail && (
+                    <div className='pt-4 border-t border-slate-200'>
+                      <p className='text-sm text-slate-600 text-center'>
+                        {t('orEmailUs')}{' '}
+                        <a href={`mailto:${contactEmail}`} className='text-main-600 font-medium hover:underline'>
+                          {contactEmail}
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Trust indicators below form */}
+              <div className='mt-6 flex flex-wrap justify-center gap-4 text-sm text-slate-600'>
+                <div className='flex items-center gap-2'>
+                  <div className='w-2 h-2 rounded-full bg-green-500' />
+                  <span>{t('responseTime')}</span>
+                </div>
+                <div className='flex items-center gap-2'>
+                  <div className='w-2 h-2 rounded-full bg-blue-500' />
+                  <span>{t('secureConnection')}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

@@ -319,6 +319,7 @@
   },
   "Header": {
     "navigation": {
+      "messages": "الرسائل",
       "noCategories": "لا توجد أقسام متاحة",
       "explore": "ابحث عن مبدعين",
       "services": "الخدمات",
@@ -351,7 +352,8 @@
       "member": "عضو",
       "menu": "القائمة",
       "myJobs": "وظائفي",
-      "becomeASeller": "كن بائعًا"
+      "becomeASeller": "كن بائعًا",
+      "withdrawMoney": "سحب الأرباح"
     },
     "auth": {
       "signIn": "تسجيل الدخول",
@@ -563,6 +565,29 @@
     "requestNewResetLink": "طلب رابط إعادة تعيين جديد"
   },
   "Home": {
+    "contact": {
+      "videoTitle": "شاهد كيف تعمل المنصة",
+      "videoSubtitle": "اكتشف كيف نربط المواهب بالفرص من خلال منصتنا",
+      "title": "تواصل معنا",
+      "subtitle": "نود أن نسمع منك",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "your.email@example.com",
+      "messageLabel": "رسالتك",
+      "messagePlaceholder": "أخبرنا كيف يمكننا المساعدة...",
+      "characters": "حرف",
+      "sendMessage": "إرسال الرسالة",
+      "sending": "جاري الإرسال...",
+      "orEmailUs": "أو راسلنا مباشرة على",
+      "responseTime": "الرد خلال 24 ساعة",
+      "secureConnection": "آمن وخاص",
+      "errors": {
+        "emailRequired": "يرجى إدخال بريدك الإلكتروني",
+        "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
+        "messageTooShort": "يجب أن تكون الرسالة على الأقل 10 أحرف",
+        "failedToSend": "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى."
+      },
+      "successfullySent": "تم إرسال الرسالة بنجاح! سنرد عليك قريباً."
+    },
     "hero": {
       "alt": "خلفية Helhal الرئيسية",
       "postOrder": "انشر طلبك",
@@ -1165,7 +1190,15 @@
       "budget": "الميزانية",
       "copy": "نسخ",
       "hourly": "بالساعة",
-      "fixed": "ثابت"
+      "fixed": "ثابت",
+      "education": "التعليم",
+      "certifications": "الشهادات",
+      "noEducation": "لم تتم إضافة تعليم",
+      "noCertifications": "لم تتم إضافة شهادات",
+      "degree": "الدرجة",
+      "institution": "المؤسسة",
+      "year": "السنة",
+      "issuingOrganization": "المنظمة المصدرة"
     },
     "infoCard": {
       "description": "الوصف",
@@ -1358,6 +1391,7 @@
     }
   },
   "CreateJob": {
+    "edit_title": "تعديل الوظيفة",
     "selectCountryFirst": "Please select a country first",
     "steps": {
       "step1": "تفاصيل المشروع",
@@ -1374,6 +1408,8 @@
       "step3Subtitle": "هذا هو المكان الذي تبدأ فيه اتخاذ القرارات النهائية."
     },
     "form": {
+      "editJob": "عدل الوظيفة",
+      "editTitleLabel": "أعطي المشروع إسما",
       "titleLabel": "أعط وظيفة مشروعك عنواناً",
       "titleHint": "اجعله قصيراً وبسيطاً - سيساعدنا هذا على مطابقتك مع الفئة الصحيحة.",
       "titlePlaceholder": "أدخل عنوان المشروع",
@@ -2927,6 +2963,7 @@
         "disputes": "النزاعات",
         "finance": "المالية",
         "chat": "الدردشة",
+        "monitor": "مراقبة الدردشات",
         "notifications": "الإشعارات",
         "settings": "الإعدادات"
       },
@@ -2941,6 +2978,7 @@
         "disputes": "طلب المدفوعات وعرض الأرصدة وسجل الدفع.",
         "finance": "طلب المدفوعات وعرض الأرصدة وسجل الدفع.",
         "chat": "المحادثات وصندوق الدعم والرسائل في الوقت الفعلي.",
+        "monitor": "مراقبة المحادثات وإدارة التفاعلات لضمان الجودة والامتثال.",
         "notifications": "جميع الإشعارات والرسائل وتنبيهات الدعم في مكان واحد.",
         "settings": "الحساب والتفضيلات والتكاملات وخيارات النظام."
       }
@@ -3521,6 +3559,27 @@
         "autoPublishDisabled": "الوظائف تتطلب الآن موافقة المسؤول قبل النشر.",
         "updateFailed": "فشل تحديث إعداد موافقة الوظيفة."
       }
+    },
+    "monitor": {
+      "title": "مراقبة المحادثات",
+      "allConversations": "جميع المحادثات",
+      "searchConversations": "البحث بالاسم أو البريد…",
+      "clear": "مسح",
+      "refresh": "تحديث",
+      "noConversations": "لا توجد محادثات",
+      "page": "صفحة {current} / {total}",
+      "buyer": "المشتري",
+      "seller": "البائع",
+      "conversation": "محادثة",
+      "about": "حول",
+      "memberSince": "عضو منذ",
+      "unknown": "غير معروف",
+      "showConversations": "عرض المحادثات",
+      "showDetails": "عرض التفاصيل",
+      "justNow": "الآن",
+      "timeAgoMinutes": "منذ {count} د",
+      "timeAgoHours": "منذ {count} س",
+      "timeAgoDays": "منذ {count} يوم"
     },
     "users": {
       "title": "المستخدمون",

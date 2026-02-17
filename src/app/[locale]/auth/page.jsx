@@ -289,8 +289,9 @@ export const ContinueWithGoogleButton = ({ referralCode }) => {
 export const ContinueWithAppleButton = ({ referralCode }) => {
   const t = useTranslations('Auth');
   const searchParams = useSearchParams();
+
+  const redirectUrl = searchParams?.get('redirect') || '/';
   const userType = searchParams.get('type') || null;
-  const redirectUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
   const handleAppleLogin = async () => {
     let url = `${API_BASE_URL}auth/apple`;
@@ -647,7 +648,7 @@ const AuthOptions = ({ activeTab, onEmailClick, onPhoneClick, referralCode }) =>
       <div className='flex-1 flex flex-col items-center justify-center gap-4 py-6'>
         <ContinueWithEmailButton onClick={onEmailClick} />
         <ContinueWithGoogleButton referralCode={referralCode} />
-        {/* <ContinueWithAppleButton referralCode={referralCode} /> */}
+        <ContinueWithAppleButton referralCode={referralCode} />
         {activeTab === 'login' && <ContinueWithPhoneButton onClick={onPhoneClick} />}
       </div>
       <p className='text-sm text-gray-500 border-t border-slate-200 mt-6 pt-6'>{t('terms')}</p>
