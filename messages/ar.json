@@ -2763,6 +2763,16 @@
     "messages": "الرسائل",
     "conversations": "المحادثات",
     "details": "التفاصيل",
+    "activeOrders": {
+      "viewActiveOrders": "عرض الطلبات النشطة",
+      "viewContracts": "عرض العقود",
+      "activeOrdersTitle": "العقود النشطة",
+      "withUser": "مع {name}",
+      "ordered": "تاريخ الطلب",
+      "noActiveOrders": "لا توجد طلبات نشطة",
+      "noActiveOrdersDesc": "ليس لديك أي طلبات نشطة مع {name} في الوقت الحالي.",
+      "errorLoading": "فشل تحميل الطلبات"
+    },
     "aria": {
       "showConversations": "إظهار المحادثات",
       "showDetails": "إظهار التفاصيل",

@@ -2766,6 +2766,16 @@
     "messages": "Messages",
     "conversations": "Conversations",
     "details": "Details",
+    "activeOrders": {
+      "viewActiveOrders": "View active orders",
+      "viewContracts": "View Contracts",
+      "activeOrdersTitle": "Active Contracts",
+      "withUser": "with {name}",
+      "ordered": "Ordered",
+      "noActiveOrders": "No active orders",
+      "noActiveOrdersDesc": "You don't have any active orders with {name} at the moment.",
+      "errorLoading": "Failed to load orders"
+    },
     "aria": {
       "showConversations": "Show conversations",
       "showDetails": "Show details",
