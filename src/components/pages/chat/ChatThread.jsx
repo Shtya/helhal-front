@@ -681,7 +681,7 @@ function OrderCard({ order, onClose }) {
           </div> */}
           <div className="flex items-center gap-2 text-xs text-slate-500">
             <Clock className="h-3 w-3" />
-            <span>{t('ordered')}: {formatDate(order.createdAt)}</span>
+            <span>{t('ordered')}: {formatDate(order.created_at)}</span>
           </div>
         </div>
 
