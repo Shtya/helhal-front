@@ -32,7 +32,7 @@ const fadeIn = { hidden: { opacity: 0, x: 12 }, show: { opacity: 1, x: 0, transi
 /* =========================================================
    Lightweight Helpers (inline so this file is standalone)
    ========================================================= */
-export const Divider = ({ className = '' }) => <div className={`my-1 border-t border-slate-200 ${className}`} />;
+export const Divider = ({ className = '' }) => <div className={`my-1 border-t border-slate-200 dark:border-dark-border ${className}`} />;
 
 
 
@@ -282,7 +282,7 @@ export default function Header() {
   };
 
   return (
-    <header className='sticky top-0 z-40 transition-all duration-300 backdrop-blur-md bg-white/70 shadow-[0_1px_0_0_rgba(0,0,0,0.06)]'>
+    <header className='sticky top-0 z-40 transition-all duration-300 backdrop-blur-md bg-white/70 dark:bg-dark-bg-input shadow-[0_1px_0_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.06)]'>
       <div className='container h-16 md:h-[88px] flex items-center justify-between gap-3'>
         {/* Left: Logo + nav */}
         <div className='flex items-center gap-1 md:gap-3 shrink-0'>
@@ -313,8 +313,8 @@ export default function Header() {
 
               <NotificationPopup />
 
-              <Link href='/cart' aria-label='Cart' className='shrink-0  relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
-                <ShoppingCart className='h-5 w-5 text-slate-600 ' />
+              <Link href='/cart' aria-label='Cart' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card'>
+                <ShoppingCart className='h-5 w-5 text-slate-600 dark:text-dark-text-primary' />
                 {cartTotal > 0 && (
                   <span className='absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-main-600 text-white text-[11px] grid place-items-center font-semibold'>
                     {cartTotal > 99 ? '99+' : cartTotal}
@@ -353,7 +353,7 @@ export default function Header() {
 
 const MobileToggle = ({ toggleMobileNav, isMobileNavOpen }) => {
   return (
-    <motion.button onClick={toggleMobileNav} className='lg:hidden p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
+    <motion.button onClick={toggleMobileNav} className='lg:hidden p-2 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
       {isMobileNavOpen ? <X className='w-6 h-6' strokeWidth={1.5} /> : <Menu className='w-6 h-6' />}
     </motion.button>
 
@@ -395,7 +395,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }} transition={{ type: 'spring', damping: 20, stiffness: 300 }} className='absolute end-0 mt-0 w-72 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl z-50'>
+          <motion.div initial={{ opacity: 0, y: 10, scale: 0.96 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.96 }} transition={{ type: 'spring', damping: 20, stiffness: 300 }} className='absolute end-0 mt-0 w-72 overflow-hidden rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-xl z-50'>
             <UserMiniCard user={user} />
 
             <Divider className='!my-0' />
@@ -407,7 +407,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
                 if (item.divider) return <Divider key={`div-${index}`} className='!my-0' />;
                 return (
                   <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.04 }}>
-                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${item.active ? 'text-main-700 bg-main-50' : 'text-gray-700 hover:bg-gray-50'}`} onClick={() => setIsOpen(false)}>
+                    <Link href={item.href} className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${item.active ? 'text-main-700 bg-main-50 dark:bg-main-900/20' : 'text-gray-700 dark:text-dark-text-primary hover:bg-gray-50 dark:hover:bg-dark-bg-card'}`} onClick={() => setIsOpen(false)}>
                       {item.icon}
                       <span className='truncate'>{item.label}</span>
                     </Link>
@@ -483,7 +483,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
 
   return (
     <div ref={rootRef} className='relative' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 hover:text-main-700'}`}>
+      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 dark:text-dark-text-primary hover:text-main-700 dark:hover:text-main-400'}`}>
         {icon} {label}
         <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-main-600' : 'bg-transparent'}`} transition={springy} />
@@ -496,7 +496,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
-            className={`z-[100] absolute start-0 mt-1 max-w-[calc(100vw-2rem)] w-[95vw] md:w-[700px] lg:w-[max(800px,70vw)] xl:w-[max(1000px,70vw)] border border-slate-200 bg-white shadow-xl rounded-xl overflow-hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
+            className={`z-[100] absolute start-0 mt-1 max-w-[calc(100vw-2rem)] w-[95vw] md:w-[700px] lg:w-[max(800px,70vw)] xl:w-[max(1000px,70vw)] border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-xl rounded-xl overflow-hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
           >
             <div className='px-4 py-5'>
               {loadingTopCategories ? (
@@ -540,7 +540,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
                                     <li key={subcategory?.id || subcategory?.slug}>
                                       <Link
                                         href={`/services/${encodeURIComponent(subcategory?.slug || '')}`}
-                                        className='block text-sm text-slate-600 hover:text-main-600 hover:underline transition-colors'
+                                        className='block text-sm text-slate-600 dark:text-dark-text-secondary hover:text-main-600 hover:underline transition-colors'
                                       >
                                         {subcategoryName || 'Unnamed Subcategory'}
                                       </Link>
@@ -603,7 +603,7 @@ function NavLinks({ links, topCategories, loadingTopCategories }) {
 
 function TopLink({ href, label, icon, active }) {
   return (
-    <Link href={href} className={`  relative px-2 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 hover:text-main-700'}`}>
+    <Link href={href} className={`relative px-2 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 dark:text-dark-text-primary hover:text-main-700 dark:hover:text-main-400'}`}>
       {icon} {label}
       <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active ? 'bg-main-600' : 'bg-transparent'}`} transition={springy} />
     </Link>
@@ -627,13 +627,13 @@ export function DropdownItem({ label, icon, active, children }) {
 
   return (
     <div ref={rootRef} className='relative' onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 hover:text-main-700'}`}>
+      <button type='button' aria-expanded={open} onClick={() => setOpen(v => !v)} className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors ${active ? 'text-main-700' : 'text-slate-700 dark:text-dark-text-primary hover:text-main-700 dark:hover:text-main-400'}`}>
         {icon} {label}
         <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-main-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute start-0  w-[240px] rounded-xl border border-slate-200 bg-white shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute start-0 w-[240px] rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         {children}
       </motion.div>
     </div>
@@ -667,8 +667,8 @@ function DropdownPanel({ items = [] }) {
             <Link
               href={fullHref}
               className={`flex items-center gap-2 px-3 py-2 text-[14px] rounded-md transition-all ${isActive
-                ? 'bg-main-50 text-main-700 font-semibold'
-                : 'text-slate-700 hover:text-main-700 hover:bg-main-50'
+                ? 'bg-main-50 dark:bg-main-900/20 text-main-700 font-semibold'
+                : 'text-slate-700 dark:text-dark-text-primary hover:text-main-700 dark:hover:text-main-400 hover:bg-main-50 dark:hover:bg-dark-bg-card'
                 }`}
             >
               <span className={`scale-125 ${isActive ? 'text-main-600' : 'text-slate-400'}`}>
@@ -703,14 +703,14 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
 
           {/* Drawer */}
           <motion.div role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 lg:hidden h-screen'>
-            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 bg-white/90 shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/100'>
+            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 dark:border-dark-border bg-white/90 dark:bg-dark-bg-input shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/100 dark:supports-[backdrop-filter]:bg-dark-bg-input'>
               {/* Header */}
               <div className='relative px-4 pt-4 pb-3'>
                 <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-main-50/70 to-transparent pointer-events-none' />
                 <div className='relative flex items-center justify-between'>
-                  <span className='text-sm font-semibold text-slate-700'>{tHeader('userMenu.menu')}</span>
-                  <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-400' aria-label='Close' autoFocus>
-                    <X className='h-5 w-5 text-slate-600' />
+                  <span className='text-sm font-semibold text-slate-700 dark:text-dark-text-primary'>{tHeader('userMenu.menu')}</span>
+                  <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-dark-bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-main-400' aria-label='Close' autoFocus>
+                    <X className='h-5 w-5 text-slate-600 dark:text-dark-text-primary' />
                   </button>
                 </div>
               </div>
@@ -723,8 +723,8 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                     <Img src={user.profileImage} altSrc={'/images/placeholder-avatar.png'} alt={`avatar`} width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm h-11 w-11' />
                   </motion.div>
                   <div className='min-w-0'>
-                    <p className='text-sm text-slate-900 font-medium truncate'>{user.username || tHeader('userMenu.user')}</p>
-                    <p className='text-xs text-slate-500 truncate'>{user.email}</p>
+                    <p className='text-sm text-slate-900 dark:text-dark-text-primary font-medium truncate'>{user.username || tHeader('userMenu.user')}</p>
+                    <p className='text-xs text-slate-500 dark:text-dark-text-primary truncate'>{user.email}</p>
                     {/* <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-main-100 text-main-800 rounded-full capitalize'>{user.role || tHeader('userMenu.member')}</span> */}
                     <span className={`text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${chip}`} title={`Role: ${role}`}>
                       <UserIcon className='h-3.5 w-3.5' />
@@ -779,12 +779,16 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                               key={c.label + fullChildHref}
                               href={fullChildHref}
                               onClick={onClose}
-                              className={`relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-[15px] transition-colors ${isChildActive
-                                ? 'bg-main-50 text-main-700 font-semibold'
-                                : 'text-slate-700 hover:bg-slate-50 '
+                              className={`relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-[15px] transition-colors 
+    ${isChildActive
+                                  ? 'bg-main-50 text-main-700 dark:bg-main-500/10 dark:text-main-400 font-semibold'
+                                  : 'text-slate-700 hover:bg-slate-50 dark:text-dark-text-secondary dark:hover:bg-dark-bg-card dark:hover:text-dark-text-primary'
                                 }`}
                             >
-                              <span className={isChildActive ? 'text-main-700' : 'text-slate-700'}>
+                              <span className={isChildActive
+                                ? 'text-main-700 dark:text-main-400'
+                                : 'text-slate-700 dark:text-dark-text-secondary transition-colors'
+                              }>
                                 {c.icon}
                               </span>
                               {c.label}
@@ -834,13 +838,21 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               {/* Logout */}
               {user && (
                 <div className='mx-2'>
-                  <motion.button onClick={onLogout} className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-red-600 bg-red-50 rounded-lg transition-colors' disabled={isLogoutLoading} whileTap={{ scale: 0.98 }}>
+                  <motion.button
+                    onClick={onLogout}
+                    className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm font-semibold rounded-lg transition-all
+        /* Light Mode: Classic Red */
+        text-red-600 bg-red-50 hover:bg-red-100 
+        /* Dark Mode: "Luminous" Red */
+        dark:text-red-400 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border dark:border-red-500/20'
+                    disabled={isLogoutLoading}
+                    whileTap={{ scale: 0.98 }}
+                  >
                     <LogOut size={16} />
                     {isLogoutLoading ? tHeader('userMenu.loggingOut') : tHeader('userMenu.logout')}
                   </motion.button>
                 </div>
               )}
-
               <div className='h-[max(12px,env(safe-area-inset-bottom))]' />
             </motion.div>
           </motion.div>
@@ -1032,14 +1044,14 @@ function UserMiniCard({ user }) {
       {/* Texts */}
       <div className='min-w-0 flex-1'>
         <div className='flex items-center gap-1.5'>
-          <p className='text-sm text-slate-900 font-medium truncate' title={name}>
+          <p className='text-sm text-slate-900 dark:text-dark-text-primary font-medium truncate' title={name}>
             {name}
           </p>
           {user?.isVerified && <ShieldCheck className='h-4 w-4 shrink-0 text-sky-600' aria-label='Verified' title='Verified' />}
         </div>
 
         <div className='flex items-center gap-2'>
-          <p className='text-xs text-slate-500 truncate' title={email} aria-label='Email'>
+          <p className='text-xs text-slate-500 dark:text-dark-text-primary truncate' title={email} aria-label='Email'>
             {email || '—'}
           </p>
         </div>
@@ -1118,9 +1130,10 @@ function RelatedUsers({ user, onClose }) {
             <button
               disabled={loadingId === relUser.id}
               onClick={() => onSwitchUser(relUser.id)}
-              className={`w-full text-left flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${loadingId === relUser.id
-                ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
-                : 'text-gray-700 hover:bg-gray-50'
+              className={`w-full text-left flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors 
+          ${loadingId === relUser.id
+                  ? 'text-gray-400 bg-gray-100 dark:text-dark-text-secondary/50 dark:bg-white/5 cursor-not-allowed'
+                  : 'text-gray-700 hover:bg-gray-50 dark:text-dark-text-secondary dark:hover:bg-dark-bg-card dark:hover:text-dark-text-primary'
                 }`}
             >
               <Img
@@ -1128,11 +1141,18 @@ function RelatedUsers({ user, onClose }) {
                 alt={relUser.username}
                 width={28}
                 height={28}
-                className="w-7 h-7 rounded-full shrink-0 object-cover"
+                className="w-7 h-7 rounded-full shrink-0 object-cover border border-slate-100 dark:border-dark-border"
               />
               <div className='flex flex-col'>
-                <span className="truncate">{relUser.username}</span>
-                <span className={`w-fit text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${roleStyles[relUser.role]?.chip || roleStyles.member}`} title={`Role: ${relUser.role}`}>
+                <span className={`truncate font-medium ${loadingId === relUser.id ? '' : 'dark:text-dark-text-primary'}`}>
+                  {relUser.username}
+                </span>
+                <span className={`w-fit text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize 
+            ${roleStyles[relUser.role]?.chip || roleStyles.member} 
+            /* Ensure the chip doesn't look too bright in dark mode */
+            dark:bg-opacity-20 dark:border dark:border-white/10`}
+                  title={`Role: ${relUser.role}`}
+                >
                   <UserIcon className='h-2.5 w-2.5' />
                   {relUser.role}
                 </span>

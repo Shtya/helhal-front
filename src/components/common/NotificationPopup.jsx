@@ -33,10 +33,10 @@ export const getLink = (relatedEntityType, relatedEntityId, subType) => {
 
 const RowSkeleton = () => (
   <div className='px-4 py-3 flex items-start gap-3'>
-    <div className='h-8 w-8 rounded-lg bg-slate-200 animate-pulse' />
+    <div className='h-8 w-8 rounded-lg bg-slate-200 dark:bg-dark-bg-card animate-pulse' />
     <div className='flex-1 space-y-2'>
-      <div className='h-3 w-3/5 rounded bg-slate-200 animate-pulse' />
-      <div className='h-3 w-2/5 rounded bg-slate-200 animate-pulse' />
+      <div className='h-3 w-3/5 rounded bg-slate-200 dark:bg-dark-bg-card animate-pulse' />
+      <div className='h-3 w-2/5 rounded bg-slate-200 dark:bg-dark-bg-card animate-pulse' />
     </div>
   </div>
 );
@@ -160,19 +160,19 @@ const NotificationPopup = ({ admin = false }) => {
 
   return (
     <div className='' ref={btnRef}>
-      <motion.button onClick={() => setOpen(v => !v)} className='relative  inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
-        <Bell className='h-5 w-5 text-slate-700' />
+      <motion.button onClick={() => setOpen(v => !v)} className='relative inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
+        <Bell className='h-5 w-5 text-slate-700 dark:text-dark-text-secondary' />
         {unreadNotificationCount > 0 && <span className='absolute -top-1 -right-1 grid h-5 min-w-[20px] place-items-center rounded-full bg-main-600 px-1 text-[11px] text-white font-semibold'>{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}</span>}
       </motion.button>
 
       <AnimatePresence>
         {open && (
-          <motion.div ref={menuRef} style={menuStyle} initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute end-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl' role='dialog' aria-label='Notifications menu'>
+          <motion.div ref={menuRef} style={menuStyle} initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 12, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ type: 'spring', stiffness: 300, damping: 22 }} className='absolute end-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-xl' role='dialog' aria-label='Notifications menu'>
             {/* Header */}
-            <div className='flex items-center justify-between border-b border-slate-200 px-4 py-3'>
-              <div className='text-sm font-semibold text-slate-900'>{t('title')}</div>
+            <div className='flex items-center justify-between border-b border-slate-200 dark:border-dark-border px-4 py-3'>
+              <div className='text-sm font-semibold text-slate-900 dark:text-dark-text-primary'>{t('title')}</div>
               <div className='flex items-center gap-2'>
-                <button onClick={markAllAsRead} className='inline-flex items-center gap-1 rounded-full border border-slate-200 px-2.5 py-1 text-[11px] text-slate-700 hover:bg-slate-50' title={t('markAllAsRead')}>
+                <button onClick={markAllAsRead} className='inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-dark-border px-2.5 py-1 text-[11px] text-slate-700 dark:text-dark-text-secondary hover:bg-slate-50 dark:hover:bg-dark-bg-card' title={t('markAllAsRead')}>
                   <Check className='h-3.5 w-3.5' />
                   {t('markAllAsRead')}
                 </button>
@@ -188,9 +188,9 @@ const NotificationPopup = ({ admin = false }) => {
                   <RowSkeleton />
                 </>
               ) : notifications.length === 0 ? (
-                <div className='px-6 py-10 text-center text-slate-500'>
-                  <div className='mx-auto mb-2 grid h-10 w-10 place-items-center rounded-xl bg-slate-100'>
-                    <Bell className='h-5 w-5 text-slate-500' />
+                <div className='px-6 py-10 text-center text-slate-500 dark:text-dark-text-secondary'>
+                  <div className='mx-auto mb-2 grid h-10 w-10 place-items-center rounded-xl bg-slate-100 dark:bg-dark-bg-card'>
+                    <Bell className='h-5 w-5 text-slate-500 dark:text-dark-text-secondary' />
                   </div>
                   <div className='text-sm'>{t('allCaughtUp')}</div>
                 </div>
@@ -200,7 +200,7 @@ const NotificationPopup = ({ admin = false }) => {
                   return (<div
                     key={n.id}
                     data-notification-id={`${n.id}`}
-                    className={`px-4 py-3 hover:bg-slate-50 transition ${!n.isRead ? 'bg-main-50/30' : ''}`}
+                    className={`px-4 py-3 hover:bg-slate-50 dark:hover:bg-dark-bg-card transition ${!n.isRead ? 'bg-main-50/30 dark:bg-main-900/20' : ''}`}
                   >
                     <div className="flex items-start gap-3">
 
@@ -214,7 +214,7 @@ const NotificationPopup = ({ admin = false }) => {
 
                         {/* Title + timestamp + View link */}
                         <div className="flex items-center justify-between gap-2">
-                          <div className="truncate text-sm font-medium text-slate-900">{n.title}</div>
+                          <div className="truncate text-sm font-medium text-slate-900 dark:text-dark-text-primary">{n.title}</div>
 
                           <div className="flex items-center gap-3 shrink-0">
                             {getLink(n.relatedEntityType, n.relatedEntityId, n.type) && (
@@ -225,12 +225,12 @@ const NotificationPopup = ({ admin = false }) => {
                                 {t('view')}
                               </Link>
                             )}
-                            <div className="text-[11px] text-slate-500">{relTime(n.created_at)}</div>
+                            <div className="text-[11px] text-slate-500 dark:text-dark-text-secondary">{relTime(n.created_at)}</div>
                           </div>
                         </div>
 
                         {/* Message */}
-                        <div className="mt-0.5 line-clamp-2 text-sm text-slate-600">
+                        <div className="mt-0.5 line-clamp-2 text-sm text-slate-600 dark:text-dark-text-secondary">
                           {n.message}
                         </div>
 
@@ -245,7 +245,7 @@ const NotificationPopup = ({ admin = false }) => {
                           {!n.isRead && (
                             <button
                               onClick={() => markOneAsRead(n.id)}
-                              className="text-[11px] text-slate-600 hover:text-slate-900 underline-offset-2 hover:underline"
+                              className="text-[11px] text-slate-600 dark:text-dark-text-secondary hover:text-slate-900 dark:hover:text-dark-text-primary underline-offset-2 hover:underline"
                             >
                               {t('markAsRead')}
                             </button>
@@ -260,7 +260,7 @@ const NotificationPopup = ({ admin = false }) => {
             </div>
 
             {/* Footer */}
-            <div className='border-t border-slate-200 px-4 py-2 text-center'>
+            <div className='border-t border-slate-200 dark:border-dark-border px-4 py-2 text-center'>
               <Link href={admin ? `/dashboard/notifications` : `/notifications`} className='text-sm text-main-700 hover:underline' onClick={() => setOpen(false)}>
                 {t('viewAll')}
               </Link>

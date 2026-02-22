@@ -235,7 +235,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
     return (
       <>
         {t.slice(0, idx)}
-        <mark className='rounded px-0.5 bg-main-100 text-main-800'>{t.slice(idx, idx + ql.length)}</mark>
+        <mark className='rounded px-0.5 bg-main-100 dark:bg-main-900/30 text-main-800 dark:text-main-300'>{t.slice(idx, idx + ql.length)}</mark>
         {t.slice(idx + ql.length)}
       </>
     );
@@ -245,12 +245,12 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   return (
     <div className=''>
 
-      <button onClick={() => setMobileOpen(p => !p)} aria-label={t('ariaLabels.goToChat')} className=' xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
-        <Search className='h-5 w-5 text-slate-600' />
+      <button onClick={() => setMobileOpen(p => !p)} aria-label={t('ariaLabels.goToChat')} className='xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card'>
+        <Search className='h-5 w-5 text-slate-600 dark:text-dark-text-secondary' />
       </button>
-      <div ref={rootRef} className={`w-full xl:w-xs relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"}  top-16 md:top-[88px] left-0 right-0 max-xl:bg-white  xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
+      <div ref={rootRef} className={`w-full xl:w-xs relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"} top-16 md:top-[88px] left-0 right-0 max-xl:bg-white dark:max-xl:bg-dark-bg-input xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
         <div className='w-full relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
-          <div className=' flex min-h-[40px] items-center gap-2 xl:rounded-md  xl:border bg-white/20 backdrop-blur-3xl px-2 py-1 text-sm  transition' style={{ borderColor: open ? BRAND : '#cbd5e1', boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
+          <div className='flex min-h-[40px] items-center gap-2 xl:rounded-md xl:border xl:border-slate-200 xl:dark:border-dark-border bg-white/20 dark:bg-dark-bg-input/80 backdrop-blur-3xl px-2 py-1 text-sm transition' style={{ borderColor: open ? BRAND : undefined, boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
 
             {(!isSeller && !isBuyer) && <button
               ref={scopeBtnRef}
@@ -261,16 +261,16 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                   return next;
                 });
               }}
-              className='inline-flex items-center gap-1 max-xl:p-[10px] rounded-lg px-2 py-1 text-slate-700 max-xl:bg-main-600 max-xl:text-white  hover:xl:bg-slate-50 border border-transparent max-xl:border-slate-200 hover:xl:border-slate-200'
+              className='inline-flex items-center gap-1 max-xl:p-[10px] rounded-lg px-2 py-1 text-slate-700 dark:text-dark-text-secondary max-xl:bg-main-600 max-xl:text-white hover:xl:bg-slate-50 dark:hover:xl:bg-dark-bg-card border border-transparent max-xl:border-slate-200 hover:xl:border-slate-200 dark:hover:xl:border-dark-border'
               aria-expanded={scopeOpen}>
               <span className='font-semibold'>{scope.label}</span>
               <ChevronDown className={`h-4 w-4 transition ${scopeOpen ? 'rotate-180' : ''}`} />
             </button>}
 
-            {(!isSeller && !isBuyer) && <span className='hidden xl:block h-5 w-px bg-slate-200 mx-1' />}
+            {(!isSeller && !isBuyer) && <span className='hidden xl:block h-5 w-px bg-slate-200 dark:bg-dark-border mx-1' />}
 
             <div className='flex-1 max-xl:flex-1 flex items-center gap-2 max-xl:border max-xl:bg-white/20 max-xl:rounded-md max-xl:border-[#cbd5e1] max-xl:p-[10px]'>
-              <Search className='h-5 w-5 xl:h-4 xl:w-4 text-slate-500 shrink-0' />
+              <Search className='h-5 w-5 xl:h-4 xl:w-4 text-slate-500 dark:text-dark-text-secondary shrink-0' />
               <input
                 ref={inputRef}
                 value={q}
@@ -305,13 +305,13 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                   }
                 }}
                 placeholder={isBuyer ? t('buyerPlaceholder') : isSeller ? t('sellerPlaceholder') : t('placeholder')}
-                className='peer w-full bg-transparent outline-none placeholder:text-slate-400'
+                className='peer w-full bg-transparent outline-none placeholder:text-slate-400 dark:placeholder:text-dark-text-secondary text-slate-900 dark:text-dark-text-primary'
               />
 
               {/* Clear & spinner */}
-              {loading && <Loader2 className='h-4 w-4 animate-spin text-slate-400' />}
+              {loading && <Loader2 className='h-4 w-4 animate-spin text-slate-400 dark:text-dark-text-secondary' />}
               {q && !loading && (
-                <button onClick={() => setQ('')} className='rounded-md p-1 text-slate-500 hover:bg-slate-100' aria-label={t('ariaLabels.clear')}>
+                <button onClick={() => setQ('')} className='rounded-md p-1 text-slate-500 dark:text-dark-text-secondary hover:bg-slate-100 dark:hover:bg-dark-bg-card' aria-label={t('ariaLabels.clear')}>
                   <X className='h-4 w-4' />
                 </button>
               )}
@@ -320,7 +320,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
           {/* Scope menu anchored to input (left) */}
           {scopeOpen && !isBuyer && !isSeller && (
-            <div className='absolute start-2 xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
+            <div className='absolute start-2 xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-sm transition will-change-transform origin-top scale-100 opacity-100'>
               {scopes.map((opt, i) => (
                 <button
                   key={opt.value}
@@ -329,7 +329,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                     setScopeOpen(false);
                     inputRef.current?.focus();
                   }}
-                  className={`block w-full px-3 py-2 text-left text-sm ${i === scopeIndex ? 'bg-main-50 text-main-700' : 'hover:bg-slate-50'}`}>
+                  className={`block w-full px-3 py-2 text-left text-sm ${i === scopeIndex ? 'bg-main-50 dark:bg-main-900/20 text-main-700' : 'hover:bg-slate-50 dark:hover:bg-dark-bg-card text-slate-900 dark:text-dark-text-primary'}`}>
                   {opt.label}
                 </button>
               ))}
@@ -338,7 +338,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
           {/* Results dropdown — only show if search open AND scope menu closed */}
           {open && !scopeOpen && (
-            <div className='absolute z-50 mt-2 w-full overflow-hidden rounded-md border border-slate-200 bg-white  shadow-sm  transition will-change-transform origin-top scale-100 opacity-100'>
+            <div className='absolute z-50 mt-2 w-full overflow-hidden rounded-md border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-sm transition will-change-transform origin-top scale-100 opacity-100'>
               <div className='max-h-[380px] overflow-auto p-2'>
 
                 {/* Live records */}
@@ -387,11 +387,11 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
               </div>
 
               {/* Footer CTA */}
-              <button onClick={() => go(q)} className='flex  w-full items-center justify-between gap-2 border-t border-slate-200 bg-white/70 px-3 py-2 text-left text-sm hover:bg-main-50'>
+              <button onClick={() => go(q)} className='flex w-full items-center justify-between gap-2 border-t border-slate-200 dark:border-dark-border bg-white/70 dark:bg-dark-bg-card px-3 py-2 text-left text-sm text-slate-900 dark:text-dark-text-primary hover:bg-main-50 dark:hover:bg-dark-bg-base'>
                 <span className='break-all'>
                   {t('footer.searchIn', { query: q || '…', scope: scope.label })}
                 </span>
-                <span className='text-[11px] text-slate-400'>{t('footer.enter')}</span>
+                <span className='text-[11px] text-slate-400 dark:text-dark-text-secondary'>{t('footer.enter')}</span>
               </button>
             </div>
           )}
@@ -420,9 +420,9 @@ function Section({ title, children, loading = false, empty = false, emptyHint = 
   const t = useTranslations('GlobalSearch');
   return (
     <div className='py-1'>
-      <div className='sticky -top-2 z-[1] bg-white/95 backdrop-blur px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500'>{title}</div>
-      {loading && <div className='px-2 pb-2 text-sm text-slate-500'>{t('loading')}</div>}
-      {empty && !loading && <div className='px-2 pb-2 text-sm text-slate-400'>{emptyHint}</div>}
+      <div className='sticky -top-2 z-[1] bg-white/95 dark:bg-dark-bg-input/95 backdrop-blur px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-dark-text-secondary'>{title}</div>
+      {loading && <div className='px-2 pb-2 text-sm text-slate-500 dark:text-dark-text-secondary'>{t('loading')}</div>}
+      {empty && !loading && <div className='px-2 pb-2 text-sm text-slate-400 dark:text-dark-text-secondary'>{emptyHint}</div>}
       {children}
     </div>
   );
@@ -430,12 +430,12 @@ function Section({ title, children, loading = false, empty = false, emptyHint = 
 
 function Row({ icon, children, subtitle, meta, active, onMouseEnter, onClick }) {
   return (
-    <button type='button' onMouseEnter={onMouseEnter} onClick={onClick} className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm transition ${active ? 'bg-main-600 text-white' : 'hover:bg-main-50'}`}>
-      <span className={`grid h-6 w-6 place-items-center rounded-md ${active ? 'bg-white/20' : 'bg-[color:var(--color-main-200)] border border-[color:var(--color-main-400)] text-slate-700'}`}>{icon}</span>
+    <button type='button' onMouseEnter={onMouseEnter} onClick={onClick} className={`flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm transition ${active ? 'bg-main-600 text-white' : 'hover:bg-main-50 dark:hover:bg-dark-bg-card text-slate-900 dark:text-dark-text-primary'}`}>
+      <span className={`grid h-6 w-6 place-items-center rounded-md ${active ? 'bg-white/20' : 'bg-main-200 dark:bg-main-900/30 border border-main-400/50 dark:border-dark-border text-slate-700 dark:text-dark-text-secondary'}`}>{icon}</span>
       <span className='flex-1 min-w-0'>
         <div className={`truncate ${active ? 'font-medium' : ''}`}>{children}</div>
         {(subtitle || meta) && (
-          <div className={`flex items-center gap-2 text-[11px] truncate ${active ? 'text-main-50' : 'text-slate-400'}`}>
+          <div className={`flex items-center gap-2 text-[11px] truncate ${active ? 'text-main-50' : 'text-slate-400 dark:text-dark-text-secondary'}`}>
             {subtitle && <span className='truncate'>{subtitle}</span>}
             {meta && <span className='truncate'>• {meta}</span>}
           </div>

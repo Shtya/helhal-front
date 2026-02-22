@@ -4,7 +4,12 @@
 :root {
   --main: #3b82f6;
   --secondary: #1f2937;
+
+
 }
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 
 @theme {
   --breakpoint-xs: 480px;
@@ -19,7 +24,34 @@
   --color-main-700: #1d4ed8;
   --color-main-800: #1e40af;
   --color-main-900: #1e3a8a;
-  --color-main-950: #172554
+  --color-main-950: #172554;
+
+  --color-dark-bg-base: #1e1e24;
+  /* Main dashboard background */
+  --color-dark-bg-card: #22252a;
+  /* Card and panel background */
+  --color-dark-bg-input: #15171c;
+  /* Input fields */
+  --color-dark-border: #33373e;
+  /* Subtle borders */
+  --color-dark-text-primary: #ffffff;
+  /* Headings and main text */
+  --color-dark-text-secondary: #9ca3af;
+  /* Subtitles and muted text */
+}
+
+:root[data-theme="dark"] {
+  /* Slightly brighter + softer blue for dark backgrounds */
+  --main: #4f8cff;
+  --secondary: #e5e7eb;
+
+}
+
+
+:root[data-theme="dark"] img {
+  color: var(--color-dark-text-primary);
+  font-size: 0.875rem;
+  text-align: center;
 }
 
 button {
@@ -42,6 +74,11 @@ button {
 
 body {
   color: black;
+}
+
+.dark body {
+  color: var(--dark-text-primary);
+  background-color: var(--dark-bg-base);
 }
 
 [dir='ltr'] body {

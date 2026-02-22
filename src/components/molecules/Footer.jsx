@@ -30,9 +30,6 @@ export const CATEGORY_LINKS = [
 ];
 
 
-
-
-
 /* ===================== SMALL UI ===================== */
 function Pill({ children, className = '' }) {
   return (
@@ -64,10 +61,10 @@ function LinksSection({ titleKey, links, directTexts = false }) {
         aria-expanded={expanded}
       >
         {/* Mobile: Reduced text-base (was text-lg) */}
-        <h3 className='font-extrabold text-base sm:text-lg md:text-xl text-gray-900 group-hover:text-main-700 transition'>
+        <h3 className='font-extrabold text-base sm:text-lg md:text-xl text-gray-900 dark:text-dark-text-primary group-hover:text-main-700 dark:group-hover:text-main-400 transition'>
           {t(titleKey)}
         </h3>
-        <span className='md:hidden text-gray-500'>
+        <span className='md:hidden text-gray-500 dark:text-dark-text-secondary'>
           {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </span>
       </button>
@@ -88,7 +85,7 @@ function LinksSection({ titleKey, links, directTexts = false }) {
                 <Link
                   href={item.href}
                   // Mobile: Reduced text-sm (was text-[15px])
-                  className='text-sm py-2 text-gray-700 hover:text-main-700 hover:ps-1 transition block'
+                  className='text-sm py-2 text-gray-700 dark:text-dark-text-secondary hover:text-main-700 dark:hover:text-main-400 hover:ps-1 transition block'
                 >
                   {directTexts ? item.key : t(item.key)}
                 </Link>
@@ -113,7 +110,7 @@ function LinksSection({ titleKey, links, directTexts = false }) {
           <li key={item.key}>
             <Link
               href={item.href}
-              className='text-[15px] py-1.5 text-gray-700 hover:text-main-700 hover:ps-1 transition block'
+              className='text-[15px] py-1.5 text-gray-700 dark:text-dark-text-secondary hover:text-main-700 dark:hover:text-main-400 hover:ps-1 transition block'
             >
               {directTexts ? item.key : t(item.key)}
             </Link>
@@ -138,9 +135,9 @@ function LanguageSwitcher() {
 
   return (
     <div className='w-[180px]'>
-      <div className='flex justify-between text-sm font-bold rounded-xl border border-main-200 overflow-hidden'>
+      <div className='flex justify-between text-sm font-bold rounded-xl border border-main-200 dark:border-dark-border overflow-hidden'>
         {languages.map(({ code, label }) => (
-          <button key={code} disabled={isPending} onClick={() => toggleLocale(code)} className={['w-1/2 text-center py-2 transition-colors cursor-pointer', locale === code ? 'bg-main-600 text-white' : 'text-main-700 hover:bg-main-50'].join(' ')} aria-label={`Switch to ${label}`}>
+          <button key={code} disabled={isPending} onClick={() => toggleLocale(code)} className={['w-1/2 text-center py-2 transition-colors cursor-pointer', locale === code ? 'bg-main-600 text-white' : 'text-main-700 dark:text-dark-text-secondary hover:bg-main-50 dark:hover:bg-dark-bg-card'].join(' ')} aria-label={`Switch to ${label}`}>
             {label}
           </button>
         ))}
@@ -237,14 +234,14 @@ export function Footer() {
 
       {/* Main card */}
       <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-        <div className={['rounded-3xl border border-main-100/70 bg-white', 'shadow-[0_20px_60px_rgba(16,185,129,0.10)]'].join(' ')}>
+        <div className={['rounded-3xl border border-main-100/70 dark:border-dark-border bg-white dark:bg-dark-bg-card', 'shadow-[0_20px_60px_rgba(16,185,129,0.10)] dark:shadow-none'].join(' ')}>
           {/* Brand + Social + Language */}
           <div className='px-6 md:px-10 pt-8 pb-6 flex flex-col lg:flex-row gap-8 lg:gap-10 items-start lg:items-center justify-between'>
             <div className='flex items-center gap-4'>
               <img src='/logo.png' alt='Helhal' width={50} height={50} className='rounded-xl' />
               <div>
-                <h2 className='text-2xl font-extrabold text-gray-900'>Helhal</h2>
-                <p className='text-sm text-gray-600'>{t('footer.description')}</p>
+                <h2 className='text-2xl font-extrabold text-gray-900 dark:text-dark-text-primary'>Helhal</h2>
+                <p className='text-sm text-gray-600 dark:text-dark-text-secondary'>{t('footer.description')}</p>
               </div>
             </div>
 
@@ -255,7 +252,7 @@ export function Footer() {
                   Array.from({ length: 3 }).map((_, idx) => (
                     <div
                       key={idx}
-                      className="w-9 h-9 bg-slate-200 rounded-full animate-pulse"
+                      className="w-9 h-9 bg-slate-200 dark:bg-dark-bg-card rounded-full animate-pulse"
                     />
                   ))
                 ) : SOCIAL_LINKS.map(item => {
@@ -282,7 +279,7 @@ export function Footer() {
 
           {/* Divider */}
           <div className='px-6 md:px-10'>
-            <div className='h-px w-full bg-gradient-to-r from-transparent via-main-100 to-transparent' />
+            <div className='h-px w-full bg-gradient-to-r from-transparent via-main-100 dark:via-dark-border to-transparent' />
           </div>
 
           {/* Links grid */}
@@ -306,7 +303,7 @@ export function Footer() {
 
           {/* Bottom bar */}
           <div className='px-6 md:px-10'>
-            <div className='h-px w-full bg-gradient-to-r from-transparent via-main-100 to-transparent' />
+            <div className='h-px w-full bg-gradient-to-r from-transparent via-main-100 dark:via-dark-border to-transparent' />
           </div>
         </div>
       </div>

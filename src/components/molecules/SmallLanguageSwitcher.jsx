@@ -18,22 +18,26 @@ export default function SmallLanguageSwitcher() {
             disabled={isPending}
             aria-label={isAr ? 'Switch to English' : 'التبديل إلى العربية'}
             title={isAr ? 'Switch to English' : 'التبديل إلى العربية'}
-            // Used your exact Link classes here
-            className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors text-slate-700 group hover:text-main-700`}
+            className={`relative px-3 py-2 text-[15px] font-medium rounded-xl inline-flex items-center gap-1.5 lg:gap-2 transition-colors 
+      /* Light Mode */
+      text-slate-700 hover:text-main-700 
+      /* Dark Mode */
+      dark:text-dark-text-secondary dark:hover:text-main-400
+      group`}
         >
             {/* The Label */}
             <span>{label}</span>
-            <Globe className="h-5 w-5 text-slate-700 group-hover:text-main-700 transition-colors" />
 
-            {/* The Underline (always transparent/inactive for a switcher, 
-                or you can remove the bg-transparent logic if it's just a button) */}
+            <Globe className="h-5 w-5 transition-colors 
+      text-slate-700 group-hover:text-main-700 
+      dark:text-dark-text-secondary dark:group-hover:text-main-400"
+            />
+
             <motion.span
                 layoutId='nav-underline'
                 className="absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full bg-transparent"
                 transition={springy}
             />
-
-            <span className='sr-only'>{isAr ? 'English' : 'العربية'}</span>
         </button>
     );
 }
