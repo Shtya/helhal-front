@@ -21,8 +21,6 @@ import { useValues } from '@/context/GlobalContext';
 import Button from '@/components/atoms/Button';
 import toast from 'react-hot-toast';
 
-
-
 // ========================= PAGE =========================
 export default function ExplorePage() {
 
@@ -548,7 +546,7 @@ export function WhyChoose() {
           {WHY_CHOOSE_ITEMS.map(item => (
             <div key={item.key} className={['flex flex-col rounded-2xl bg-white dark:bg-dark-bg-card border border-main-100/70 dark:border-dark-border', 'px-6 py-8 shadow-sm hover:shadow-main-200/50 dark:hover:shadow-none hover:shadow-lg', 'transition-all duration-200 hover:-translate-y-0.5'].join(' ')}>
               <div className='w-12 h-12 mb-4 relative'>
-                <Image src={item.icon} loader={localImageLoader} alt={t(`whyChoose.items.${item.key}.title`)} fill sizes='48px' className='object-contain' />
+                <Image src={item.icon} loader={localImageLoader} alt={t(`whyChoose.items.${item.key}.title`)} fill sizes='48px' className='object-contain dark:invert' />
               </div>
               <h3 className='text-lg font-semibold mb-1 dark:text-dark-text-primary'>{t(`whyChoose.items.${item.key}.title`)}</h3>
               <p className='text-sm text-gray-700 dark:text-dark-text-secondary'>{t(`whyChoose.items.${item.key}.description`)}</p>

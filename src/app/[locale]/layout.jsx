@@ -108,7 +108,7 @@ export default async function RootLayout({ children, params }) {
 
 
   return (
-    <html data-theme="dark" lang={locale} dir={locale == 'en' ? 'ltr' : 'rtl'} suppressHydrationWarning>
+    <html lang={locale} dir={locale == 'en' ? 'ltr' : 'rtl'} suppressHydrationWarning>
       <body className={`bg-[#fff] dark:bg-dark-bg-base scroll ${arabicSans.variable} ${englishSans.variable}`}>
         <NextIntlClientProvider locale={locale}>
           <Layout>

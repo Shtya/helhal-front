@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransi
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useLocale, useTranslations } from 'next-intl';
-import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard, Globe2, Wrench, Zap, Package, Layers, Banknote } from 'lucide-react';
+import { Mail, ShieldCheck, User as UserIcon, Menu, X, LogOut, Briefcase, Compass, Store, LayoutGrid, Code2, Palette, FilePlus2, ListTree, ClipboardList, FileText, ChevronDown, Bell, User, Settings, CreditCard, UserPlus, DollarSign, MessageCircle, ShoppingCart, CheckCircle2, AlertCircle, ChevronRight, Check, ListChecks, LucideLayoutDashboard, Globe2, Wrench, Zap, Package, Layers, Banknote, Moon, Sun, SunMedium, MoonStar } from 'lucide-react';
 import GlobalSearch from '../atoms/GlobalSearch';
 import { localImageLoader } from '@/utils/helper';
 import { useAuth } from '@/context/AuthContext';
@@ -21,6 +21,7 @@ import SmallLanguageSwitcher from './SmallLanguageSwitcher';
 import { has } from '@/utils/permissions';
 import { PERMISSION_DOMAINS } from '@/constants/permissions';
 
+import { useTheme } from "next-themes";
 /* =========================================================
    Animations
    ========================================================= */
@@ -310,7 +311,7 @@ export default function Header() {
                   </span>
                 )}
               </Link> */}
-
+              <ThemeToggle />
               <NotificationPopup />
 
               <Link href='/cart' aria-label='Cart' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card'>
@@ -337,6 +338,7 @@ export default function Header() {
               <div className=' max-lg:hidden'>
                 <SmallLanguageSwitcher />
               </div>
+              <ThemeToggle />
               <div className='order-3'>
                 <MobileToggle toggleMobileNav={toggleMobileNav} isMobileNavOpen={isMobileNavOpen} />
               </div>
@@ -354,7 +356,7 @@ export default function Header() {
 const MobileToggle = ({ toggleMobileNav, isMobileNavOpen }) => {
   return (
     <motion.button onClick={toggleMobileNav} className='lg:hidden p-2 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
-      {isMobileNavOpen ? <X className='w-6 h-6' strokeWidth={1.5} /> : <Menu className='w-6 h-6' />}
+      {isMobileNavOpen ? <X className='w-6 h-6  dark:invert' strokeWidth={1.5} /> : <Menu className='w-6 h-6 dark:invert' />}
     </motion.button>
 
   )
@@ -418,7 +420,7 @@ const AvatarDropdown = ({ user, navItems, onLogout }) => {
 
             <Divider className='!my-0' />
 
-            <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-4 py-3 text-sm text-red-600 bg-red-50 transition-colors' disabled={isLogoutLoading}>
+            <motion.button onClick={handleLogout} className='flex items-center gap-2 w-full px-4 py-3 text-sm text-red-600 bg-red-50 hover:bg-red-100   dark:text-red-400 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border dark:border-red-500/20 transition-colors' disabled={isLogoutLoading}>
               <LogOut size={16} />
               {isLogoutLoading ? tHeader('userMenu.loggingOut') : tHeader('userMenu.logout')}
             </motion.button>
@@ -692,41 +694,64 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
   const { chip } = roleStyles[role] || roleStyles.member;
   const locale = useLocale();
   const searchParams = useSearchParams();
-  const { isPending, toggleLocale } = useLangSwitcher()
+  const { isPending, toggleLocale } = useLangSwitcher();
 
   return (
     <AnimatePresence>
       {open && (
         <>
           {/* Overlay */}
-          <motion.button type='button' onClick={onClose} className='fixed inset-0 z-30 lg:hidden bg-slate-900/60 backdrop-blur-[12px]' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+          <motion.button
+            type='button'
+            onClick={onClose}
+            className='fixed inset-0 z-30 lg:hidden bg-slate-900/60 backdrop-blur-[12px]'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
 
-          {/* Drawer */}
-          <motion.div role='dialog' aria-modal='true' aria-label='Mobile navigation' initial={{ x: '100%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '100%', opacity: 0 }} transition={{ type: 'spring', stiffness: 280, damping: 26 }} className='fixed inset-y-0 right-0 z-40 lg:hidden h-screen'>
-            <motion.div drag='x' dragConstraints={{ left: -80, right: 0 }} dragElastic={0.04} onDragEnd={(_, info) => info.offset.x > 80 && onClose()} className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 dark:border-dark-border bg-white/90 dark:bg-dark-bg-input shadow-2xl backdrop-blur supports-[backdrop-filter]:bg-white/100 dark:supports-[backdrop-filter]:bg-dark-bg-input'>
+          {/* Drawer Container */}
+          <motion.div
+            role='dialog'
+            aria-modal='true'
+            aria-label='Mobile navigation'
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+            className='fixed inset-y-0 right-0 z-40 lg:hidden h-screen'
+          >
+            <motion.div
+              drag='x'
+              dragConstraints={{ left: -80, right: 0 }}
+              dragElastic={0.04}
+              onDragEnd={(_, info) => info.offset.x > 80 && onClose()}
+              className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-2xl transition-colors'
+            >
               {/* Header */}
               <div className='relative px-4 pt-4 pb-3'>
-                <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-main-50/70 to-transparent pointer-events-none' />
+                <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-main-50/20 dark:from-main-900/10 to-transparent pointer-events-none' />
                 <div className='relative flex items-center justify-between'>
                   <span className='text-sm font-semibold text-slate-700 dark:text-dark-text-primary'>{tHeader('userMenu.menu')}</span>
-                  <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-dark-bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-main-400' aria-label='Close' autoFocus>
+                  <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-dark-bg-card transition-colors'>
                     <X className='h-5 w-5 text-slate-600 dark:text-dark-text-primary' />
                   </button>
                 </div>
               </div>
 
-              {/* Quick profile */}
-
+              {/* Profile Section */}
               {user && (
-                <div className='px-4 pe-6 pb-3 flex items-center gap-3'>
-                  <motion.div whileHover={{ rotate: 4 }} transition={{ type: 'spring', stiffness: 280, damping: 18 }}>
-                    <Img src={user.profileImage} altSrc={'/images/placeholder-avatar.png'} alt={`avatar`} width={44} height={44} className='rounded-full object-cover border border-slate-200 shadow-sm h-11 w-11' />
-                  </motion.div>
+                <div className='px-4 pe-6 pb-4 flex items-center gap-3'>
+                  <Img
+                    src={user.profileImage}
+                    altSrc={'/images/placeholder-avatar.png'}
+                    width={44} height={44}
+                    className='rounded-full object-cover border border-slate-200 dark:border-dark-border shadow-sm h-11 w-11'
+                  />
                   <div className='min-w-0'>
                     <p className='text-sm text-slate-900 dark:text-dark-text-primary font-medium truncate'>{user.username || tHeader('userMenu.user')}</p>
-                    <p className='text-xs text-slate-500 dark:text-dark-text-primary truncate'>{user.email}</p>
-                    {/* <span className='text-[11px] mt-1 inline-block px-2 py-0.5 bg-main-100 text-main-800 rounded-full capitalize'>{user.role || tHeader('userMenu.member')}</span> */}
-                    <span className={`text-[11px] inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${chip}`} title={`Role: ${role}`}>
+                    <p className='text-xs text-slate-500 dark:text-dark-text-secondary truncate'>{user.email}</p>
+                    <span className={`text-[11px] mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-full capitalize ${chip}`}>
                       <UserIcon className='h-3.5 w-3.5' />
                       {role}
                     </span>
@@ -735,125 +760,125 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
               )}
 
               <Divider className='!my-0' />
+
+              {/* Related Users (Logic Preserved) */}
               <RelatedUsers onClose={onClose} user={user} />
-              {/* Primary links */}
-              <motion.nav variants={stagger} initial='hidden' animate='show' className='flex flex-col px-2 py-2'>
-                {navLinks.map(link => {
-                  // Check if we should use the Accordion/Dropdown style
+
+              {/* Primary Nav Links */}
+              <motion.nav className='flex flex-col px-2 py-2'>
+                {navLinks.map((link) => {
                   const showAsDropdown = link.useMegaMenu || (link.children && link.children.length > 0);
 
+                  if (showAsDropdown) {
+                    return (
+                      <MobileServicesMenu
+                        key={link.label}
+                        label={link.label}
+                        icon={link.icon}
+                        topCategories={link.useMegaMenu ? topCategories : link.children}
+                        loadingTopCategories={link.useMegaMenu ? loadingTopCategories : false}
+                        locale={locale}
+                        onClose={onClose}
+                        pathname={pathname}
+                      />
+                    );
+                  }
+
+                  // Single Link Logic
+                  const c = link;
+                  const fullChildHref = c.query ? `${c.href}?${c.query}` : c.href;
+                  let isChildActive = false;
+                  if (c.query) {
+                    const [key, value] = c.query.split('=');
+                    isChildActive = pathname === c.href && searchParams.get(key) === value;
+                  } else {
+                    isChildActive = pathname === c.href || pathname.startsWith(c.href + '/');
+                  }
+
                   return (
-                    <motion.div key={link.label + (link.href || '')} variants={fadeIn}>
-                      {showAsDropdown ? (
-                        // --- CASE 1: Mega Menu or Dropdown Children ---
-                        <MobileServicesMenu
-                          label={link.label}
-                          icon={link.icon}
-                          // Pass global categories if it's a mega menu, otherwise pass the specific link's children
-                          topCategories={link.useMegaMenu ? topCategories : link.children}
-                          loadingTopCategories={link.useMegaMenu ? loadingTopCategories : false}
-                          locale={locale}
-                          onClose={onClose}
-                          pathname={pathname}
-                        />
-                      ) : (
-                        // --- CASE 2: Single Direct Link ---
-                        (() => {
-                          // We alias 'link' to 'c' to match your provided snippet perfectly
-                          const c = link;
-
-                          // 1. Construct the full URL for the child
-                          const fullChildHref = c.query ? `${c.href}?${c.query}` : c.href;
-
-                          // 2. Determine if the child is active
-                          let isChildActive = false;
-                          if (c.query) {
-                            const [key, value] = c.query.split('=');
-                            isChildActive = pathname === c.href && searchParams.get(key) === value;
-                          } else {
-                            isChildActive = pathname === c.href || pathname.startsWith(c.href + '/');
-                          }
-
-                          return (
-                            <Link
-                              key={c.label + fullChildHref}
-                              href={fullChildHref}
-                              onClick={onClose}
-                              className={`relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-[15px] transition-colors 
-    ${isChildActive
-                                  ? 'bg-main-50 text-main-700 dark:bg-main-500/10 dark:text-main-400 font-semibold'
-                                  : 'text-slate-700 hover:bg-slate-50 dark:text-dark-text-secondary dark:hover:bg-dark-bg-card dark:hover:text-dark-text-primary'
-                                }`}
-                            >
-                              <span className={isChildActive
-                                ? 'text-main-700 dark:text-main-400'
-                                : 'text-slate-700 dark:text-dark-text-secondary transition-colors'
-                              }>
-                                {c.icon}
-                              </span>
-                              {c.label}
-                            </Link>
-                          );
-                        })()
-                      )}
-                    </motion.div>
+                    <Link
+                      key={c.label + fullChildHref}
+                      href={fullChildHref}
+                      onClick={onClose}
+                      className={`relative flex items-center gap-2 px-4 py-2 text-[15px] rounded-lg transition-colors 
+                        ${isChildActive
+                          ? 'text-main-700 bg-main-50 dark:bg-main-900/20 dark:text-main-400 font-semibold'
+                          : 'text-slate-700 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card'
+                        }`}
+                    >
+                      <span className={isChildActive ? 'text-main-700 dark:text-main-400' : 'text-slate-500 dark:text-dark-text-secondary'}>
+                        {c.icon}
+                      </span>
+                      {c.label}
+                    </Link>
                   );
                 })}
               </motion.nav>
+
               <Divider className='!my-0' />
 
-              {/* Secondary (role) */}
+              {/* Secondary Role Items */}
               {user && (
-                <nav className='py-1 mx-2'>
+                <nav className='py-2 px-2'>
                   {navItems.map((item, index) => {
-                    if (item.divider) return <Divider key={`divider-${index}`} className='!my-0' />;
-                    if (item.mobile != undefined && !item.mobile) return null;
+                    if (item.divider) return <Divider key={`divider-${index}`} className='!my-1' />;
+                    if (item.mobile === false) return null;
+
+                    const isActive = pathname.startsWith(item.href);
+
                     return (
-                      <motion.div key={index} initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: index * 0.05 }}>
-                        <Link href={item.href} onClick={onClose} className={`group flex items-center gap-2 px-2 py-2 text-[16px] font-medium rounded-lg transition ${pathname.startsWith(item.href) ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-800 hover:bg-slate-100'}`}>
+                      <Link
+                        key={index}
+                        href={item.href}
+                        onClick={onClose}
+                        className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors 
+                          ${isActive
+                            ? 'text-main-700 bg-main-50 dark:bg-main-900/20 dark:text-main-400 font-semibold'
+                            : 'text-slate-700 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card'
+                          }`}
+                      >
+                        <span className={isActive ? 'text-main-700 dark:text-main-400' : 'text-slate-500 dark:text-dark-text-secondary'}>
                           {item.icon}
-                          <span className='truncate'>{item.label}</span>
-                        </Link>
-                      </motion.div>
+                        </span>
+                        <span className='truncate'>{item.label}</span>
+                      </Link>
                     );
                   })}
                 </nav>
               )}
 
               <Divider className='!my-0' />
+
               {/* Language Switcher */}
-              <div className='mx-2'>
+              <div className='px-2 py-2'>
                 <motion.button
                   onClick={toggleLocale}
                   disabled={isPending}
-                  className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm text-slate-800 hover:text-main-700 hover:bg-main-50 rounded-lg transition-colors'
+                  className='flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card rounded-lg transition-colors'
                   whileTap={{ scale: 0.98 }}
-                  aria-label={locale === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'}
                 >
-                  <Globe2 size={16} />
+                  <Globe2 size={16} className="text-slate-500 dark:text-dark-text-secondary" />
                   <span>{locale === 'ar' ? 'English' : 'العربية'}</span>
                 </motion.button>
               </div>
 
-              {/* Logout */}
+              {/* Logout Button */}
               {user && (
-                <div className='mx-2'>
+                <div className='px-2 pb-6'>
                   <motion.button
                     onClick={onLogout}
-                    className='flex items-center gap-2 w-full px-2 my-2 py-2 text-sm font-semibold rounded-lg transition-all
-        /* Light Mode: Classic Red */
-        text-red-600 bg-red-50 hover:bg-red-100 
-        /* Dark Mode: "Luminous" Red */
-        dark:text-red-400 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border dark:border-red-500/20'
                     disabled={isLogoutLoading}
                     whileTap={{ scale: 0.98 }}
+                    className='flex items-center gap-2 w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors
+                      text-red-600 bg-red-50 hover:bg-red-100 
+                      dark:text-red-400 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border dark:border-red-500/20'
                   >
                     <LogOut size={16} />
                     {isLogoutLoading ? tHeader('userMenu.loggingOut') : tHeader('userMenu.logout')}
                   </motion.button>
                 </div>
               )}
-              <div className='h-[max(12px,env(safe-area-inset-bottom))]' />
+              <div className='h-[env(safe-area-inset-bottom)]' />
             </motion.div>
           </motion.div>
         </>
@@ -884,11 +909,13 @@ function MobileCollapsible({ label, icon, children }) {
   );
 }
 
+/* =========================================================
+   MobileServicesMenu: Updated for Dark Mode
+   ========================================================= */
 function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, locale, onClose, pathname }) {
   const [open, setOpen] = useState(false);
 
   const getCategoryName = (category) => {
-    // Fallback to 'label' if name_ar/en are missing (handling standard links)
     if (category.label) return category.label;
     return locale === 'ar' ? (category?.name_ar || category?.name_en || '') : (category?.name_en || category?.name_ar || '');
   };
@@ -902,25 +929,42 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
 
   return (
     <div className='px-1'>
-      <button onClick={() => setOpen(o => !o)} className={`w-full flex items-center justify-between gap-2 px-2 py-2 rounded-lg text-[16px] font-medium ${open ? 'bg-main-50 text-main-700 ring-1 ring-main-200' : 'text-slate-700 hover:bg-slate-100'}`}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-[16px] font-medium transition-all
+          ${open
+            ? 'bg-main-50 text-main-700 ring-1 ring-main-200 dark:bg-main-900/20 dark:text-main-400 dark:ring-main-500/30'
+            : 'text-slate-700 dark:text-dark-text-primary hover:bg-slate-100 dark:hover:bg-dark-bg-card'
+          }`}
+      >
         <span className='inline-flex items-center gap-2'>
-          {icon}
+          <span className={open ? 'text-main-700 dark:text-main-400' : 'text-slate-500 dark:text-dark-text-secondary'}>
+            {icon}
+          </span>
           {label}
         </span>
-        <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
       </button>
+
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className='overflow-hidden px-1'>
-            <div className='py-1 space-y-1'>
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className='overflow-hidden px-1'
+          >
+            <div className='py-2 space-y-1'>
               {loadingTopCategories ? (
-                <div className='space-y-2 px-3'>
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className='h-4 bg-slate-200 rounded animate-pulse' />
+                <div className='space-y-3 px-3 py-2'>
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className='h-4 bg-slate-200 dark:bg-dark-bg-card rounded animate-pulse w-full' />
                   ))}
                 </div>
               ) : !categoriesToShow || categoriesToShow.length === 0 ? (
-                <div className='px-3 py-2 text-sm text-slate-500'>No categories available</div>
+                <div className='px-3 py-2 text-sm text-slate-500 dark:text-dark-text-secondary italic'>
+                  No categories available
+                </div>
               ) : (
                 categoriesToShow.map(category => {
                   const categoryName = getCategoryName(category);
@@ -949,40 +993,52 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
   );
 }
 
+/* =========================================================
+   MobileCategoryItem: Updated for Dark Mode
+   ========================================================= */
 function MobileCategoryItem({ category, categoryName, children, hasChildren, getSubcategoryName, onClose, pathname }) {
   const [open, setOpen] = useState(false);
 
-  // Update logic: Handle both 'slug' (services) and direct 'href' (standard links)
   const categoryLink = category.href ? category.href : `/services/${encodeURIComponent(category?.slug || '')}`;
   const isActive = pathname === categoryLink || pathname.startsWith(categoryLink + '/');
 
   return (
-    <div>
-      <div className='flex items-center justify-between gap-2'>
+    <div className="group/item">
+      <div className='flex items-center justify-between gap-1'>
         <Link
           href={categoryLink}
           onClick={onClose}
-          className={`flex-1 px-3 py-2 rounded-lg text-[15px] transition ${isActive ? 'bg-main-50 text-main-700 font-medium' : 'text-slate-700 hover:bg-main-50 hover:text-main-700'}`}
+          className={`flex-1 px-3 py-2 rounded-lg text-[15px] transition-colors
+            ${isActive
+              ? 'bg-main-50/70 text-main-700 font-semibold dark:bg-main-900/10 dark:text-main-400'
+              : 'text-slate-700 dark:text-dark-text-primary hover:bg-main-50 dark:hover:bg-dark-bg-card hover:text-main-700 dark:hover:text-main-400'
+            }`}
         >
           {categoryName || 'Unnamed Category'}
         </Link>
+
         {hasChildren && (
           <button
             onClick={() => setOpen(o => !o)}
-            className='px-2 py-2 text-slate-600 hover:text-main-700'
+            className='p-2 text-slate-500 dark:text-dark-text-secondary hover:text-main-700 dark:hover:text-main-400 transition-colors'
           >
-            <ChevronDown className={`h-4 w-4 transition ${open ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
           </button>
         )}
       </div>
+
       {hasChildren && (
         <AnimatePresence initial={false}>
           {open && (
-            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className='overflow-hidden'>
-              <ul className='pl-4 space-y-1'>
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className='overflow-hidden'
+            >
+              <ul className='mt-1 ml-4 rtl:ml-0 rtl:mr-4 border-l border-slate-100 dark:border-dark-border space-y-1'>
                 {children.map(subcategory => {
                   const subcategoryName = getSubcategoryName(subcategory);
-                  // Update logic: Handle both 'slug' and direct 'href'
                   const subLink = subcategory.href ? subcategory.href : `/services/${encodeURIComponent(subcategory?.slug || '')}`;
                   const isSubActive = pathname === subLink || pathname.startsWith(subLink + '/');
 
@@ -991,7 +1047,11 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
                       <Link
                         href={subLink}
                         onClick={onClose}
-                        className={`block px-3 py-2 rounded-lg text-[14px] transition ${isSubActive ? 'bg-main-50 text-main-700 font-medium' : 'text-slate-600 hover:bg-main-50 hover:text-main-700'}`}
+                        className={`block px-4 py-2 rounded-lg text-[14px] transition-colors
+                          ${isSubActive
+                            ? 'text-main-700 dark:text-main-400 font-medium'
+                            : 'text-slate-600 dark:text-dark-text-secondary hover:text-main-700 dark:hover:text-main-400 hover:bg-slate-50 dark:hover:bg-dark-bg-card'
+                          }`}
                       >
                         {subcategoryName || 'Unnamed Subcategory'}
                       </Link>
@@ -1169,3 +1229,33 @@ function RelatedUsers({ user, onClose }) {
 
 
 
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  useEffect(() => {
+    // On mount, read the theme from the <html> tag (which was set by our blocking script)
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    setTheme(currentTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+  };
+
+
+  return (
+    <motion.button
+      onClick={toggleTheme}
+      whileTap={{ scale: 0.96 }}
+      className='relative inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500'
+      aria-label='Toggle Theme'
+    >
+      {theme === 'light' ? (
+        <MoonStar className='h-5 w-5 text-slate-700' />
+      ) : (
+        <SunMedium className='h-5 w-5 text-yellow-400' />
+      )}
+    </motion.button>
+  );
+}

@@ -8,10 +8,11 @@ import ConfigAos from '@/config/Aos';
 import { ProgressProvider } from '@bprogress/next/app';
 import { AuthProvider } from '@/context/AuthContext';
 import { useAuthInterceptor } from '@/hooks/useAuthInterceptor';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { SocketProvider } from '@/context/SocketContext';
 import ChatbotWrapper from './chatbot/ChatbotWrapper';
+import { ThemeProvider } from 'next-themes';
 
 export default function Layout({ children, params }) {
 
@@ -32,27 +33,29 @@ export default function Layout({ children, params }) {
   return (
     <AuthProvider>
       <NotificationProvider>
-        <SocketProvider>
-          <GlobalProvider>
-            <AuthInterceptorWrapper>
-              <ProgressProvider
-                height="2px"
-                color="#0070f3"
-                options={{ showSpinner: false }}
-                shallowRouting
-              >
-                {!isAuthRoute && <Header />}
-                <div className='  ' >
-                  {children}
-                  <ChatbotWrapper />
-                </div>
-                {!isAuthRoute && <Footer />}
-                <ConfigAos />
-                <Toaster position='top-center' />
-              </ProgressProvider>
-            </AuthInterceptorWrapper>
-          </GlobalProvider>
-        </SocketProvider>
+        <ThemeProvider enableSystem>
+          <SocketProvider>
+            <GlobalProvider>
+              <AuthInterceptorWrapper>
+                <ProgressProvider
+                  height="2px"
+                  color="#0070f3"
+                  options={{ showSpinner: false }}
+                  shallowRouting
+                >
+                  {!isAuthRoute && <Header />}
+                  <div className='  ' >
+                    {children}
+                    <ChatbotWrapper />
+                  </div>
+                  {!isAuthRoute && <Footer />}
+                  <ConfigAos />
+                  <Toaster position='top-center' />
+                </ProgressProvider>
+              </AuthInterceptorWrapper>
+            </GlobalProvider>
+          </SocketProvider>
+        </ThemeProvider>
       </NotificationProvider>
     </AuthProvider>
   );

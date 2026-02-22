@@ -40,7 +40,7 @@
   /* Subtitles and muted text */
 }
 
-:root[data-theme="dark"] {
+[data-theme="dark"] {
   /* Slightly brighter + softer blue for dark backgrounds */
   --main: #4f8cff;
   --secondary: #e5e7eb;
@@ -48,7 +48,7 @@
 }
 
 
-:root[data-theme="dark"] img {
+[data-theme="dark"] img {
   color: var(--color-dark-text-primary);
   font-size: 0.875rem;
   text-align: center;
