@@ -33,7 +33,7 @@ import {
 
 const Page = () => {
 	return (
-		<div className="bg-white">
+		<div className="bg-white dark:bg-dark-bg-base">
 			<Hero />
 			<StatsStrip />
 			<WhyChoose />
@@ -67,46 +67,49 @@ function Section({
 	return (
 		<section
 			className={[
-				"relative overflow-hidden",
-				withDividerTop ? "border-t border-main-100/70" : "",
-				isTint ? "bg-gradient-to-b from-main-50/70 via-white to-white" : "bg-white",
+				"relative overflow-hidden transition-colors duration-300",
+				// Uses your specific dark-border
+				withDividerTop ? "border-t border-main-100/70 dark:border-dark-border" : "",
+				// Uses dark-bg-base and dark:bg-none to force out the light mode gradient
+				isTint
+					? "bg-gradient-to-b from-main-50/70 via-white to-white dark:bg-none dark:bg-dark-bg-base"
+					: "bg-white dark:bg-dark-bg-base",
 				className
 			].join(" ")}
 		>
-			{/* unified background accents */}
+			{/* Background Accents - Keep these very subtle for the dark-bg-base */}
 			<div className="pointer-events-none absolute inset-0">
 				{isTint ? (
 					<>
-						<div className="absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-main-400/14 blur-3xl" />
-						<div className="absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-teal-400/12 blur-3xl" />
-						<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.10),transparent_55%)]" />
+						<div className="absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-main-400/14 dark:bg-main-500/5 blur-3xl" />
+						<div className="absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-teal-400/12 dark:bg-teal-500/5 blur-3xl" />
 					</>
 				) : (
 					<>
-						<div className="absolute -top-28 -left-28 h-80 w-80 rounded-full bg-main-400/8 blur-3xl" />
-						<div className="absolute -bottom-24 right-1/3 h-72 w-72 rounded-full bg-teal-400/8 blur-3xl" />
+						<div className="absolute -top-28 -left-28 h-80 w-80 rounded-full bg-main-400/8 dark:bg-white/5 blur-3xl" />
+						<div className="absolute -bottom-24 right-1/3 h-72 w-72 rounded-full bg-teal-400/8 dark:bg-white/5 blur-3xl" />
 					</>
 				)}
 			</div>
 
-			<div className="relative container !px-4 sm:!px-6 lg:!px-8 !py-12 md:!py-16">
+			<div className="relative container mx-auto !px-4 sm:!px-6 lg:!px-8 !py-12 md:!py-16">
 				<div className="mx-auto max-w-6xl">
 					<div className="mb-10 text-center">
-						{eyebrow ? (
-							<div className="mx-auto mb-3 inline-flex items-center rounded-full border border-main-200/60 bg-main-50 px-4 py-1 text-xs font-semibold text-main-900/90">
+						{eyebrow && (
+							<div className="mx-auto mb-3 inline-flex items-center rounded-full border border-main-200/60 bg-main-50 px-4 py-1 text-xs font-semibold text-main-900/90 dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-secondary">
 								{eyebrow}
 							</div>
-						) : null}
+						)}
 
-						<h2 className="text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+						<h2 className="text-2xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-dark-text-primary">
 							{title}
 						</h2>
 
-						{description ? (
-							<p className="mx-auto mt-3 max-w-2xl text-base md:text-lg text-slate-600">
+						{description && (
+							<p className="mx-auto mt-3 max-w-2xl text-base md:text-lg text-slate-600 dark:text-dark-text-secondary">
 								{description}
 							</p>
-						) : null}
+						)}
 					</div>
 
 					{children}
@@ -120,8 +123,8 @@ function Card({ children, className = "" }) {
 	return (
 		<div
 			className={[
-				"group rounded-3xl border border-main-100/70 bg-white/80 backdrop-blur",
-				"shadow-[0_10px_35px_-25px_rgba(2,6,23,0.35)] hover:shadow-[0_25px_60px_-40px_rgba(2,6,23,0.55)]",
+				"group rounded-3xl border border-main-100/70 dark:border-dark-border bg-white/80 dark:bg-dark-bg-card/80 backdrop-blur",
+				"shadow-[0_10px_35px_-25px_rgba(2,6,23,0.35)] dark:shadow-none",
 				"transition-all duration-200 hover:-translate-y-0.5",
 				className
 			].join(" ")}
@@ -130,7 +133,6 @@ function Card({ children, className = "" }) {
 		</div>
 	);
 }
-
 /* ---------------------------------- Hero ---------------------------------- */
 
 export function Hero() {
@@ -368,10 +370,14 @@ function StatCard({ item, index, start }) {
 			transition={{ delay: index * 0.06, duration: 0.5, ease: "easeOut" }}
 			className="group relative rounded-3xl p-[1px]"
 		>
-			<div className="absolute inset-0 rounded-3xl bg-[linear-gradient(120deg,rgba(16,185,129,0.55),rgba(45,212,191,0.45),rgba(59,130,246,0.35))] opacity-70 blur-[0.2px] transition-opacity group-hover:opacity-100" />
-			<div className="absolute -inset-6 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.22),transparent_55%)] opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
+			{/* Outer Border Gradient - Adjusted for Dark Mode depth */}
+			<div className="absolute inset-0 rounded-3xl bg-[linear-gradient(120deg,rgba(16,185,129,0.4),rgba(45,212,191,0.3),rgba(59,130,246,0.2))] dark:bg-[linear-gradient(120deg,rgba(16,185,129,0.6),rgba(45,212,191,0.5),rgba(59,130,246,0.4))] opacity-70 blur-[0.2px] transition-opacity group-hover:opacity-100" />
 
-			<div className="relative rounded-3xl bg-white/70 backdrop-blur-xl px-6 py-7 shadow-[0_10px_30px_-18px_rgba(2,6,23,0.35)] ring-1 ring-main-100/70">
+			{/* Hover Radial Glow */}
+			<div className="absolute -inset-6 rounded-[32px] bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.15),transparent_55%)] dark:bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.25),transparent_60%)] opacity-0 blur-2xl transition-opacity group-hover:opacity-100" />
+
+			{/* Card Body - Glassmorphism */}
+			<div className="relative h-full rounded-3xl bg-white/70 dark:bg-dark-bg-card/60 backdrop-blur-xl px-6 py-7 shadow-[0_10px_30px_-18px_rgba(2,6,23,0.35)] dark:shadow-none ring-1 ring-main-100/70 dark:ring-white/10">
 				<div className="absolute rtl:left-5 ltr:right-5 top-5 opacity-0 transition-opacity group-hover:opacity-100">
 					<Sparkles className="h-5 w-5 text-main-500/80" />
 				</div>
@@ -379,28 +385,29 @@ function StatCard({ item, index, start }) {
 				<div className="flex items-center gap-4">
 					<div className="relative">
 						<div className="absolute inset-0 rounded-2xl bg-main-500/20 blur-xl" />
-						<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 ring-1 ring-main-200/70">
-							<Icon className="h-6 w-6 text-main-700" />
+						<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 dark:from-main-500/25 dark:to-teal-500/20 ring-1 ring-main-200/70 dark:ring-main-500/40">
+							<Icon className="h-6 w-6 text-main-700 dark:text-main-400" />
 						</div>
 					</div>
 
 					<div className="min-w-0">
 						<div className="flex items-baseline gap-2">
-							<div className=" text-nowrap text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900">
+							<div className="text-nowrap text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-dark-text-primary">
 								{display}
 							</div>
-							<span className="hidden md:inline text-xs font-semibold text-main-700/80 bg-main-50 px-2 py-1 rounded-full ring-1 ring-main-200/70">
+							<span className="hidden md:inline text-[10px] font-bold text-main-700/80 dark:text-main-300 bg-main-50 dark:bg-main-500/20 px-2 py-0.5 rounded-full ring-1 ring-main-200/70 dark:ring-main-500/30 uppercase tracking-wider">
 								{t("verified")}
 							</span>
 						</div>
 
-						<div className="mt-1 text-sm font-medium text-slate-600">
+						<div className="mt-1 text-sm font-medium text-slate-600 dark:text-dark-text-secondary">
 							{t(`items.${item.key}.label`)}
 						</div>
 					</div>
 				</div>
 
-				<div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-main-200/70 to-transparent" />
+				{/* Decorative Divider Line */}
+				<div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-main-200/70 dark:via-main-500/30 to-transparent" />
 			</div>
 		</motion.div>
 	);
@@ -427,11 +434,11 @@ export function StatsStrip() {
 			eyebrow={t("badge")}
 			title={t("title")}
 			description={t("description")}
-			variant="tint"
+			variant="tint" // Section component likely handles dark:bg-dark-bg-subtle
 			withDividerTop
-			className="!py-0"
+			className="!py-16 dark:bg-dark-bg-subtle"
 		>
-			<div ref={ref} className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+			<div ref={ref} className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
 				{items.map((it, i) => (
 					<StatCard key={it.key} item={it} index={i} start={inView} />
 				))}
@@ -474,24 +481,27 @@ export function WhyChoose() {
 							transition={{ delay: i * 0.06, duration: 0.45, ease: "easeOut" }}
 							className="group"
 						>
-							<Card className="relative overflow-hidden p-6">
+							<Card className="relative h-full overflow-hidden p-6 border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-card transition-colors hover:border-main-500/50">
+								{/* Hover Gradient Glow */}
 								<div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100">
-									<div className="absolute -inset-10 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.16),transparent_55%)] blur-2xl" />
+									<div className="absolute -inset-10 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.12),transparent_55%)] dark:bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.2),transparent_55%)] blur-2xl" />
 								</div>
 
 								<div className="relative flex items-start gap-4">
-									<div className="relative">
+									{/* Icon Container */}
+									<div className="relative flex-shrink-0">
 										<div className="absolute inset-0 rounded-2xl bg-main-500/20 blur-xl" />
-										<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 ring-1 ring-main-200/70">
-											<Icon className="h-6 w-6 text-main-700" />
+										<div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 dark:from-main-500/25 dark:to-teal-500/20 ring-1 ring-main-200/70 dark:ring-main-500/40">
+											<Icon className="h-6 w-6 text-main-700 dark:text-main-400" />
 										</div>
 									</div>
 
+									{/* Content */}
 									<div className="min-w-0">
-										<h3 className="text-base md:text-lg font-extrabold tracking-tight text-slate-900">
+										<h3 className="text-base md:text-lg font-extrabold tracking-tight text-slate-900 dark:text-dark-text-primary">
 											{t(`whyChoose.items.${item.key}.title`)}
 										</h3>
-										<p className="mt-2 text-sm text-slate-600 leading-relaxed">
+										<p className="mt-2 text-sm text-slate-600 dark:text-dark-text-secondary leading-relaxed">
 											{t(`whyChoose.items.${item.key}.description`)}
 										</p>
 									</div>
@@ -518,28 +528,36 @@ function getTooltipPlacement(pos) {
 	const isLeft = left <= 25;
 	const isRight = left >= 75;
 
-	// Default: below
-	let cls = "top-full mt-3 left-1/2 -translate-x-1/2";
+	/**
+	 * BASE STYLES for Dark Mode Tooltips:
+	 * - Light: bg-slate-900 text-white
+	 * - Dark: dark:bg-dark-bg-card dark:text-dark-text-primary dark:ring-1 dark:ring-white/10
+	 */
+	const baseClasses = "absolute z-50 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-bold shadow-xl transition-all pointer-events-none ";
+	const darkTheme = "bg-slate-900 text-white dark:bg-dark-bg-input dark:text-dark-text-primary dark:ring-1 dark:ring-white/20 ";
 
-	// If near top -> put below (already)
-	if (isTop) cls = "top-full mt-3 left-1/2 -translate-x-1/2";
+	// Default: below
+	let posCls = "top-full mt-3 left-1/2 -translate-x-1/2";
+
+	// If near top -> put below
+	if (isTop) posCls = "top-full mt-3 left-1/2 -translate-x-1/2";
 
 	// If near bottom -> put above
-	if (isBottom) cls = "bottom-full mb-3 left-1/2 -translate-x-1/2";
+	if (isBottom) posCls = "bottom-full mb-3 left-1/2 -translate-x-1/2";
 
 	// If strong left -> put right side
-	if (isLeft) cls = "left-full ms-3 top-1/2 -translate-y-1/2";
+	if (isLeft) posCls = "left-full ms-3 top-1/2 -translate-y-1/2";
 
 	// If strong right -> put left side
-	if (isRight) cls = "right-full me-3 top-1/2 -translate-y-1/2";
+	if (isRight) posCls = "right-full me-3 top-1/2 -translate-y-1/2";
 
-	// Handle corners: prefer vertical placement to avoid going offscreen
-	if (isTop && isLeft) cls = "top-full mt-3 left-1/2 -translate-x-1/2";
-	if (isTop && isRight) cls = "top-full mt-3 left-1/2 -translate-x-1/2";
-	if (isBottom && isLeft) cls = "bottom-full mb-3 left-1/2 -translate-x-1/2";
-	if (isBottom && isRight) cls = "bottom-full mb-3 left-1/2 -translate-x-1/2";
+	// Handle corners: prefer vertical placement to avoid horizontal overflow
+	if (isTop && isLeft) posCls = "top-full mt-3 left-0 translate-x-0";
+	if (isTop && isRight) posCls = "top-full mt-3 right-0 translate-x-0";
+	if (isBottom && isLeft) posCls = "bottom-full mb-3 left-0 translate-x-0";
+	if (isBottom && isRight) posCls = "bottom-full mb-3 right-0 translate-x-0";
 
-	return cls;
+	return baseClasses + darkTheme + posCls;
 }
 
 function getTooltipArrow(pos) {
@@ -551,22 +569,18 @@ function getTooltipArrow(pos) {
 	const isLeft = left <= 25;
 	const isRight = left >= 75;
 
-	// arrow is a small rotated square
-	// Default arrow (pointing up from tooltip to node): place at top center
 	let arrow = "left-1/2 -translate-x-1/2 -top-1";
 
-	if (isTop) arrow = "left-1/2 -translate-x-1/2 -top-1"; // tooltip below node
-	if (isBottom) arrow = "left-1/2 -translate-x-1/2 -bottom-1"; // tooltip above node
-	if (isLeft) arrow = "-left-1 top-1/2 -translate-y-1/2"; // tooltip right of node
-	if (isRight) arrow = "-right-1 top-1/2 -translate-y-1/2"; // tooltip left of node
+	if (isTop) arrow = "left-1/2 -translate-x-1/2 -top-1";
+	if (isBottom) arrow = "left-1/2 -translate-x-1/2 -bottom-1";
+	if (isLeft) arrow = "-left-1 top-1/2 -translate-y-1/2";
+	if (isRight) arrow = "-right-1 top-1/2 -translate-y-1/2";
 
-	// corners -> vertical arrow
 	if ((isTop && isLeft) || (isTop && isRight)) arrow = "left-1/2 -translate-x-1/2 -top-1";
 	if ((isBottom && isLeft) || (isBottom && isRight)) arrow = "left-1/2 -translate-x-1/2 -bottom-1";
 
 	return arrow;
 }
-
 
 export function CustomFeatures() {
 	const t = useTranslations("freelance.customFeatures");
@@ -587,14 +601,13 @@ export function CustomFeatures() {
 	const activeItem = FEATURES.find((f) => f.key === active) ?? FEATURES[0];
 	const ActiveIcon = activeItem.icon;
 
-	// orbit positions (percent-based so it scales responsively)
 	const POS = [
-		{ top: "3%", left: "50%", cn: "top-[0] left-[50%] translate-x-[-50%] " },   // top
-		{ top: "25%", left: "86%", cn: "top-[25%] left-[86%] " },  // top-right
-		{ top: "68%", left: "88%", cn: "top-[68%] left-[85%] " },  // bottom-right
-		{ top: "92%", left: "50%", cn: "top-[90%] left-[50%] translate-x-[-50%] " },  // bottom
-		{ top: "68%", left: "12%", cn: "top-[68%] left-[20px] " },  // bottom-left
-		{ top: "25%", left: "14%", cn: "top-[25%] left-[10px] " }   // top-left
+		{ top: "3%", left: "50%", cn: "top-[0] left-[50%] translate-x-[-50%] " },
+		{ top: "25%", left: "86%", cn: "top-[25%] left-[86%] " },
+		{ top: "68%", left: "88%", cn: "top-[68%] left-[85%] " },
+		{ top: "92%", left: "50%", cn: "top-[90%] left-[50%] translate-x-[-50%] " },
+		{ top: "68%", left: "12%", cn: "top-[68%] left-[20px] " },
+		{ top: "25%", left: "14%", cn: "top-[25%] left-[10px] " }
 	];
 
 	return (
@@ -602,12 +615,12 @@ export function CustomFeatures() {
 			eyebrow={t("eyebrow")}
 			title={t("title")}
 			description={t("subtitle")}
-			className=" relative bg-gradient-to-b from-white via-white to-main-50/40"
+			className="relative bg-gradient-to-b from-white via-white to-main-50/40 dark:from-dark-bg-base dark:via-dark-bg-base dark:to-dark-bg-card/30"
 		>
 			{/* background blobs */}
 			<div className="pointer-events-none absolute inset-0">
-				<div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-main-400/15 blur-3xl" />
-				<div className="absolute -bottom-28 -right-28 h-80 w-80 rounded-full bg-teal-400/15 blur-3xl" />
+				<div className="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-main-400/15 dark:bg-main-500/10 blur-3xl" />
+				<div className="absolute -bottom-28 -right-28 h-80 w-80 rounded-full bg-teal-400/15 dark:bg-teal-500/5 blur-3xl" />
 			</div>
 
 			<div className="relative mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -616,27 +629,26 @@ export function CustomFeatures() {
 					<div className="relative mx-auto aspect-square w-full max-w-[520px]">
 						{/* orbit rings */}
 						<div className="pointer-events-none absolute inset-0 grid place-items-center">
-							<div className="h-[92%] w-[92%] rounded-full border border-main-200/60" />
-							<div className="absolute h-[72%] w-[72%] rounded-full border border-main-200/40" />
-							<div className="absolute h-[48%] w-[48%] rounded-full border border-main-200/30" />
-							<div className="absolute -inset-10 rounded-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.10),transparent_60%)] blur-2xl" />
+							<div className="h-[92%] w-[92%] rounded-full border border-main-200/60 dark:border-dark-border/60" />
+							<div className="absolute h-[72%] w-[72%] rounded-full border border-main-200/40 dark:border-dark-border/40" />
+							<div className="absolute h-[48%] w-[48%] rounded-full border border-main-200/30 dark:border-dark-border/20" />
+							<div className="absolute -inset-10 rounded-full bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.10),transparent_60%)] dark:bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.05),transparent_60%)] blur-2xl" />
 						</div>
 
 						{/* hub (center) */}
 						<div className="absolute inset-0 grid place-items-center">
-							<div className="relative w-[78%] rounded-[32px] bg-white/70 backdrop-blur-xl ring-1 ring-main-200/60 shadow-[0_30px_80px_-55px_rgba(2,6,23,0.55)] overflow-hidden">
+							<div className="relative w-[78%] rounded-[32px] bg-white/70 dark:bg-dark-bg-card/80 backdrop-blur-xl ring-1 ring-main-200/60 dark:ring-dark-border shadow-[0_30px_80px_-55px_rgba(2,6,23,0.55)] dark:shadow-none overflow-hidden">
 								<div className="h-1.5 w-full bg-gradient-to-r from-main-400 via-teal-400 to-sky-400 opacity-80" />
 
 								<div className="relative p-7 md:p-9">
-									{/* glow */}
-									<div className="pointer-events-none absolute -top-14 -right-14 h-40 w-40 rounded-full bg-main-400/15 blur-3xl" />
-									<div className="pointer-events-none absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-teal-400/15 blur-3xl" />
+									<div className="pointer-events-none absolute -top-14 -right-14 h-40 w-40 rounded-full bg-main-400/15 dark:bg-main-500/10 blur-3xl" />
+									<div className="pointer-events-none absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-teal-400/15 dark:bg-teal-500/5 blur-3xl" />
 
 									<div className="flex items-start gap-4">
 										<div className="relative shrink-0">
 											<div className="absolute inset-0 rounded-2xl bg-main-500/20 blur-xl" />
-											<div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 ring-1 ring-main-200/70">
-												<ActiveIcon className="h-7 w-7 text-main-700" />
+											<div className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-main-500/15 to-teal-500/10 ring-1 ring-main-200/70 dark:ring-main-800/50">
+												<ActiveIcon className="h-7 w-7 text-main-700 dark:text-main-400" />
 											</div>
 										</div>
 
@@ -649,30 +661,28 @@ export function CustomFeatures() {
 													exit={{ opacity: 0, y: -10 }}
 													transition={{ duration: 0.22, ease: "easeOut" }}
 												>
-													<p className="text-xs font-semibold text-main-800/80">
+													<p className="text-xs font-semibold text-main-800/80 dark:text-main-400/80">
 														{t("orbit.label")}
 													</p>
-
-													<h3 className="mt-1 text-lg md:text-xl font-extrabold tracking-tight text-slate-900">
+													<h3 className="mt-1 text-lg md:text-xl font-extrabold tracking-tight text-slate-900 dark:text-dark-text-primary">
 														{t(`features.${active}.title`)}
 													</h3>
-
-													<p className="mt-3 text-sm leading-relaxed text-slate-600">
+													<p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-dark-text-secondary">
 														{t(`features.${active}.description`)}
 													</p>
 
 													<div className="mt-5 flex flex-wrap items-center gap-2">
-														<span className="inline-flex items-center rounded-full bg-main-50 px-3 py-1 text-xs font-semibold text-main-800 ring-1 ring-main-200/70">
+														<span className="inline-flex items-center rounded-full bg-main-50 dark:bg-main-900/30 px-3 py-1 text-xs font-semibold text-main-800 dark:text-main-300 ring-1 ring-main-200/70 dark:ring-main-800/50">
 															{t("orbit.pill1")}
 														</span>
-														<span className="inline-flex items-center rounded-full bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
+														<span className="inline-flex items-center rounded-full bg-slate-50 dark:bg-dark-bg-base px-3 py-1 text-xs font-semibold text-slate-700 dark:text-dark-text-secondary ring-1 ring-slate-200 dark:ring-dark-border">
 															{t("orbit.pill2")}
 														</span>
 													</div>
 
 													<button
 														type="button"
-														className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:opacity-90"
+														className="mt-6 inline-flex items-center gap-2 rounded-full bg-slate-900 dark:bg-main-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:opacity-90 active:scale-95"
 													>
 														{t("orbit.cta")}
 														<ArrowRight className="h-4 w-4" />
@@ -698,35 +708,28 @@ export function CustomFeatures() {
 									onMouseEnter={() => setActive(item.key)}
 									onFocus={() => setActive(item.key)}
 									onClick={() => setActive(item.key)}
-									initial={false}
 									animate={{ scale: isActive ? 1.06 : 1 }}
 									transition={{ type: "spring", stiffness: 400, damping: 22 }}
-									// style={{
-									// 	top: pos.top,
-									// 	left: pos.left,
-									// 	transform: "translate(-50%, -50%)"
-									// }}
 									className={[
 										pos?.cn,
 										"absolute group grid place-items-center rounded-full",
 										"w-14 h-14 md:w-16 md:h-16",
 										"ring-1 transition shadow-sm",
 										isActive
-											? "bg-white ring-main-300"
-											: "bg-white/70 ring-main-200 hover:bg-white"
+											? "bg-white dark:bg-main-600 ring-main-300 dark:ring-main-400"
+											: "bg-white/70 dark:bg-dark-bg-card/80 ring-main-200 dark:ring-dark-border hover:bg-white dark:hover:bg-dark-bg-input"
 									].join(" ")}
 									aria-label={t(`features.${item.key}.title`)}
 								>
-									{/* active ping */}
 									{isActive && (
-										<span className="pointer-events-none absolute inset-0 rounded-full bg-main-400/20 blur-xl" />
+										<span className="pointer-events-none absolute inset-0 rounded-full bg-main-400/20 dark:bg-main-500/30 blur-xl" />
 									)}
 
 									<div className="relative grid place-items-center">
 										<Icon
 											className={[
 												"h-6 w-6 md:h-7 md:w-7 transition",
-												isActive ? "text-main-700" : "text-main-700/80"
+												isActive ? "text-main-700 dark:text-white" : "text-main-700/80 dark:text-dark-text-secondary"
 											].join(" ")}
 										/>
 									</div>
@@ -735,18 +738,17 @@ export function CustomFeatures() {
 									<span
 										className={[
 											"pointer-events-none absolute z-20 whitespace-nowrap",
-											"rounded-full bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white",
-											"opacity-0 scale-95 transition",
+											"rounded-full bg-slate-900 dark:bg-dark-bg-card px-3 py-1 text-[11px] font-semibold text-white dark:text-dark-text-primary",
+											"opacity-0 scale-95 transition border dark:border-dark-border",
 											"transform-gpu will-change-transform",
 											"group-hover:opacity-100 group-hover:scale-100",
 											getTooltipPlacement(pos)
 										].join(" ")}
 									>
-										{/* arrow */}
 										<span
 											aria-hidden
 											className={[
-												"absolute h-2 w-2 rotate-45 bg-slate-900",
+												"absolute h-2 w-2 rotate-45 bg-slate-900 dark:bg-dark-bg-card dark:border-l dark:border-t dark:border-dark-border",
 												getTooltipArrow(pos)
 											].join(" ")}
 										/>
@@ -758,7 +760,7 @@ export function CustomFeatures() {
 					</div>
 				</div>
 
-				{/* RIGHT: short supporting copy (no boxes) */}
+				{/* RIGHT: short supporting copy */}
 				<div className="lg:col-span-5">
 					<motion.div
 						initial={{ opacity: 0, y: 14 }}
@@ -767,20 +769,20 @@ export function CustomFeatures() {
 						transition={{ duration: 0.45, ease: "easeOut" }}
 						className="max-w-lg"
 					>
-						<p className="inline-flex items-center gap-2 rounded-full bg-main-50 px-3 py-1 text-xs font-semibold text-main-800 ring-1 ring-main-200/70">
+						<p className="inline-flex items-center gap-2 rounded-full bg-main-50 dark:bg-main-900/30 px-3 py-1 text-xs font-semibold text-main-800 dark:text-main-300 ring-1 ring-main-200/70 dark:ring-main-800/50">
 							<span className="h-1.5 w-1.5 rounded-full bg-main-500" />
 							{t("side.kicker")}
 						</p>
 
-						<h4 className="mt-4 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+						<h4 className="mt-4 text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-dark-text-primary">
 							{t("side.title")}
 						</h4>
 
-						<p className="mt-3 text-sm md:text-base leading-relaxed text-slate-600">
+						<p className="mt-3 text-sm md:text-base leading-relaxed text-slate-600 dark:text-dark-text-secondary">
 							{t("side.desc")}
 						</p>
 
-						<p className="mt-6 text-xs text-slate-500">
+						<p className="mt-6 text-xs text-slate-500 dark:text-dark-text-secondary/60">
 							{t("side.helper")}
 						</p>
 					</motion.div>
@@ -790,6 +792,7 @@ export function CustomFeatures() {
 	);
 }
 
+
 /* -------------------------------- Banner CTA ------------------------------- */
 
 export function BannerCTA() {
@@ -797,10 +800,18 @@ export function BannerCTA() {
 
 	return (
 		<section className="relative overflow-hidden py-14 md:py-20">
-			<div style={{ background: `linear-gradient( 90deg, var(--color-main-500), var(--color-main-400), var(--color-main-600) )`, }} className="absolute inset-0 " />
+			{/* Base Gradient - Slightly deeper in dark mode */}
+			<div
+				style={{ background: `linear-gradient( 90deg, var(--color-main-600), var(--color-main-500), var(--color-main-700) )` }}
+				className="absolute inset-0 dark:brightness-90"
+			/>
+
+			{/* Overlays */}
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(255,255,255,0.22),transparent_45%)]" />
 			<div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_30%,rgba(255,255,255,0.18),transparent_55%)]" />
-			<div className="absolute inset-0 opacity-[0.08] [background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><filter id=%22n%22 x=%220%22 y=%220%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/></filter><rect width=%22400%22 height=%22400%22 filter=%22url(%23n)%22 opacity=%220.35%22/></svg>')]" />
+
+			{/* Grain Texture - Reduced opacity in dark mode for better compression/rendering */}
+			<div className="absolute inset-0 opacity-[0.08] dark:opacity-[0.04] [background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22><filter id=%22n%22 x=%220%22 y=%220%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/></filter><rect width=%22400%22 height=%22400%22 filter=%22url(%23n)%22 opacity=%220.35%22/></svg>')]" />
 
 			<div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
 			<div className="pointer-events-none absolute -bottom-28 -right-28 h-80 w-80 rounded-full bg-teal-200/10 blur-3xl" />
@@ -811,16 +822,13 @@ export function BannerCTA() {
 					whileInView={{ opacity: 1, y: 0, scale: 1 }}
 					viewport={{ once: true, margin: "-80px" }}
 					transition={{ duration: 0.5, ease: "easeOut" }}
-					className="mx-auto max-w-6xl rounded-[32px] p-[1px] bg-[linear-gradient(120deg,rgba(255,255,255,0.28),rgba(255,255,255,0.10),rgba(255,255,255,0.20))] shadow-[0_30px_80px_-45px_rgba(0,0,0,0.6)]"
+					className="mx-auto max-w-6xl rounded-[32px] p-[1px] bg-[linear-gradient(120deg,rgba(255,255,255,0.35),rgba(255,255,255,0.1),rgba(255,255,255,0.25))] shadow-[0_30px_80px_-45px_rgba(0,0,0,0.6)]"
 				>
-					<div className="relative overflow-hidden rounded-[31px] border border-white/15 bg-white/10 backdrop-blur-xl">
-						<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.20),transparent_55%)]" />
-						<div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
-
+					<div className="relative overflow-hidden rounded-[31px] border border-white/15 bg-white/10 dark:bg-black/10 backdrop-blur-xl">
 						<div className="relative p-7 md:p-10">
 							<div className="flex flex-col lg:flex-row items-center justify-between gap-8">
 								<div className="text-center lg:text-start">
-									<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white ring-1 ring-white/20">
+									<div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-semibold text-white ring-1 ring-white/25">
 										<Sparkles className="h-4 w-4" />
 										{t("badge")}
 									</div>
@@ -837,14 +845,14 @@ export function BannerCTA() {
 								<div className="flex flex-col sm:flex-row items-center gap-3">
 									<Link
 										href="/services"
-										className="inline-flex items-center justify-center h-12 px-7 rounded-lg bg-white/10 text-white font-semibold ring-1 ring-white/25 hover:bg-white/15 transition"
+										className="inline-flex items-center justify-center h-12 px-7 rounded-lg bg-white/10 text-white font-semibold ring-1 ring-white/30 hover:bg-white/20 transition active:scale-95"
 									>
 										{t("secondaryCta")}
 									</Link>
 
 									<Link
 										href="/auth?tab=register&type=seller"
-										className="group inline-flex items-center justify-center h-12 px-8 rounded-lg bg-white text-main-800 font-extrabold shadow-lg hover:shadow-xl transition hover:bg-main-50"
+										className="group inline-flex items-center justify-center h-12 px-8 rounded-lg bg-white text-main-900 font-extrabold shadow-lg hover:shadow-xl transition hover:bg-main-50 active:scale-95"
 									>
 										<span>{t("cta")}</span>
 										<ArrowRight className="rtl:scale-x-[-1] ms-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -853,18 +861,12 @@ export function BannerCTA() {
 							</div>
 
 							<div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-2 text-xs text-white/75">
-								<span className="inline-flex items-center gap-2">
-									<span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-									{t("foot1")}
-								</span>
-								<span className="inline-flex items-center gap-2">
-									<span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-									{t("foot2")}
-								</span>
-								<span className="inline-flex items-center gap-2">
-									<span className="h-1.5 w-1.5 rounded-full bg-white/70" />
-									{t("foot3")}
-								</span>
+								{[t("foot1"), t("foot2"), t("foot3")].map((text, i) => (
+									<span key={i} className="inline-flex items-center gap-2">
+										<span className="h-1 w-1 rounded-full bg-white/50" />
+										{text}
+									</span>
+								))}
 							</div>
 						</div>
 					</div>
@@ -890,11 +892,14 @@ export function FAQs() {
 			description={t("subtitle")}
 			variant="plain"
 			withDividerTop
+			className="bg-white dark:bg-dark-bg"
 		>
 			<div className="relative mx-auto max-w-5xl">
-				<div className="rounded-[32px] bg-white/60 backdrop-blur-xl ring-1 ring-main-200/60 shadow-[0_30px_90px_-60px_rgba(2,6,23,0.55)] overflow-hidden">
+				{/* Background Glass Card Updated for Dark Mode */}
+				<div className="rounded-[32px] bg-white/60 dark:bg-dark-bg-card/50 backdrop-blur-xl ring-1 ring-main-200/60 dark:ring-dark-border shadow-[0_30px_90px_-60px_rgba(2,6,23,0.55)] dark:shadow-none overflow-hidden">
 					<div className="h-1.5 w-full bg-gradient-to-r from-main-400 via-teal-400 to-sky-400 opacity-80" />
 					<div className="p-5 md:p-8">
+						{/* Ensure FAQSection internally handles dark mode text colors */}
 						<FAQSection faqs={faqs} loading={loadingSettings} showTitle={false} />
 					</div>
 				</div>
@@ -902,7 +907,6 @@ export function FAQs() {
 		</Section>
 	);
 }
-
 
 
 

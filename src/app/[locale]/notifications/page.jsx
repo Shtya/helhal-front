@@ -195,13 +195,13 @@ const NotificationsPage = () => {
 
   if (loading && pageNotifications.length === 0) {
     return (
-      <div className='container mx-auto px-4 py-8 max-w-4xl !mt-6'>
+      <div className='container mx-auto px-4 py-8 max-w-4xl !mt-6 dark:bg-dark-bg-base'>
         <div className='animate-pulse space-y-4'>
-          <div className='h-8 bg-gray-200 rounded w-1/4'></div>
+          <div className='h-8 bg-gray-200 rounded w-1/4 dark:bg-dark-border'></div>
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className='p-4 border border-gray-200 rounded-lg'>
-              <div className='h-4 bg-gray-200 rounded w-3/4 mb-2'></div>
-              <div className='h-3 bg-gray-200 rounded w-1/2'></div>
+            <div key={i} className='p-4 border border-gray-200 rounded-lg dark:border-dark-border'>
+              <div className='h-4 bg-gray-200 rounded w-3/4 mb-2 dark:bg-dark-border'></div>
+              <div className='h-3 bg-gray-200 rounded w-1/2 dark:bg-dark-border'></div>
             </div>
           ))}
         </div>
@@ -211,9 +211,9 @@ const NotificationsPage = () => {
 
 
   return (
-    <div className=' !my-8 container  '>
+    <div className=' !my-8 container dark:bg-dark-bg-base'>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('title')}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-dark-text-primary">{t('title')}</h1>
         {unreadNotificationCount > 0 && (
           <button
             onClick={markAllAsRead}
@@ -229,8 +229,8 @@ const NotificationsPage = () => {
           <NoResults mainText={t('noNotifications')} additionalText={t('noNotificationsDesc')} />
         </div>
       ) : (
-        <div className='bg-white shadow-sm rounded-lg overflow-hidden'>
-          <div className='divide-y divide-gray-200'>
+        <div className='bg-white dark:bg-dark-bg-card shadow-sm rounded-lg overflow-hidden'>
+          <div className='divide-y divide-gray-200 dark:divide-dark-border'>
             {pageNotifications.map(notification => {
               const { Icon, color } = getNotificationConfig(notification.type, notification.relatedEntityType);
 
@@ -238,7 +238,7 @@ const NotificationsPage = () => {
                 <div
                   key={notification.id}
                   data-notification-id={notification.id}
-                  className={`p-4 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}
+                  className={`p-4 hover:bg-gray-50 dark:hover:bg-dark-bg-input transition-colors ${!notification.isRead ? 'bg-blue-50 dark:bg-main-900/10' : ''}`}
                 >
                   <div className='flex gap-4'>
                     {/* 1. THE ICON COLUMN - Fixed scope */}
@@ -249,20 +249,20 @@ const NotificationsPage = () => {
                     {/* 2. THE CONTENT COLUMN */}
                     <div className='flex-1 min-w-0'>
                       <div className='flex flex-col xs:flex-row items-start justify-between'>
-                        <h3 className='text-sm font-medium text-gray-900'>{notification.title}</h3>
-                        <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2'>
+                        <h3 className='text-sm font-medium text-gray-900 dark:text-dark-text-primary'>{notification.title}</h3>
+                        <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2 dark:text-dark-text-secondary'>
                           {formatDate(notification.created_at)}
                         </span>
                       </div>
 
-                      <p className='text-sm text-gray-600 mt-2'>{notification.message}</p>
+                      <p className='text-sm text-gray-600 mt-2 dark:text-dark-text-secondary'>{notification.message}</p>
 
                       {/* Actions: Link and Mark as Read */}
                       <div className='flex items-center justify-between mt-3'>
                         {getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type) && (
                           <Link
                             href={getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type)}
-                            className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all shadow-sm'
+                            className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all shadow-sm dark:text-main-400 dark:bg-main-900/20 dark:hover:bg-main-900/30'
                           >
                             <span className='text-xs'>
                               {notification.relatedEntityType === 'proposal' ? t('viewProposal') : t('viewOrder')}
@@ -274,7 +274,7 @@ const NotificationsPage = () => {
                         {!notification.isRead && (
                           <button
                             onClick={() => markOneAsRead(notification.id)}
-                            className='text-xs text-blue-600 hover:text-blue-800 font-medium'
+                            className='text-xs text-blue-600 hover:text-blue-800 font-medium dark:text-main-400 dark:hover:text-main-300'
                           >
                             {t('markAsRead')}
                           </button>

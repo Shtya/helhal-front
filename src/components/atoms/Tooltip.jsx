@@ -38,18 +38,18 @@ const Tooltip = ({
 
     const variantStyles = {
         dark: {
-            bg: 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900',
-            border: 'border-gray-700',
-            text: 'text-white',
-            shadow: 'shadow-lg shadow-gray-500/50',
-            glow: 'bg-gray-400'
+            bg: 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800',
+            border: 'border-gray-700 dark:border-gray-600',
+            text: 'text-white dark:text-gray-100',
+            shadow: 'shadow-lg shadow-gray-500/50 dark:shadow-black/50',
+            glow: 'bg-gray-400 dark:bg-gray-600/50'
         },
         light: {
-            bg: 'bg-gradient-to-br from-white via-gray-50 to-white',
-            border: 'border-gray-200',
-            text: 'text-gray-900',
-            shadow: 'shadow-lg shadow-gray-300/50',
-            glow: 'bg-gray-200'
+            bg: 'bg-gradient-to-br from-white via-gray-50 to-white dark:from-gray-800 dark:via-gray-700 dark:to-gray-800',
+            border: 'border-gray-200 dark:border-gray-600',
+            text: 'text-gray-900 dark:text-gray-100',
+            shadow: 'shadow-lg shadow-gray-300/50 dark:shadow-black/50',
+            glow: 'bg-gray-200 dark:bg-gray-600/50'
         },
         primary: {
             bg: 'bg-gradient-to-br from-primary via-primary-hover to-primary',
@@ -84,9 +84,7 @@ const Tooltip = ({
                     "group-hover/tooltip:translate-y-0",
                     className
                 )}
-                style={{
-                    transitionDelay: delay ? `${delay}ms` : '0ms'
-                }}
+                style={{ transitionDelay: delay ? `${delay}ms` : '0ms' }}
             >
                 <div className="relative flex flex-col items-center">
                     {/* Outer glow */}

@@ -26,7 +26,19 @@ import { useSearchParams } from 'next/navigation';
 import Currency from '@/components/common/Currency';
 import { Modal } from '@/components/common/Modal';
 
-const Skeleton = ({ className = '' }) => <div className={`shimmer rounded-md bg-slate-200/70 ${className}`} />;
+const Skeleton = ({ className = '' }) => (
+  <div
+    className={`
+      shimmer
+      rounded-md
+      bg-slate-200/70
+        dark:bg-dark-border 
+      transition-colors
+      duration-300
+      ${className}
+    `}
+  />
+);
 
 export const BANKS = [
   { code: "AUB" },
@@ -199,18 +211,17 @@ export default function Page() {
 const getStatusStyles = (status) => {
   switch (status) {
     case 'completed':
-      return 'bg-green-50 text-green-700 border-green-200'; // Success green
+      return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/30';
     case 'pending':
-      return 'bg-orange-50 text-orange-700 border-orange-200'; // Warning orange
+      return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/30';
     case 'failed':
-      return 'bg-red-50 text-red-700 border-red-200'; // Danger red
+      return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30';
     case 'refunded':
-      return 'bg-blue-50 text-blue-700 border-blue-200'; // Info blue
+      return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/30';
     default:
-      return 'bg-slate-50 text-slate-700 border-slate-200';
+      return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-dark-bg-input dark:text-dark-text-secondary dark:border-dark-border';
   }
 };
-
 const BillingHistory = () => {
   const t = useTranslations('MyBilling.billingHistory');
   const [data, setData] = useState([]);
@@ -296,7 +307,7 @@ const BillingHistory = () => {
   return (
     <div>
       <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
+        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 dark:text-dark-text-primary tracking-wide transition-colors duration-300'>{t('title')}</h1>
         <div className='flex max-sm:flex-col justify-end max-md:w-full max-md:justify-center items-center flex-1 gap-2'>
           <InputDate className={'max-w-[250px] w-full'} placeholder={t('searchByDate')} onChange={handleDateChange} />
           <InputSearch className={'!max-w-[250px] w-full'} iconLeft={'/icons/search.svg'} placeholder={t('searchByOrder')} onSearch={handleSearch} />
@@ -370,17 +381,19 @@ const AvailableBalances = ({ setActiveTab }) => {
       amount: balances?.availableBalance || 0,
       description: t('availableBalance.description'),
       icon: CreditCard,
-      iconBg: 'bg-[var(--color-main-100)] text-[var(--color-main-600)]',
+      iconBg:
+        'bg-main-100 text-main-600 dark:bg-main-600/10 dark:text-main-400',
       show: true,
-      hasAction: true, // Specific flag for the withdraw button
+      hasAction: true,
     },
     {
-      id: 'reserved', // Fixed duplicate ID
+      id: 'reserved',
       title: t('reservedBalance.title'),
       amount: balances?.reservedBalance || 0,
       description: t('reservedBalance.description'),
       icon: Hourglass,
-      iconBg: 'bg-amber-100 text-amber-600',
+      iconBg:
+        'bg-amber-100 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
       show: true,
     },
     {
@@ -389,7 +402,8 @@ const AvailableBalances = ({ setActiveTab }) => {
       amount: balances?.earningsToDate || 0,
       description: t('earningsToDate.description'),
       icon: Wallet,
-      iconBg: 'bg-emerald-100 text-emerald-600',
+      iconBg:
+        'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
       show: user?.role === 'seller',
     },
     {
@@ -398,7 +412,8 @@ const AvailableBalances = ({ setActiveTab }) => {
       amount: balances?.promoCredits || 0,
       description: t('promoCredits.description'),
       icon: DollarSign,
-      iconBg: 'bg-blue-100 text-blue-600',
+      iconBg:
+        'bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
       show: true,
     },
     {
@@ -407,7 +422,8 @@ const AvailableBalances = ({ setActiveTab }) => {
       amount: balances?.cancelledOrdersCredit || 0,
       description: t('cancelledOrdersCredit.description'),
       icon: RotateCcw,
-      iconBg: 'bg-red-100 text-red-600',
+      iconBg:
+        'bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400',
       show: user?.role === 'buyer',
     },
   ];
@@ -417,7 +433,7 @@ const AvailableBalances = ({ setActiveTab }) => {
       <div className='mb-12'>
         {/* Title Skeleton */}
         <div className='mb-6'>
-          <div className='h-8 w-48 bg-gray-200 rounded-lg animate-pulse' />
+          <div className='h-8 w-48 bg-gray-200 dark:bg-dark-bg-card rounded-lg animate-pulse transition-colors duration-300' />
         </div>
 
         {/* Cards Grid Skeleton */}
@@ -425,25 +441,21 @@ const AvailableBalances = ({ setActiveTab }) => {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className='rounded-2xl border border-gray-100 bg-white p-6 shadow-sm'
+              className='rounded-2xl border border-gray-100 dark:border-dark-border bg-white dark:bg-dark-bg-card p-6 shadow-sm transition-colors duration-300'
             >
               <div className='flex justify-between items-start mb-4'>
                 <div className='space-y-3 flex-grow'>
-                  {/* Title text line */}
-                  <div className='h-4 w-24 bg-gray-200 rounded animate-pulse' />
-                  {/* Amount text line */}
-                  <div className='h-10 w-32 bg-gray-200 rounded-lg animate-pulse' />
+                  <div className='h-4 w-24 bg-gray-200 dark:bg-dark-border rounded animate-pulse' />
+                  <div className='h-10 w-32 bg-gray-200 dark:bg-dark-border rounded-lg animate-pulse' />
                 </div>
-                {/* Icon circle */}
-                <div className='w-10 h-10 bg-gray-200 rounded-xl animate-pulse' />
+
+                <div className='w-10 h-10 bg-gray-200 dark:bg-dark-border rounded-xl animate-pulse' />
               </div>
 
-              {/* Description line */}
-              <div className='h-4 w-full bg-gray-100 rounded animate-pulse mt-2' />
+              <div className='h-4 w-full bg-gray-100 dark:bg-dark-border/70 rounded animate-pulse mt-2' />
 
-              {/* Optional: If the card has an action button, add a skeleton for it */}
               {i === 1 && (
-                <div className='mt-5 h-11 w-full bg-gray-200 rounded-xl animate-pulse' />
+                <div className='mt-5 h-11 w-full bg-gray-200 dark:bg-dark-border rounded-xl animate-pulse' />
               )}
             </div>
           ))}
@@ -451,12 +463,14 @@ const AvailableBalances = ({ setActiveTab }) => {
       </div>
     );
   }
+
   return (
     <>
-
       <div className='mb-12'>
         <div className='mb-6'>
-          <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
+          <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 dark:text-dark-text-primary tracking-wide transition-colors duration-300'>
+            {t('title')}
+          </h1>
         </div>
 
         <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
@@ -467,29 +481,38 @@ const AvailableBalances = ({ setActiveTab }) => {
             return (
               <div
                 key={card.id}
-                className='rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-6 flex flex-col'
+                className='rounded-2xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card shadow-sm hover:shadow-md dark:hover:shadow-lg transition-all duration-300 p-6 flex flex-col'
               >
                 <div className='flex justify-between items-start mb-4'>
                   <div>
-                    <p className='text-sm text-gray-500 font-semibold uppercase tracking-wider'>{card.title}</p>
-                    <div className='flex gap-2 items-center text-3xl font-extrabold text-gray-900 mt-1'>
+                    <p className='text-sm text-gray-500 dark:text-dark-text-secondary font-semibold uppercase tracking-wider transition-colors duration-300'>
+                      {card.title}
+                    </p>
+
+                    <div className='flex gap-2 items-center text-3xl font-extrabold text-gray-900 dark:text-dark-text-primary mt-1 transition-colors duration-300'>
                       <span>{Number(card.amount).toFixed(2)}</span>
-                      <span className='text-lg font-medium text-gray-400'>SAR</span>
+                      <span className='text-lg font-medium text-gray-400 dark:text-dark-text-secondary transition-colors duration-300'>
+                        SAR
+                      </span>
                     </div>
                   </div>
-                  <span className={`w-10 h-10 flex items-center justify-center rounded-xl ${card.iconBg}`}>
+
+                  <span
+                    className={`w-10 h-10 flex items-center justify-center rounded-xl ${card.iconBg}`}
+                  >
                     <Icon className='w-5 h-5' />
                   </span>
                 </div>
 
-                <p className='text-sm text-gray-500 flex-grow'>{card.description}</p>
+                <p className='text-sm text-gray-500 dark:text-dark-text-secondary flex-grow transition-colors duration-300'>
+                  {card.description}
+                </p>
 
-                {/* Withdraw Button Integration */}
                 {card.hasAction && (
                   <button
                     onClick={() => openWithdrawModal(card.amount)}
                     disabled={card.amount < 112}
-                    className='mt-4 w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[var(--color-main-600)] hover:bg-[var(--color-main-700)] text-white rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed'
+                    className='mt-4 w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-main-600 hover:bg-main-700 text-white rounded-xl font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
                   >
                     <ArrowUpRight className='w-4 h-4' />
                     {t('withdrawButton') || 'Withdraw Funds'}
@@ -500,12 +523,13 @@ const AvailableBalances = ({ setActiveTab }) => {
           })}
         </div>
       </div>
+
       <WithdrawModal
         isOpen={isWithdrawModalOpen}
         onClose={() => setIsWithdrawModalOpen(false)}
         maxAmount={selectedWithdrawAmount}
         onSuccess={handleWithdrawSuccess}
-        onMoveToPaymentMethods={() => setActiveTab("payment-methods")}
+        onMoveToPaymentMethods={() => setActiveTab('payment-methods')}
       />
     </>
   );
@@ -705,14 +729,27 @@ const BillingInformation = () => {
     }));
   }, [statesOptions, locale]);
 
-  // Loading Skeleton
   if (isLoadingData || countryLoading) {
     return (
-      <div className='max-w-[800px] w-full mx-auto mb-12'>
-        <Skeleton className='h-8 w-64 mb-6' />
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className="max-w-[800px] w-full mx-auto mb-12 space-y-6">
+        {/* Title Skeleton */}
+        <div className="h-8 w-64 rounded-lg animate-pulse bg-gray-200 dark:bg-dark-border transition-colors duration-300" />
+
+        {/* Grid Skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className='h-12 w-full' />
+            <div
+              key={i}
+              className="rounded-2xl border border-gray-100 dark:border-dark-border bg-white dark:bg-dark-bg-card p-6 shadow-sm transition-colors duration-300"
+            >
+              {/* Inner Skeleton Bars */}
+              <div className="space-y-3">
+                <div className="h-4 w-24 rounded animate-pulse bg-gray-200 dark:bg-dark-border" />
+                <div className="h-10 w-32 rounded-lg animate-pulse bg-gray-200 dark:bg-dark-border" />
+              </div>
+
+              <div className="w-10 h-10 rounded-xl animate-pulse bg-gray-200 dark:bg-dark-border mt-4" />
+            </div>
           ))}
         </div>
       </div>
@@ -720,9 +757,9 @@ const BillingInformation = () => {
   }
 
   return (
-    <div className='max-w-[800px] w-full mx-auto mb-12'>
-      <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>
+    <div className="max-w-[800px] w-full mx-auto mb-12">
+      <div className="flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6">
+        <h1 className="text-2xl max-md:text-xl font-bold text-gray-800 dark:text-dark-text-primary tracking-wide transition-colors duration-300">
           {t('title')}
         </h1>
       </div>
@@ -730,16 +767,19 @@ const BillingInformation = () => {
       {/* Message Display */}
       {message && (
         <div
-          className={`mb-4 p-3 rounded ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' // Adjusted colors for success
+          className={`mb-4 p-3 rounded-lg text-sm font-medium transition-colors duration-300 ${message.type === 'error'
+            ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+            : 'bg-green-100 text-green-700 dark:bg-emerald-500/10 dark:text-emerald-400'
             }`}
         >
           {message.text}
         </div>
       )}
 
+
       {/* Form Start */}
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className='max-w-[800px] w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <div className='w-full grid grid-cols-1 md:grid-cols-2 gap-6'>
 
           {/* First Name */}
           <Controller
@@ -880,13 +920,17 @@ const BillingInformation = () => {
           />
           <span className='text-sm text-gray-700'>{t('inboxMessages')}</span>
         </div> */}
-        {errors.agreeToInvoiceEmails && <p className="text-red-500 text-sm">{errors.agreeToInvoiceEmails.message}</p>}
+        {errors.agreeToInvoiceEmails && (
+          <p className="text-red-500 dark:text-red-400 text-sm mt-2 transition-colors duration-300">
+            {errors.agreeToInvoiceEmails.message}
+          </p>
+        )}
 
-        <div className='max-w-[250px] mt-6'>
+        <div className="max-w-[250px] mt-6">
           <Button
             name={isSubmitting ? t('saving') : t('saveChanges')}
-            color='green'
-            type="submit" // Trigger form submission
+            color="green"
+            type="submit"
             disabled={isSubmitting}
           />
         </div>
@@ -1045,72 +1089,100 @@ const PaymentMethods = () => {
 
   if (loading) {
     return (
-      <div className='max-w-[1400px] w-full mx-auto mb-12'>
-        <Skeleton className='h-8 w-64 mb-6' />
-        <Skeleton className='h-6 w-52 mb-4' />
-        <Skeleton className='h-20 w-full mb-4' />
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4'>
+      <div className="max-w-[1400px] w-full mx-auto mb-12 ">
+        <Skeleton className="h-8 w-64 mb-6" />
+        <Skeleton className="h-6 w-52 mb-4" />
+        <Skeleton className="h-20 w-full mb-4" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className='h-12 w-full' />
+            <Skeleton key={i} className="h-12 w-full" />
           ))}
         </div>
       </div>
     );
   }
 
+
   return (
-    <div className='max-w-[1400px] w-full mx-auto mb-12'>
-      <div className='flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6'>
-        <h1 className='text-2xl max-md:text-xl font-bold text-gray-800 tracking-wide'>{t('title')}</h1>
+    <div className="max-w-[1400px] w-full mx-auto mb-12">
+      <div className="flex max-md:flex-col w-full items-center justify-between gap-2 flex-wrap mb-6">
+        <h1 className="text-2xl max-md:text-xl font-bold text-gray-800 dark:text-dark-text-primary tracking-wide transition-colors duration-300">
+          {t('title')}
+        </h1>
       </div>
 
+      {/* Message */}
       {message && (
-        <div className={`mb-4 p-3 rounded ${message.includes('Error') || message.includes('failed') ? 'bg-red-100 text-red-700' : 'bg-main-100 text-main-700'}`}>
+        <div
+          className={`mb-4 p-3 rounded-lg text-sm font-medium transition-colors duration-300 ${message.includes('Error') || message.includes('failed')
+            ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400'
+            : 'bg-main-100 text-main-700 dark:bg-main-600/10 dark:text-main-400'
+            }`}
+        >
           {message}
         </div>
       )}
+
+      {/* Bank Accounts List */}
       {bankAccounts.length > 0 && (
-        <div className='mb-8'>
-          <h2 className='text-xl font-semibold mb-4'>{t('yourBankAccounts')}</h2>
-          <div className='grid gap-4'>
-            {bankAccounts.map(account => (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-dark-text-primary transition-colors duration-300">
+            {t('yourBankAccounts')}
+          </h2>
+
+          <div className="grid gap-4">
+            {bankAccounts.map((account) => (
               <div
                 key={account.id}
-                className={`border rounded-lg p-4 flex flex-col sm:flex-row sm:items-center gap-3 ${editingAccount?.id === account.id ? 'border-main-600 bg-main-50' : ''
+                className={`border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3 transition-all duration-300
+              ${editingAccount?.id === account.id
+                    ? 'border-main-600 bg-main-50 dark:bg-main-600/10'
+                    : 'border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card'
                   }`}
               >
                 {/* Info */}
-                <div className='flex-1 min-w-0'>
-                  <p className='font-semibold '>{account.fullName}</p>
-                  <p className='text-gray-600 text-sm break-words'>{t('iban')} {account.iban}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 dark:text-dark-text-primary transition-colors duration-300">
+                    {account.fullName}
+                  </p>
+
+                  <p className="text-gray-600 dark:text-dark-text-secondary text-sm break-words transition-colors duration-300">
+                    {t('iban')} {account.iban}
+                  </p>
+
                   {account.isDefault && (
-                    <span className='inline-block bg-main-100 text-main-800 text-xs px-2 py-1 rounded mt-1'>
+                    <span className="inline-block bg-main-100 text-main-800 dark:bg-main-600/10 dark:text-main-400 text-xs px-2 py-1 rounded mt-1 transition-colors duration-300">
                       {t('default')}
                     </span>
                   )}
                 </div>
 
                 {/* Actions */}
-                <div className='flex items-center gap-3 flex-shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0'>
+                <div className="flex items-center gap-3 flex-shrink-0 border-t sm:border-t-0 border-gray-200 dark:border-dark-border pt-3 sm:pt-0 transition-colors duration-300">
                   <button
                     onClick={() => handleEditClick(account)}
-                    className='text-main-600 hover:text-main-800 text-sm font-medium'
+                    className="text-main-600 hover:text-main-800 dark:text-main-400 dark:hover:text-main-300 text-sm font-medium transition-colors duration-200"
                   >
                     {t('edit') || 'Edit'}
                   </button>
+
                   {!account.isDefault && (
                     <>
-                      <span className='text-gray-300 text-xs'>|</span>
+                      <span className="text-gray-300 dark:text-dark-border text-xs">|</span>
+
                       <button
                         onClick={() => handleSetDefault(account.id)}
-                        className='text-blue-600 hover:text-blue-800 text-sm'
+                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm transition-colors duration-200"
                       >
                         {t('setDefault')}
                       </button>
-                      <span className='text-gray-300 text-xs'>|</span>
+
+                      <span className="text-gray-300 dark:text-dark-border text-xs">|</span>
+
                       <button
                         onClick={() => handleDeleteAccount(account.id)}
-                        className='text-red-600 hover:text-red-800 text-sm'
+                        className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm transition-colors duration-200"
                       >
                         {t('delete')}
                       </button>
@@ -1123,31 +1195,36 @@ const PaymentMethods = () => {
         </div>
       )}
 
-      <div className='bg-gray-50 p-6 rounded-2xl border border-gray-100'>
-        <h3 className='text-lg font-bold mb-4'>
-          {editingAccount ? t('editAccountTitle') || 'Edit Bank Account' : t('addAccountTitle') || 'Add New Account'}
+      {/* Form Card */}
+      <div className="bg-gray-50 dark:bg-dark-bg-card p-6 rounded-2xl border border-gray-100 dark:border-dark-border transition-colors duration-300">
+        <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-dark-text-primary transition-colors duration-300">
+          {editingAccount
+            ? t('editAccountTitle') || 'Edit Bank Account'
+            : t('addAccountTitle') || 'Add New Account'}
         </h3>
-        <div className='w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Controller
             name="fullName"
             control={control}
             render={({ field }) => (
               <Input
                 {...field}
-                cnInput='!border-[var(--color-main-600)]'
+                cnInput="!border-main-600 dark:!border-main-500"
                 label={t('fullName')}
                 placeholder={t('fullNamePlaceholder')}
                 error={errors.fullName?.message}
               />
             )}
           />
+
           <Controller
             name="iban"
             control={control}
             render={({ field }) => (
               <Input
                 {...field}
-                cnInput='!border-[var(--color-main-600)]'
+                cnInput="!border-main-600 dark:!border-main-500"
                 label={t('ibanLabel')}
                 placeholder={t('ibanPlaceholder')}
                 error={errors.iban?.message}
@@ -1161,30 +1238,39 @@ const PaymentMethods = () => {
             render={({ field }) => (
               <Select
                 {...field}
-                cnSelect='!border-[var(--color-main-600)]'
+                cnSelect="!border-main-600 dark:!border-main-500"
                 label={t('bank_codes.bank_name')}
                 placeholder={t('bank_codes.select_bank')}
                 options={bankOptions}
                 value={field.value}
-                onChange={val => field.onChange(val?.id)}
+                onChange={(val) => field.onChange(val?.id)}
                 error={errors.bankCode?.message}
               />
             )}
           />
 
-          <div className='lg:col-span-3 flex justify-end gap-3 mt-4'>
+          <div className="lg:col-span-3 flex justify-end gap-3 mt-4">
             {editingAccount && (
               <Button
                 name={t('cancel') || 'Cancel'}
-                className='!h-[45px] max-w-[150px]'
-                color='gray'
+                className="!h-[45px] max-w-[150px]"
+                color="gray"
                 onClick={handleCancelEdit}
               />
             )}
+
             <Button
-              className='!h-[45px] !py-1 max-w-[250px]'
-              name={saving ? (editingAccount ? t('updating') : t('adding')) : (editingAccount ? t('updateAccount') : t('addBankAccount'))}
-              color='green'
+              className="!h-[45px] !py-1 max-w-[250px]"
+              name={
+                saving
+                  ? editingAccount
+                    ? t('updating')
+                    : t('adding')
+                  : editingAccount
+                    ? t('updateAccount')
+                    : t('addBankAccount')
+              }
+              color="green"
               onClick={handleSubmit(handleSave)}
               disabled={saving}
             />
@@ -1332,11 +1418,14 @@ const PhoneVerification = ({ phone, countryCode, onVerified }) => {
               value={otp}
               onChange={setOtp}
               numInputs={6}
+              inputType="number"
               renderSeparator={<span className="mx-1">-</span>}
               renderInput={props => (
                 <input
                   {...props}
-                  className="!w-10 h-10 border rounded-lg text-center text-xl"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  className="hide-number-input  !w-10 h-10 border rounded-lg text-center text-xl"
                 />
               )}
               containerStyle="flex justify-center flex-wrap gap-y-2"
@@ -1431,63 +1520,75 @@ export const WithdrawModal = ({ isOpen, onClose, maxAmount, onSuccess, onMoveToP
   };
 
   if (!isOpen) return;
+
+  if (!isOpen) return;
+
   return (
-    <Modal title={t('title')} isOpen={isOpen} onClose={onClose} className="!max-w-xl">
+    <Modal
+      title={t('title')}
+      isOpen={isOpen}
+      onClose={onClose}
+      className="!max-w-xl"
+    >
       <div className="p-6">
         {loadingBank ? (
           <div className="space-y-4 animate-pulse">
-            <div className="h-24 bg-slate-100 rounded-xl" />
-            <div className="h-12 bg-slate-100 rounded-xl" />
-            <div className="h-10 w-1/3 bg-slate-100 rounded-xl" />
+            <div className="h-24 bg-slate-100 dark:bg-dark-border rounded-xl transition-colors duration-300" />
+            <div className="h-12 bg-slate-100 dark:bg-dark-border rounded-xl transition-colors duration-300" />
+            <div className="h-10 w-1/3 bg-slate-100 dark:bg-dark-border rounded-xl transition-colors duration-300" />
           </div>
         ) : !bankAccount ? (
-          // Case: No Default Bank Account
+          // No Bank Account
           <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
-            <div className="w-16 h-16 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-orange-50 text-orange-500 dark:bg-orange-500/10 dark:text-orange-400 rounded-full flex items-center justify-center transition-colors duration-300">
               <AlertTriangle className="w-8 h-8" />
             </div>
+
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">{t('noBankTitle')}</h3>
-              <p className="text-gray-500 mt-1 max-w-xs mx-auto">{t('noBankMessage')}</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary transition-colors duration-300">
+                {t('noBankTitle')}
+              </h3>
+              <p className="text-gray-500 dark:text-dark-text-secondary mt-1 max-w-xs mx-auto transition-colors duration-300">
+                {t('noBankMessage')}
+              </p>
             </div>
+
             <Button
               variant="outline"
               onClick={onMoveToPaymentMethods}
               name={t('addBankLink')}
-              className='!w-fit'
+              className="!w-fit"
             />
           </div>
         ) : (
-          // Case: Has Bank Account - Show Form
+          // Has Bank Account
           <div className="space-y-6">
-
             {/* Bank Details Card */}
-
-            <div className='bg-slate-50 border border-slate-200 rounded-xl p-4'>
-              <label className='text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-3'>
+            <div className="bg-slate-50 dark:bg-dark-bg-input border border-slate-200 dark:border-dark-border rounded-xl p-4 transition-colors duration-300">
+              <label className="text-xs font-semibold text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide block mb-3 transition-colors duration-300">
                 {t('bankLabel')}
               </label>
-              <div className='flex items-start gap-3'>
-                <div className='p-2 bg-white rounded-lg border border-gray-100 shadow-sm flex-shrink-0'>
-                  <Building2Icon className='w-6 h-6 text-gray-600' />
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-white dark:bg-dark-bg-card rounded-lg border border-gray-100 dark:border-dark-border shadow-sm flex-shrink-0 transition-colors duration-300">
+                  <Building2Icon className="w-6 h-6 text-gray-600 dark:text-dark-text-secondary transition-colors duration-300" />
                 </div>
-                <div className='flex-1 min-w-0'>
-                  {/* Localized Bank Name */}
-                  <p className='font-bold text-gray-900 truncate'>
-                    {bankAccount.bankCode && tBank(`bank_codes.banks.${bankAccount.bankCode}`)}
+
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-gray-900 dark:text-dark-text-primary truncate transition-colors duration-300">
+                    {bankAccount.bankCode &&
+                      tBank(`bank_codes.banks.${bankAccount.bankCode}`)}
                   </p>
 
-                  {/* Account Holder */}
-                  <p className='text-sm font-medium text-gray-700 mt-0.5 truncate'>
+                  <p className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary mt-0.5 truncate transition-colors duration-300">
                     {bankAccount.fullName}
                   </p>
 
-                  {/* IBAN */}
-                  <div className='mt-2 flex items-center gap-2 min-w-0'>
-                    <span className='flex-shrink-0 text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-bold uppercase'>
+                  <div className="mt-2 flex items-center gap-2 min-w-0">
+                    <span className="flex-shrink-0 text-[10px] bg-slate-200 text-slate-600 dark:bg-dark-bg-card dark:text-dark-text-secondary px-1.5 py-0.5 rounded font-bold uppercase transition-colors duration-300">
                       {tBank('ibanLabel')}
                     </span>
-                    <p className='text-sm text-gray-500 font-mono tracking-tighter truncate'>
+                    <p className="text-sm text-gray-500 dark:text-dark-text-secondary font-mono tracking-tighter truncate transition-colors duration-300">
                       {bankAccount.iban}
                     </p>
                   </div>
@@ -1497,20 +1598,23 @@ export const WithdrawModal = ({ isOpen, onClose, maxAmount, onSuccess, onMoveToP
 
             {/* Amount Input */}
             <div>
-              {/* Label & Available Badge Header */}
               <div className="flex justify-between items-center mb-1">
-                <label className="block text-sm font-medium text-slate-700">
+                <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary transition-colors duration-300">
                   {t('amountLabel')}
                 </label>
-                <span className="text-xs font-medium text-[var(--color-main-600)] bg-[var(--color-main-50)] px-2 py-0.5 rounded-full">
-                  {t('available', { amount: Number(maxAmount).toFixed(2) })}
+
+                <span className="text-xs font-medium text-main-600 bg-main-50 dark:bg-main-600/10 dark:text-main-400 px-2 py-0.5 rounded-full transition-colors duration-300">
+                  {t('available', {
+                    amount: Number(maxAmount).toFixed(2),
+                  })}
                 </span>
               </div>
 
-              {/* Input Container with Relative Positioning for "SAR" */}
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
-                  <span className="text-gray-500 sm:text-sm">SAR</span>
+                  <span className="text-gray-500 dark:text-dark-text-secondary sm:text-sm transition-colors duration-300">
+                    SAR
+                  </span>
                 </div>
 
                 <Input
@@ -1520,9 +1624,7 @@ export const WithdrawModal = ({ isOpen, onClose, maxAmount, onSuccess, onMoveToP
                   placeholder="0.00"
                   min="112"
                   max={maxAmount}
-                  // Add 'pl-12' to make room for the SAR prefix
                   className="pl-12 !text-lg font-semibold"
-                // If you are using React Hook Form, replace value/onChange with: {...register('amount')}
                 />
               </div>
             </div>
@@ -1536,8 +1638,9 @@ export const WithdrawModal = ({ isOpen, onClose, maxAmount, onSuccess, onMoveToP
                 loading={submitting}
                 className="flex-1"
               />
+
               <Button
-                color='gray'
+                color="gray"
                 onClick={onClose}
                 className="flex-1"
                 name={t('cancel')}

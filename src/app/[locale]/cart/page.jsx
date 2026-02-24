@@ -56,12 +56,16 @@ export default function CartPage() {
   const hasItems = cart?.total > 0;
 
   return (
-    <div className="bg-white py-8 sm:py-12 px-4 sm:px-6">
+    <div className="bg-white dark:bg-dark-bg-base py-8 sm:py-12 px-4 sm:px-6 transition-colors duration-300 min-h-screen">
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">{t('title')}</h1>
-            <p className="text-slate-600">{t('subtitle')}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-dark-text-primary">
+              {t('title')}
+            </h1>
+            <p className="text-slate-600 dark:text-dark-text-secondary">
+              {t('subtitle')}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {hasItems && (
@@ -79,33 +83,35 @@ export default function CartPage() {
               color="secondary"
               href="/services"
               disabled={busy === 'all'}
-              className="!w-fit !px-4"
+              className="!w-fit !px-4 dark:bg-dark-bg-input dark:text-dark-text-primary! dark:border-dark-border"
               aria-label={t('exploreServices')}
             />
           </div>
         </div>
 
         {error && (
-          <div className="mb-6 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          <div className="mb-6 rounded-md border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 px-3 py-2 text-sm text-red-700">
             {error}
           </div>
         )}
 
         {loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-60 bg-slate-200 rounded-lg animate-pulse" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-64 bg-slate-100 dark:bg-dark-bg-card rounded-xl animate-pulse border border-slate-200 dark:border-dark-border" />
             ))}
           </div>
         )}
 
         {!loading && !hasItems && (
-          <NoResults
-            mainText={t('emptyState.mainText')}
-            additionalText={t('emptyState.additionalText')}
-            buttonText={t('emptyState.buttonText')}
-            buttonLink="/services"
-          />
+          <div className="py-12">
+            <NoResults
+              mainText={t('emptyState.mainText')}
+              additionalText={t('emptyState.additionalText')}
+              buttonText={t('emptyState.buttonText')}
+              buttonLink="/services"
+            />
+          </div>
         )}
 
         {!loading && hasItems && (
@@ -115,21 +121,23 @@ export default function CartPage() {
               return (
                 <div
                   key={service.id}
-                  className="bg-white border border-slate-200 rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300"
+                  className="bg-white dark:bg-dark-bg-card border border-slate-200 dark:border-dark-border rounded-xl shadow-sm overflow-hidden hover:shadow-xl dark:hover:shadow-2xl/20 transition-all duration-300"
                 >
-                  <div className="relative w-full aspect-2/1 overflow-hidden rounded-lg">
+                  <div className="relative w-full aspect-[16/10] overflow-hidden">
                     <Img
                       src={thumb}
                       alt={service?.title ?? 'Service'}
-                      className="object-cover w-full h-full"
+                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                   </div>
-                  <div className="p-4 space-y-3">
+
+                  <div className="p-4 space-y-4">
                     <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <Link
                           href={service?.slug ? `/services/category/${service.slug}` : '#'}
-                          className="block text-base sm:text-lg font-semibold text-slate-900 truncate hover:underline"
+                          className="block text-base font-bold text-slate-900 dark:text-dark-text-primary leading-tight hover:text-main-600 dark:hover:text-main-400 transition-colors line-clamp-2"
                           title={service?.title}
                         >
                           {service?.title ?? 'Service'}
@@ -138,20 +146,20 @@ export default function CartPage() {
                       <button
                         onClick={() => removeFromCart(service.id)}
                         disabled={busy === service.id}
-                        className="p-2 rounded-md hover:bg-red-50 border border-transparent hover:border-red-200 text-red-600 disabled:opacity-60"
+                        className="p-2 rounded-lg bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors disabled:opacity-60 shrink-0"
                         title={t('remove')}
-                        aria-label={t('remove')}
                       >
                         {busy === service.id ? (
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         )}
                       </button>
                     </div>
+
                     <Button
                       href={`/services/category/${service?.slug ?? ''}`}
-                      className="mt-3 sm:mt-4 w-full"
+                      className="w-full !h-10 text-sm"
                       name={t('viewService')}
                       aria-label={t('viewService')}
                     />

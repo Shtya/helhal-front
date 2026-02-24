@@ -219,9 +219,9 @@ export default function MyJobsPage() {
 
 
   return (
-    <div className='container !mb-12'>
+    <div className='container !mb-12 '>
       <div className='mt-8 mb-4 flex items-center justify-between'>
-        <h1 className='text-3xl font-bold max-md:text-xl'>{t('title')}</h1>
+        <h1 className='text-3xl font-bold max-md:text-xl dark:text-dark-text-primary'>{t('title')}</h1>
         <Button name={t('createNewJob')} className='max-w-fit' href='share-job-description' />
       </div>
 
@@ -332,19 +332,19 @@ function JobDrawer({ open, onClose, job, jobId }) {
           <motion.div className='fixed inset-0 bg-black/40 backdrop-blur-[1px] z-40' onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
 
           {/* Drawer */}
-          <motion.aside className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col' initial={{ x: -580 }} animate={{ x: 0 }} exit={{ x: -580 }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
+          <motion.aside className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white dark:bg-dark-bg-card shadow-2xl flex flex-col' initial={{ x: -580 }} animate={{ x: 0 }} exit={{ x: -580 }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
             {jobLoading ? (
               <JobDrawerSkeleton onClose={onClose} />
             ) : (
               <>
                 {/* Header */}
-                <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
+                <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200 dark:border-dark-border'>
                   <div className='flex items-center flex-wrap gap-3'>
-                    <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || t('jobDetails')}</h3>
+                    <h3 className='text-lg font-semibold text-slate-900 dark:text-dark-text-primary line-clamp-1'>{localJob?.title || t('jobDetails')}</h3>
 
                   </div>
-                  <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
-                    <X className='h-5 w-5 text-slate-700' />
+                  <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100 dark:hover:bg-dark-bg-input'>
+                    <X className='h-5 w-5 text-slate-700 dark:text-dark-text-primary' />
                   </button>
                 </div>
 
@@ -353,9 +353,9 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   {/* Summary */}
                   {localJob?.description && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('summary')}</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2 dark:text-dark-text-primary'>{t('summary')}</h4>
 
-                      <p className="text-sm text-slate-700 whitespace-pre-wrap">
+                      <p className="text-sm text-slate-700 whitespace-pre-wrap dark:text-dark-text-secondary">
                         {localJob?.description}
                       </p>
 
@@ -366,24 +366,24 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   {/* Basic meta */}
                   <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Budget + Price Type */}
-                    <div className="rounded-xl border border-slate-200 p-4">
-                      <div className="text-slate-900 font-semibold flex gap-1">{fmtMoney(budget)}<Currency /></div>
-                      <div className="text-xs text-slate-500">{priceType}</div>
+                    <div className="rounded-xl border border-slate-200 p-4 dark:border-dark-border dark:bg-dark-bg-input">
+                      <div className="text-slate-900 font-semibold flex gap-1 dark:text-dark-text-primary">{fmtMoney(budget)}<Currency /></div>
+                      <div className="text-xs text-slate-500 dark:text-dark-text-secondary">{priceType}</div>
                     </div>
 
                     {/* Preferred Delivery */}
-                    <div className="rounded-xl border border-slate-200 p-4">
-                      <div className="text-slate-900 font-semibold">
+                    <div className="rounded-xl border border-slate-200 p-4 dark:border-dark-border dark:bg-dark-bg-input">
+                      <div className="text-slate-900 font-semibold dark:text-dark-text-primary">
                         {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? t('day') : t('days')}
                       </div>
-                      <div className="text-xs text-slate-500">{t('preferredDelivery')}</div>
+                      <div className="text-xs text-slate-500 dark:text-dark-text-secondary">{t('preferredDelivery')}</div>
                     </div>
                   </section>
 
                   {/* Skills */}
                   {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('skillsAndExpertise')}</h4>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2 dark:text-dark-text-primary'>{t('skillsAndExpertise')}</h4>
                       <div className='flex flex-wrap gap-2'>
                         {localJob?.skillsRequired.map((s, i) => (
                           <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
@@ -396,9 +396,9 @@ function JobDrawer({ open, onClose, job, jobId }) {
 
 
                   {/* Location */}
-                  <section className="rounded-xl border border-slate-200 p-4 mt-4">
-                    <h4 className="text-sm font-semibold text-slate-900 mb-2">{t('location')}</h4>
-                    <div className="text-slate-700 text-sm flex flex-col gap-1">
+                  <section className="rounded-xl border border-slate-200 p-4 mt-4 dark:border-dark-border dark:bg-dark-bg-input">
+                    <h4 className="text-sm font-semibold text-slate-900 mb-2 dark:text-dark-text-primary">{t('location')}</h4>
+                    <div className="text-slate-700 text-sm flex flex-col gap-1 dark:text-dark-text-secondary">
                       {/** Determine country and state based on locale */}
                       {(() => {
                         const JobCountry = locale === 'ar'
@@ -425,13 +425,13 @@ function JobDrawer({ open, onClose, job, jobId }) {
 
                   {/* Client */}
                   <section>
-                    <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('aboutTheClient')}</h4>
+                    <h4 className='text-sm font-semibold text-slate-900 mb-2 dark:text-dark-text-primary'>{t('aboutTheClient')}</h4>
                     <div className='mt-3 space-y-2 text-sm'>
                       <div className='flex items-center gap-2'>
 
                       </div>
-                      <div className='flex items-center gap-2 text-slate-700'>
-                        <CalendarDays className='h-4 w-4' />
+                      <div className='flex items-center gap-2 text-slate-700 dark:text-dark-text-secondary'>
+                        <CalendarDays className='h-4 w-4 dark:text-dark-text-secondary dark:invert' />
                         <span>{t('posted')} {created || '—'}</span>
                       </div>
                     </div>
@@ -440,10 +440,10 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   {/* Attachments */}
                   {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('attachments')}</h4>
-                      <div className='rounded-xl border border-slate-200 p-3'>
-                        <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                          <FolderOpen className='h-4 w-4' /> {t('files')}
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2 dark:text-dark-text-primary'>{t('attachments')}</h4>
+                      <div className='rounded-xl border border-slate-200 p-3 dark:border-dark-border dark:bg-dark-bg-input'>
+                        <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800 dark:text-dark-text-primary'>
+                          <FolderOpen className='h-4 w-4 dark:text-dark-text-secondary dark:invert' /> {t('files')}
                         </div>
                         <AttachmentList attachments={localJob?.attachments} />
                       </div>
@@ -452,8 +452,8 @@ function JobDrawer({ open, onClose, job, jobId }) {
                   {/* additionalInfo */}
                   {localJob?.additionalInfo && (
                     <section>
-                      <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('additionalDetails')}</h4>
-                      <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
+                      <h4 className='text-sm font-semibold text-slate-900 mb-2 dark:text-dark-text-primary'>{t('additionalDetails')}</h4>
+                      <p className='text-sm text-slate-700 whitespace-pre-wrap dark:text-dark-text-secondary'>{localJob?.additionalInfo}</p>
                     </section>
                   )}
                 </div>
@@ -471,60 +471,60 @@ function JobDrawerSkeleton({ onClose }) {
   return (
     <div className="space-y-6 animate-pulse p-4">
       {/* header */}
-      <div className='flex items-center justify-between  pb-4 border-b border-slate-200'>
+      <div className='flex items-center justify-between  pb-4 border-b border-slate-200 dark:border-dark-border'>
 
-        <div className="h-6 w-2/3 bg-slate-200 rounded" />
+        <div className="h-6 w-2/3 bg-slate-200 rounded dark:bg-dark-border" />
 
-        <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
-          <X className='h-5 w-5 text-slate-700' />
+        <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100 dark:hover:bg-dark-bg-input'>
+          <X className='h-5 w-5 text-slate-700 dark:text-dark-text-primary' />
         </button>
       </div>
 
       {/* summary */}
       <div className="space-y-2">
-        <div className="h-4 w-1/3 bg-slate-200 rounded" />
-        <div className="h-3 w-full bg-slate-200 rounded" />
-        <div className="h-3 w-full bg-slate-200 rounded" />
-        <div className="h-3 w-full bg-slate-200 rounded" />
+        <div className="h-4 w-1/3 bg-slate-200 rounded dark:bg-dark-border" />
+        <div className="h-3 w-full bg-slate-200 rounded dark:bg-dark-border" />
+        <div className="h-3 w-full bg-slate-200 rounded dark:bg-dark-border" />
+        <div className="h-3 w-full bg-slate-200 rounded dark:bg-dark-border" />
 
-        <div className="h-3 w-5/6 bg-slate-200 rounded" />
+        <div className="h-3 w-5/6 bg-slate-200 rounded dark:bg-dark-border" />
       </div>
 
       {/* meta grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-slate-200 p-4">
-          <div className="h-5 w-24 bg-slate-200 rounded mb-2" />
-          <div className="h-3 w-16 bg-slate-200 rounded" />
+        <div className="rounded-xl border border-slate-200 p-4 dark:border-dark-border">
+          <div className="h-5 w-24 bg-slate-200 rounded mb-2 dark:bg-dark-border" />
+          <div className="h-3 w-16 bg-slate-200 rounded dark:bg-dark-border" />
         </div>
-        <div className="rounded-xl border border-slate-200 p-4">
-          <div className="h-5 w-20 bg-slate-200 rounded mb-2" />
-          <div className="h-3 w-24 bg-slate-200 rounded" />
+        <div className="rounded-xl border border-slate-200 p-4 dark:border-dark-border">
+          <div className="h-5 w-20 bg-slate-200 rounded mb-2 dark:bg-dark-border" />
+          <div className="h-3 w-24 bg-slate-200 rounded dark:bg-dark-border" />
         </div>
       </div>
 
       {/* skills */}
       <div className="flex flex-wrap gap-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-6 w-20 bg-slate-200 rounded-full" />
+          <div key={i} className="h-6 w-20 bg-slate-200 rounded-full dark:bg-dark-border" />
         ))}
       </div>
 
       {/* client */}
       <div className="flex items-center gap-3">
         <div className="flex-1">
-          <div className="h-4 w-36 bg-slate-200 rounded mb-2" />
-          <div className="h-3 w-20 bg-slate-200 rounded" />
+          <div className="h-4 w-36 bg-slate-200 rounded mb-2 dark:bg-dark-border" />
+          <div className="h-3 w-20 bg-slate-200 rounded dark:bg-dark-border" />
         </div>
       </div>
 
       {/* attachments */}
-      <div className="rounded-xl border border-slate-200 p-3 space-y-2">
-        <div className="h-4 w-28 bg-slate-200 rounded" />
-        <div className="h-8 w-full bg-slate-200 rounded" />
+      <div className="rounded-xl border border-slate-200 p-3 space-y-2 dark:border-dark-border">
+        <div className="h-4 w-28 bg-slate-200 rounded dark:bg-dark-border" />
+        <div className="h-8 w-full bg-slate-200 rounded dark:bg-dark-border" />
       </div>
 
       {/* additional info */}
-      <div className="h-12 w-full bg-slate-200 rounded" />
+      <div className="h-12 w-full bg-slate-200 rounded dark:bg-dark-border" />
     </div>
   );
 }

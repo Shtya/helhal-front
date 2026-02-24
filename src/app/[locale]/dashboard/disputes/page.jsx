@@ -17,7 +17,6 @@ import Img from '@/components/atoms/Img';
 import { DisputeStatus, disputeType } from '@/constants/dispute';
 import toast from 'react-hot-toast';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
-import { MdOutlineLockOpen } from 'react-icons/md';
 import { isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
@@ -29,20 +28,45 @@ import { has } from '@/utils/permissions';
 function UserMini({ user }) {
   const letter = (user?.username?.[0] || '?').toUpperCase();
   const img = user?.profileImage || user?.avatarUrl;
+
   return (
-    <div className='flex items-center gap-2 min-w-[220px]'>
-      <div className='h-9 w-9 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-sm font-semibold'>
-        {img ? <Img src={img} alt={user?.username || 'user'} altSrc='/no-user.png' className='h-full w-full object-cover' /> : letter}</div>
-      <div className='leading-tight'>
-        <h1 className='font-medium text-sm truncate max-w-[160px]'>{user?.username || '—'}</h1>
-        <p className='text-xs text-gray-500 truncate max-w-[160px]'>{user?.email || ''}</p>
+    <div className="flex items-center gap-2 min-w-[220px]">
+      <div
+        className="
+          h-9 w-9 rounded-full overflow-hidden flex items-center justify-center
+          text-sm font-semibold
+          bg-gray-200
+          dark:bg-dark-bg-input
+          dark:text-dark-text-primary
+        "
+      >
+        {img ? (
+          <Img
+            src={img}
+            alt={user?.username || 'user'}
+            altSrc="/no-user.png"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          letter
+        )}
+      </div>
+
+      <div className="leading-tight">
+        <h1 className="font-medium text-sm truncate max-w-[160px] text-slate-800 dark:text-dark-text-primary">
+          {user?.username || '—'}
+        </h1>
+
+        <p className="text-xs truncate max-w-[160px] text-gray-500 dark:text-dark-text-secondary">
+          {user?.email || ''}
+        </p>
       </div>
     </div>
   );
 }
 
 function Shimmer({ className = '' }) {
-  return <div className={`animate-pulse bg-gray-100 rounded ${className}`} />;
+  return <div className={`shimmer animate-pulse bg-gray-100 rounded ${className}`} />;
 }
 
 function nestMessages(list) {
@@ -158,10 +182,22 @@ export default function DisputesPage() {
         key: 'status',
         label: t('Dashboard.disputes.columns.status'),
         status: [
-          ['open', 'text-yellow-700'],
-          ['in_review', 'text-blue-700'],
-          ['resolved', 'text-main-700'],
-          ['rejected', 'text-rose-700'],
+          [
+            'open',
+            ' text-yellow-700 dark:text-yellow-400'
+          ],
+          [
+            'in_review',
+            ' text-blue-700 dark:text-blue-400'
+          ],
+          [
+            'resolved',
+            ' text-main-700 dark:text-main-400'
+          ],
+          [
+            'rejected',
+            ' text-rose-700 dark:text-rose-400'
+          ],
         ],
         headerClassName: 'text-center',
         cellClassName: 'text-center',
@@ -521,30 +557,46 @@ export default function DisputesPage() {
 
       {/* Details Modal */}
       {detailsOpen && (
-        <Modal title={t('Dashboard.disputes.modals.detailsTitle')} onClose={closeAllModals}>
+        <Modal
+          title={t('Dashboard.disputes.modals.detailsTitle')}
+          onClose={closeAllModals}
+          className="dark:bg-dark-bg-card dark:text-dark-text-primary"
+        >
           <div className="space-y-4">
             {/* Dispute Info Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Info label={t('Dashboard.disputes.modals.order')} value={selected?._raw?.order?.title || selected?._raw?.orderId} />
-              <Info label={t('Dashboard.disputes.modals.raisedBy')} value={selected?._raw?.raisedBy?.username || selected?._raw?.raisedById} />
+              <Info
+                label={t('Dashboard.disputes.modals.order')}
+                value={selected?._raw?.order?.title || selected?._raw?.orderId}
+              />
+              <Info
+                label={t('Dashboard.disputes.modals.raisedBy')}
+                value={selected?._raw?.raisedBy?.username || selected?._raw?.raisedById}
+              />
               <Info label={t('Dashboard.disputes.modals.subject')} value={selected?._raw?.subject} />
               <Info
                 label={t('Dashboard.disputes.modals.type')}
-                value={
-                  disputeType.find((type) => type.id === selected?._raw?.type)?.name ?? '—'
-                }
+                value={disputeType.find((type) => type.id === selected?._raw?.type)?.name ?? '—'}
               />
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 font-medium">{t('Dashboard.disputes.modals.status')}:</span>
+                <span className="text-sm text-gray-600 font-medium dark:text-dark-text-secondary">
+                  {t('Dashboard.disputes.modals.status')}:
+                </span>
                 <DisputeStatusPill status={selected?._raw?.status} />
               </div>
             </div>
-            <Info label={t('Dashboard.disputes.modals.reason')} value={selected?._raw?.reason} />
+
+            <Info
+              label={t('Dashboard.disputes.modals.reason')}
+              value={selected?._raw?.reason}
+            />
 
             {/* Invoice Section */}
-            <div className="rounded-lg border border-gray-200 p-3">
-              <h4 className="font-medium mb-2">{t('Dashboard.disputes.modals.invoice')}</h4>
+            <div className="rounded-lg border border-gray-200 p-3 dark:border-dark-border dark:bg-dark-bg-card">
+              <h4 className="font-medium mb-2 dark:text-dark-text-primary">
+                {t('Dashboard.disputes.modals.invoice')}
+              </h4>
               {orderDetailLoading ? (
                 <div className="space-y-2">
                   <Shimmer className="h-4 w-32" />
@@ -552,7 +604,7 @@ export default function DisputesPage() {
                   <Shimmer className="h-4 w-40" />
                 </div>
               ) : inv ? (
-                <div className="text-sm space-y-1">
+                <div className="text-sm space-y-1 dark:text-dark-text-primary">
                   <div className="flex justify-between">
                     <span>{t('Dashboard.disputes.modals.subtotal')}</span>
                     <span>{subtotal.toFixed(2)} {currency}</span>
@@ -567,7 +619,9 @@ export default function DisputesPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-500">{t('Dashboard.disputes.modals.noInvoice')}</p>
+                <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
+                  {t('Dashboard.disputes.modals.noInvoice')}
+                </p>
               )}
             </div>
           </div>
@@ -576,53 +630,59 @@ export default function DisputesPage() {
 
       {/* Resolution Modal */}
       {resolutionOpen && (
-        <Modal title={t('Dashboard.disputes.modals.proposeTitle')} onClose={closeAllModals}>
-          <div className='space-y-4'>
-            <div className='rounded-lg border border-gray-200 p-3'>
-              <h4 className='font-medium mb-2'>{t('Dashboard.disputes.modals.order')}</h4>
-              <div className='text-sm text-gray-700'>{selected?._raw?.order?.title || selected?._raw?.orderId}</div>
+        <Modal
+          title={t('Dashboard.disputes.modals.proposeTitle')}
+          onClose={closeAllModals}
+          className="dark:bg-dark-bg-card dark:text-dark-text-primary"
+        >
+          <div className="space-y-4">
+            <div className="rounded-lg border border-gray-200 p-3 dark:border-dark-border dark:bg-dark-bg-card">
+              <h4 className="font-medium mb-2 dark:text-dark-text-primary">
+                {t('Dashboard.disputes.modals.order')}
+              </h4>
+              <div className="text-sm text-gray-700 dark:text-dark-text-primary">
+                {selected?._raw?.order?.title || selected?._raw?.orderId}
+              </div>
             </div>
 
-            <div className='rounded-lg border border-gray-200 p-3'>
-              <h4 className='font-medium mb-2'>{t('Dashboard.disputes.modals.invoice')}</h4>
+            <div className="rounded-lg border border-gray-200 p-3 dark:border-dark-border dark:bg-dark-bg-card">
+              <h4 className="font-medium mb-2 dark:text-dark-text-primary">
+                {t('Dashboard.disputes.modals.invoice')}
+              </h4>
               {orderDetailLoading ? (
-                <div className='space-y-2'>
-                  <Shimmer className='h-4 w-32' />
-                  <Shimmer className='h-4 w-24' />
-                  <Shimmer className='h-4 w-40' />
+                <div className="space-y-2">
+                  <Shimmer className="h-4 w-32" />
+                  <Shimmer className="h-4 w-24" />
+                  <Shimmer className="h-4 w-40" />
                 </div>
               ) : inv ? (
-                <div className='text-sm'>
-                  <div className='flex justify-between'>
+                <div className="text-sm dark:text-dark-text-primary">
+                  <div className="flex justify-between">
                     <span>{t('Dashboard.disputes.modals.subtotalEscrow')}</span>
-                    <span className='font-medium'>
-                      {subtotal.toFixed(2)} {currency}
-                    </span>
+                    <span className="font-medium">{subtotal.toFixed(2)} {currency}</span>
                   </div>
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <span>{t('Dashboard.disputes.modals.serviceFeePlatform')}</span>
-                    <span>
-                      {serviceFee.toFixed(2)} {currency}
-                    </span>
+                    <span>{serviceFee.toFixed(2)} {currency}</span>
                   </div>
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <span>{t('Dashboard.disputes.modals.total')}</span>
-                    <span>
-                      {total.toFixed(2)} {currency}
-                    </span>
+                    <span>{total.toFixed(2)} {currency}</span>
                   </div>
                 </div>
               ) : (
-                <p className='text-sm text-gray-500'>{t('Dashboard.disputes.modals.noInvoice')}</p>
+                <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
+                  {t('Dashboard.disputes.modals.noInvoice')}
+                </p>
               )}
             </div>
 
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label={t('Dashboard.disputes.modals.sellerAmount')}>
                 <input
                   type="number"
                   step="0.01"
-                  className="w-full rounded-lg border border-gray-300 p-2"
+                  className="w-full rounded-lg border border-gray-300 p-2 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary"
                   value={sellerAmount}
                   onChange={e => {
                     const val = Number(e.target.value);
@@ -637,7 +697,7 @@ export default function DisputesPage() {
                 <input
                   type="number"
                   step="0.01"
-                  className="w-full rounded-lg border border-gray-300 p-2"
+                  className="w-full rounded-lg border border-gray-300 p-2 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary"
                   value={buyerRefund}
                   onChange={e => {
                     const val = Number(e.target.value);
@@ -647,40 +707,74 @@ export default function DisputesPage() {
                   }}
                 />
               </Field>
-
             </div>
 
-            <div className='rounded-lg border border-gray-200 p-3'>
-              <div className='text-sm text-gray-700 mb-2'>{t('Dashboard.disputes.modals.closeOrderAs')}</div>
-              <div className='flex items-center gap-4'>
-                <InputRadio name='closeAs' value='completed' label={t('Dashboard.disputes.modals.completed')} checked={closeAs === 'completed'} onChange={setCloseAs} />
-                <InputRadio name='closeAs' value='cancelled' label={t('Dashboard.disputes.modals.cancelled')} checked={closeAs === 'cancelled'} onChange={setCloseAs} />
+            <div className="rounded-lg border border-gray-200 p-3 dark:border-dark-border dark:bg-dark-bg-card">
+              <div className="text-sm text-gray-700 mb-2 dark:text-dark-text-secondary">
+                {t('Dashboard.disputes.modals.closeOrderAs')}
+              </div>
+              <div className="flex items-center gap-4">
+                <InputRadio
+                  name="closeAs"
+                  value="completed"
+                  label={t('Dashboard.disputes.modals.completed')}
+                  checked={closeAs === 'completed'}
+                  onChange={setCloseAs}
+                />
+                <InputRadio
+                  name="closeAs"
+                  value="cancelled"
+                  label={t('Dashboard.disputes.modals.cancelled')}
+                  checked={closeAs === 'cancelled'}
+                  onChange={setCloseAs}
+                />
               </div>
             </div>
-            {resError ? <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{resError}</div> : null}
 
-            <div className='flex items-center justify-end gap-2'>
-              <Button disabled={!orderDetail} name={resSubmitting ? t('Dashboard.disputes.modals.processing') : t('Dashboard.disputes.modals.resolvePayout')} onClick={resolveAndPayoutNow} className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400' : 'bg-main-600 hover:bg-main-700'}`} loading={resSubmitting} />
+            {resError && (
+              <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-primary">
+                {resError}
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                disabled={!orderDetail}
+                name={resSubmitting ? t('Dashboard.disputes.modals.processing') : t('Dashboard.disputes.modals.resolvePayout')}
+                onClick={resolveAndPayoutNow}
+                className={`rounded-lg px-4 py-2 text-white ${resSubmitting ? 'bg-gray-400 dark:bg-dark-bg-input' : 'bg-main-600 hover:bg-main-700 dark:bg-dark-bg-input dark:hover:bg-dark-bg-card'}`}
+                loading={resSubmitting}
+              />
             </div>
           </div>
         </Modal>
       )}
-
       {/* Activity & Thread Modal */}
       {activityOpen && (
-        <Modal className={'!max-w-[700px] w-full '} title={t('Dashboard.disputes.modals.activityTitle')} onClose={closeAllModals}>
-          <div className='space-y-4'>
+        <Modal
+          className="!max-w-[700px] w-full dark:bg-dark-bg-card dark:text-dark-text-primary"
+          title={t('Dashboard.disputes.modals.activityTitle')}
+          onClose={closeAllModals}
+        >
+          <div className="space-y-4">
             {actLoading ? (
-              <div className='space-y-3'>
-                <Shimmer className='h-5 w-40' />
-                <Shimmer className='h-4 w-2/3' />
-                <Shimmer className='h-32 w-full' />
+              <div className="space-y-3">
+                <Shimmer className="h-5 w-40" />
+                <Shimmer className="h-4 w-2/3" />
+                <Shimmer className="h-32 w-full" />
               </div>
             ) : actError ? (
-              <div className='rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700'>{actError}</div>
+              <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-primary">
+                {actError}
+              </div>
             ) : activity ? (
               <>
-                <DisputeChat detail={activity} selectedId={activity?.dispute?.id} setDetail={setActivity} />
+                <DisputeChat
+                  detail={activity}
+                  selectedId={activity?.dispute?.id}
+                  setDetail={setActivity}
+                  className="dark:bg-dark-bg-card dark:text-dark-text-primary"
+                />
               </>
             ) : null}
           </div>
@@ -692,20 +786,19 @@ export default function DisputesPage() {
 
 function Info({ label, value }) {
   return (
-    <div className='text-sm'>
-      <div className='text-gray-500'>{label}</div>
-      <div className='font-medium text-gray-900'>{value ?? '—'}</div>
+    <div className="text-sm">
+      <div className="text-gray-500 dark:text-dark-text-secondary">{label}</div>
+      <div className="font-medium text-gray-900 dark:text-dark-text-primary">{value ?? '—'}</div>
     </div>
   );
 }
 
 function Field({ label, children }) {
   return (
-    <label className='block'>
-      <span className='text-sm font-medium text-gray-700'>{label}</span>
-      <div className='mt-1'>{children}</div>
+    <label className="block">
+      <span className="text-sm font-medium text-gray-700 dark:text-dark-text-secondary">{label}</span>
+      <div className="mt-1">{children}</div>
     </label>
   );
 }
-
 

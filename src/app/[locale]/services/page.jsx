@@ -36,10 +36,10 @@ export default function ServicesHomePage() {
 
   if (loading) {
     return (
-      <main className='container !pb-8'>
+      <main className='container !pb-8 dark:bg-dark-bg-base'>
         {/* <HeaderCategoriesSwiper /> */}
         <CardSlider title={t('page.browseCategories')} />
-        <h1 className='text-3xl max-md:text-xl font-[900] mt-12 mb-4'>{t('page.featured')}</h1>
+        <h1 className='text-3xl max-md:text-xl font-[900] mt-12 mb-4 dark:text-dark-text-primary'>{t('page.featured')}</h1>
         <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
           {Array.from({ length: 8 }).map((_, index) => (
             <CardSkeleton key={index} />
@@ -50,11 +50,11 @@ export default function ServicesHomePage() {
   }
 
   return (
-    <main className='container !pb-8'>
+    <main className='container !pb-8 dark:bg-dark-bg-base'>
       <CardSlider title={t('page.browseCategories')} />
 
       <div className='flex items-center justify-between mt-12 mb-4'>
-        <h1 className='text-3xl max-md:text-xl font-[900] '>{t('page.featured')}</h1>
+        <h1 className='text-3xl max-md:text-xl font-[900] dark:text-dark-text-primary'>{t('page.featured')}</h1>
 
         <Button href={'/services/all'} className='!w-[35px] !px-2   !h-[35px] !rounded-lg !text-base ' icon={isArabic ? <ChevronsLeft size={22} /> : <ChevronsRight size={22} />} />
       </div>

@@ -1005,10 +1005,13 @@
       "close": "Close"
     },
     "proposals": {
+      "viewJob": "View Job",
+      "estimatedTimeDays": "Estimated Time (days)",
+      "submitted": "Submitted",
+      "portfolio": "Portfolio",
       "title": "My Proposals",
       "subtitle": "Track submissions, approvals, and outcomes.",
       "all": "All",
-      "submitted": "submitted",
       "accepted": "accepted",
       "rejected": "rejected",
       "noProposals": "No proposals found",
@@ -1017,7 +1020,6 @@
       "noStatusProposals": "No {status} proposals.",
       "showLess": "Show less",
       "showMore": "Show more",
-      "portfolio": "Portfolio",
       "jobDetails": "Job details",
       "days": "days",
       "errors": {
@@ -2911,6 +2913,8 @@
     }
   },
   "NotFound": {
+    "error404": "Error 404",
+    "pageNotFound": "Page Not Found",
     "errorCode": "Error 404",
     "title": "Page not found",
     "description": "Sorry, the page you're looking for doesn't exist or has been moved. Try going back, or head to the homepage.",

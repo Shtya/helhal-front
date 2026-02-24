@@ -30,15 +30,15 @@ export function MonitorAllMessagesPanel({
       <div className="w-full relative pt-6">
         <div className="px-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold tracking-tight">{t('allConversations')}</h2>
+            <h2 className="text-2xl font-semibold tracking-tight dark:text-dark-text-primary">{t('allConversations')}</h2>
             <button
               disabled={loading}
               onClick={onRefresh}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-dark-text-secondary dark:hover:bg-dark-bg-card transition-colors"
               aria-label={t('refresh')}
               title={t('refresh')}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="dark:invert">
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
                 <path d="M21 3v5h-5" />
                 <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
@@ -47,19 +47,19 @@ export function MonitorAllMessagesPanel({
             </button>
           </div>
 
-          <div className="relative rounded-lg bg-white px-3 py-2 mb-4 ring-1 ring-inset ring-slate-200">
+          <div className="relative rounded-lg bg-white dark:bg-dark-bg-input px-3 py-2 mb-4 ring-1 ring-inset ring-slate-200 dark:ring-dark-border">
             <div className="flex items-center" disabled={loading}>
-              <Search size={18} className="text-gray-500 mr-2" />
+              <Search size={18} className="text-gray-500 dark:text-dark-text-secondary mr-2 dark:invert" />
               <input
                 value={query}
                 onChange={(e) => onSearch(e.target.value?.trim())}
-                className="w-full bg-transparent text-sm outline-none placeholder:text-gray-500"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-gray-500 dark:placeholder-dark-text-secondary dark:text-dark-text-primary"
                 placeholder={t('searchConversations')}
                 aria-label={t('searchConversations')}
               />
               {query && (
                 <AccessibleButton
-                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                  className="text-gray-500 hover:text-gray-700 dark:text-dark-text-secondary dark:hover:text-dark-text-primary transition-colors"
                   title={t('clear')}
                   type="button"
                   onClick={() => onSearch('')}
@@ -72,7 +72,7 @@ export function MonitorAllMessagesPanel({
           </div>
         </div>
 
-        <div className="my-4 h-px w-full bg-slate-200" />
+        <div className="my-4 h-px w-full bg-slate-200 dark:bg-dark-border" />
         <div className="px-6">
           {loading ? (
             <div className="py-2 h-[320px] w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-auto">
@@ -81,7 +81,7 @@ export function MonitorAllMessagesPanel({
               ))}
             </div>
           ) : (
-            <div className="py-2 h-[320px] w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-auto">
+            <div className="py-2 h-[320px] :w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-auto">
               <ul className="space-y-2" aria-label="Conversation list">
                 {items.map((it) => (
                   <li key={it.id}>
@@ -93,7 +93,7 @@ export function MonitorAllMessagesPanel({
                   </li>
                 ))}
                 {items.length === 0 && (
-                  <li className="text-sm text-slate-500 p-4 text-center" aria-live="polite">
+                  <li className="text-sm text-slate-500 dark:text-dark-text-secondary p-4 text-center" aria-live="polite">
                     {t('noConversations')}
                   </li>
                 )}
@@ -103,21 +103,21 @@ export function MonitorAllMessagesPanel({
         </div>
       </div>
 
-      <div className="mt-auto flex items-center justify-between p-3 border-t border-t-gray-200 bg-white rounded-b-xl">
+      <div className="mt-auto flex items-center justify-between p-3 border-t border-t-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card rounded-b-xl">
         <button
           onClick={() => setUserPagination((uP) => ({ ...uP, page: Math.max(1, p - 1) }))}
           disabled={p <= 1}
-          className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 rounded-full"
+          className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-dark-bg-input rounded-full dark:text-dark-text-primary"
         >
           {isArabic ? '▶' : '◀'}
         </button>
-        <span className="text-sm font-medium">
+        <span className="text-sm font-medium dark:text-dark-text-primary">
           {t('page', { current: p, total: pages })}
         </span>
         <button
           onClick={() => setUserPagination((uP) => ({ ...uP, page: Math.min(pages, p + 1) }))}
           disabled={p >= pages}
-          className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 rounded-full"
+          className="w-[35px] h-[35px] flex items-center justify-center p-2 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-dark-bg-input rounded-full dark:text-dark-text-primary"
         >
           {isArabic ? '◀' : '▶'}
         </button>
@@ -151,9 +151,9 @@ function MonitorThreadItem({
       className={[
         'cursor-pointer group w-full text-left rounded-xl p-3',
         'ring-1 ring-transparent transition-all duration-200',
-        'hover:ring-slate-200 hover:bg-slate-50/80',
+        'hover:ring-slate-200 hover:bg-slate-50/80 dark:hover:ring-dark-border dark:hover:bg-dark-bg-input/80',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500/50',
-        active ? 'gradient' : 'bg-transparent text-slate-900',
+        active ? 'gradient' : 'bg-transparent text-slate-900 dark:text-dark-text-primary',
       ].join(' ')}
     >
       <div className="flex items-start gap-3">

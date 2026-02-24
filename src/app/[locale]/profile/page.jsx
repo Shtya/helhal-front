@@ -93,21 +93,25 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
 
   return (
     <Card className=''>
-      <div className='rounded-t-2xl px-6 py-7' style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0) 100%)' }}>
+      <div
+        className='rounded-t-2xl px-6 py-7 bg-gradient-to-b from-white to-transparent dark:from-dark-bg-card dark:to-dark-bg-card/0'
+      >
         <div className='flex items-center justify-between'>
           <div className='flex flex-wrap items-center gap-2'>
             <Pill>{state?.type || '—'}</Pill>
-            {state.sellerLevel ? <Pill>{t('level', { level: state.sellerLevel })}</Pill> : null}
+            {state.sellerLevel ? (
+              <Pill>{t('level', { level: state.sellerLevel })}</Pill>
+            ) : null}
             <TopRatedBadge isTopRated={meta?.topRated} />
           </div>
 
           {/* Replace your <img> with this */}
           <button
             onClick={() => setEditing(!editing)}
-            className="p-1 rounded-lg transition-all focus:outline-none"
-            aria-label="Edit"
+            className='p-1 rounded-lg transition-all focus:outline-none'
+            aria-label='Edit'
           >
-            <EditIcon className={editing ? "scale-110 opacity-70" : ""} />
+            <EditIcon className={editing ? 'scale-110 opacity-70' : ''} />
           </button>
         </div>
 
@@ -119,11 +123,16 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
               <div className='group relative grid place-items-center'>
                 <div className='relative overflow-hidden'>
                   {state.profileImage ? (
-                    <Img altSrc={'/no-user.png'} src={state.profileImage} alt='avatar' className='h-20 w-20 rounded-full border border-[#EDEDED] object-cover' />
+                    <Img
+                      altSrc={'/no-user.png'}
+                      src={state.profileImage}
+                      alt='avatar'
+                      className='h-20 w-20 rounded-full border border-[#EDEDED] object-cover dark:border-dark-border'
+                    />
                   ) : (
-                    <div className='grid h-20 w-20 place-content-center rounded-full border border-[#EDEDED] bg-[#EDEDED] group-hover:ring-2 group-hover:ring-[var(--color-main-600)]'>
-                      <span className='text-2xl font-bold text-[#6B7280]'>{letterFromName(state.username || state.email)}</span>
-                    </div>
+                    <span className="text-2xl font-bold text-[#6B7280] dark:text-dark-text-secondary">
+                      {letterFromName(state.username || state.email)}
+                    </span>
                   )}
 
                   <div className='pointer-events-none absolute inset-0 hidden items-center justify-center rounded-full bg-black/35 text-white group-hover:flex'>
@@ -135,9 +144,10 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                     maxSelection={1}
                     className='absolute inset-0 scale-y-[4] opacity-0'
                     onChange={files => {
-                      const img = (files || []).find(f => String(f.mimeType || '').startsWith('image/'));
+                      const img = (files || []).find(f =>
+                        String(f.mimeType || '').startsWith('image/')
+                      );
                       if (!img) return;
-                      // Replace with real upload — here we just use a provided url
                       setState(s => ({ ...s, profileImage: img.url }));
                     }}
                   />
@@ -164,28 +174,32 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                 }}
                 onBlur={e => handleChangeUsername(e.target.value)}
               />
-              {usernameError && <FormErrorMessage message={tAuth(`errors.${usernameError}`)} />}
-              {/* <Input label='Email' value={state.email} onChange={e => setState(s => ({ ...s, email: e.target.value }))} /> */}
-              {/* <PhoneInputWithCountry
-                value={{ countryCode: state.countryCode, phone: state.phone }}
-                onChange={handleChangePhone}
-              />
-              {phoneError && <FormErrorMessage message={tAuth(`errors.${phoneError}`)} />} */}
-
-
+              {usernameError && (
+                <FormErrorMessage
+                  message={tAuth(`errors.${usernameError}`)}
+                />
+              )}
             </div>
           ) : (
             <>
-              <h3 className='mt-3 text-xl font-semibold text-[#000000]'>{state.username || '—'}</h3>
-              <p className='mb-[5px] text-[#6B7280]'>{state.email || '—'}</p>
-              <div className='flex  flex-wrap items-center gap-2'>
+              <h3 className='mt-3 text-xl font-semibold text-[#000000] dark:text-white'>
+                {state.username || '—'}
+              </h3>
+              <p className="mb-[5px] text-[#6B7280] dark:text-dark-text-secondary">
+                {state.email || '—'}
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
                 <Pill>
-                  <Shield className='mr-1 h-4 w-4' /> {meta.role || '—'}
+                  <Shield className="mr-1 h-4 w-4" /> {meta.role || '—'}
                 </Pill>
                 {state.phone && (
-                  <Pill className='text-[#6B7280]'>
-                    <Phone className='mr-1 h-4 w-4' />
-                    <span> {state.countryCode.dial_code} {state.phone.replace(/^\+/, '')}</span>
+                  <Pill className="text-[#6B7280] dark:text-dark-text-secondary">
+                    <Phone className="mr-1 h-4 w-4" />
+                    <span>
+                      {' '}
+                      {state.countryCode.dial_code}{' '}
+                      {state.phone.replace(/^\+/, '')}
+                    </span>
                   </Pill>
                 )}
               </div>
@@ -194,7 +208,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
         </div>
       </div>
 
-      <div className='mx-6 my-5 h-px bg-[#EDEDED]' />
+      <div className='mx-6 my-5 h-px bg-[#EDEDED] dark:bg-dark-border' />
 
       <div className='px-6 pb-6'>
         {loading ? (
@@ -213,48 +227,67 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
             </div>
           </div>
         ) : (
-          <ul className='space-y-4 text-[#292D32] text-sm sm:text-base'>
+          <ul className='space-y-4 text-[#292D32] dark:text-[#F9FAFB] text-sm sm:text-base'>
             <li className='flex items-center justify-between gap-2'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] dark:text-[#D1D5DB] shrink-0'>
                 <MapPin className='h-4 w-4' /> {t('from')}
               </span>
-              <span className='font-semibold break-words max-lg:break-all'>{state?.country?.name || '—'}</span>
+              <span className='font-semibold break-words max-lg:break-all'>
+                {state?.country?.name || '—'}
+              </span>
             </li>
             <li className='flex items-center justify-between gap-2'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] dark:text-[#D1D5DB] shrink-0'>
                 <CalendarDays className='h-4 w-4' /> {t('memberSince')}
               </span>
-              <span className='font-semibold break-words max-lg:break-all'>{meta.memberSince || '—'}</span>
+              <span className='font-semibold break-words max-lg:break-all'>
+                {meta.memberSince || '—'}
+              </span>
             </li>
             <li className='flex items-center justify-between gap-2'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] dark:text-[#D1D5DB] shrink-0'>
                 <Info className='h-4 w-4' /> {t('lastLogin')}
               </span>
-              <span className='font-semibold break-words max-lg:break-all'>{meta.lastLogin || '—'}</span>
-            </li>
-            <li className='flex items-center justify-between gap-2'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>{t('referralCode')}</span>
-              <span className='inline-flex items-center gap-2'>
-                <span className='font-semibold break-words max-lg:break-all'>{meta.referralCode || '—'}</span>
-                {meta.referralCode ? (
-                  <button onClick={onCopyReferral} className='cursor-pointer hover:scale-[1.1] duration-300 hover:bg-gray-100 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[#EDEDED]'>
-                    <Copy className='  h-4 w-4' />
-                  </button>
-                ) : null}
+              <span className='font-semibold break-words max-lg:break-all'>
+                {meta.lastLogin || '—'}
               </span>
             </li>
             <li className='flex items-center justify-between gap-2'>
-              <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>{t('referralStats')}</span>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] dark:text-[#D1D5DB] shrink-0'>
+                {t('referralCode')}
+              </span>
+              <span className='inline-flex items-center gap-2'>
+                <span className='font-semibold break-words max-lg:break-all'>
+                  {meta.referralCode || '—'}
+                </span>
+                {meta.referralCode && (
+                  <button
+                    onClick={onCopyReferral}
+                    className='cursor-pointer hover:scale-[1.1] duration-300 hover:bg-gray-100 dark:hover:bg-gray-700 inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[#EDEDED] dark:border-dark-border'
+                  >
+                    <Copy className='h-4 w-4' />
+                  </button>
+                )}
+              </span>
+            </li>
+            <li className='flex items-center justify-between gap-2'>
+              <span className='inline-flex items-center gap-2 text-[#6B7280] dark:text-[#D1D5DB] shrink-0'>
+                {t('referralStats')}
+              </span>
               <span className='font-semibold break-words max-lg:break-all'>
                 {meta.referralCount ?? 0} {t('referrals')}
               </span>
             </li>
-            {meta.referredBy ? (
+            {meta.referredBy && (
               <li className='flex items-center justify-between gap-2'>
-                <span className='inline-flex items-center gap-2 text-[#6B7280] shrink-0'>{t('referredBy')}</span>
-                <span className='font-semibold break-words max-lg:break-all'>@{meta.referredBy.username}</span>
+                <span className='inline-flex items-center gap-2 text-[#6B7280] dark:text-[#D1D5DB] shrink-0'>
+                  {t('referredBy')}
+                </span>
+                <span className='font-semibold break-words max-lg:break-all'>
+                  @{meta.referredBy.username}
+                </span>
               </li>
-            ) : null}
+            )}
           </ul>
         )}
       </div>
@@ -391,19 +424,34 @@ function KPICard({ loading, stats }) {
     <>
       {/* <h3 className='mb-3 text-lg font-semibold'>Seller KPIs</h3> */}
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-        <StatCard title={t('ordersCompleted')} value={Number(stats.ordersCompleted || 0)} hint={t('allTime')} icon={CheckCircle2} gradient='from-main-500 via-teal-500 to-cyan-400' />
-        <StatCard title={t('repeatBuyers')} value={Number(stats.repeatBuyers || 0)} hint={t('uniqueCustomers')} icon={Repeat} gradient='from-sky-500 via-indigo-500 to-violet-500' />
-        <StatCard title={t('avgRating')} value={stats.rating > 0 ? `${stats.rating.toFixed(1)} / 5` : '—'}
-          hint={stats.rating} icon={Star} gradient='from-amber-400 via-orange-500 to-rose-500' />
+        <StatCard
+          title={t('ordersCompleted')}
+          value={Number(stats.ordersCompleted || 0)}
+          hint={t('allTime')}
+          icon={CheckCircle2}
+          gradient='from-main-500 via-teal-500 to-cyan-400'
+        />
+        <StatCard
+          title={t('repeatBuyers')}
+          value={Number(stats.repeatBuyers || 0)}
+          hint={t('uniqueCustomers')}
+          icon={Repeat}
+          gradient='from-sky-500 via-indigo-500 to-violet-500'
+        />
+        <StatCard
+          title={t('avgRating')}
+          value={stats.rating > 0 ? `${stats.rating.toFixed(1)} / 5` : '—'}
+          hint={stats.rating}
+          icon={Star}
+          gradient='from-amber-400 via-orange-500 to-rose-500'
+        />
         <StatCard
           title={t('responseTime')}
           value={formatResponseTime(stats.responseTime)}
           hint={stats.responseTime ? t('responseTimeAverage') : t('responseTimeNotCalculated')}
           icon={Award}
-          gradient="from-fuchsia-500 via-rose-500 to-orange-400"
+          gradient='from-fuchsia-500 via-rose-500 to-orange-400'
         />
-
-
       </div>
     </>
   );
@@ -1129,13 +1177,18 @@ export default function Overview() {
   }
 
   /* --------------------------- Education/Cert modals ------------------------ */
-  const onRemoveEducation = idx => setState(a => ({ ...a, education: a.education.filter((_, i) => i !== idx) }));
-  const onRemoveCertification = idx => setState(a => ({ ...a, certifications: a.certifications.filter((_, i) => i !== idx) }));
+  const onRemoveEducation = idx =>
+    setState(a => ({ ...a, education: a.education.filter((_, i) => i !== idx) }));
+
+  const onRemoveCertification = idx =>
+    setState(a => ({ ...a, certifications: a.certifications.filter((_, i) => i !== idx) }));
+
   const [hasError, setHasError] = useState(false);
+
   return (
     <div className='container !py-8'>
       <div className='gap-6 flex flex-col lg:flex-row'>
-        <div className='lg:sticky lg:top-30  space-y-6 w-full lg:w-[350px] xl:w-[400px]'>
+        <div className='lg:sticky lg:top-30 space-y-6 w-full lg:w-[350px] xl:w-[400px]'>
           <ProfileCard
             loading={loading}
             editing={editing}
@@ -1228,27 +1281,36 @@ export default function Overview() {
         </div>
 
         {/* Bottom Save Drawer */}
-        <div className={`fixed inset-x-0 bottom-0 z-50 transition-transform duration-300 ${dirty ? 'translate-y-0' : 'translate-y-full'}`}>
-          <div className='mx-auto mb-4 w-[min(960px,92%)] rounded-2xl border border-main-200 bg-white/95 shadow-[0_20px_40px_rgba(0,0,0,0.12)] backdrop-blur'>
-            <div className='flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between'>
-              <div className='flex items-start gap-3'>
-                <AlertTriangle className='mt-[2px] h-5 w-5 text-amber-600' />
+        <div
+          className={`fixed inset-x-0 bottom-0 z-50 transition-transform duration-300 ${dirty ? 'translate-y-0' : 'translate-y-full'
+            }`}
+        >
+          <div className="mx-auto mb-4 w-[min(960px,92%)] rounded-2xl border border-main-200 bg-white/95 shadow-[0_20px_40px_rgba(0,0,0,0.12)] backdrop-blur
+                  dark:bg-dark-bg-card dark:border-dark-border">
+            <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="mt-[2px] h-5 w-5 text-amber-600" />
                 <div>
-                  <div className='font-semibold'>{t('unsavedChanges')}</div>
-                  <div className='text-sm text-slate-600'>{t('unsavedChangesDesc')}</div>
+                  <div className="font-semibold dark:text-dark-text-primary">
+                    {t('unsavedChanges')}
+                  </div>
+                  <div className="text-sm text-slate-600 dark:text-dark-text-secondary">
+                    {t('unsavedChangesDesc')}
+                  </div>
                 </div>
               </div>
-              <div className='flex items-center gap-2'>
+
+              <div className="flex items-center gap-2">
                 <Button
-                  color='secondary'
+                  color="secondary"
                   name={t('discard')}
                   onClick={() => {
                     if (baselineRef.current) {
                       setReverting(true);
                       try {
                         const parsed = JSON.parse(baselineRef.current);
-                        // restore snapshot
-                        setState(prev => ({ ...prev, ...parsed, password: '' })); // never restore password
+                        setState(prev => ({ ...prev, ...parsed, password: '' }));
                       } finally {
                         setTimeout(() => {
                           setReverting(false);
@@ -1258,10 +1320,19 @@ export default function Overview() {
                       window.location.reload();
                     }
                   }}
-                  className='!w-auto !px-4'
+                  className="!w-auto !px-4"
                 />
-                <Button color='green' name={saving ? '' : t('saveChanges')} loading={saving} onClick={saveAuthProfile} className='!w-auto !px-5' disabled={hasError} />
+
+                <Button
+                  color="green"
+                  name={saving ? '' : t('saveChanges')}
+                  loading={saving}
+                  onClick={saveAuthProfile}
+                  className="!w-auto !px-5"
+                  disabled={hasError}
+                />
               </div>
+
             </div>
           </div>
         </div>

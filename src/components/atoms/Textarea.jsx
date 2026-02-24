@@ -25,22 +25,27 @@ const Textarea = forwardRef(({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={name} className={`mb-1 block text-sm font-medium text-gray-600 ${cnLabel}`}>
+        <label
+          htmlFor={name}
+          className={`mb-1 block text-sm font-medium text-gray-600 dark:text-dark-text-secondary ${cnLabel}`}
+        >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
 
       <div className={`relative flex items-center rounded-md bg-white transition border ${error
-        ? 'border-red-500 ring-2 ring-red-500/20'
-        : props.value
-          ? 'border-main-600'
-          : 'border-gray-300'
-        } focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20 ${cnInput}`}>
+          ? 'border-red-500 ring-2 ring-red-500/20'
+          : props.value
+            ? 'border-main-600'
+            : 'border-gray-300 dark:border-dark-border'
+        } 
+        dark:bg-dark-bg-input focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20 ${cnInput}`}
+      >
 
         {iconLeft && (
           <span className='flex-none text-slate-400 pl-2'>
-            <img src={iconLeft} alt='' className='w-4' />
+            <img src={iconLeft} alt='' className='w-4 dark:opacity-70' />
           </span>
         )}
 
@@ -52,7 +57,7 @@ const Textarea = forwardRef(({
           onChange={onChange}
           onBlur={onBlur}
           rows={rows}
-          className='p-2 w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400 resize-none'
+          className='p-2 w-full bg-transparent outline-none text-slate-700 dark:text-dark-text-primary placeholder:text-gray-400 dark:placeholder:text-dark-text-secondary/50 resize-none'
           {...props}
         />
 
@@ -60,7 +65,7 @@ const Textarea = forwardRef(({
           <button
             type="button"
             onClick={onAction}
-            className='cursor-pointer flex items-center justify-center h-full aspect-1/1 absolute right-0 top-1/2 -translate-y-1/2 flex-none gradient p-2 text-white transition'
+            className='cursor-pointer flex items-center justify-center h-full aspect-square absolute right-0 top-1/2 -translate-y-1/2 flex-none gradient p-2 text-white transition'
           >
             <img src={actionIcon} alt='' className='w-[25px]' />
           </button>

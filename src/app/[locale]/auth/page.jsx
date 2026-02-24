@@ -21,9 +21,6 @@ import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import Logo from '@/components/common/Logo';
 import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
-
-
-/* ---------- Login Success Animation Component ----------- */
 const LoginSuccessAnimation = ({ message, onComplete }) => {
   const t = useTranslations('Auth');
 
@@ -40,7 +37,7 @@ const LoginSuccessAnimation = ({ message, onComplete }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 h-screen w-screen z-[9999] flex items-center justify-center bg-white"
+      className="fixed inset-0 h-screen w-screen z-[9999] flex items-center justify-center bg-white dark:bg-dark-bg-base"
     >
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
@@ -89,7 +86,7 @@ const LoginSuccessAnimation = ({ message, onComplete }) => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.5 }}
-          className="text-3xl font-bold text-gray-800 mb-2"
+          className="text-3xl font-bold text-gray-800 dark:text-dark-text-primary mb-2"
         >
           {message || t('success.signedIn')}
         </motion.h2>
@@ -139,7 +136,6 @@ const registerSchema = z.object({
     .max(150, 'refMax')
     .optional()
     .nullable(),
-
 });
 
 const forgetPasswordSchema = z.object({
@@ -150,8 +146,7 @@ const passwordResetFormSchema = z
   .object({
     newPassword: z.string().min(8, 'passwordMin').max(20, 'passwordMax').regex(/^[A-Za-z0-9_@$!%*?&]+$/, 'passwordInvalidChars'),
     confirmNewPassword: z.string(),
-    otp: z.string().regex(/^[0-9]+$/, 'otpNumbersOnly').length(4, 'otpLength')
-    ,
+    otp: z.string().regex(/^[0-9]+$/, 'otpNumbersOnly').length(4, 'otpLength'),
   })
   .refine(data => data.newPassword === data.confirmNewPassword, {
     message: 'passwordsMatch',
@@ -165,7 +160,7 @@ const phoneLoginSchema = z.object({
 /* ---------- context ---------- */
 const AuthFormContext = createContext(null);
 
-/* ---------- small UI bits (titles/tabs) unchanged from your file ---------- */
+/* ---------- small UI bits (titles/tabs) ---------- */
 function TitleByTab({ activeTab, view }) {
   const t = useTranslations('Auth');
   const TITLES = {
@@ -190,21 +185,20 @@ function TitleByTab({ activeTab, view }) {
   const tabData = TITLES[activeTab] || TITLES.login;
   const content = tabData[view] || tabData.options || { title: '', subtitle: '', values: [] };
 
-
   return (
     <motion.div key={`${activeTab}-${view}`} className="mb-6 text-center md:text-left">
-      <h1 className="text-center mt-2 text-xl md:text-2xl font-extrabold">{content.title}</h1>
+      <h1 className="text-center mt-2 text-xl md:text-2xl font-extrabold dark:text-dark-text-primary">{content.title}</h1>
 
       {content.subtitle && (
-        <p className="text-center mt-1 text-base text-gray-600">{content.subtitle}</p>
+        <p className="text-center mt-1 text-base text-gray-600 dark:text-dark-text-secondary">{content.subtitle}</p>
       )}
 
       {/* عرض القيم إذا موجودة */}
       {content.values && content.values.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-2 text-gray-600">
+        <ul className="mt-3 flex flex-col gap-2 text-gray-600 dark:text-dark-text-secondary">
           {content.values.map((val, idx) => (
             <li key={idx} className="flex items-start gap-2">
-              <span className="mt-1 h-2 w-2 flex-none rounded-full bg-main-600" />
+              <span className="mt-1 h-2 w-2 flex-none rounded-full bg-main-600 dark:bg-main-400" />
               <span>{val}</span>
             </li>
           ))}
@@ -239,13 +233,13 @@ function AuthTabs({ setView, activeTab, setActiveTab }) {
 
   return (
     <LayoutGroup id='auth-tabs'>
-      <div className='mb-10 grid grid-cols-3 gap-1 sm:gap-2 rounded-2xl bg-gray-100/80 pb-[3px] p-1 text-sm font-medium ring-1 ring-black/5'>
+      <div className='mb-10 grid grid-cols-3 gap-1 sm:gap-2 rounded-2xl bg-gray-100/80 dark:bg-dark-bg-card pb-[3px] p-1 text-sm font-medium ring-1 ring-black/5 dark:ring-white/10'>
         {TABS.map(tab => {
           const isActive = activeTab === tab.key;
           return (
             <motion.button key={tab.key} role='tab' aria-selected={isActive} onClick={() => handleClick(tab.key)} className='relative rounded-xl px-3 py-2 cursor-pointer'>
               {isActive && <motion.span layoutId='active-pill' className='absolute inset-0 rounded-xl bg-gradient-to-r from-main-500 to-main-400' />}
-              <span className={`relative z-10 ${isActive ? 'text-white' : 'text-gray-700'}`}>{t(tab.label)}</span>
+              <span className={`relative z-10 ${isActive ? 'text-white' : 'text-gray-700 dark:text-dark-text-secondary'}`}>{t(tab.label)}</span>
             </motion.button>
           );
         })}
@@ -254,7 +248,7 @@ function AuthTabs({ setView, activeTab, setActiveTab }) {
   );
 }
 
-/* ---------- social buttons (unchanged interface) ---------- */
+/* ---------- social buttons ---------- */
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/`;
 
 export const ContinueWithGoogleButton = ({ referralCode }) => {
@@ -283,7 +277,7 @@ export const ContinueWithGoogleButton = ({ referralCode }) => {
     }
   };
 
-  return <SocialButton icon='/images/google-icon.png' text={t('continueWithGoogle')} onClick={handleGoogleLogin} />;
+  return <SocialButton icon='/images/google-icon.png' imagInvert={false} text={t('continueWithGoogle')} onClick={handleGoogleLogin} />;
 };
 
 export const ContinueWithAppleButton = ({ referralCode }) => {
@@ -323,7 +317,7 @@ export const ContinueWithPhoneButton = ({ onClick }) => {
   return <SocialButton icon='/images/phone-icon.png' text={t('continueWithPhone')} onClick={onClick} />;
 };
 
-/* ---------- forms (switched to api from lib/axios) ---------- */
+/* ---------- forms ---------- */
 const LoginForm = ({ onLoggedIn }) => {
   const t = useTranslations('Auth');
   const { login } = useAuth();
@@ -344,20 +338,17 @@ const LoginForm = ({ onLoggedIn }) => {
     try {
       const { accessToken, refreshToken, user: fatchedUser } = await login(data);
 
-      //set login data at cookie
       await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ accessToken, refreshToken, user: fatchedUser }),
       });
 
-      // Show success animation instead of toast
       setSuccessMessage(t('success.signedIn'));
       setShowSuccessAnimation(true);
 
       setLoading(false);
       setTimeout(() => {
-        // setShowSuccessAnimation(false);
         onLoggedIn?.(fatchedUser);
       }, 1000);
     } catch (err) {
@@ -398,7 +389,6 @@ const RegisterForm = ({ onOtp }) => {
     setLoading(true);
     setError(null);
     try {
-
       await api.post('/auth/register', data);
       sessionStorage.setItem('registerEmail', data.email);
       toast.success(t('success.otpSent'));
@@ -521,7 +511,7 @@ const ResetPasswordForm = ({ email, otp, onReset }) => {
     try {
       await api.post('/auth/reset-password', { email, newPassword: data.newPassword, otp: data.otp });
       setSuccess(true);
-      onReset?.()
+      onReset?.();
       toast.success(t('success.passwordReset'));
     } catch (err) {
       const msg = err?.response?.data?.message || t('errors.passwordResetFailed');
@@ -545,13 +535,12 @@ const ResetPasswordForm = ({ email, otp, onReset }) => {
 
 //purpose = 'verify-email' | 'verify-phone' | 'reset'
 const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
-
   const t = useTranslations('Auth');
   const { setLoading, setError, loading } = useContext(AuthFormContext);
   const [otp, setOtp] = useState('');
   const [resending, setResending] = useState(false);
   const [seconds, setSeconds] = useState(30);
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   const referralCode = searchParams.get('ref') || '';
   const userType = searchParams.get('type') || 'buyer';
 
@@ -574,8 +563,6 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
       } else if (purpose === 'verify-phone') {
         const res = await api.post('/auth/verify-phone', { ...value, code: otp });
         const data = res.data;
-
-        // Show success animation instead of toast - handled at parent level
         onVerified?.(data);
       } else {
         onVerified?.(otp); // for reset or other custom flows
@@ -600,7 +587,6 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
           ref: referralCode,
           role: userType
         });
-
       } else {
         await api.post('/auth/forgot-password', { email: value });
       }
@@ -615,25 +601,40 @@ const OTPForm = ({ value, onVerified, purpose = 'verify-email' }) => {
 
   return (
     <motion.div className='w-full'>
-      <p className='text-gray-600 mb-6'>{t('otpSentTo')}</p>
+      <p className='text-gray-600 dark:text-dark-text-secondary mb-6'>{t('otpSentTo')}</p>
       <Input
         label={purpose === 'verify-phone' ? t('phoneNumber') : t('email')}
         type='text'
         value={purpose === 'verify-phone' ? `\u200E${value.countryCode.dial_code} ${value.phone}` : value}
         disabled
-        cnInput='cursor-not-allowed '
+        cnInput='cursor-not-allowed dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-secondary'
       />
       <form onSubmit={onSubmit}>
         <div className='mb-6'>
-          <label className='block text-sm font-medium text-gray-700 mb-2'>{t('otpCode')}</label>
-          <OtpInput value={otp} onChange={setOtp} numInputs={4} renderSeparator={<span className='mx-1'>-</span>} renderInput={props => <input {...props} className='!w-10 h-10 border rounded-lg text-center text-xl' />} containerStyle='flex justify-center flex-wrap gap-y-2' />
+          <label className='block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2'>{t('otpCode')}</label>
+          <OtpInput
+            value={otp}
+            onChange={setOtp}
+            numInputs={4}
+            inputType="number"
+            renderSeparator={<span className='mx-1 dark:text-dark-text-secondary'>-</span>}
+            renderInput={props => (
+              <input
+                {...props}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                className='hide-number-input !w-10 h-10 border rounded-lg text-center text-xl bg-white dark:bg-dark-bg-input border-slate-300 dark:border-dark-border text-slate-900 dark:text-dark-text-primary focus:outline-none focus:ring-2 focus:ring-main-500 transition-all'
+              />
+            )}
+            containerStyle='flex justify-center flex-wrap gap-y-2 rtl:flex-row-reverse'
+          />
         </div>
         <SubmitButton isLoading={loading}>{t('verifyCodeButton')}</SubmitButton>
       </form>
 
-      <p className='text-center text-gray-600 mt-4'>
+      <p className='text-center text-gray-600 dark:text-dark-text-secondary mt-4'>
         {t('didntReceiveCode')}{' '}
-        <button type='button' disabled={resending || seconds > 0} className={`text-blue-600 hover:underline disabled:opacity-50 ${seconds > 0 ? 'cursor-not-allowed' : ''}`} onClick={resend}>
+        <button type='button' disabled={resending || seconds > 0} className={`text-main-600 hover:underline disabled:opacity-50 ${seconds > 0 ? 'cursor-not-allowed' : ''}`} onClick={resend}>
           {seconds > 0 ? t('resendIn', { seconds }) : t('resendCode')}
         </button>
       </p>
@@ -651,11 +652,22 @@ const AuthOptions = ({ activeTab, onEmailClick, onPhoneClick, referralCode }) =>
         <ContinueWithAppleButton referralCode={referralCode} />
         {activeTab === 'login' && <ContinueWithPhoneButton onClick={onPhoneClick} />}
       </div>
-      <p className='text-sm text-gray-500 border-t border-slate-200 mt-6 pt-6'>{t('terms')}</p>
+      <p className='text-sm text-gray-500 dark:text-dark-text-secondary border-t border-slate-200 dark:border-dark-border mt-6 pt-6'>{t('terms')}</p>
     </motion.div>
   );
 };
 
+export {
+  LoginSuccessAnimation,
+  TitleByTab,
+  AuthTabs,
+  LoginForm,
+  RegisterForm,
+  ForgotPasswordForm,
+  ResetPasswordForm,
+  OTPForm,
+  AuthOptions
+}
 /* ---------- main ---------- */
 export default function AuthPage() {
   const router = useRouter();
@@ -686,7 +698,6 @@ export default function AuthPage() {
   useEffect(() => {
     if (loginError === 'oauth_failed') {
       toast.error(errorMessage || t('errors.loginFailedTryAgain'));
-
 
       // 🔥 Remove query param from URL without reload
       const params = new URLSearchParams(window.location.search);
@@ -896,9 +907,12 @@ export default function AuthPage() {
           />
         )}
       </AnimatePresence>
-      <div className='min-h-screen !px-0 flex justify-center  bg-gray-100 '>
-        <div className='relative max-w-screen-2xl m-0 sm:m-10   sm:rounded-lg flex justify-center flex-1 overflow-hidden bg-white'>
 
+      {/* 1. Main Background */}
+      <div className='min-h-screen !px-0 flex justify-center bg-gray-100 dark:bg-dark-bg-base transition-colors duration-300'>
+
+        {/* 2. Main Card Container */}
+        <div className='relative max-w-screen-2xl m-0 sm:m-10 sm:rounded-lg flex justify-center flex-1 overflow-hidden bg-white dark:bg-dark-bg-card shadow-xl dark:shadow-none dark:border dark:border-dark-border transition-colors duration-300'>
 
           {/* left hero */}
           <div className='hidden w-full lg:flex p-12 text-white relative overflow-hidden'>
@@ -924,10 +938,13 @@ export default function AuthPage() {
               <Logo textHideMobile={false} />
             </div>
             <motion.div className='w-full lg:py-8'>
+
+              {/* 3. Branding Headers */}
               <div className='mb-4 w-full text-center md:text-start'>
-                <h4 className='text-sm font-semibold text-main-700'>{t('brandingTitle')}</h4>
-                <p className='text-xs text-slate-500 mt-1'>{t('brandingSubtitle')}</p>
+                <h4 className='text-sm font-semibold text-main-700 dark:text-main-400'>{t('brandingTitle')}</h4>
+                <p className='text-xs text-slate-500 dark:text-dark-text-secondary mt-1'>{t('brandingSubtitle')}</p>
               </div>
+
               <TitleByTab view={view} activeTab={activeTab} />
               <AuthTabs setView={setView} activeTab={activeTab} setActiveTab={setActiveTab} />
               <AnimatePresence mode='wait'>
@@ -943,30 +960,52 @@ export default function AuthPage() {
   );
 }
 
-/* helper component (unchanged) */
+/* helper component */
 const UserTypeSelection = ({ onSelect, loading }) => {
   const t = useTranslations('Auth');
   const [selectedType, setSelectedType] = useState(null);
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className='w-full'>
-      <h2 className='text-xl font-bold text-center mb-6'>{t('selectUserType')}</h2>
-      <p className='text-gray-600 text-center mb-8'>{t('selectUserTypeDescription')}</p>
+
+      {/* 4. Text Updates */}
+      <h2 className='text-xl font-bold text-center mb-6 dark:text-dark-text-primary'>{t('selectUserType')}</h2>
+      <p className='text-gray-600 dark:text-dark-text-secondary text-center mb-8'>{t('selectUserTypeDescription')}</p>
+
       <div className='grid grid-cols-2 gap-4 mb-8'>
-        <button type='button' onClick={() => setSelectedType('Business')} className={`p-6 rounded-lg border-2 ${selectedType === 'Business' ? 'border-main-500 bg-main-50' : 'border-gray-300'} `}>
+        {/* 5. Business Button */}
+        <button
+          type='button'
+          onClick={() => setSelectedType('Business')}
+          className={`p-6 rounded-lg border-2 transition-all duration-200 ${selectedType === 'Business'
+            ? 'border-main-500 bg-main-50 dark:bg-main-900/20 dark:border-main-400'
+            : 'border-gray-300 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-bg-input'
+            }`}
+        >
           <div className='flex flex-col items-center'>
-            <div className='w-12 h-12 mb-3 bg-main-100 rounded-full' />
-            <h3 className='font-semibold'>{t('business')}</h3>
-            <p className='text-sm text-gray-600 mt-1 text-center'>{t('businessDescription')}</p>
+            <div className='w-12 h-12 mb-3 bg-main-100 dark:bg-main-900/40 rounded-full' />
+            <h3 className='font-semibold dark:text-dark-text-primary'>{t('business')}</h3>
+            <p className='text-sm text-gray-600 dark:text-dark-text-secondary mt-1 text-center'>{t('businessDescription')}</p>
           </div>
         </button>
-        <button type='button' onClick={() => setSelectedType('Individual')} className={`p-6 rounded-lg border-2 ${selectedType === 'Individual' ? 'border-main-500 bg-main-50' : 'border-gray-300'} `}>
+
+        {/* 6. Individual Button */}
+        <button
+          type='button'
+          onClick={() => setSelectedType('Individual')}
+          className={`p-6 rounded-lg border-2 transition-all duration-200 ${selectedType === 'Individual'
+            ? 'border-main-500 bg-main-50 dark:bg-main-900/20 dark:border-main-400'
+            : 'border-gray-300 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-bg-input'
+            }`}
+        >
           <div className='flex flex-col items-center'>
-            <div className='w-12 h-12 mb-3 bg-main-100 rounded-full' />
-            <h3 className='font-semibold'>{t('individual')}</h3>
-            <p className='text-sm text-gray-600 mt-1 text-center'>{t('individualDescription')}</p>
+            <div className='w-12 h-12 mb-3 bg-main-100 dark:bg-main-900/40 rounded-full' />
+            <h3 className='font-semibold dark:text-dark-text-primary'>{t('individual')}</h3>
+            <p className='text-sm text-gray-600 dark:text-dark-text-secondary mt-1 text-center'>{t('individualDescription')}</p>
           </div>
         </button>
       </div>
+
       <SubmitButton isLoading={loading} onClick={() => (selectedType ? onSelect(selectedType) : toast.error(t('selectUserType')))}>
         {t('continueToExplore')}
       </SubmitButton>
@@ -1029,7 +1068,8 @@ const PhoneLoginForm = ({ onOtp }) => {
       <div className='mb-4'>
         <PhoneInputWithCountry value={state} onChange={setState} />
         {state.phone && state.phone.length < 6 && (
-          <p className='text-red-500 text-sm mt-2'>{t('errors.phoneMin')}</p>
+          /* 7. Validation Error Coloring */
+          <p className='text-red-500 dark:text-red-400 text-sm mt-2'>{t('errors.phoneMin')}</p>
         )}
       </div>
       <SubmitButton isLoading={loading}>{t('sendCodeButton')}</SubmitButton>

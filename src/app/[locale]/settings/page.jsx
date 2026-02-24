@@ -27,14 +27,22 @@ export default function Page() {
   const tabs = [
     { label: t('tabs.account'), value: 'account' },
     { label: t('tabs.security'), value: 'security' },
-    // { label: 'Notifications', value: 'notifications' },
+    // { label: t('tabs.notifications'), value: 'notifications' },
   ];
 
   return (
-    <main className='container flex flex-col items-center !max-w-[700px] mx-auto !mt-6'>
+    <main className="container flex flex-col items-center !max-w-[700px] mx-auto !mt-6">
       <Tabs tabs={tabs} setActiveTab={setActiveTab} activeTab={activeTab} />
-      <div className='py-6 md:py-10 w-full'>
-        <motion.div key={activeTab} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.2 }} className='w-full mx-auto rounded-2xl border border-slate-100 bg-white p-6 md:p-10 shadow-sm'>
+
+      <div className="py-6 md:py-10 w-full">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 6 }}
+          transition={{ duration: 0.2 }}
+          className="w-full mx-auto rounded-2xl border border-slate-100 dark:border-dark-border bg-white dark:bg-dark-bg-card p-6 md:p-10 shadow-sm"
+        >
           {activeTab === 'account' && <AccountSettings />}
           {activeTab === 'security' && <SecuritySettings />}
           {activeTab === 'notifications' && <NotificationSettings />}
@@ -195,7 +203,7 @@ function AccountSettings() {
   return (
     <div>
       {/* {pendingEmail && (
-        <div className=' max-w-[450px] mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>
+        <div className='  mb-6 p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>
           <p>
             {t.rich('pendingEmail', {
               email: maskEmail(pendingEmail),
@@ -228,13 +236,14 @@ function AccountSettings() {
           </div>
         </div>
       )} */}
-
-      <h2 className='text-xl font-semibold text-gray-800'>{t('updateProfile')}</h2>
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-dark-text-primary">
+        {t('updateProfile')}
+      </h2>
 
       <Input
         label={t('username')}
         placeholder='Enter Text'
-        className='mt-6 max-w-[450px] w-full'
+        className='mt-6  w-full'
         error={errors.username?.message && t(`errors.${errors.username?.message}`)}
         {...register('username')}
       />
@@ -244,59 +253,73 @@ function AccountSettings() {
         label={t('email')}
         placeholder='you@example.com'
         type='email'
-        className='mt-6 max-w-[450px] w-full'
+        className='mt-6  w-full'
         error={errors.email?.message}
         {...register('email')}
       />
  */}
 
 
-      <Button name={saving ? '' : t('saveChanges')} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md ' onClick={saveProfile} />
+      <Button name={saving ? '' : t('saveChanges')} loading={saving} className='mt-6  w-full !rounded-md ' onClick={saveProfile} />
 
       <Divider className='!my-8' />
+      <h3 className="p !opacity-100 dark:text-dark-text-primary">{t('accountDeactivation')}</h3>
+      <p className="text-sm opacity-90 mt-2 dark:text-dark-text-secondary">{t('deactivationDescription')}</p>
 
-      <h3 className='p !opacity-100'>{t('accountDeactivation')}</h3>
-      <p className='text-sm opacity-90 mt-2'>{t('deactivationDescription')}</p>
-      <div className='mt-3 space-y-1 text-sm text-gray-600'>
+      <div className="mt-3 space-y-1 text-sm dark:text-dark-text-secondary">
         <p>• {t('deactivationPoints.profileHidden')}</p>
         <p>• {t('deactivationPoints.ordersCancelled')}</p>
       </div>
 
-      <Select className='mt-6 max-w-[450px] w-full' cnLabel='!text-sm opacity-90 mt-2' label={t('leavingReason')} placeholder={t('chooseReason')} value={reason} onChange={opt => setReason(opt?.id)} options={reasons} />
+      <Select
+        className="mt-6  w-full"
+        cnLabel="!text-sm opacity-90 mt-2 dark:text-dark-text-secondary"
+        label={t('leavingReason')}
+        placeholder={t('chooseReason')}
+        value={reason}
+        onChange={opt => setReason(opt?.id)}
+        options={reasons}
+      />
+
       {reason === 'other' && (
         <Input
           label={t('tellUsWhy')}
           placeholder={t('yourReason')}
-          className='mt-4 max-w-[450px] w-full'
+          className="mt-4  w-full dark:bg-dark-bg-input dark:text-dark-text-primary dark:border-dark-border"
           value={customReason}
           onChange={e => {
-            const value = e.target.value.slice(0, 500)
-            setCustomReason(value)
+            const value = e.target.value.slice(0, 500);
+            setCustomReason(value);
           }}
         />
       )}
 
-      <Button name={t('deactivateAccount')} color='red' loading={deactivating} className='mt-6 max-w-[450px] w-full !rounded-md' onClick={() => {
-        const finalReason = reason === 'other' ? customReason : reason;
-        if (!finalReason?.trim()) return;
-        setConfirmOpen(true)
-      }} />
+      <Button
+        name={t('deactivateAccount')}
+        color="red"
+        loading={deactivating}
+        className="mt-6  w-full !rounded-md"
+      />
+
       {confirmOpen && (
-        <Modal title={t('confirmDeactivation')} onClose={() => setConfirmOpen(false)}>
-          <p className='text-sm text-gray-700 mb-4'>
-            {t('confirmMessage')}
-          </p>
-          <div className='flex justify-end gap-3'>
+        <Modal
+          title={t('confirmDeactivation')}
+          className="dark:bg-dark-bg-card dark:text-dark-text-primary"
+          onClose={() => setConfirmOpen(false)}
+        >
+          <p className="text-sm mb-4 dark:text-dark-text-secondary">{t('confirmMessage')}</p>
+
+          <div className="flex justify-end gap-3">
             <Button
               name={t('cancel')}
-              variant='ghost'
+              variant="ghost"
+              className="dark:text-dark-text-secondary"
               onClick={() => setConfirmOpen(false)}
             />
             <Button
               name={t('yesDeactivate')}
-              color='red'
+              color="red"
               loading={deactivating}
-              onClick={deactivate}
             />
           </div>
         </Modal>
@@ -438,13 +461,13 @@ function SecuritySettings() {
 
   return (
     <div>
-      <h2 className='text-xl font-semibold text-gray-800'>{t('changePassword')}</h2>
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-dark-text-primary">{t('changePassword')}</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input
           label={t('currentPassword')}
           type="password"
           placeholder={t('placeholders.currentPassword')}
-          className="mt-6 max-w-[450px] w-full"
+          className="mt-6  w-full"
           {...register('currentPassword')}
           error={errors.currentPassword?.message ? t(`errors.${errors.currentPassword?.message}`) : null}
         />
@@ -452,7 +475,7 @@ function SecuritySettings() {
           label={t('newPassword')}
           type="password"
           placeholder={t('placeholders.newPassword')}
-          className="mt-3 max-w-[450px] w-full"
+          className="mt-3  w-full"
           {...register('newPassword')}
           error={errors.newPassword?.message ? t(`errors.${errors.newPassword?.message}`) : null}
         />
@@ -460,14 +483,14 @@ function SecuritySettings() {
           label={t('confirmPassword')}
           type="password"
           placeholder={t('placeholders.confirmPassword')}
-          className="mt-3 max-w-[450px] w-full"
+          className="mt-3  w-full"
           {...register('confirmPassword')}
           error={errors.confirmPassword?.message ? t(`errors.${errors.confirmPassword?.message}`) : null}
         />
         <Button
           name={t('saveChanges')}
           loading={isSubmitting}
-          className="mt-6 max-w-[450px] w-full !rounded-md"
+          className="mt-6  w-full !rounded-md"
           color="green"
           type="submit"
         />
@@ -476,49 +499,68 @@ function SecuritySettings() {
 
       <Divider className='!my-8' />
 
-      <div className='border border-slate-200 rounded-lg p-4'>
-        <h2 className='text-xl font-semibold'>{t('connectedDevices')}</h2>
-        <Divider className='!my-3' />
+      <div className="border border-slate-200 dark:border-dark-border rounded-lg p-4 dark:bg-dark-bg-card">
+        <h2 className="text-xl font-semibold dark:text-dark-text-primary">{t('connectedDevices')}</h2>
+        <Divider className="!my-3" />
 
         {/* skeleton loader */}
         {loading && (
-          <div className='space-y-3'>
+          <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className=' '>
-                <div className=' shimmer h-4 bg-slate-200 rounded w-2/3 mb-2' />
-                <div className=' shimmer h-3 bg-slate-100 rounded w-1/2' />
-                <Divider className=' shimmer !my-3' />
+              <div key={i}>
+                <div className="shimmer h-4 rounded w-2/3 mb-2 dark:bg-dark-bg-input" />
+                <div className="shimmer h-3 rounded w-1/2 dark:bg-dark-bg-input" />
+                <Divider className="shimmer !my-3 dark:bg-dark-bg-input" />
               </div>
             ))}
           </div>
         )}
 
         {!loading && (
-          <div className='overflow-auto' style={{ maxHeight: 300 }}>
-            {sessions.length === 0 && <p className='text-sm text-gray-600'>{t('noActiveSessions')}</p>}
+          <div className="overflow-auto" style={{ maxHeight: 300 }}>
+            {sessions.length === 0 && <p className="text-sm dark:text-dark-text-secondary">{t('noActiveSessions')}</p>}
+
             {sessions.map((s, i) => {
-              // ✅ compare current session id with row id
               const isThisDevice = !!(me?.currentDeviceId && s.id && me?.currentDeviceId === s.id);
               const killed = !!s.revokedAt;
               const meta = `${s.browser || 'Unknown'}${s.os ? `, ${s.os}` : ''}${s.deviceType ? ` (${s.deviceType})` : ''}`;
+
               return (
-                <div key={s.id} className={`py-3 px-2 ${i !== sessions.length - 1 ? 'border-b border-slate-200' : ''}`}>
-                  <div className='flex items-center justify-between gap-4'>
+                <div
+                  key={s.id}
+                  className={`py-3 px-2 ${i !== sessions.length - 1 ? 'border-b border-slate-200 dark:border-dark-border' : ''}`}
+                >
+                  <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className='font-medium text-gray-800'>
+                      <p className="font-medium dark:text-dark-text-primary">
                         {meta}
-                        {isThisDevice && <span className='ml-2 text-main-600 text-xs font-semibold'>{t('thisDevice')}</span>}
-                        {killed && <span className='ml-2 text-red-600 text-xs font-semibold'>{t('signedOut')}</span>}
+                        {isThisDevice && <span className="ml-2 text-main-600 text-xs font-semibold">{t('thisDevice')}</span>}
+                        {killed && <span className="ml-2 text-red-600 text-xs font-semibold">{t('signedOut')}</span>}
                       </p>
-                      <p className='text-sm text-gray-600'>
+                      <p className="text-sm dark:text-dark-text-secondary">
                         IP {s.ipAddress || '—'} · {t('lastActivity', { date: fmt(s.lastActivity) })}
                       </p>
                     </div>
-                    <div className='flex items-center gap-2'>{!killed ? <Button name={revoking === s.id ? '' : t('signOut')} loading={revoking === s.id} color='red' className='!w-auto !px-3 !py-1.5' onClick={() => revoke(s.id)} /> : <span className='text-xs text-gray-500'>{t('revoked', { date: fmt(s.revokedAt) })}</span>}</div>
+                    <div className="flex items-center gap-2">
+                      {!killed ? (
+                        <Button
+                          name={revoking === s.id ? '' : t('signOut')}
+                          loading={revoking === s.id}
+                          color="red"
+                          className="!w-auto !px-3 !py-1.5"
+                          onClick={() => revoke(s.id)}
+                        />
+                      ) : (
+                        <span className="text-xs dark:text-dark-text-secondary">
+                          {t('revoked', { date: fmt(s.revokedAt) })}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
+
             {/* LOAD MORE */}
             {hasMore && (
               <div className="text-center mt-4">
@@ -534,8 +576,15 @@ function SecuritySettings() {
           </div>
         )}
 
-
-        {!loading && sessions.length > 1 && <Button name={t('signOutAllOthers')} disabled={revokingAll} className='mt-4 !rounded-md' color='red' onClick={revokeAllOthers} />}
+        {!loading && sessions.length > 1 && (
+          <Button
+            name={t('signOutAllOthers')}
+            disabled={revokingAll}
+            className="mt-4 !rounded-md"
+            color="red"
+            onClick={revokeAllOthers}
+          />
+        )}
       </div>
     </div>
   );
@@ -604,30 +653,30 @@ function NotificationSettings() {
   if (loading) {
     return (
       <div>
-        <h2 className='text-xl font-semibold text-gray-800'>{t('title')}</h2>
-        <p className='text-sm opacity-90 mt-2'>{t('description')}</p>
+        <h2 className="text-xl font-semibold dark:text-dark-text-primary">{t('title')}</h2>
+        <p className="text-sm mt-2 dark:text-dark-text-secondary">{t('description')}</p>
 
         {/* Skeleton table */}
-        <div className='mt-6 overflow-x-auto'>
-          <table className='w-full border-collapse text-sm'>
+        <div className="mt-6 overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className='text-left text-gray-600 border-b border-slate-200'>
-                <th className='pb-2'>{t('type')}</th>
-                <th className='pb-2'>{t('email')}</th>
-                <th className='pb-2'>{t('mobile')}</th>
+              <tr className="text-left dark:text-dark-text-secondary border-b border-slate-200 dark:border-dark-border">
+                <th className="pb-2">{t('type')}</th>
+                <th className="pb-2">{t('email')}</th>
+                <th className="pb-2">{t('mobile')}</th>
               </tr>
             </thead>
             <tbody>
               {Array.from({ length: 6 }).map((_, i) => (
-                <tr key={i} className='border-b border-slate-200 '>
-                  <td className='py-3'>
-                    <div className='shimmer h-4 bg-slate-200 rounded w-40' />
+                <tr key={i} className="border-b border-slate-200 dark:border-dark-border">
+                  <td className="py-3">
+                    <div className="shimmer h-4 bg-slate-200 dark:bg-dark-bg-input rounded w-40" />
                   </td>
                   <td>
-                    <div className='shimmer h-4 w-6 bg-slate-200 rounded mx-auto' />
+                    <div className="shimmer h-4 w-6 bg-slate-200 dark:bg-dark-bg-input rounded mx-auto" />
                   </td>
                   <td>
-                    <div className='shimmer h-4 w-6 bg-slate-200 rounded mx-auto' />
+                    <div className="shimmer h-4 w-6 bg-slate-200 dark:bg-dark-bg-input rounded mx-auto" />
                   </td>
                 </tr>
               ))}
@@ -635,16 +684,16 @@ function NotificationSettings() {
           </table>
         </div>
 
-        <Divider className='!my-8' />
+        <Divider className="!my-8 dark:border-dark-border" />
 
-        <h3 className='text-lg font-semibold text-gray-800'>{t('pushNotifications')}</h3>
-        <div className='mt-6 space-y-6'>
+        <h3 className="text-lg font-semibold dark:text-dark-text-primary">{t('pushNotifications')}</h3>
+        <div className="mt-6 space-y-6">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className='flex items-center gap-3 '>
-              <div className='shimmer h-6 w-12 bg-slate-200 rounded-full' />
+            <div key={i} className="flex items-center gap-3">
+              <div className="shimmer h-6 w-12 rounded-full bg-slate-200 dark:bg-dark-bg-input" />
               <div>
-                <div className='shimmer h-4 bg-slate-200 rounded w-48 mb-1' />
-                <div className='shimmer h-3 bg-slate-100 rounded w-32' />
+                <div className="shimmer h-4 rounded w-48 mb-1 bg-slate-200 dark:bg-dark-bg-input" />
+                <div className="shimmer h-3 rounded w-32 bg-slate-100 dark:bg-dark-bg-input" />
               </div>
             </div>
           ))}
@@ -655,27 +704,37 @@ function NotificationSettings() {
 
   return (
     <div>
-      <h2 className='text-xl font-semibold text-gray-800'>{t('title')}</h2>
-      <p className='text-sm opacity-90 mt-2'>{t('description')}</p>
+      <h2 className="text-xl font-semibold text-gray-800 dark:text-dark-text-primary">{t('title')}</h2>
+      <p className="text-sm opacity-90 mt-2 dark:text-dark-text-secondary">{t('description')}</p>
 
-      <div className='mt-6 overflow-x-auto'>
-        <table className='w-full border-collapse text-sm text-gray-800'>
+      <div className="mt-6 overflow-x-auto">
+        <table className="w-full border-collapse text-sm text-gray-800 dark:text-dark-text-primary">
           <thead>
-            <tr className='text-left text-gray-600 border-b border-b-slate-200'>
-              <th className='pb-2'>{t('type')}</th>
-              <th className='pb-2'>{t('email')}</th>
-              <th className='pb-2'>{t('mobile')}</th>
+            <tr className="text-left text-gray-600 border-b border-slate-200 dark:border-dark-border dark:text-dark-text-secondary">
+              <th className="pb-2">{t('type')}</th>
+              <th className="pb-2">{t('email')}</th>
+              <th className="pb-2">{t('mobile')}</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, idx) => (
-              <tr key={row.key} className={`border-b border-b-slate-200 ${rows.length === idx + 1 ? '!border-b-transparent' : ''}`}>
-                <td className='py-2'>{row.label}</td>
+              <tr
+                key={row.key}
+                className={`border-b border-slate-200 dark:border-dark-border ${rows.length === idx + 1 ? '!border-b-transparent' : ''
+                  }`}
+              >
+                <td className="py-2">{row.label}</td>
                 <td>
-                  <AnimatedCheckbox checked={!!settings.email?.[row.key]} onChange={() => toggle('email', row.key)} />
+                  <AnimatedCheckbox
+                    checked={!!settings.email?.[row.key]}
+                    onChange={() => toggle('email', row.key)}
+                  />
                 </td>
                 <td>
-                  <AnimatedCheckbox checked={!!settings.mobile?.[row.key]} onChange={() => toggle('mobile', row.key)} />
+                  <AnimatedCheckbox
+                    checked={!!settings.mobile?.[row.key]}
+                    onChange={() => toggle('mobile', row.key)}
+                  />
                 </td>
               </tr>
             ))}
@@ -683,30 +742,42 @@ function NotificationSettings() {
         </table>
       </div>
 
-      <Divider className='!my-8' />
+      <Divider className="!my-8 dark:border-dark-border" />
 
-      <h3 className='text-lg font-semibold text-gray-800'>{t('pushNotifications')}</h3>
-      <div className='mt-6 space-y-6'>
-        <div className='flex items-center gap-3'>
-          <Switcher checked={!!settings.push?.enabled} onChange={v => setSettings(p => ({ ...p, push: { ...p.push, enabled: v } }))} />
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-dark-text-primary">{t('pushNotifications')}</h3>
+      <div className="mt-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <Switcher
+            checked={!!settings.push?.enabled}
+            onChange={v => setSettings(p => ({ ...p, push: { ...p.push, enabled: v } }))}
+          />
           <div>
-            <p className='text-sm font-medium text-gray-800'>{t('enableDisablePush')}</p>
-            <p className='text-xs text-gray-500'>{t('tryMe')}</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-dark-text-primary">{t('enableDisablePush')}</p>
+            <p className="text-xs text-gray-500 dark:text-dark-text-secondary">{t('tryMe')}</p>
           </div>
         </div>
 
-        <div className='flex items-center gap-3'>
-          <Switcher checked={!!settings.push?.sound} onChange={v => setSettings(p => ({ ...p, push: { ...p.push, sound: v } }))} />
+        <div className="flex items-center gap-3">
+          <Switcher
+            checked={!!settings.push?.sound}
+            onChange={v => setSettings(p => ({ ...p, push: { ...p.push, sound: v } }))}
+          />
           <div>
-            <p className='text-sm font-medium text-gray-800'>{t('enableDisableSound')}</p>
-            <p className='text-xs text-gray-500'>{t('tryMe')}</p>
+            <p className="text-sm font-medium text-gray-800 dark:text-dark-text-primary">{t('enableDisableSound')}</p>
+            <p className="text-xs text-gray-500 dark:text-dark-text-secondary">{t('tryMe')}</p>
           </div>
         </div>
       </div>
 
-      <Divider className='!my-8' />
+      <Divider className="!my-8 dark:border-dark-border" />
 
-      <Button name={saving ? '' : t('saveChanges')} loading={saving} className='mt-6 max-w-[450px] w-full !rounded-md' color='green' onClick={save} />
+      <Button
+        name={saving ? '' : t('saveChanges')}
+        loading={saving}
+        className="mt-6  w-full !rounded-md"
+        color="green"
+        onClick={save}
+      />
     </div>
   );
 }

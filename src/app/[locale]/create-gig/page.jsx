@@ -429,37 +429,36 @@ const getStep5Schema = (t) => yup.object({
 export default function GigCreationWizard({ gigSlug = '', isAdmin = false }) {
   const { step, formData, loadingServices, setFormData, loading, error, nextStep, prevStep, handleSubmit } = useGigCreation({ gigSlug, isAdmin });
   const searchParams = useSearchParams()
+
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [step]);
 
   const isEditMode = Boolean(gigSlug);
+
   const renderStep = () => {
     if (loading) return <SkeletonLoading />;
-    if (error) return <div className='text-red-500 text-center py-12'>{error}</div>;
+    if (error) return (
+      <div className='text-red-500 dark:text-rose-500 text-center py-12 font-medium'>
+        {error}
+      </div>
+    );
+
+    const stepProps = { formData, setFormData, nextStep, prevStep, isEditMode, gigSlug };
 
     switch (step) {
-      case 1:
-        return <Step1 isEditMode={isEditMode} formData={formData} setFormData={setFormData} nextStep={nextStep} gigSlug={gigSlug} />;
-      case 2:
-        return <Step2 formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
-      case 3:
-        return <Step3 formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
-      case 4:
-        return <Step4 formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
-      case 5:
-        return <Step5 isEditMode={isEditMode} formData={formData} setFormData={setFormData} nextStep={nextStep} prevStep={prevStep} />;
-      case 6:
-        return <Step6 isEditMode={isEditMode} formData={formData} handleSubmit={handleSubmit} prevStep={prevStep} loading={loadingServices} />;
-      default:
-        return <Step1 formData={formData} setFormData={setFormData} nextStep={nextStep} gigSlug={gigSlug} />;
+      case 1: return <Step1 {...stepProps} />;
+      case 2: return <Step2 {...stepProps} />;
+      case 3: return <Step3 {...stepProps} />;
+      case 4: return <Step4 {...stepProps} />;
+      case 5: return <Step5 {...stepProps} />;
+      case 6: return <Step6 {...stepProps} handleSubmit={handleSubmit} loading={loadingServices} />;
+      default: return <Step1 {...stepProps} />;
     }
   };
 
   const t = useTranslations('CreateGig');
 
-
-  // Base steps
   const steps = [
     {
       label: t('steps.overview'),
@@ -473,18 +472,25 @@ export default function GigCreationWizard({ gigSlug = '', isAdmin = false }) {
     { label: t('steps.publish'), title: t('stepTitles.publishTitle'), description: t('stepDescriptions.publish') },
   ];
 
-
   return (
-    <div className='container !mt-8 !mb-12'>
+    <div className='container !mt-8 !mb-12 min-h-screen'>
       <div className='mx-auto max-w-[1200px] w-full'>
-        {/* Progress Header */}
+        {/* Progress Header - Ensure this component uses dark:text-dark-text-primary */}
         <ProgressBar step={step} steps={steps} />
 
-        {/* Step Content */}
-        <div className=''>
+        {/* Step Content Wrapper */}
+        <div className='mt-8'>
           <AnimatePresence mode='wait'>
-            <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-              {renderStep()}
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="bg-white dark:bg-dark-bg-card rounded-2xl shadow-sm dark:shadow-none border border-slate-200 dark:border-dark-border p-1">
+                {renderStep()}
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -496,21 +502,36 @@ export default function GigCreationWizard({ gigSlug = '', isAdmin = false }) {
 // --- STEP COMPONENTS ---
 const Field = ({ title, desc, required, error, hint, className = '', children }) => {
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-6 ${className}`}>
+    <div className={`grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-6 py-4 ${className}`}>
       {/* Left label/description panel */}
       <div className='md:col-span-4'>
-        <label className='block text-lg font-semibold leading-6 text-slate-800'>
+        <label className='block text-lg font-semibold leading-6 text-slate-800 dark:text-dark-text-primary'>
           {title}
-          {required ? <span className='text-rose-600 ml-1'>*</span> : null}
+          {required ? <span className='text-rose-600 dark:text-rose-500 ml-1'>*</span> : null}
         </label>
-        {desc ? <p className='mt-1 text-sm text-slate-500'>{desc}</p> : null}
+        {desc ? (
+          <p className='mt-1 text-sm text-slate-500 dark:text-dark-text-secondary leading-relaxed'>
+            {desc}
+          </p>
+        ) : null}
       </div>
 
       {/* Right input panel */}
       <div className='md:col-span-8'>
-        <div className=' bg-white '>{children}</div>
-        {hint ? <p className='mt-1 text-xs text-slate-500'>{hint}</p> : null}
-        {error ? <p className='mt-1 text-xs font-medium text-rose-600'>{error}</p> : null}
+        {/* We use transparent bg here so the parent card/container color shows through */}
+        <div className='bg-transparent'>{children}</div>
+
+        {hint ? (
+          <p className='mt-2 text-xs text-slate-500 dark:text-dark-text-secondary/70 italic'>
+            {hint}
+          </p>
+        ) : null}
+
+        {error ? (
+          <p className='mt-2 text-xs font-medium text-rose-600 dark:text-rose-500'>
+            {error}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -687,68 +708,65 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
     setFormData({ ...formData, payOnDelivery: newValue });
   };
   return (
-    <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 bg-white/60 p-6 md:p-10'>
+    <form onSubmit={e => e.preventDefault()} className='rounded-2xl border border-slate-200 dark:border-dark-border bg-white/60 dark:bg-dark-bg-card/60 backdrop-blur-sm p-6 md:p-10 transition-colors'>
       {/* Header */}
       <div className="mb-8 flex flex-col gap-2">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-900">{t("title")}</h2>
-          <p className="mt-1 text-sm text-slate-500">{isEditMode ? t("subtitleEdit") : t("subtitle")}</p>
+          <h2 className="text-2xl font-semibold text-slate-900 dark:text-dark-text-primary">{t("title")}</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-dark-text-secondary">{isEditMode ? t("subtitleEdit") : t("subtitle")}</p>
         </div>
-        {/* Note about platform fee (improved UI) */}
-
-
       </div>
 
       <div className='mx-auto max-w-5xl space-y-8'>
         {/* Gig Title */}
         <Field title={t('gigTitle')} desc={t('gigTitleDesc')} required error={errors?.title?.message} hint={`${titleVal.length}/80`}>
-          <Textarea placeholder={t('placeholders.titleExample')} {...register('title')} rows={2} className='resize-none' maxLength={80} />
-          {/* Title status */}
+          <Textarea
+            placeholder={t('placeholders.titleExample')}
+            {...register('title')}
+            rows={2}
+            className='resize-none dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-primary'
+            maxLength={80}
+          />
+          {/* Title status alerts */}
           {titleStatus.loading && (
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-400 dark:text-dark-text-secondary/60 italic">
               {t('checkingTitle')}...
             </p>
           )}
-
           {!titleStatus.loading && titleStatus.valid === true && (
-            <p className="mt-1 text-xs text-main-600">
+            <p className="mt-1 text-xs text-main-600 dark:text-main-400 font-medium">
               {titleStatus.message || t('titleAvailable')}
             </p>
           )}
-
           {!titleStatus.loading && titleStatus.valid === false && (
-            <p className="mt-1 text-xs text-red-600">
+            <p className="mt-1 text-xs text-red-600 dark:text-rose-500">
               {titleStatus.message}
             </p>
           )}
         </Field>
 
         {/* Gig Brief */}
-        <Field className='pt-8 border-t border-slate-200' title={t('gigBrief')} desc={t('gigBriefDesc')} required error={errors?.brief?.message} hint={`${briefVal.length}/300`}>
-          <Textarea placeholder={t('placeholders.briefExample')} {...register('brief')} rows={4} className='resize-y' maxLength={300} />
+        <Field className='pt-8 border-t border-slate-200 dark:border-dark-border' title={t('gigBrief')} desc={t('gigBriefDesc')} required error={errors?.brief?.message} hint={`${briefVal.length}/300`}>
+          <Textarea
+            placeholder={t('placeholders.briefExample')}
+            {...register('brief')}
+            rows={4}
+            className='resize-y dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-primary'
+            maxLength={300}
+          />
         </Field>
 
-        {/* Category / Subcategory */}
-        <Field className='pt-8 border-t border-slate-200' title={t('category')} desc={t('categoryDesc')} required >
+        {/* Category / Subcategory - Ensure CategorySelect handles dark internally */}
+        <Field className='pt-8 border-t border-slate-200 dark:border-dark-border' title={t('category')} desc={t('categoryDesc')} required >
           <div className='grid gap-4 md:grid-cols-2'>
-            <div className='mb-4'>
-              <Controller name='categoryId' control={control} render={({ field }) => (
-                <CategorySelect type='category' label={t('category')} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder={t('placeholders.selectCategory')} />
-              )} />
-            </div>
-
-            <div className='mb-4'>
-              <Controller name='subcategoryId' control={control} render={({ field }) =>
-              (
-                <CategorySelect type='subcategory' parentId={watch('category')?.id} label={t('subcategory')} value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? t('placeholders.selectSubcategory') : t('placeholders.selectCategoryFirst')} />
-              )} />
-            </div>
-
-            {/* <Select label='Category' options={categories} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} required />
-            <Select label='Subcategory'  value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} disabled={!watch('category')} /> */}
+            <Controller name='categoryId' control={control} render={({ field }) => (
+              <CategorySelect {...field} type='category' label={t('category')} value={formData.category?.id} onChange={handleCategoryChange} error={errors?.category?.message} placeholder={t('placeholders.selectCategory')} />
+            )} />
+            <Controller name='subcategoryId' control={control} render={({ field }) => (
+              <CategorySelect {...field} type='subcategory' parentId={watch('category')?.id} label={t('subcategory')} value={formData.subcategory?.id} onChange={handleSubcategoryChange} error={errors?.subcategory?.message} placeholder={watch('category') ? t('placeholders.selectSubcategory') : t('placeholders.selectCategoryFirst')} />
+            )} />
           </div>
         </Field>
-
         {/* country / state */}
         <Field className='pt-8 border-t border-slate-200' title={t('country')} desc={t('countryDesc')} required >
           <div className='grid gap-4 md:grid-cols-2'>
@@ -785,56 +803,47 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
         </Field>
 
         {/* Tags */}
-        <Field className='pt-8 border-t border-slate-200' title={t('searchTags')} desc={t('searchTagsDesc')} hint={t('tagsHint')}>
+        <Field className='pt-8 border-t border-slate-200 dark:border-dark-border' title={t('searchTags')} desc={t('searchTagsDesc')} hint={t('tagsHint')}>
           <div>
             <InputList onChange={handleInputListChange} onRemoveItemHandler={handleRemoveInputList} label={t('placeholders.enterTagsLabel')} value={formData.tags} setValue={setValue} getValues={getValues} fieldName='tags' placeholder={t('placeholders.addTag')} errors={errors} validationMessage={errors?.tags?.message} maxItems={5} />
-            <div className='mt-2 flex items-center justify-between text-xs text-slate-500'>
+            <div className='mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-dark-text-secondary'>
               <span>{t('maxTags')}</span>
               <span>{(formData.tags || []).length}/5</span>
             </div>
           </div>
         </Field>
-        <Field
-          className='pt-8 border-t border-slate-200'
-          title={t('paymentMethod')}
-          desc={t('paymentMethodDesc')}
-        >
+
+        {/* Pay on Delivery Toggle */}
+        <Field className='pt-8 border-t border-slate-200 dark:border-dark-border' title={t('paymentMethod')} desc={t('paymentMethodDesc')}>
           <div className="max-w-md">
             <button
               type='button'
               onClick={togglePOD}
-              className={`
-        relative flex w-full items-center justify-between rounded-md bg-white p-3 transition border
-        ${isPOD
-                  ? 'border-main-600 ring-2 ring-main-600/20'
-                  : 'border-gray-300 hover:border-main-600/70'
-                }
-        focus:outline-none gap-3
-      `}
+              className={`relative flex w-full items-center justify-between rounded-xl p-4 transition-all border 
+                ${isPOD
+                  ? 'border-main-600 ring-2 ring-main-600/20 bg-main-50/30 dark:bg-main-500/10'
+                  : 'border-slate-300 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:border-main-600/70'
+                } focus:outline-none gap-3`}
             >
               <div className="flex items-center gap-3">
-                <div className={`
-          flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors
-          ${isPOD ? 'bg-main-50 text-main-600' : 'bg-slate-50 text-slate-400'}
-        `}>
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors
+                  ${isPOD ? 'bg-main-100 dark:bg-main-500/20 text-main-600 dark:text-main-400' : 'bg-slate-50 dark:bg-dark-bg-card text-slate-400'}
+                `}>
                   <Truck className="h-5 w-5" />
                 </div>
-
                 <div className="text-left">
-                  <p className={`text-sm font-semibold ${isPOD ? 'text-main-700' : 'text-slate-700'}`}>
+                  <p className={`text-sm font-semibold ${isPOD ? 'text-main-700 dark:text-main-400' : 'text-slate-700 dark:text-dark-text-primary'}`}>
                     {t('payOnDelivery')}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-dark-text-secondary">
                     {t('payOnDeliveryHint')}
                   </p>
                 </div>
               </div>
 
-              {/* Checkmark indicator aligned with your input style */}
-              <div className={`
-        flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-all
-        ${isPOD ? 'bg-main-600 border-main-600' : 'border-gray-300 bg-white'}
-      `}>
+              <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-all
+                ${isPOD ? 'bg-main-600 border-main-600' : 'border-slate-300 dark:border-dark-border bg-white dark:bg-dark-bg-card'}
+              `}>
                 {isPOD && <Check className="h-3.5 w-3.5 text-white" strokeWidth={4} />}
               </div>
             </button>
@@ -843,8 +852,8 @@ function Step1({ isEditMode, formData, setFormData, nextStep, gigSlug }) {
       </div>
 
       {/* Footer */}
-      <div className='mt-10 flex justify-end'>
-        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8' />
+      <div className='mt-10 flex justify-end border-t border-slate-100 dark:border-dark-border pt-6'>
+        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-10' />
       </div>
     </form>
   );
@@ -892,31 +901,32 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       {/* Matrix (desktop) / Cards (mobile) */}
-      <div className='rounded-xl overflow-hidden border border-slate-200'>
+      <div className='rounded-xl overflow-hidden border border-slate-200 dark:border-dark-border'>
+
         {/* Sticky header */}
-        <div className='sticky top-0 z-[1] grid grid-cols-1 border-b border-slate-200 bg-white/80 backdrop-blur sm:grid-cols-4'>
-          <div className='px-4 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500'>{t('field')}</div>
+        <div className='sticky top-0 z-[10] grid grid-cols-1 border-b border-slate-200 dark:border-dark-border bg-white/80 dark:bg-dark-bg-card/80 backdrop-blur-md sm:grid-cols-4'>
+          <div className='px-4 py-4 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-dark-text-secondary'>
+            {t('field')}
+          </div>
           {LABELS.map((label, idx) => (
-            <div key={label} className='border-l border-l-slate-200 px-4 py-4'>
+            <div key={label} className='border-l border-l-slate-200 dark:border-l-dark-border px-4 py-4'>
               <div className='flex items-center justify-between'>
-                <span className='text-base font-semibold text-slate-900'>{label}</span>
-                {/* Show per-column summary error indicator */}
-                {pkgErrors?.[idx] && <span className='rounded-md bg-rose-50 px-2 py-1 text-xs font-medium text-rose-700'>{t('checkErrors')}</span>}
+                <span className='text-base font-semibold text-slate-900 dark:text-dark-text-primary'>
+                  {label}
+                </span>
+                {/* Error indicator */}
+                {pkgErrors?.[idx] && (
+                  <span className='rounded-md bg-rose-50 dark:bg-rose-500/10 px-2 py-1 text-xs font-medium text-rose-700 dark:text-rose-400'>
+                    {t('checkErrors')}
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
 
         {/* Rows */}
-        <div className='grid grid-cols-1 sm:grid-cols-4'>
-          {/* Title */}
-          {/* <FieldLabel>{t('title')}</FieldLabel>
-          {TYPES.map((_, i) => (
-            <Cell key={`title-${i}`}>
-              <Input placeholder={t('placeholders.title')} {...register(`packages.${i}.title`)} error={pkgErrors?.[i]?.title?.message} />
-            </Cell>
-          ))} */}
-
+        <div className='grid grid-cols-1 sm:grid-cols-4 bg-white dark:bg-dark-bg-card'>
           {/* Description */}
           <FieldLabel>{t('description')}</FieldLabel>
           {TYPES.map((_, i) => (
@@ -949,21 +959,6 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
             </Cell>
           ))}
 
-          {/* Test (boolean) */}
-          {/* <FieldLabel>{t('test')}</FieldLabel>
-          {TYPES.map((_, i) => (
-            <Cell key={`test-${i}`} className='flex items-center'>
-              <AnimatedCheckbox
-                checked={!!watch(`packages.${i}.test`)}
-                onChange={() => {
-                  const v = getValues(`packages.${i}.test`);
-                  setValue(`packages.${i}.test`, !v, { shouldDirty: true, shouldValidate: true });
-                }}
-              />
-              {pkgErrors?.[i]?.test?.message && <span className='ml-2 text-xs text-rose-600'>{pkgErrors?.[i]?.test?.message}</span>}
-            </Cell>
-          ))} */}
-
           {/* Features editor */}
           <FieldLabel>{t('features')}</FieldLabel>
           {TYPES.map((_, i) => (
@@ -974,52 +969,61 @@ function Step2({ formData, setFormData, nextStep, prevStep }) {
         </div>
       </div>
 
-      {/* Extra Services */}
-      {/* <div className='rounded-xl bg-slate-50 p-6'>
-        <h3 className='mb-4 text-lg font-semibold'>Extra Services</h3>
-
-        <Row>
-          <ColLeft title='Extra Fast Delivery' desc='Complete orders faster for an additional fee' />
-          <ColRight>
-            <Switcher checked={watch('extraFastDelivery')} onChange={v => setValue('extraFastDelivery', v, { shouldDirty: true })} />
-          </ColRight>
-        </Row>
-
-        <Row>
-          <ColLeft title='Additional Revision' desc='Offer extra revisions for an additional fee' />
-          <ColRight>
-            <Switcher checked={watch('additionalRevision')} onChange={v => setValue('additionalRevision', v, { shouldDirty: true })} />
-          </ColRight>
-        </Row>
-      </div> */}
-
       {/* Footer actions */}
-      <div className='flex justify-end gap-2 pt-4'>
-        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button type='button' onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8' />
+      <div className='flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-dark-border'>
+        <Button
+          type='button'
+          name={t('back')}
+          color='outline'
+          onClick={prevStep}
+          icon={<ChevronRight className='ltr:scale-x-[-1]' />}
+          className='!w-fit !flex-row-reverse dark:border-dark-border! dark:text-dark-text-primary!'
+        />
+        <Button
+          type='button'
+          onClick={handleSubmit(onSubmit)}
+          name={t('continue')}
+          color='green'
+          className='!w-fit !px-8'
+        />
       </div>
     </form>
   );
 }
-
 /* ---------------------------- Helper Components --------------------------- */
 function FieldLabel({ children }) {
-  return <div className='border-t border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 sm:border-r'>{children}</div>;
-}
-function Cell({ children, className = '' }) {
-  return <div className={`border-t border-slate-200 px-4 py-3 sm:border-r ${className}`}>{children}</div>;
-}
-function Row({ children }) {
-  return <div className='flex items-center justify-between border-b border-slate-200 py-3 last:border-b-0'>{children}</div>;
-}
-function ColLeft({ title, desc }) {
   return (
-    <div>
-      <h4 className='font-medium text-slate-900'>{title}</h4>
-      <p className='text-sm text-slate-600'>{desc}</p>
+    <div className='border-t border-slate-200 dark:border-dark-border px-4 py-3 text-sm font-semibold text-slate-700 dark:text-dark-text-secondary sm:border-r bg-gray-50/50 dark:bg-dark-bg-input/20'>
+      {children}
     </div>
   );
 }
+
+function Cell({ children, className = '' }) {
+  return (
+    <div className={`border-t border-slate-200 dark:border-dark-border px-4 py-3 sm:border-r dark:bg-dark-bg-card ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+function Row({ children }) {
+  return (
+    <div className='flex items-center justify-between border-b border-slate-200 dark:border-dark-border py-3 last:border-b-0'>
+      {children}
+    </div>
+  );
+}
+
+function ColLeft({ title, desc }) {
+  return (
+    <div>
+      <h4 className='font-medium text-slate-900 dark:text-dark-text-primary'>{title}</h4>
+      <p className='text-sm text-slate-600 dark:text-dark-text-secondary'>{desc}</p>
+    </div>
+  );
+}
+
 function ColRight({ children }) {
   return <div className='flex items-center'>{children}</div>;
 }
@@ -1030,27 +1034,44 @@ function FeaturesEditor({ idx, fieldArray, register, errors }) {
   const { fields, append, remove } = fieldArray;
 
   const canAdd = fields.length < 5;
-  const canRemove = fields.length > 1;
 
   return (
     <div>
       <div className='space-y-2'>
         {fields.map((f, i) => (
-          <div key={f.id} className=' relative flex items-start gap-2'>
-            <Input placeholder={t('placeholders.feature', { number: i + 1 })} {...register(`packages.${idx}.features.${i}`)} error={errors?.[i]?.message} className='flex-1  ' onAction={() => remove(i)} actionIcon={'/icons/minus.svg'} />
-            {/* <Button className=" absolute top-1/2 rtl:left-2 ltr:right-2 -translate-y-1/2 !w-fit !px-2 " color='outline'  disabled={!canRemove} onClick={() => remove(i)} icon={<Minus className='h-4 !w-4' />}  aria-label='Remove feature'   /> */}
+          <div key={f.id} className='relative flex items-start gap-2'>
+            <Input
+              placeholder={t('placeholders.feature', { number: i + 1 })}
+              {...register(`packages.${idx}.features.${i}`)}
+              error={errors?.[i]?.message}
+              className='flex-1'
+              onAction={() => remove(i)}
+              // Ensure your Input component handles dark mode for the action icon
+              actionIcon={'/icons/minus.svg'}
+            />
           </div>
         ))}
       </div>
 
-      <div className='mt-2 flex-col flex gap-2 '>
-        {typeof errors?.message === 'string' && <span className='ml-2 text-xs text-rose-600'>{errors?.message}</span>}
-        <Button type='button' color='outline' disabled={!canAdd} onClick={() => append('')} icon={<Plus className='h-4 w-4' />} name={t('addFeature')} className='!w-fit' />
+      <div className='mt-2 flex-col flex gap-2'>
+        {typeof errors?.message === 'string' && (
+          <span className='ml-2 text-xs text-rose-600 dark:text-rose-500 font-medium'>
+            {errors?.message}
+          </span>
+        )}
+        <Button
+          type='button'
+          color='outline'
+          disabled={!canAdd}
+          onClick={() => append('')}
+          icon={<Plus className='h-4 w-4' />}
+          name={t('addFeature')}
+          className='!w-fit dark:border-dark-border! dark:text-dark-text-primary!'
+        />
       </div>
     </div>
   );
 }
-
 /* --------------------------- Default Normalizer --------------------------- */
 function normalizeDefaults(formData) {
   // Ensure three packages with required keys and 3 default features
@@ -1214,7 +1235,7 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
     }
   };
 
-
+  console.log(faqs)
   const addPreset = preset => {
     if (faqs.length >= MAX_FAQS) return;
     if (faqs.some(f => f.question.trim().toLowerCase() === preset.question.trim().toLowerCase())) return;
@@ -1233,66 +1254,82 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       {/* FAQ Section */}
-      <section className='rounded-xl border border-slate-200 bg-white/60 backdrop-blur-sm shadow-sm'>
-        <div className='flex flex-col gap-3 border-b border-slate-200 px-4 py-3 md:flex-row md:items-center md:justify-between'>
+      <section className='rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-card shadow-sm'>
+        <div className='flex flex-col gap-3 border-b border-slate-200 dark:border-dark-border px-4 py-3 md:flex-row md:items-center md:justify-between'>
           <div className='flex items-center gap-2'>
-            <h3 className='text-base font-semibold text-slate-900'>{t('faqs')}</h3>
-            <span className='ml-2 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-600'>
+            <h3 className='text-base font-semibold text-slate-900 dark:text-dark-text-primary'>{t('faqs')}</h3>
+            <span className='ml-2 rounded-full border border-slate-200 dark:border-dark-border px-2 py-0.5 text-xs text-slate-600 dark:text-dark-text-secondary'>
               {faqs.length}/{MAX_FAQS}
             </span>
           </div>
           <div className='relative'>
-            <Search className='pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
-            <input value={query} onChange={e => setQuery(e.target.value)} placeholder={t('searchPlaceholder')} className='w-56 rounded-lg border border-slate-200 pl-8 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-main-500/30' />
+            <Search className='pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-dark-text-secondary' />
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder={t('searchPlaceholder')}
+              className='w-56 rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input pl-8 pr-3 py-1.5 text-sm text-slate-900 dark:text-dark-text-primary focus:outline-none focus:ring-2 focus:ring-main-500/30'
+            />
           </div>
         </div>
 
         {/* FAQ list */}
-        <ul className='divide-y divide-slate-200'>
+        <ul className='divide-y divide-slate-200 dark:divide-dark-border'>
           {filteredFaqs.length === 0 ? (
-            <li className='p-4 text-sm text-slate-500'>{t('noFaqs')}</li>
+            <li className='p-4 text-sm text-slate-500 dark:text-dark-text-secondary'>{t('noFaqs')}</li>
           ) : (
             filteredFaqs.map((faq, idx) => {
               const realIndex = faqs.findIndex(f => f.question === faq.question && f.answer === faq.answer);
               const isEditing = editingIndex === realIndex;
               return (
-                <li key={`${faq.question}-${realIndex}`} className='group p-4'>
+                <li key={`${faq.question}-${realIndex}`} className='group p-4 bg-white dark:bg-dark-bg-card'>
                   <div className={`flex-1 flex items-start justify-between gap-3 ${isEditing ? "flex-col" : ""}`}>
                     <div className={`flex-1 ${isEditing ? "w-full" : "min-w-0"}`}>
                       {isEditing ?
-                        <input value={editingTemp.question} onChange={e => setEditingTemp(s => ({ ...s, question: e.target.value }))} className='w-full rounded-lg border border-slate-200 px-3 py-1.5 text-sm' />
-                        : <h4 className='truncate text-sm font-semibold text-slate-900'>{faq.question}</h4>}
+                        <input
+                          value={editingTemp.question}
+                          onChange={e => setEditingTemp(s => ({ ...s, question: e.target.value }))}
+                          className='w-full rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input px-3 py-1.5 text-sm text-slate-900 dark:text-dark-text-primary'
+                        />
+                        : <h4 className='truncate text-sm font-semibold text-slate-900 dark:text-dark-text-primary'>{faq.question}</h4>}
                       <div className='mt-2'>{isEditing ?
-                        <textarea value={editingTemp.answer} onChange={e => setEditingTemp(s => ({ ...s, answer: e.target.value }))} rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm' />
-                        : <p className='text-sm text-slate-700'>{faq.answer}</p>}</div>
+                        <textarea
+                          value={editingTemp.answer}
+                          onChange={e => setEditingTemp(s => ({ ...s, answer: e.target.value }))}
+                          rows={3}
+                          className='w-full rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input px-3 py-2 text-sm text-slate-900 dark:text-dark-text-primary'
+                        />
+                        : <p className='text-sm text-slate-700 dark:text-dark-text-secondary leading-relaxed'>{faq.answer}</p>}</div>
                     </div>
 
                     <div className="shrink-0 sm:w-32">
-                      {isEditing ? (
-                        <div className='flex items-center gap-1'>
-                          <button type='button' onClick={() => saveEdit(realIndex)} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-main-50'>
-                            <Check className='h-4 w-4' />
-                          </button>
-                          <button type='button' onClick={cancelEdit} className='rounded-lg border border-slate-200 px-2 py-1 text-xs hover:bg-slate-50'>
-                            <X className='h-4 w-4' />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className='flex flex-col sm:flex-row items-center gap-1'>
-                          <button type='button' onClick={() => moveFaq(realIndex, -1)} className='rounded-lg border border-slate-200 p-1 hover:bg-slate-50'>
-                            <ArrowUp className='h-4 w-4' />
-                          </button>
-                          <button type='button' onClick={() => moveFaq(realIndex, 1)} className='rounded-lg border border-slate-200 p-1 hover:bg-slate-50'>
-                            <ArrowDown className='h-4 w-4' />
-                          </button>
-                          <button type='button' onClick={() => startEdit(realIndex)} className='rounded-lg border border-slate-200 p-1 hover:bg-slate-50'>
-                            <Pencil className='h-4 w-4' />
-                          </button>
-                          <button type='button' onClick={() => removeFaq(realIndex)} className='rounded-lg border border-slate-200 p-1 hover:bg-rose-50'>
-                            <Trash2 className='h-4 w-4 text-rose-600' />
-                          </button>
-                        </div>
-                      )}
+                      <div className='flex flex-wrap sm:flex-nowrap items-center gap-1'>
+                        {isEditing ? (
+                          <>
+                            <button type='button' onClick={() => saveEdit(realIndex)} className='rounded-lg border border-slate-200 dark:border-dark-border p-1.5 hover:bg-main-50 dark:hover:bg-main-500/10 text-main-600'>
+                              <Check className='h-4 w-4' />
+                            </button>
+                            <button type='button' onClick={cancelEdit} className='rounded-lg border border-slate-200 dark:border-dark-border p-1.5 hover:bg-slate-50 dark:hover:bg-dark-bg-input text-slate-600 dark:text-dark-text-secondary'>
+                              <X className='h-4 w-4' />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            {[
+                              { icon: ArrowUp, onClick: () => moveFaq(realIndex, -1) },
+                              { icon: ArrowDown, onClick: () => moveFaq(realIndex, 1) },
+                              { icon: Pencil, onClick: () => startEdit(realIndex) }
+                            ].map((btn, i) => (
+                              <button key={i} type='button' onClick={btn.onClick} className='rounded-lg border border-slate-200 dark:border-dark-border p-1.5 hover:bg-slate-50 dark:hover:bg-dark-bg-input text-slate-600 dark:text-dark-text-secondary transition-colors'>
+                                <btn.icon className='h-4 w-4' />
+                              </button>
+                            ))}
+                            <button type='button' onClick={() => removeFaq(realIndex)} className='rounded-lg border border-slate-200 dark:border-dark-border p-1.5 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-600'>
+                              <Trash2 className='h-4 w-4' />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -1302,32 +1339,65 @@ function Step3({ formData, setFormData, nextStep, prevStep }) {
         </ul>
 
         {/* Add new + presets */}
-        <div className='border-t border-slate-200 p-4'>
-          <div className='mb-3 text-sm font-medium text-slate-700'>{t('addNewFaq')}</div>
+        <div className='border-t border-slate-200 dark:border-dark-border p-4 bg-slate-50/50 dark:bg-dark-bg-input/20'>
+          <div className='mb-3 text-sm font-medium text-slate-700 dark:text-dark-text-primary'>{t('addNewFaq')}</div>
           <div className='grid gap-3 md:grid-cols-2'>
-            <input value={newFaq.question} onChange={e => setNewFaq({ ...newFaq, question: e.target.value })} placeholder={t('question')} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
-            <textarea value={newFaq.answer} onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })} placeholder={t('answer')} rows={3} className='w-full rounded-lg border border-slate-200 px-3 py-2 text-sm md:col-span-2' />
+            <input
+              value={newFaq.question}
+              onChange={e => setNewFaq({ ...newFaq, question: e.target.value })}
+              placeholder={t('question')}
+              className='w-full rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input px-3 py-2 text-sm text-slate-900 dark:text-dark-text-primary md:col-span-2'
+            />
+            <textarea
+              value={newFaq.answer}
+              onChange={e => setNewFaq({ ...newFaq, answer: e.target.value })}
+              placeholder={t('answer')}
+              rows={3}
+              className='w-full rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input px-3 py-2 text-sm text-slate-900 dark:text-dark-text-primary md:col-span-2'
+            />
           </div>
           <FormErrorMessage message={firstFaqError} />
 
-          <div className='mt-3 flex flex-col sm :flex-row gap-4 items-center justify-between'>
+          <div className='mt-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between'>
             <div className='flex flex-wrap gap-2'>
               {PRESET_FAQS.map((p, i) => (
-                <button key={i} type='button' onClick={() => addPreset(p)} className='rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-700 hover:bg-slate-50'>
+                <button
+                  key={i}
+                  type='button'
+                  onClick={() => addPreset(p)}
+                  className='rounded-full border border-slate-200 dark:border-dark-border px-3 py-1 text-xs text-slate-700 dark:text-dark-text-secondary hover:bg-white dark:hover:bg-dark-bg-card transition-colors'
+                >
                   + {p.question}
                 </button>
               ))}
             </div>
 
-            <Button name={t('addFaq')} disabled={!newFaq.question.trim() || !newFaq.answer.trim() || faqs.length >= MAX_FAQS} icon={<Plus className='h-4 w-4' />} onClick={addFaq} className='!w-fit !px-4' />
+            <Button
+              name={t('addFaq')}
+              disabled={!newFaq.question.trim() || !newFaq.answer.trim() || faqs.length >= MAX_FAQS}
+              icon={<Plus className='h-4 w-4' />}
+              onClick={addFaq}
+              className='!w-fit !px-4'
+            />
           </div>
         </div>
       </section>
 
-      {/* Navigation Buttons */}
-      <div className='flex justify-end gap-2 pt-2'>
-        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button name={t('continue')} onClick={handleSubmit(onSubmit)} className='!w-fit !px-4' />
+      {/* Navigation */}
+      <div className='flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-dark-border'>
+        <Button
+          type='button'
+          name={t('back')}
+          color='outline'
+          onClick={prevStep}
+          icon={<ChevronRight className='ltr:scale-x-[-1]' />}
+          className='!w-fit !flex-row-reverse dark:text-dark-text-primary'
+        />
+        <Button
+          name={t('continue')}
+          onClick={handleSubmit(onSubmit)}
+          className='!w-fit !px-6'
+        />
       </div>
     </form>
   );
@@ -1425,45 +1495,51 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
   return (
     <form onSubmit={e => e.preventDefault()} className='space-y-8'>
       {/* Existing questions list */}
-      <div className='rounded-2xl border border-slate-200 bg-white/80 backdrop-blur-sm'>
-        <div className='flex items-center justify-between px-5 py-4 border-b border-slate-100'>
+      <div className='rounded-2xl border border-slate-200 dark:border-dark-border bg-white/80 dark:bg-dark-bg-card/80 backdrop-blur-sm'>
+        <div className='flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-dark-border'>
           <div className='flex items-center gap-2'>
-            <h3 className='text-base font-semibold text-slate-900'>{t('questions')}</h3>
-            <span className='ml-2 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-600'>
+            <h3 className='text-base font-semibold text-slate-900 dark:text-dark-text-primary'>{t('questions')}</h3>
+            <span className='ml-2 rounded-full border border-slate-200 dark:border-dark-border px-2 py-0.5 text-xs text-slate-600 dark:text-dark-text-secondary'>
               {questions.length}/{MAX_QUES}
             </span>
           </div>
-          <div className='text-xs text-slate-500'>{t('dragFree')}</div>
+          <div className='text-xs text-slate-500 dark:text-dark-text-secondary/60'>{t('dragFree')}</div>
         </div>
 
         <div className='p-5 space-y-4'>
           {questions.length === 0 && (
-            <div className='rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center'>
-              <div className='mx-auto mb-2 h-10 w-10 rounded-full bg-white shadow-sm grid place-items-center'>
-                <HelpCircle className='w-5 h-5 text-slate-500' />
+            <div className='rounded-xl border border-dashed border-slate-200 dark:border-dark-border bg-slate-50/60 dark:bg-dark-bg-input/40 p-6 text-center'>
+              <div className='mx-auto mb-2 h-10 w-10 rounded-full bg-white dark:bg-dark-bg-card shadow-sm grid place-items-center'>
+                <HelpCircle className='w-5 h-5 text-slate-500 dark:text-dark-text-secondary' />
               </div>
-              <p className='text-slate-700 font-medium'>{t('noQuestions')}</p>
-              <p className='text-sm text-slate-500'>{t('noQuestionsDesc')}</p>
+              <p className='text-slate-700 dark:text-dark-text-primary font-medium'>{t('noQuestions')}</p>
+              <p className='text-sm text-slate-500 dark:text-dark-text-secondary'>{t('noQuestionsDesc')}</p>
             </div>
           )}
 
           {questions.map((q, index) => (
-            <div key={index} className='group rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_0_0_rgba(0,0,0,0.03)] transition hover:shadow-md'>
+            <div key={index} className='group rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input p-4 shadow-[0_1px_0_0_rgba(0,0,0,0.03)] transition hover:shadow-md dark:hover:border-dark-border'>
               <div className='flex items-start justify-between gap-4'>
                 <div className='min-w-0'>
-                  <h4 className='font-medium text-slate-900 break-words'>{q.question}</h4>
+                  <h4 className='font-medium text-slate-900 dark:text-dark-text-primary break-words'>{q.question}</h4>
 
                   <div className='mt-2 flex flex-wrap items-center gap-2 text-xs'>
-                    <span className='inline-flex items-center gap-1 rounded-full border border-main-200 bg-main-50 px-2.5 py-1 text-main-700'>{q.requirementType?.replace('_', ' ') || 'text'}</span>
-                    <span className={q.isRequired ? 'inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1 text-rose-700' : 'inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-600'}>{q.isRequired ? t('required') : t('optional')}</span>
+                    <span className='inline-flex items-center gap-1 rounded-full border border-main-200 dark:border-main-500/30 bg-main-50 dark:bg-main-500/10 px-2.5 py-1 text-main-700 dark:text-main-400'>
+                      {q.requirementType?.replace('_', ' ') || 'text'}
+                    </span>
+                    <span className={q.isRequired
+                      ? 'inline-flex items-center gap-1 rounded-full border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 px-2.5 py-1 text-rose-700 dark:text-rose-400'
+                      : 'inline-flex items-center gap-1 rounded-full border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-bg-card px-2.5 py-1 text-slate-600 dark:text-dark-text-secondary'}>
+                      {q.isRequired ? t('required') : t('optional')}
+                    </span>
                   </div>
 
                   {q.requirementType === 'multiple_choice' && Array.isArray(q.options) && q.options.length > 0 && (
                     <div className='mt-3'>
-                      <p className='text-xs font-medium text-slate-600 mb-1'>{t('options')}</p>
+                      <p className='text-xs font-medium text-slate-600 dark:text-dark-text-secondary mb-1'>{t('options')}</p>
                       <div className='flex flex-wrap gap-2'>
                         {q.options.map((opt, i) => (
-                          <span key={i} className='inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[12px] text-slate-700'>
+                          <span key={i} className='inline-flex items-center rounded-full border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-bg-card px-2.5 py-1 text-[12px] text-slate-700 dark:text-dark-text-primary'>
                             {opt}
                           </span>
                         ))}
@@ -1472,23 +1548,21 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
                   )}
                 </div>
 
-                <button type='button' onClick={() => removeQuestion(index)} className='shrink-0 rounded-lg p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition' aria-label={`Remove question ${index + 1}`} title='Remove'>
+                <button type='button' onClick={() => removeQuestion(index)} className='shrink-0 rounded-lg p-2 text-slate-400 dark:text-dark-text-secondary hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition'>
                   <Trash2 className='w-5 h-5' />
                 </button>
               </div>
             </div>
           ))}
-
           <FormErrorMessage message={firstQuesError} />
-
         </div>
       </div>
 
-      {/* Add new question */}
-      <div className='rounded-2xl border border-main-200 bg-white shadow-[0_1px_0_0_rgba(16,138,0,0.08)]'>
-        <div className='px-5 py-4 border-b border-main-100 flex items-center justify-between'>
-          <h4 className='font-semibold text-main-900'>{t('addNewQuestion')}</h4>
-          <div className='text-xs text-main-700/70'>{t('textMultipleFile')}</div>
+      {/* Add new question card */}
+      <div className='rounded-2xl border border-main-200 dark:border-main-500/30 bg-white dark:bg-main-500/5 shadow-[0_1px_0_0_rgba(16,138,0,0.08)]'>
+        <div className='px-5 py-4 border-b border-main-100 dark:border-main-500/20 flex items-center justify-between'>
+          <h4 className='font-semibold text-main-900 dark:text-main-400'>{t('addNewQuestion')}</h4>
+          <div className='text-xs text-main-700/70 dark:text-main-400/60'>{t('textMultipleFile')}</div>
         </div>
 
         <div className='p-5'>
@@ -1496,7 +1570,6 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
             <div className='md:col-span-2'>
               <Input label={t('questionLabel')} placeholder={t('questionPlaceholder')} value={newQuestion.question} onChange={e => setNewQuestion({ ...newQuestion, question: e.target.value })} error={errors?.newQuestion?.question?.message} />
             </div>
-
             <div>
               <Select
                 options={[
@@ -1508,115 +1581,73 @@ function Step4({ formData, setFormData, nextStep, prevStep }) {
                 onChange={opt => setNewQuestion({ ...newQuestion, requirementType: opt.id })}
                 label={t('type')}
                 placeholder={t('selectType')}
-                className='w-full'
               />
             </div>
           </div>
 
           <div className='mt-4 flex items-center gap-3'>
             <AnimatedCheckbox checked={newQuestion.isRequired} onChange={v => setNewQuestion({ ...newQuestion, isRequired: v })} />
-            <label className='text-sm text-slate-700'>{t('required')}</label>
+            <label className='text-sm text-slate-700 dark:text-dark-text-primary font-medium'>{t('required')}</label>
           </div>
 
           {newQuestion.requirementType === 'multiple_choice' && (
-            <div className='mt-5 rounded-xl border border-slate-200 bg-slate-50/50 p-4'>
-              <label className='block text-sm font-medium text-slate-700 mb-2'>{t('optionsLabel')}</label>
-
+            <div className='mt-5 rounded-xl border border-slate-200 dark:border-dark-border bg-slate-50/50 dark:bg-dark-bg-card p-4'>
+              <label className='block text-sm font-medium text-slate-700 dark:text-dark-text-primary mb-2'>{t('optionsLabel')}</label>
               <div className='flex items-center gap-2'>
-                <Input
-                  placeholder={t('optionsPlaceholder')}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addOption(e.currentTarget.value);
-                      e.currentTarget.value = '';
-                    }
-                  }}
-                  className='flex-1'
-                  ref={multiInputRef}
-                />
-                <Button
-                  type='button'
-                  color='green'
-                  icon={<Plus className='w-4 h-4' />}
-                  onClick={() => {
-                    const el = multiInputRef.current;
-                    if (el && 'value' in el) {
-                      addOption(el.value);
-                      el.value = '';
-                    }
-                  }}
-                  className='!px-4 !h-[40px] !w-fit '
-                />
+                <Input placeholder={t('optionsPlaceholder')} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addOption(e.currentTarget.value); e.currentTarget.value = ''; } }} className='flex-1' ref={multiInputRef} />
+                <Button type='button' color='green' icon={<Plus className='w-4 h-4' />} onClick={() => { const el = multiInputRef.current; if (el?.value) { addOption(el.value); el.value = ''; } }} className='!px-4 !h-[42px] !w-fit' />
               </div>
 
               <div className='mt-3 flex flex-wrap gap-2'>
                 {newQuestion.options.map((opt, i) => (
-                  <span key={i} className='inline-flex items-center gap-1 rounded-full border border-main-200 bg-main-50 px-2.5 py-1 text-[12px] text-main-800'>
+                  <span key={i} className='inline-flex items-center gap-1 rounded-full border border-main-200 dark:border-main-500/40 bg-main-50 dark:bg-main-500/10 px-2.5 py-1 text-[12px] text-main-800 dark:text-main-400'>
                     {opt}
-                    <button type='button' onClick={() => removeOption(opt)} className='ml-1 rounded p-0.5 hover:bg-main-100' aria-label={`Remove option ${opt}`}>
+                    <button type='button' onClick={() => removeOption(opt)} className='ml-1 rounded p-0.5 hover:bg-main-100 dark:hover:bg-main-500/20'>
                       <X size={14} />
                     </button>
                   </span>
                 ))}
               </div>
-
-              {newQuestion.requirementType === 'multiple_choice' && newQuestion.options.length === 0 && <p className='mt-2 text-[13px] text-rose-600'>{t('atLeastOneOption')}</p>}
             </div>
           )}
 
           <div className='mt-6 flex justify-end'>
-            <Button type='button' name={t('addQuestion')} color='green' disabled={!newQuestion.question || (newQuestion.requirementType === 'multiple_choice' && newQuestion.options.length < 1)} onClick={addQuestion} className='!w-fit !px-6 rounded-xl shadow-[0_6px_20px_-6px_rgba(16,138,0,0.45)] data-[disabled=true]:opacity-60' />
+            <Button type='button' name={t('addQuestion')} color='green' disabled={!newQuestion.question || (newQuestion.requirementType === 'multiple_choice' && newQuestion.options.length < 1)} onClick={addQuestion} className='!w-fit !px-6 rounded-xl' />
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <div className='flex justify-end gap-2 pt-4'>
-        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:scale-x-[-1]' />} className='!w-fit !flex-row-reverse' />
-        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-8 py-2 rounded-xl text-white bg-main-600 hover:bg-main-700 shadow-[0_8px_24px_-8px_rgba(16,138,0,0.55)]' />
+      <div className='flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-dark-border'>
+        <Button type='button' name={t('back')} color='outline' onClick={prevStep} icon={<ChevronRight className='ltr:rotate-180  !flex-row-reverse' />} className='!w-fit' />
+        <Button onClick={handleSubmit(onSubmit)} name={t('continue')} color='green' className='!w-fit !px-10' />
       </div>
     </form>
   );
 }
 
 
-const UploadImage = ({ className = "w-[100px] h-[100px]  " }) => {
+const UploadImage = ({ className = "w-[100px] h-[100px]" }) => {
   return (
-    <div className='bg-main-300 p-2 rounded-full w-fit mx-auto'>
-
+    <div className='bg-main-100 dark:bg-main-500/20 p-3 dark:text-dark-text-primary  rounded-full w-fit mx-auto transition-colors'>
       <svg
-        width="12" height="12"
+        width="12"
+        height="12"
         viewBox="0 0 24 24"
         version="1.1"
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"
-        style={{ color: 'var(--color-main-700)' }}
-        className={`${className} fill-main-400 stroke-main-700`}
+        className={`${className} fill-main-600 dark:fill-main-400 stroke-none dark:text-dark-text-primary `}
       >
         <g id="Iconly/Bold/Image-2" stroke="none" transform="translate(2.5, 2) scale(0.8)" strokeWidth="1" fill="none" fillRule="evenodd">
           <g id="Image-2" transform="translate(1.999400, 2.000400)" fill="currentColor" fillRule="nonzero">
-
             <path d="M14.354,0 C17.731,0 20,2.362 20,5.888 L20,5.888 L20,14.102 C20,14.253 19.973,14.388 19.965,14.534 C19.96,14.619 19.961,14.704 19.954,14.789 C19.95,14.827 19.939,14.862 19.935,14.9 C19.902,15.214 19.851,15.514 19.78,15.805 C19.762,15.883 19.741,15.958 19.72,16.034 C19.64,16.316 19.546,16.585 19.433,16.842 C19.4,16.914 19.364,16.983 19.33,17.054 C19.208,17.299 19.076,17.534 18.923,17.752 L18.923,17.752 L18.775,17.944 C18.616,18.15 18.45,18.347 18.262,18.526 C18.201,18.584 18.132,18.634 18.068,18.689 C17.875,18.855 17.678,19.014 17.461,19.15 C17.383,19.199 17.297,19.235 17.217,19.279 C16.996,19.401 16.773,19.52 16.53,19.612 C16.43,19.65 16.319,19.67 16.215,19.703 C15.976,19.777 15.74,19.854 15.483,19.898 C15.4183333,19.9093333 15.3517778,19.9173333 15.2842222,19.9235926 L14.874,19.953 C14.7,19.966 14.535,20 14.354,20 L14.354,20 L5.638,20 C5.262,20 4.903,19.962 4.556,19.905 C4.543,19.903 4.531,19.901 4.519,19.899 C3.166,19.666 2.043,19.013 1.256,18.028 C1.247,18.028 1.247,18.018 1.238,18.009 C0.447,17.013 1.77635684e-15,15.674 1.77635684e-15,14.102 L1.77635684e-15,14.102 L1.77635684e-15,5.888 C1.77635684e-15,2.362 2.271,0 5.638,0 L5.638,0 Z M14.354,1.395 L5.638,1.395 C3.061,1.395 1.396,3.162 1.396,5.888 L1.396,5.888 L1.396,14.102 C1.396,14.867 1.538,15.55 1.781,16.141 C1.812,16.104 3.749,13.742 3.758,13.734 C4.45,12.944 5.749,11.766 7.454,12.479 C7.864,12.649 8.224,12.888 8.554,13.098 C9.127,13.481 9.464,13.661 9.814,13.631 C9.959,13.611 10.095,13.568 10.224,13.488 C10.782,13.144 12.359,10.844 12.454,10.719 C13.544,9.299 15.224,8.919 16.624,9.759 C16.718,9.815 17.10175,10.07825 17.51775,10.37475 L17.8317734,10.6006406 C18.1437969,10.8273281 18.43775,11.04825 18.605,11.19 L18.605,11.19 L18.605,5.888 C18.605,3.162 16.94,1.395 14.354,1.395 L14.354,1.395 Z M6.47928217,3.9996 C7.17695659,3.9996 7.80873953,4.29297966 8.26125891,4.76103602 C8.71571628,5.21268628 9.0006,5.83515298 9.0006,6.5145585 C9.0006,7.86950928 7.86687907,8.9996 6.50544496,8.9996 C5.30873953,8.9996 4.2883907,8.12525142 4.05970853,6.99323057 C4.02191783,6.82337919 4.0006,6.64870249 4.0006,6.4682354 C4.0006,5.10363397 5.10912713,3.9996 6.47928217,3.9996 Z"></path>
           </g>
         </g>
-        <g
-          id="Upload-Overlay"
-          transform="translate(16, 2) scale(0.35)"
-          fillRule="nonzero"
-        >
-          <path
-            d="M8,0C3.5,0,0,3.5,0,8s3.5,8,8,8s8-3.5,8-8S12.5,0,8,0z"
-            fill="currentColor"
-          />
-
-          <path
-            d="M10,7v6H6V7H4l4-5l4,5H10z"
-            fill="white"
-          />
+        <g id="Upload-Overlay" transform="translate(16, 2) scale(0.35)" fillRule="nonzero">
+          <path d="M8,0C3.5,0,0,3.5,0,8s3.5,8,8,8s8-3.5,8-8S12.5,0,8,0z" fill="currentColor" />
+          <path d="M10,7v6H6V7H4l4-5l4,5H10z" fill="white" />
         </g>
-
-
       </svg>
     </div>
   );
@@ -1716,41 +1747,132 @@ function Step5({ isEditMode, formData, setFormData, nextStep, prevStep }) {
     <form onSubmit={e => e.preventDefault()} className='space-y-6'>
       <div>
 
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('images')} desc={isEditMode ? t('imagesDescEdit') : t('imagesDesc')}>
+        <LabelWithInput
+          className='items-center bg-gray-50 p-6 rounded-xl mb-6 
+             dark:bg-dark-bg-card 
+             transition-colors duration-300'
+          title={t('images')}
+          desc={isEditMode ? t('imagesDescEdit') : t('imagesDesc')}
+        >
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.images?.map((e, i) => (
-              <div key={i} className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
-                {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+              <div
+                key={i}
+                className='relative flex items-center justify-center flex-col 
+                   bg-white 
+                   max-sm:w-full w-[200px] 
+                   shadow-inner 
+                   border border-slate-200 
+                   p-2 px-6 gap-2 rounded-xl
+                   dark:bg-dark-bg-input
+                   dark:border-dark-border
+                   dark:text-dark-text-primary
+                   transition-colors duration-300'
+              >
+                {(e?.mimeType || e?.type)?.startsWith('image') ? (
+                  <img src={baseImg + e.url} className='w-full aspect-square dark:invert' />
+                ) : (
+                  <div className='mx-auto aspect-square w-[100px] flex items-center justify-center rounded-md dark:invert'>
+                    {getFileIcon(e?.mimeType || e?.type)}
+                  </div>
+                )}
 
-                <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]' title={e?.filename}>{e?.filename}</h4>
+                <h4
+                  className='text-base whitespace-nowrap truncate max-w-[100px] 
+                     dark:text-dark-text-secondary'
+                  title={e?.filename}
+                >
+                  {e?.filename}
+                </h4>
+
                 <button
                   type="button"
                   onClick={() => removeFile("images", i)}
-                  className="absolute top-2 right-2 rounded-full bg-red-500 text-white p-1 hover:bg-red-600"
+                  className="absolute top-2 right-2 rounded-full 
+                     bg-red-500 text-white p-1 hover:bg-red-600"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ))}
-            <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
-              {/* Replace the old <img> tag with this */}<UploadImage className='w-[100px] h-[100px]' />
-              <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseImages')}</span></div>
-              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'images')} maxSelection={3} />
+
+            <div
+              className='overflow-hidden bg-white max-sm:w-full w-[200px] 
+                 relative text-center shadow-inner 
+                 border border-slate-200 
+                 rounded-xl p-2
+                 dark:bg-dark-bg-input
+                 dark:border-dark-border
+                 transition-colors duration-300'
+            >
+              <UploadImage className='w-[100px] h-[100px]' />
+
+              <div>
+                <span className='text-[var(--color-main-600)] font-[500]'>
+                  {t('browseImages')}
+                </span>
+              </div>
+
+              <AttachFilesButton
+                className={'scale-[10] opacity-0 !absolute'}
+                hiddenFiles={true}
+                onChange={files => handleFileSelection(files, 'images')}
+                maxSelection={3}
+              />
             </div>
           </div>
         </LabelWithInput>
-        <FormErrorMessage message={getFirstFileError(errors, 'images')} className="mt-4" />
+
+        <FormErrorMessage
+          message={getFirstFileError(errors, 'images')}
+          className="mt-4 dark:text-red-400"
+        />
       </div>
 
       <div>
 
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('video')} desc={isEditMode ? t('videoDescEdit') : t('videoDesc')}>
+        <LabelWithInput
+          className='items-center bg-gray-50 p-6 rounded-xl mb-6
+               dark:bg-dark-bg-card
+               transition-colors duration-300'
+          title={t('video')}
+          desc={isEditMode ? t('videoDescEdit') : t('videoDesc')}
+        >
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.video?.map((e, i) => (
-              <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
-                {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+              <div
+                key={i}
+                className='relative flex items-center justify-center flex-col
+                     bg-white
+                     max-sm:w-full w-[200px]
+                     shadow-inner
+                     border border-slate-200
+                     p-2 px-6 gap-2 rounded-xl
+                     dark:bg-dark-bg-input
+                     dark:border-dark-border
+                     dark:text-dark-text-primary
+                     transition-colors duration-300'
+              >
+                {(e?.mimeType || e?.type)?.startsWith('image') ? (
+                  <img
+                    src={baseImg + e.url}
+                    alt={e.filename}
+                    className='w-full aspect-square'
+                  />
+                ) : (
+                  <div className='mx-auto aspect-square w-[100px] flex items-center justify-center rounded-md dark:invert'>
+                    {getFileIcon(e?.mimeType || e?.type)}
+                  </div>
+                )}
 
-                <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]' title={e?.filename}>{e.filename}</h4>
+                <h4
+                  className='text-base whitespace-nowrap truncate max-w-[100px]
+                       dark:text-dark-text-secondary'
+                  title={e?.filename}
+                >
+                  {e.filename}
+                </h4>
+
                 <button
                   type="button"
                   onClick={() => removeFile("video", i)}
@@ -1760,24 +1882,84 @@ function Step5({ isEditMode, formData, setFormData, nextStep, prevStep }) {
                 </button>
               </div>
             ))}
-            <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
+
+            <div
+              className='overflow-hidden bg-white max-sm:w-full w-[200px]
+                   relative text-center shadow-inner
+                   border border-slate-200
+                   rounded-xl p-2
+                   dark:bg-dark-bg-input
+                   dark:border-dark-border
+                   transition-colors duration-300'
+            >
               <UploadImage className='w-[100px] h-[100px]' />
-              <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseVideo')}</span></div>
-              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'video')} maxSelection={1} />
+
+              <div>
+                <span className='text-[var(--color-main-600)] font-[500]'>
+                  {t('browseVideo')}
+                </span>
+              </div>
+
+              <AttachFilesButton
+                className={'scale-[10] opacity-0 !absolute'}
+                hiddenFiles={true}
+                onChange={files => handleFileSelection(files, 'video')}
+                maxSelection={1}
+              />
             </div>
           </div>
         </LabelWithInput>
-        <FormErrorMessage message={getFirstFileError(errors, 'video')} className="mt-4" />
+
+        <FormErrorMessage
+          message={getFirstFileError(errors, 'video')}
+          className="mt-4 dark:text-red-400"
+        />
+
       </div>
 
       <div>
-        <LabelWithInput className=' items-center bg-gray-50 p-6 rounded-xl mb-6' title={t('document')} desc={isEditMode ? t('documentDescEdit') : t('documentDesc')}>
+        <LabelWithInput
+          className='items-center bg-gray-50 p-6 rounded-xl mb-6
+               dark:bg-dark-bg-card
+               transition-colors duration-300'
+          title={t('document')}
+          desc={isEditMode ? t('documentDescEdit') : t('documentDesc')}
+        >
           <div className='flex flex-wrap gap-3 justify-end'>
             {formData?.documents?.map((e, i) => (
-              <div className='relative  flex items-center justify-center flex-col bg-white max-sm:w-full w-[200px] shadow-inner border border-slate-200 p-2 px-6 gap-2 rounded-xl '>
-                {(e?.mimeType || e?.type)?.startsWith('image') ? <img src={baseImg + e.url} alt={e.filename} className='w-full  aspect-square  ' /> : <div className=' mx-auto aspect-square w-[100px] flex items-center justify-center  rounded-md'>{getFileIcon(e?.mimeType || e?.type)}</div>}
+              <div
+                key={i}
+                className='relative flex items-center justify-center flex-col
+                     bg-white
+                     max-sm:w-full w-[200px]
+                     shadow-inner
+                     border border-slate-200
+                     p-2 px-6 gap-2 rounded-xl
+                     dark:bg-dark-bg-input
+                     dark:border-dark-border
+                     dark:text-dark-text-primary
+                     transition-colors duration-300'
+              >
+                {(e?.mimeType || e?.type)?.startsWith('image') ? (
+                  <img
+                    src={baseImg + e.url}
+                    alt={e.filename}
+                    className='w-full aspect-square'
+                  />
+                ) : (
+                  <div className='mx-auto aspect-square w-[100px] flex items-center justify-center rounded-md dark:invert'>
+                    {getFileIcon(e?.mimeType || e?.type)}
+                  </div>
+                )}
 
-                <h4 className=' text-base whitespace-nowrap truncate max-w-[100px]  ' title={e?.filename} >{e.filename}</h4>
+                <h4
+                  className='text-base whitespace-nowrap truncate max-w-[100px]
+                       dark:text-dark-text-secondary'
+                  title={e?.filename}
+                >
+                  {e.filename}
+                </h4>
+
                 <button
                   type="button"
                   onClick={() => removeFile("documents", i)}
@@ -1787,14 +1969,38 @@ function Step5({ isEditMode, formData, setFormData, nextStep, prevStep }) {
                 </button>
               </div>
             ))}
-            <div className=' overflow-hidden bg-white max-sm:w-full w-[200px] relative text-center shadow-inner border border-slate-200 rounded-xl p-2  '>
+
+            <div
+              className='overflow-hidden bg-white max-sm:w-full w-[200px]
+                   relative text-center shadow-inner
+                   border border-slate-200
+                   rounded-xl p-2
+                   dark:bg-dark-bg-input
+                   dark:border-dark-border
+                   transition-colors duration-300'
+            >
               <UploadImage className='w-[100px] h-[100px]' />
-              <div className=''><span className='text-[var(--color-main-600)] font-[500]'>{t('browseDocuments')}</span></div>
-              <AttachFilesButton className={'scale-[10]  opacity-0 !absolute '} hiddenFiles={true} onChange={files => handleFileSelection(files, 'documents')} maxSelection={2} />
+
+              <div>
+                <span className='text-[var(--color-main-600)] font-[500]'>
+                  {t('browseDocuments')}
+                </span>
+              </div>
+
+              <AttachFilesButton
+                className={'scale-[10] opacity-0 !absolute'}
+                hiddenFiles={true}
+                onChange={files => handleFileSelection(files, 'documents')}
+                maxSelection={2}
+              />
             </div>
           </div>
         </LabelWithInput>
-        <FormErrorMessage message={getFirstFileError(errors, 'documents')} className="mt-4" />
+
+        <FormErrorMessage
+          message={getFirstFileError(errors, 'documents')}
+          className="mt-4 dark:text-red-400"
+        />
       </div>
 
       <div className='flex justify-end gap-2 pt-6'>
@@ -1814,24 +2020,52 @@ function Step6({ isEditMode, formData, handleSubmit, prevStep, loading }) {
   const isUpdate = Boolean(gigSlug); // true if updating
 
   return (
-    <div className='text-center space-y-8 py-8'>
+    <div className='text-center space-y-8 py-12'>
       <div>
-        <div className='w-[200px] h-fit bg-main-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-          <img src='/icons/congratlation.png' alt='' className='w-[300px]' />
+        {/* Celebration Icon Wrapper */}
+        <div className='w-48 h-48 bg-main-100 dark:bg-main-500/10 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors'>
+          <img src='/icons/congratlation.png' alt='Celebration' className='w-64 object-contain' />
         </div>
-        <h1 className='text-3xl font-bold text-gray-900 mb-2'>{t('congratulations')}</h1>
-        <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{isEditMode ? t('almostDoneUpdate') : t('almostDoneCreate')}</p>
+
+        <h1 className='text-3xl font-bold text-gray-900 dark:text-dark-text-primary mb-3'>
+          {t('congratulations')}
+        </h1>
+
+        <p className='max-w-[700px] mx-auto text-gray-600 dark:text-dark-text-secondary leading-relaxed'>
+          {isEditMode ? t('almostDoneUpdate') : t('almostDoneCreate')}
+        </p>
+
         {!isUpdate && (
-          <>
-            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{!isEditMode && t('phoneVerification')}</p>
-            <p className='max-w-[900px] mb-2 mx-auto text-center text-gray-600'>{isEditMode ? t('EditHint') : t('phonePrivacy')}</p>
-          </>
+          <div className="mt-4 space-y-2">
+            <p className='max-w-[700px] mx-auto text-gray-600 dark:text-dark-text-secondary'>
+              {!isEditMode && t('phoneVerification')}
+            </p>
+            <p className='max-w-[700px] mx-auto text-gray-500 dark:text-dark-text-secondary/70 text-sm'>
+              {isEditMode ? t('EditHint') : t('phonePrivacy')}
+            </p>
+          </div>
         )}
       </div>
 
-      <div className='flex flex-col xs:flex-row justify-center gap-4 pt-4'>
-        <Button type='button' icon={isArabic ? <ChevronRight className='ltr:scale-x-[-1]' /> : <ChevronLeft className='' />} name={t('backToEdit')} color='secondary' onClick={prevStep} className='!w-fit !flex-row-reverse !px-8 py-2 text-white bg-main-600 hover:bg-main-700 rounded-lg transition-colors max-xs:!w-full' />
-        <Button type='button' name={isUpdate ? t('updateGig') : t('publishGig')} color='green' onClick={handleSubmit} loading={loading} disabled={loading} className='!w-fit !px-8 py-2 text-white bg-main-600 hover:bg-main-700 rounded-lg transition-colors max-xs:!w-full' />
+      {/* Action Footer */}
+      <div className='flex flex-col xs:flex-row justify-center gap-4 pt-6'>
+        <Button
+          type='button'
+          icon={isArabic ? <ChevronRight className='ltr:scale-x-[-1]' /> : <ChevronLeft />}
+          name={t('backToEdit')}
+          color='secondary'
+          onClick={prevStep}
+          className='!w-fit !px-8 py-2  !flex-row-reverse dark:bg-dark-bg-input dark:text-dark-text-primary dark:hover:bg-dark-bg-input/80 max-xs:!w-full border dark:border-dark-border'
+        />
+        <Button
+          type='button'
+          name={isUpdate ? t('updateGig') : t('publishGig')}
+          color='green'
+          onClick={handleSubmit}
+          loading={loading}
+          disabled={loading}
+          className='!w-fit !px-12 py-2 text-white bg-main-600 hover:bg-main-700 rounded-lg transition-all shadow-lg shadow-main-500/20 max-xs:!w-full'
+        />
       </div>
     </div>
   );
@@ -1841,24 +2075,26 @@ function SkeletonLoading() {
   const t = useTranslations('CreateGig.loading');
   return (
     <div className='flex flex-col items-center justify-center py-20 space-y-8 relative animate-pulse'>
-      <div className='absolute w-full h-full inset-0 bg-gray-100 rounded-lg z-[-1]'></div>
-      {/* Animated spinner with smooth green gradient */}
+      {/* Background Layer */}
+      <div className='absolute w-full h-full inset-0 bg-gray-100 dark:bg-dark-bg-input/50 rounded-lg z-[-1] transition-colors'></div>
+
+      {/* Animated spinner */}
       <div className='relative'>
-        <div className='w-16 h-16 border-6 border-main-200 rounded-full'></div>
-        <div className='absolute top-0 left-0 w-16 h-16 border-4 border-main-600 border-t-transparent rounded-full animate-spin'></div>
+        <div className='w-16 h-16 border-4 border-main-200 dark:border-main-500/20 rounded-full'></div>
+        <div className='absolute top-0 left-0 w-16 h-16 border-4 border-main-600 dark:border-main-400 border-t-transparent rounded-full animate-spin'></div>
       </div>
 
-      {/* Loading text with smooth fading animation */}
+      {/* Loading text */}
       <div className='text-center space-y-4'>
-        <p className='text-xl font-semibold text-main-800'>{t('loadingGigCreator')}</p>
-        <p className='text-sm text-main-600 animate-pulse'>{t('gettingReady')}</p>
+        <p className='text-xl font-semibold text-main-800 dark:text-main-400'>{t('loadingGigCreator')}</p>
+        <p className='text-sm text-main-600 dark:text-main-500/80 animate-pulse'>{t('gettingReady')}</p>
       </div>
 
-      {/* Progress dots with a pulsating effect and subtle delay */}
+      {/* Progress dots */}
       <div className='flex space-x-3'>
-        <div className='w-3 h-3 bg-gradient-to-r from-main-400 to-main-500 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
-        <div className='w-3 h-3 bg-gradient-to-r from-main-500 to-main-600 rounded-full animate-bounce' style={{ animationDelay: '200ms' }}></div>
-        <div className='w-3 h-3 bg-gradient-to-r from-main-600 to-main-700 rounded-full animate-bounce' style={{ animationDelay: '400ms' }}></div>
+        <div className='w-3 h-3 bg-main-400 dark:bg-main-500 rounded-full animate-bounce' style={{ animationDelay: '0ms' }}></div>
+        <div className='w-3 h-3 bg-main-500 dark:bg-main-600 rounded-full animate-bounce' style={{ animationDelay: '200ms' }}></div>
+        <div className='w-3 h-3 bg-main-600 dark:bg-main-700 rounded-full animate-bounce' style={{ animationDelay: '400ms' }}></div>
       </div>
     </div>
   );
@@ -1868,11 +2104,16 @@ const LabelWithInput = ({ children, title, desc, className }) => {
   return (
     <div className={`flex flex-col md:flex-row ${className} gap-6`}>
       <div className="w-full md:max-w-[300px] shrink-0">
-        <label className="text-[22px] font-semibold text-slate-900">{title}</label>
-        {desc && <p className="text-sm text-slate-600 mt-1">{desc}</p>}
+        <label className="text-[22px] font-semibold text-slate-900 dark:text-dark-text-primary leading-tight transition-colors">
+          {title}
+        </label>
+        {desc && (
+          <p className="text-sm text-slate-600 dark:text-dark-text-secondary mt-1.5">
+            {desc}
+          </p>
+        )}
       </div>
       <div className="flex-1">{children}</div>
     </div>
   );
 };
-

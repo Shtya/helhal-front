@@ -34,6 +34,11 @@ export default function Img({ src, altSrc, alt = '', className = 'h-full w-full 
     // show contained altSrcFinal to avoid ugly stretch
     e.currentTarget.classList.add('!object-contain', 'bg-slate-50');
     e.currentTarget.src = altSrcFinal;
+
+    if (altSrcFinal === "/icons/no-img.png") {
+      e.currentTarget.classList.add('dark:invert-[20%]');
+    }
+
     setErrored(true);
   };
 

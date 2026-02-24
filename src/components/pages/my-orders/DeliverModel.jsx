@@ -112,15 +112,15 @@ export default function DeliverModel({
     return (
         <Modal title={t('title')} onClose={onClose}>
             <div className="space-y-4">
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-slate-600 dark:text-dark-text-secondary">
                     {t('order')}: <strong>{orderTitle}</strong>
                 </p>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-slate-600 dark:text-dark-text-secondary">
                     {t('receivePayment')} <strong>{clientName}</strong> {t('acceptsDelivery')}
                 </p>
 
                 <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                         {t('messageToClient')} *
                     </label>
                     <Textarea
@@ -139,7 +139,7 @@ export default function DeliverModel({
                     onChange={(newFiles) => setValue('files', newFiles)}
                 />
                 {/* Freelancer note */}
-                <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
+                <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2 dark:text-dark-text-secondary dark:bg-dark-bg-input dark:border-dark-border">
                     {t('note')} <strong>{clientName}</strong> {t('willHave')} <strong>14</strong> {t('daysToReview')}
                     {t('noAction')} <strong>${amount}</strong> {t('willBeReleased')}
                 </div>

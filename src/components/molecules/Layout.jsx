@@ -33,7 +33,7 @@ export default function Layout({ children, params }) {
   return (
     <AuthProvider>
       <NotificationProvider>
-        <ThemeProvider enableSystem>
+        <ThemeProvider storageKey="theme" defaultTheme='dark' enableSystem>
           <SocketProvider>
             <GlobalProvider>
               <AuthInterceptorWrapper>

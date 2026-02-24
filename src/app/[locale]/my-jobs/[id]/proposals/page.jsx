@@ -17,6 +17,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import Select from '@/components/atoms/Select';
 import InputSearch from '@/components/atoms/InputSearch';
 import { isErrorAbort } from '@/utils/helper';
+import Currency from '@/components/common/Currency';
 
 // ----------------------------
 // API Helpers
@@ -84,13 +85,13 @@ const formatMoney = v => {
 const statusPill = status => {
   switch (status) {
     case 'submitted':
-      return 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200';
+      return 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:ring-blue-500/40';
     case 'accepted':
-      return 'bg-main-50 text-main-700 ring-1 ring-inset ring-main-200';
+      return 'bg-main-50 text-main-700 ring-1 ring-inset ring-main-200 dark:bg-main-900/20 dark:text-main-400 dark:ring-main-500/40';
     case 'rejected':
-      return 'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200';
+      return 'bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:ring-rose-500/40';
     default:
-      return 'bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-200';
+      return 'bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-200 dark:bg-dark-bg-input dark:text-dark-text-secondary dark:ring-dark-border';
   }
 };
 
@@ -99,47 +100,47 @@ const SkeletonLoader = () => (
     {[...Array(3)].map((_, i) => (
       <div
         key={i}
-        className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm animate-pulse"
+        className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm animate-pulse dark:bg-dark-bg-card dark:border-dark-border"
       >
         {/* Header */}
         <div className="mb-5 flex flex-col items-center sm:items-start justify-between gap-4 md:flex-row">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
             {/* Avatar */}
-            <div className="h-16 w-16 rounded-full bg-slate-200 shrink-0" />
+            <div className="h-16 w-16 rounded-full bg-slate-200 shrink-0 dark:bg-dark-border" />
 
             {/* Info */}
             <div className="flex-1 space-y-2 w-full sm:w-auto">
-              <div className="h-4 w-40 rounded bg-slate-200" />
-              <div className="h-4 w-32 rounded bg-slate-200" />
-              <div className="h-4 w-52 rounded bg-slate-200" />
+              <div className="h-4 w-40 rounded bg-slate-200 dark:bg-dark-border" />
+              <div className="h-4 w-32 rounded bg-slate-200 dark:bg-dark-border" />
+              <div className="h-4 w-52 rounded bg-slate-200 dark:bg-dark-border" />
             </div>
           </div>
 
           {/* Bid Info */}
           <div className="space-y-2 text-right sm:text-left">
-            <div className="h-6 w-24 rounded bg-slate-200 ml-auto sm:ml-0" />
-            <div className="h-4 w-28 rounded bg-slate-200 ml-auto sm:ml-0" />
+            <div className="h-6 w-24 rounded bg-slate-200 ml-auto sm:ml-0 dark:bg-dark-border" />
+            <div className="h-4 w-28 rounded bg-slate-200 ml-auto sm:ml-0 dark:bg-dark-border" />
           </div>
         </div>
 
         {/* Body */}
         <div className="space-y-2">
-          <div className="h-4 w-full rounded bg-slate-200" />
-          <div className="h-4 w-5/6 rounded bg-slate-200" />
-          <div className="h-4 w-4/6 rounded bg-slate-200" />
+          <div className="h-4 w-full rounded bg-slate-200 dark:bg-dark-border" />
+          <div className="h-4 w-5/6 rounded bg-slate-200 dark:bg-dark-border" />
+          <div className="h-4 w-4/6 rounded bg-slate-200 dark:bg-dark-border" />
         </div>
 
         {/* Footer */}
-        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-slate-100 pt-4">
+        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-4 border-t border-slate-100 pt-4 dark:border-dark-border">
 
           {/* Actions */}
           <div className="flex flex-wrap justify-center sm:justify-end gap-2">
-            <div className="h-10 w-28 rounded bg-slate-200" />
-            <div className="h-10 w-24 rounded bg-slate-200" />
-            <div className="h-10 w-24 rounded bg-slate-200" />
+            <div className="h-10 w-28 rounded bg-slate-200 dark:bg-dark-border" />
+            <div className="h-10 w-24 rounded bg-slate-200 dark:bg-dark-border" />
+            <div className="h-10 w-24 rounded bg-slate-200 dark:bg-dark-border" />
           </div>
           {/* Status Pill */}
-          <div className="h-6 w-24 rounded bg-slate-200 self-center sm:self-auto" />
+          <div className="h-6 w-24 rounded bg-slate-200 self-center sm:self-auto dark:bg-dark-border" />
         </div>
       </div>
     ))}
@@ -164,7 +165,7 @@ function Avatar({ name, src }) {
 
 function MetaChip({ icon, text, title }) {
   return (
-    <div title={title} className='inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-200'>
+    <div title={title} className='inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-200 dark:bg-dark-bg-input dark:text-dark-text-secondary dark:ring-dark-border'>
       {icon}
       <span className='truncate'>{text}</span>
     </div>
@@ -196,7 +197,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
   }, [proposal.portfolio]);
 
   return (
-    <div className='group rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg'>
+    <div className='group rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg dark:bg-dark-bg-card dark:border-dark-border'>
       {/* Header */}
       <div className='mb-5 flex flex-col items-center sm:items-start justify-between gap-4 md:flex-row'>
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
@@ -209,7 +210,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={`/profile/${seller.id}`}
-                className="text-lg font-semibold text-slate-900 hover:underline"
+                className="text-lg font-semibold text-slate-900 hover:underline dark:text-dark-text-primary dark:hover:text-main-400"
               >
                 {seller.username}
               </Link>
@@ -223,7 +224,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
             </div>
 
             {/* Contact + Meta */}
-            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-600">
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-600 dark:text-dark-text-secondary">
               <NativeLink
                 href={`mailto:${seller.email}`}
                 className="inline-flex items-center gap-1 hover:underline"
@@ -243,7 +244,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
                 {seller.skills.slice(0, 6).map(s => (
                   <span
                     key={s}
-                    className="rounded-md bg-main-50 px-2 py-0.5 text-[11px] font-medium text-main-700 ring-1 ring-inset ring-main-200"
+                    className="rounded-md bg-main-50 px-2 py-0.5 text-[11px] font-medium text-main-700 ring-1 ring-inset ring-main-200 dark:bg-main-900/20 dark:text-main-400 dark:ring-main-500/40"
                   >
                     {s}
                   </span>
@@ -256,22 +257,22 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
         <div className='flex gap-2 items-center'>
 
           <div className='flex gap-1 items-center'>
-            <div className='inline-flex items-end gap-1'>
-              <DollarSign className='mb-0.5 h-5 w-5 text-main-600' />
-              <p className='text-2xl font-bold text-main-700'>{formatMoney(proposal.bidAmount)}</p>
-              <span className='text-sm text-slate-500'>/{proposal.bidType === 'hourly' ? t('bidType.hourly') : proposal.bidType === 'fixed' ? t('bidType.fixed') : t('bidType.bid')}</span>
+            <div className='inline-flex items-end gap-1 text-nowrap'>
+              <Currency className='mb-0.5 h-5 w-5 text-main-600 dark:text-main-400 ' />
+              <p className='text-2xl font-bold text-main-700 dark:text-main-400'>{formatMoney(proposal.bidAmount)}</p>
+              <span className='text-sm text-slate-500 dark:text-dark-text-secondary'>/{proposal.bidType === 'hourly' ? t('bidType.hourly') : proposal.bidType === 'fixed' ? t('bidType.fixed') : t('bidType.bid')}</span>
             </div>
-            <p className='mt-1 inline-flex items-center gap-1 text-sm text-slate-600'>
-              <Clock className='h-4 w-4' />
-              {t('daysDelivery', { days: proposal.estimatedTimeDays })}
+            <p className='mt-1 inline-flex items-center gap-1 text-sm text-slate-600 dark:text-dark-text-secondary'>
+              <Clock className='h-4 w-4 shrink-0 dark:text-dark-text-secondary dark:invert ' />
+              <span className='text-nowrap'>{t('daysDelivery', { days: proposal.estimatedTimeDays })}</span>
             </p>
           </div>
           <Button
             name={t('message')}
             icon={<MessageSquare className="h-4 w-4" />}
             href={`/chat?userId=${proposal.seller.id}`}
-            color="secondary"
-            className="!rounded-full !px-5 !py-2 !w-fit text-sm !font-bold !text-slate-700 !bg-white border border-slate-200 shadow-sm hover:!bg-slate-50 hover:border-main-300 transition-all active:scale-95"
+            color="gray"
+            className="bg-slate-100! dark:bg-gray-800! border-slate-200 dark:border-dark-border hover:bg-slate-200  !text-slate-700 px-5 !py-2 transition-all active:scale-95 shadow-sm   dark:text-dark-text-secondary! dark:hover:bg-dark-bg-input! "
           />
 
         </div>
@@ -281,8 +282,8 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
       <div className='mb-5 space-y-2'>
         {portfolioUrls.length > 0 && (
           <div className="mt-4">
-            <div className='mb-1 flex items-center gap-1 text-sm font-semibold text-slate-900'>
-              <Briefcase className='h-4 w-4' />
+            <div className='mb-1 flex items-center gap-1 text-sm font-semibold text-slate-900 dark:text-dark-text-primary'>
+              <Briefcase className='h-4 w-4 dark:text-dark-text-secondary dark:invert' />
               {t('portfolio')}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -292,7 +293,7 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
                   href={fullUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 rounded-md bg-sky-50 px-2 py-1 text-xs font-medium text-sky-700 ring-1 ring-sky-200 hover:underline"
+                  className="inline-flex items-center gap-1 rounded-md bg-sky-50 px-2 py-1 text-xs font-medium text-sky-700 ring-1 ring-sky-200 hover:underline dark:bg-sky-900/20 dark:text-sky-300 dark:ring-sky-500/40"
                 >
                   🌐 {hostname}
                 </a>
@@ -301,16 +302,16 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
           </div>
         )}
 
-        <div className='mb-1 flex items-center gap-1 text-sm font-semibold text-slate-900'>
-          <FileText className='h-4 w-4' />
+        <div className='mb-1 flex items-center gap-1 text-sm font-semibold text-slate-900 dark:text-dark-text-primary'>
+          <FileText className='h-4 w-4 dark:text-dark-text-secondary dark:invert' />
           {t('coverLetter')}
         </div>
-        <p className='leading-relaxed text-slate-700 break-words'>{proposal.coverLetter}</p>
+        <p className='leading-relaxed text-slate-700 break-words dark:text-dark-text-secondary'>{proposal.coverLetter}</p>
       </div>
 
       {!!proposal.attachments?.length && (
         <div className='mb-5'>
-          <h4 className='mb-1 text-sm font-semibold text-slate-900'>{t('attachments')}</h4>
+          <h4 className='mb-1 text-sm font-semibold text-slate-900 dark:text-dark-text-primary'>{t('attachments')}</h4>
           <AttachmentList className='lg:grid-cols-3 xl:grid-cols-4' attachments={proposal.attachments} />
         </div>
       )}
@@ -464,20 +465,20 @@ export default function JobProposalsPage() {
 
 
   return (
-    <div className='container min-h-[600px] !py-8'>
+    <div className='container min-h-[600px] !py-8 dark:bg-dark-bg-base'>
       {/* Job Header */}
       <div className='mb-6'>
         <div className='flex flex-col justify-between gap-4 md:flex-row md:items-end'>
           <div>
-            <h1 className='mb-1 text-3xl font-bold text-slate-900'>{job?.title || t('title')}</h1>
-            <p className='text-slate-600'>
+            <h1 className='mb-1 text-3xl font-bold text-slate-900 dark:text-dark-text-primary'>{job?.title || t('title')}</h1>
+            <p className='text-slate-600 dark:text-dark-text-secondary'>
               {proposals.length} {proposals.length === 1 ? t('proposal') : t('proposals')} {t('received')}
             </p>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
             {job?.budget && <MetaChip icon={<DollarSign className='h-3.5 w-3.5' />} text={`${formatMoney(job.budget)} • ${job.budgetType || 'budget'}`} title={t('jobBudget')} />}
             {job?.preferredDeliveryDays != null && <MetaChip icon={<Clock className='h-3.5 w-3.5' />} text={t('daysPreferred', { days: job.preferredDeliveryDays })} title={t('preferredDeliveryTime')} />}
-            <Link href='/my-jobs' className='text-sm text-main-700 underline underline-offset-2'>
+            <Link href='/my-jobs' className='text-sm text-main-700 underline underline-offset-2 dark:text-main-400'>
               {t('viewMyJobs')}
             </Link>
           </div>
@@ -485,7 +486,7 @@ export default function JobProposalsPage() {
       </div>
 
       {/* Toolbar */}
-      <div className='mb-6 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between'>
+      <div className='mb-6 flex flex-col gap-3 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between dark:bg-dark-bg-card dark:border-dark-border'>
         <div className='flex flex-1 items-center gap-2'>
           <InputSearch iconLeft={'/icons/search.svg'} value={query} onChange={v => setQuery(v)} placeholder={t('searchPlaceholder')} className='w-full md:max-w-md' showAction={false} />
         </div>
@@ -554,14 +555,30 @@ export default function JobProposalsPage() {
       {/* Accept Confirmation Modal */}
       {confirmOpen && (
         <Modal title={t('acceptConfirmTitle')} onClose={() => setConfirmOpen(false)}>
-          <p className='text-slate-700'>
+          <p className="text-slate-700 dark:text-dark-text-primary">
             {t.rich('acceptConfirmMessage', {
               strong: (chunk) => <strong className="font-semibold">{chunk}</strong>
             })}
           </p>
-          <div className='mt-6 flex justify-end gap-2'>
-            <Button name={t('cancel')} color='secondary' onClick={() => setConfirmOpen(false)} className='!px-4 !py-2 text-sm !text-slate-700' disabled={actionLoading} />
-            <Button name={t('confirmAccept')} color='green' onClick={confirmAccept} loading={actionLoading} className='!px-4 !py-2 text-sm' icon={<Check className='h-4 w-4' />} />
+
+          <div className="mt-6 flex justify-end gap-2">
+            <Button
+              type="button"
+              name={t('cancel')}
+              color="secondary"
+              onClick={() => setConfirmOpen(false)}
+              className="!px-4 !py-2 text-sm text-slate-700 dark:text-dark-text-secondary"
+              disabled={actionLoading}
+            />
+            <Button
+              type="button"
+              name={t('confirmAccept')}
+              color="green"
+              onClick={confirmAccept}
+              loading={actionLoading}
+              className="!px-4 !py-2 text-sm"
+              icon={<Check className="h-4 w-4" />}
+            />
           </div>
         </Modal>
       )}

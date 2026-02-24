@@ -213,20 +213,43 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
 
   return (
     <div className={className || ''}>
-      {label && <label className='block text-sm font-medium text-gray-700 mb-2'>{label}</label>}
+      {label && (
+        <label className='block text-sm font-medium text-gray-700 dark:text-dark-text-primary mb-2'>
+          {label}
+        </label>
+      )}
 
-      <div ref={containerRef} className={['w-full min-h-[44px] rounded-md border px-2 py-1.5 flex items-center gap-1 flex-wrap', 'bg-white shadow-sm transition-colors', 'focus-within:ring-2 focus-within:ring-main-500 focus-within:border-main-500', errorMsg ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-300 hover:border-main-500/60'].join(' ')}>
-        {/* tags */}
+      <div
+        ref={containerRef}
+        className={[
+          'w-full min-h-[44px] rounded-md border px-2 py-1.5 flex items-center gap-1 flex-wrap transition-colors',
+          'bg-white dark:bg-dark-bg-input shadow-sm',
+          'focus-within:ring-2 focus-within:ring-main-500/40 focus-within:border-main-500',
+          errorMsg
+            ? 'border-red-500 ring-2 ring-red-500/20'
+            : 'border-gray-300 dark:border-dark-border hover:border-main-500/60'
+        ].join(' ')}
+      >
+        {/* Tags */}
         {tags.map((t, i) => (
-          <span key={`${t}-${i}`} className=' border border-slate-200 group inline-flex items-center gap-1 rounded-xl bg-main-100  text-main-800 px-2.5 py-1 text-sm'>
+          <span
+            key={`${t}-${i}`}
+            className='border border-slate-200 dark:border-main-500/20 group inline-flex items-center gap-1 rounded-xl bg-main-100 dark:bg-main-500/10 text-main-800 dark:text-main-400 px-2.5 py-1 text-sm'
+          >
             <span className='break-all'>{t}</span>
-            <button type='button' data-chip onClick={() => handleRemove(t)} title='Remove' className='cursor-pointer  text-main-600 hover:text-main-800 transition'>
+            <button
+              type='button'
+              data-chip
+              onClick={() => handleRemove(t)}
+              title='Remove'
+              className='cursor-pointer text-main-600 dark:text-main-400 hover:text-main-800 dark:hover:text-main-300 transition'
+            >
               <X size={13} />
             </button>
           </span>
         ))}
 
-        {/* input + inline add button */}
+        {/* Input + Inline add button */}
         <div className='relative flex-1 min-w-[120px]'>
           <input
             ref={inputRef}
@@ -235,8 +258,6 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
             onKeyDown={onKeyDown}
             onPaste={onPaste}
             onBlur={() => {
-
-              // optionally commit on blur  
               if (inputValue.trim()) {
                 if (!isValid(inputValue.trim())) return;
                 commit(inputValue);
@@ -244,10 +265,16 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
               }
             }}
             placeholder={tags.length ? '' : placeholder}
-            className='w-full border-0 outline-none focus:ring-0 text-sm text-gray-900 placeholder:text-gray-400 pr-3'
+            className='w-full border-0 outline-none focus:ring-0 bg-transparent text-sm text-gray-900 dark:text-dark-text-primary placeholder:text-gray-400 dark:placeholder:text-dark-text-secondary pr-2'
             disabled={!canAddMore}
           />
-          <button type='button' onClick={handleAddClick} title='Add' className='gradient cursor-pointer text-white absolute end-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md  disabled:opacity-40' disabled={!canAddMore || !inputValue.trim() || (minTagLength && inputValue?.length < minTagLength)}>
+          <button
+            type='button'
+            onClick={handleAddClick}
+            title='Add'
+            className='gradient cursor-pointer text-white absolute end-0 top-1/2 -translate-y-1/2 p-1.5 rounded-md disabled:opacity-40 disabled:grayscale'
+            disabled={!canAddMore || !inputValue.trim() || (minTagLength && inputValue?.length < minTagLength)}
+          >
             <Plus size={16} />
           </button>
         </div>
@@ -257,7 +284,7 @@ export default function TagInput({ label, value, fieldName, getValues, setValue,
 
       {/* Optional helper / counter */}
       {typeof maxTags === 'number' && (
-        <p className='text-xs text-gray-500 mt-1'>
+        <p className='text-xs text-gray-500 dark:text-dark-text-secondary mt-1'>
           {tags.length}/{maxTags} tags
         </p>
       )}

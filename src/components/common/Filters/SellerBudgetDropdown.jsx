@@ -11,7 +11,7 @@ export default function SellerBudgetDropdown({
   onBudgetChange,
   selectedPriceRange,
   customBudget,
-  currencySymbol = '$', // تقدر تغيّرها لـ EGP مثلاً
+  currencySymbol = '$',
 }) {
   const t = useTranslations('Services.filters.budget');
   const BRAND = 'var(--color-main-700)';
@@ -24,8 +24,6 @@ export default function SellerBudgetDropdown({
     return new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(num);
   };
 
-
-  // حوّل مفاتيح priceRanges إلى تسميات لطيفة
   const labelForRange = id => {
     switch (id) {
       case 'u1000':
@@ -54,27 +52,23 @@ export default function SellerBudgetDropdown({
       .concat([{ id: 'custom', label: t('customBudget'), count: null }]);
   }, [filterOptions, currencySymbol]);
 
-  // ---- State
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(selectedPriceRange || null);
   const [customValue, setCustomValue] = useState(customBudget || '');
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Sync props -> state
   useEffect(() => {
     setSelectedId(selectedPriceRange || null);
     setCustomValue(customBudget || '');
     setHasChanges(false);
   }, [selectedPriceRange, customBudget, open]);
 
-  // detect changes
   useEffect(() => {
     if (!open || !selectedId) return;
     const changed = selectedId !== selectedPriceRange || (selectedId === 'custom' && String(customValue || '') !== String(customBudget || ''));
     setHasChanges(changed);
   }, [selectedId, customValue, selectedPriceRange, customBudget, open]);
 
-  // close on outside + Esc
   useEffect(() => {
     const onDoc = e => {
       if (!open) return;
@@ -93,22 +87,12 @@ export default function SellerBudgetDropdown({
     };
   }, [open, selectedId, customValue]);
 
-  // lock scroll when open
-  // useEffect(() => {
-  //   if (!open) return;
-  //   const prev = document.body.style.overflow;
-  //   document.body.style.overflow = 'hidden';
-  //   return () => (document.body.style.overflow = prev);
-  // }, [open]);
-
-  // ---- Derived label
   const activeLabel = () => {
     if (selectedId === 'custom' && customValue) return t('budgetWithAmount', { amount: `${currencySymbol}${fmtNumber(customValue)}` });
     const tier = tiers.find(t => t.id === selectedId);
     return tier ? tier.label : t('budget');
   };
 
-  // ---- Handlers
   const clearAll = () => {
     setSelectedId(null);
     setCustomValue('');
@@ -121,7 +105,7 @@ export default function SellerBudgetDropdown({
   };
 
   const onCustomInput = e => {
-    const v = e.target.value.replace(/[^\d]/g, ''); // أرقام فقط
+    const v = e.target.value.replace(/[^\d]/g, '');
     setCustomValue(v);
     setHasChanges(true);
   };
@@ -145,15 +129,15 @@ export default function SellerBudgetDropdown({
       <button
         type='button'
         onClick={() => onPick(id)}
-        className={`w-full px-1 py-2.5  rounded-md flex items-center justify-between text-left transition
-          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-main-100 text-slate-800'}`}>
+        className={`w-full px-1 py-2.5 rounded-md flex items-center justify-between text-left transition
+          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-main-100 dark:hover:bg-dark-bg-input text-slate-800 dark:text-dark-text-primary'}`}>
         <span className='flex items-center gap-2'>
           <span
             className={`w-5 h-5 rounded-full border flex items-center justify-center
-              ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513]'}`}>
+              ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513] dark:border-dark-border dark:bg-dark-bg-base'}`}>
             {active && <Check className='w-3 h-3 text-white' />}
           </span>
-          <span className={`text-sm text-nowrap truncate  ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
+          <span className={`text-sm text-nowrap truncate ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
         </span>
       </button>
     );
@@ -161,32 +145,28 @@ export default function SellerBudgetDropdown({
 
   return (
     <>
-      {/* overlay */}
-      {open && <div className='fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn' onClick={() => setOpen(false)} />}
+      {open && <div className='fixed inset-0 z-[60] bg-slate-900/40 dark:bg-black/60 backdrop-blur-[1px] animate-fadeIn' onClick={() => setOpen(false)} />}
 
       <div ref={rootRef} className={`relative inline-block text-left ${open && 'z-[70]'}`}>
-        {/* Trigger */}
         <button
           type='button'
           aria-haspopup='listbox'
           aria-expanded={open}
           onClick={() => setOpen(o => !o)}
-          className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition
-            ${open ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]' : 'border-slate-300'}`}
-          style={{
-          }}>
+          className={`h-[40px] px-4 rounded-md border w-full bg-white dark:bg-dark-bg-input dark:hover:bg-dark-bg-card flex items-center justify-between text-sm shadow-inner transition
+            ${open ? 'ring-2 border-main-700/60' : 'border-slate-300 dark:border-dark-border'} dark:text-dark-text-primary`}
+        >
           <span className='truncate'>{activeLabel()}</span>
           <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
         </button>
 
-        {/* Panel */}
         <div
-          className={` border border-main-700/40  absolute left-0 mt-2 w-full rounded-lg  bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
-            transition origin-top z-[70]
+          className={`border border-main-700/40 absolute left-0 mt-2 w-full rounded-lg bg-white dark:bg-dark-bg-card shadow-[0_6px_24px_rgba(0,0,0,.08)] dark:shadow-none
+            transition origin-top z-[70] dark:border-dark-border
             ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
           <div className='py-4'>
             <div className='px-4'>
-              <h4 className='text-lg font-bold text-slate-900 mb-2  text-start'>{t('budget')}</h4>
+              <h4 className='text-lg font-bold text-slate-900 dark:text-dark-text-primary mb-2 text-start'>{t('budget')}</h4>
             </div>
 
             <div className='px-2 space-y-2'>
@@ -194,25 +174,23 @@ export default function SellerBudgetDropdown({
                 <RadioRow key={t.id} id={t.id} label={t.label} count={t.count} />
               ))}
 
-              {/* Custom input */}
               <div
                 className={`overflow-hidden transition-[max-height,opacity,margin] duration-200 ease-out
                   ${selectedId === 'custom' ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}>
-                <div className='h-[44px] rounded-md flex items-center px-4 text-sm' style={{ border: `2px solid ${BRAND}` }}>
-                  <span className='text-slate-400 mr-2'>{currencySymbol}</span>
-                  <input type='text' inputMode='numeric' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' placeholder={t('enterMaxAmount')} />
+                <div className='h-[44px] rounded-md flex items-center px-4 text-sm dark:bg-dark-bg-input' style={{ border: `2px solid ${BRAND}` }}>
+                  <span className='text-slate-400 dark:text-dark-text-secondary mr-2'>{currencySymbol}</span>
+                  <input type='text' inputMode='numeric' value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 dark:text-dark-text-primary placeholder:text-slate-400 bg-transparent' placeholder={t('enterMaxAmount')} />
                 </div>
 
-                <div className='mt-2 text-[11px] text-slate-400'>{customValue ? t('youEntered', { amount: `${currencySymbol}${fmtNumber(customValue)}` }) : t('typeNumberOnly')}</div>
+                <div className='mt-2 text-[11px] text-slate-400 dark:text-dark-text-secondary'>{customValue ? t('youEntered', { amount: `${currencySymbol}${fmtNumber(customValue)}` }) : t('typeNumberOnly')}</div>
 
-                <div className='mt-3 border-t border-slate-200' />
+                <div className='mt-3 border-t border-slate-200 dark:border-dark-border' />
               </div>
             </div>
 
-            {/* Footer */}
             <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>
-              <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
-              {hasChanges && <Button icon={<Check size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={applyChanges} />}
+              <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px] dark:border-dark-border dark:text-dark-text-secondary' onClick={clearAll} />
+              {hasChanges && <Button icon={<Check size={16} />} color='outline' className='!w-fit !h-[35px] dark:border-dark-border dark:text-dark-text-secondary' onClick={applyChanges} />}
             </div>
           </div>
         </div>
@@ -223,12 +201,8 @@ export default function SellerBudgetDropdown({
           animation: fadeIn 120ms ease-out;
         }
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
       `}</style>
     </>

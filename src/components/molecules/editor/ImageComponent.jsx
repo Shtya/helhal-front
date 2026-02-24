@@ -87,7 +87,6 @@ export default function ImageComponent({
       )
     );
   }, [editor, onClick, onDelete]);
-
   return (
     <div
       style={{
@@ -104,10 +103,11 @@ export default function ImageComponent({
           width: width === 'inherit' ? '100%' : width,
           height: height === 'inherit' ? 'auto' : height,
           maxWidth: '100%',
-          // Visual feedback for selection
-          outline: isSelected ? '2px solid #3b82f6' : 'none',
+          // Visual feedback for selection (dark mode friendly)
+          outline: isSelected ? '2px solid var(--color-main-600)' : 'none',
           cursor: 'pointer',
-          borderRadius: '4px'
+          borderRadius: '4px',
+          backgroundColor: 'var(--color-dark-bg-card)', // subtle dark bg behind transparent images
         }}
         draggable="false"
       />

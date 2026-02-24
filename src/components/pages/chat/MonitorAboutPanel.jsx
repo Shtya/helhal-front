@@ -30,11 +30,11 @@ export function MonitorAboutPanel({ buyer, seller, t: tProp }) {
 
   return (
     <div className="w-full p-3">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('about')}</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary mb-4">{t('about')}</h2>
 
       <div className="space-y-4">
         {/* Buyer abbreviation */}
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
+        <div className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-900/20 p-4">
           <div className="flex items-start gap-3">
             <Img
               src={buyer?.profileImage}
@@ -45,15 +45,15 @@ export function MonitorAboutPanel({ buyer, seller, t: tProp }) {
             <div className="flex-1 min-w-0">
               <Link
                 href={`/profile/${buyer?.id}`}
-                className="font-semibold text-slate-900 hover:text-main-600 truncate block"
+                className="font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 truncate block"
               >
                 {abbreviateName(buyerName)}
               </Link>
-              <p className="text-xs text-emerald-700 font-medium">{t('buyer')}</p>
-              <p className="text-sm text-slate-600 truncate" title={buyer?.person?.email || buyer?.email}>
+              <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">{t('buyer')}</p>
+              <p className="text-sm text-slate-600 dark:text-dark-text-secondary truncate" title={buyer?.person?.email || buyer?.email}>
                 {abbreviateEmail(buyer?.person?.email || buyer?.email)}
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-dark-text-secondary mt-1">
                 {t('memberSince')}: {formatDate(buyer?.memberSince || buyer?.created_at)}
               </p>
             </div>
@@ -61,7 +61,7 @@ export function MonitorAboutPanel({ buyer, seller, t: tProp }) {
         </div>
 
         {/* Seller abbreviation */}
-        <div className="rounded-xl border border-main-200 bg-main-50/50 p-4">
+        <div className="rounded-xl border border-main-200 dark:border-main-500/30 bg-main-50/50 dark:bg-main-900/20 p-4">
           <div className="flex items-start gap-3">
             <Img
               src={seller?.profileImage}
@@ -72,15 +72,15 @@ export function MonitorAboutPanel({ buyer, seller, t: tProp }) {
             <div className="flex-1 min-w-0">
               <Link
                 href={`/profile/${seller?.id}`}
-                className="font-semibold text-slate-900 hover:text-main-600 truncate block"
+                className="font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 truncate block"
               >
                 {abbreviateName(sellerName)}
               </Link>
-              <p className="text-xs text-main-700 font-medium">{t('seller')}</p>
-              <p className="text-sm text-slate-600 truncate" title={seller?.person?.email || seller?.email}>
+              <p className="text-xs text-main-700 dark:text-main-400 font-medium">{t('seller')}</p>
+              <p className="text-sm text-slate-600 dark:text-dark-text-secondary truncate" title={seller?.person?.email || seller?.email}>
                 {abbreviateEmail(seller?.person?.email || seller?.email)}
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-dark-text-secondary mt-1">
                 {t('memberSince')}: {formatDate(seller?.memberSince || seller?.created_at)}
               </p>
             </div>

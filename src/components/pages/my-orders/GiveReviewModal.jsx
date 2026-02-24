@@ -41,26 +41,26 @@ export default function GiveReviewModal({ orderId, onClose, open, fetchOrders })
             <div className="container py-10 max-w-3xl animate-pulse">
                 {/* Header Skeleton */}
                 <div className="mb-8 space-y-3">
-                    <div className="h-9 w-48 bg-slate-200 rounded-lg mt-3" />
-                    <div className="h-4 w-64 bg-slate-100 rounded" />
+                    <div className="h-9 w-48 bg-slate-200 rounded-lg mt-3 dark:bg-dark-border" />
+                    <div className="h-4 w-64 bg-slate-100 rounded dark:bg-dark-border" />
                 </div>
 
                 <div className="space-y-6">
                     {/* Order Card Skeleton */}
-                    <div className="h-24 w-full bg-slate-100 rounded-lg border border-slate-200" />
+                    <div className="h-24 w-full bg-slate-100 rounded-lg border border-slate-200 dark:bg-dark-bg-input dark:border-dark-border" />
 
                     {/* Privacy Note Skeleton */}
-                    <div className="h-20 w-full bg-slate-50 rounded-lg border border-slate-100" />
+                    <div className="h-20 w-full bg-slate-50 rounded-lg border border-slate-100 dark:bg-dark-bg-input dark:border-dark-border" />
 
                     {/* Ratings Box Skeleton */}
-                    <div className="bg-white p-8 rounded-lg border border-slate-200 space-y-6">
-                        <div className="h-6 w-32 bg-slate-200 rounded" />
+                    <div className="bg-white p-8 rounded-lg border border-slate-200 space-y-6 dark:bg-dark-bg-card dark:border-dark-border">
+                        <div className="h-6 w-32 bg-slate-200 rounded dark:bg-dark-border" />
                         {[1, 2, 3, 4, 5].map((i) => (
                             <div key={i} className="flex justify-between items-center py-2">
-                                <div className="h-4 w-24 bg-slate-100 rounded" />
+                                <div className="h-4 w-24 bg-slate-100 rounded dark:bg-dark-border" />
                                 <div className="flex gap-2">
                                     {[1, 2, 3, 4, 5].map((s) => (
-                                        <div key={s} className="w-6 h-6 bg-slate-100 rounded-full" />
+                                        <div key={s} className="w-6 h-6 bg-slate-100 rounded-full dark:bg-dark-border" />
                                     ))}
                                 </div>
                             </div>
@@ -68,14 +68,14 @@ export default function GiveReviewModal({ orderId, onClose, open, fetchOrders })
                     </div>
 
                     {/* Review Textarea Skeleton */}
-                    <div className="bg-white p-8 rounded-lg border border-slate-200 space-y-4">
-                        <div className="h-6 w-32 bg-slate-200 rounded" />
-                        <div className="h-32 w-full bg-slate-100 rounded-lg" />
+                    <div className="bg-white p-8 rounded-lg border border-slate-200 space-y-4 dark:bg-dark-bg-card dark:border-dark-border">
+                        <div className="h-6 w-32 bg-slate-200 rounded dark:bg-dark-border" />
+                        <div className="h-32 w-full bg-slate-100 rounded-lg dark:bg-dark-border" />
                     </div>
 
                     {/* Button Skeleton */}
                     <div className="flex justify-end">
-                        <div className="h-11 w-40 bg-slate-200 rounded-lg" />
+                        <div className="h-11 w-40 bg-slate-200 rounded-lg dark:bg-dark-border" />
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@ export default function GiveReviewModal({ orderId, onClose, open, fetchOrders })
                     {/* <h1 className="text-3xl font-bold mb-2 text-slate-900 mt-3">
                         {userHasRated ? t('editFeedback') : t('giveFeedback')}
                     </h1> */}
-                    <p className="text-slate-600">{t('subtitle')}</p>
+                    <p className="text-slate-600 dark:text-dark-text-secondary">{t('subtitle')}</p>
                 </div>
                 <RatingForm
                     fetchOrders={fetchOrders}
@@ -178,32 +178,32 @@ function RatingForm({ orderId, initialData, onClose, fetchOrders }) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
 
 
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 dark:bg-dark-bg-input dark:border-dark-border">
                 <div className="flex gap-3">
                     <div className="flex-shrink-0 mt-0.5">
-                        <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-5 h-5 text-slate-600 dark:text-dark-text-secondary dark:invert" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div>
-                        <h3 className="text-sm font-semibold text-slate-900 mb-1">
+                        <h3 className="text-sm font-semibold text-slate-900 mb-1 dark:text-dark-text-primary">
                             {tOrder('privacyNote.title')}
                         </h3>
-                        <p className="text-sm text-slate-600 leading-relaxed">
+                        <p className="text-sm text-slate-600 leading-relaxed dark:text-dark-text-secondary">
                             {tOrder('privacyNote.description')}
                         </p>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white p-8 rounded-lg border border-slate-200">
-                <h2 className="text-lg font-semibold text-slate-900 mb-6">
+            <div className="bg-white p-8 rounded-lg border border-slate-200 dark:bg-dark-bg-input dark:border-dark-border">
+                <h2 className="text-lg font-semibold text-slate-900 mb-6 dark:text-dark-text-primary">
                     {t('ratingsTitle')}
                 </h2>
                 <div className="space-y-5">
                     {dimensions.map((dim) => (
                         <div key={dim} className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
-                            <label className="text-sm font-medium text-slate-700 flex-shrink-0 w-36">
+                            <label className="text-sm font-medium text-slate-700 flex-shrink-0 w-36 dark:text-dark-text-primary">
                                 {tOrder(`dimensions.${dim}`)}
                             </label>
                             <div className="flex gap-2">
@@ -228,12 +228,12 @@ function RatingForm({ orderId, initialData, onClose, fetchOrders }) {
                 </div>
             </div>
 
-            <div className="bg-white p-8 rounded-lg border border-slate-200">
+            <div className="bg-white p-8 rounded-lg border border-slate-200 dark:bg-dark-bg-input dark:border-dark-border">
                 <div className="mb-4">
-                    <h2 className="text-lg font-semibold text-slate-900 mb-1">
+                    <h2 className="text-lg font-semibold text-slate-900 mb-1 dark:text-dark-text-primary">
                         {t('yourReview')}
                     </h2>
-                    <p className="text-sm text-slate-500">{t('reviewDescription')}</p>
+                    <p className="text-sm text-slate-500 dark:text-dark-text-secondary">{t('reviewDescription')}</p>
                 </div>
                 <div className="relative">
                     <Textarea
@@ -243,7 +243,7 @@ function RatingForm({ orderId, initialData, onClose, fetchOrders }) {
                         error={errors?.reviewText?.message}
                         className="w-full resize-none"
                     />
-                    <div className="text-right text-xs text-slate-400 mt-2">
+                    <div className="text-right text-xs text-slate-400 mt-2 dark:text-dark-text-secondary">
                         {reviewTextValue.length} / 5000
                     </div>
                 </div>

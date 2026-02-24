@@ -211,15 +211,18 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
     }
     return (
         <div className='mt-4 flex-1 min-h-0 flex flex-col'>
-            <div className='relative rounded-2xl  bg-white flex-1 overflow-hidden flex flex-col'>
+            <div className='relative rounded-2xl bg-white dark:bg-dark-bg-card flex-1 overflow-hidden flex flex-col'>
                 {/* Sticky header */}
-                <div className='sticky top-0 z-10 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-100 px-4 py-2 flex items-center justify-between'>
-                    <div className='text-sm font-semibold'>{t('thread')}</div>
+                <div className='sticky top-0 z-10 bg-white/80 dark:bg-dark-bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-dark-bg-card/60 border-b border-gray-100 dark:border-dark-border px-4 py-2 flex items-center justify-between'>
+                    <div className='text-sm font-semibold text-gray-900 dark:text-dark-text-primary'>{t('thread')}</div>
                     <div></div>
                 </div>
 
                 {/* Scrollable list */}
-                <div ref={scrollRef} className='mb-[73px] flex-1 min-h-[300px] max-h-[485px] overflow-y-auto px-3 sm:px-4 pt-3 pb-2 space-y-3 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]'>
+                <div
+                    ref={scrollRef}
+                    className='mb-[73px] flex-1 min-h-[300px] max-h-[485px] overflow-y-auto px-3 sm:px-4 pt-3 pb-2 space-y-3 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent]'
+                >
                     {/* Load older messages control */}
                     {detail?.hasMore && (
                         <div className='text-center'>
@@ -238,12 +241,22 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                     )}
 
                     {threaded.length ? (
-                        threaded.map(n => <MessageNode key={n.id} node={n} onReply={setReplyTo} messageById={messageById} meId={me?.id} onJump={handleJumpToMessage} isDisputeClosed={isDisputeClosed} />)
+                        threaded.map(n => (
+                            <MessageNode
+                                key={n.id}
+                                node={n}
+                                onReply={setReplyTo}
+                                messageById={messageById}
+                                meId={me?.id}
+                                onJump={handleJumpToMessage}
+                                isDisputeClosed={isDisputeClosed}
+                            />
+                        ))
                     ) : (
-                        <div className='mx-2 flex flex-col items-center justify-center py-8 text-center text-gray-500 border border-dashed border-gray-200 rounded-xl bg-gray-50 h-full'>
-                            <MessageSquare className='h-6 w-6 mb-2 text-gray-400' />
+                        <div className='mx-2 flex flex-col items-center justify-center py-8 text-center text-gray-500 dark:text-dark-text-secondary border border-dashed border-gray-200 dark:border-dark-border rounded-xl bg-gray-50 dark:bg-dark-bg-card h-full'>
+                            <MessageSquare className='h-6 w-6 mb-2 text-gray-400 dark:text-dark-text-secondary' />
                             <p className='text-sm font-medium'>{t('noMessages.title')}</p>
-                            <p className='text-xs text-gray-400 mt-1'>{t('noMessages.subtitle')}</p>
+                            <p className='text-xs text-gray-400 dark:text-dark-text-secondary mt-1'>{t('noMessages.subtitle')}</p>
                         </div>
                     )}
 
@@ -255,7 +268,8 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                                     const el = scrollRef.current;
                                     if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
                                 }}
-                                className='inline-flex items-center gap-1 rounded-full bg-white/90 ring-1 ring-gray-200 px-3 py-1 text-xs shadow'>
+                                className='inline-flex items-center gap-1 rounded-full bg-white/90 dark:bg-dark-bg-card/90 ring-1 ring-gray-200 dark:ring-dark-border px-3 py-1 text-xs shadow'
+                            >
                                 <ArrowDown className='h-4 w-4' /> {t('newerMessages')}
                             </button>
                         </div>
@@ -263,20 +277,22 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                 </div>
 
                 {/* Composer */}
-                {<div className='absolute bottom-0 left-0 right-0 border-t border-gray-100 bg-white px-4 py-3'>
-                    <div className='text-[12px] text-gray-500 mb-2'>
+                <div className='absolute bottom-0 left-0 right-0 border-t border-gray-100 dark:border-dark-border bg-white dark:bg-dark-bg-card px-4 py-3'>
+                    <div className='text-[12px] text-gray-500 dark:text-dark-text-secondary mb-2'>
                         {replyTo && (
                             <div className='flex items-center justify-between gap-2 max-w-full'>
-                                <div className="truncate max-w-[70%] cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded transition"
-                                    onClick={() => handleJumpToMessage?.(replyTo?.id)} >
+                                <div
+                                    className='truncate max-w-[70%] cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-card/50 px-1 py-0.5 rounded transition'
+                                    onClick={() => handleJumpToMessage?.(replyTo?.id)}
+                                >
                                     {t.rich('replyingTo', {
                                         username: parent?.sender?.username || t('user'),
-                                        message: replyTo?.message?.slice(0, 120) + (replyTo?.message?.length > 120 ? '…' : ''),
-                                        strong: (chunk) => <strong>{chunk}</strong>,
+                                        message:
+                                            replyTo?.message?.slice(0, 120) +
+                                            (replyTo?.message?.length > 120 ? '…' : ''),
+                                        strong: chunk => <strong>{chunk}</strong>,
                                     })}
-
                                 </div>
-
 
                                 <button className='ml-2 underline' onClick={() => setReplyTo(null)}>
                                     {t('cancel')}
@@ -284,16 +300,13 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                             </div>
                         )}
                     </div>
-                    <div className='flex items-end gap-2  w-full '>
+                    <div className='flex items-end gap-2 w-full'>
                         <Input
                             name='thread-message'
                             placeholder={t('writeMessage')}
                             value={msg}
                             disabled={isDisputeClosed}
-                            cnInput={`${isDisputeClosed
-                                ? "message-disabled"
-                                : ""
-                                }`}
+                            cnInput={`${isDisputeClosed ? 'message-disabled' : ''}`}
                             onChange={e => setMsg(e.target.value)}
                             onKeyDown={e => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -301,11 +314,19 @@ export default function DisputeChat({ detail, setDetail, selectedId }) {
                                     if (!sending && (msg || '').trim()) sendMessage();
                                 }
                             }}
-                            className=""
+                            className=''
                         />
-                        <Button icon={<Send size={18} />} color='black' onClick={sendMessage} loading={sending} disabled={isDisputeClosed || sending || !msg.trim()} className='!h-[39px] !w-auto px-4' name={t('send')} />
+                        <Button
+                            icon={<Send size={18} />}
+                            color='green'
+                            onClick={sendMessage}
+                            loading={sending}
+                            disabled={isDisputeClosed || sending || !msg.trim()}
+                            className='!h-[39px] !w-auto px-4'
+                            name={t('send')}
+                        />
                     </div>
-                </div>}
+                </div>
             </div>
         </div>
     );
@@ -322,20 +343,31 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
 
 
     return (
-        <div className={`relative `} data-message-id={node.id}>
+        <div className={`relative`} data-message-id={node.id}>
             <div className={`flex gap-2 sm:gap-3 ${isMine ? 'justify-end' : 'justify-start'}`}>
                 {/* Avatar */}
-                {!isMine && <div className='h-8 w-8 rounded-full bg-gray-200 overflow-hidden grid place-items-center text-[11px] font-semibold shrink-0'>{initialsFromName(node?.sender?.username) || 'S'}</div>}
+                {!isMine && (
+                    <div className='h-8 w-8 rounded-full bg-gray-200 dark:bg-dark-bg-card overflow-hidden grid place-items-center text-[11px] font-semibold shrink-0 text-gray-800 dark:text-dark-text-primary'>
+                        {initialsFromName(node?.sender?.username) || 'S'}
+                    </div>
+                )}
 
                 {/* Bubble */}
-                <div className={`max-w-[88%] sm:max-w-[80%] `}>
-                    <div className={`rounded-2xl px-3 py-2 ring-1 shadow-sm ${node.system ? 'bg-slate-50 ring-slate-200' : isMine ? 'bg-main-50 ring-main-100' : 'bg-white ring-slate-200'}`}>
-                        <div className="text-[12px] text-gray-500 mb-1 flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-x-2 gap-y-1">
-                            <b className="text-gray-800 truncate max-w-[50%] sm:max-w-none">
+                <div className={`max-w-[88%] sm:max-w-[80%]`}>
+                    <div
+                        className={`rounded-2xl px-3 py-2 ring-1 shadow-sm ${node.system
+                            ? 'bg-slate-50 dark:bg-dark-bg-card ring-slate-200 dark:ring-dark-border'
+                            : isMine
+                                ? 'bg-main-50 dark:bg-main-800 ring-main-100 dark:ring-main-600'
+                                : 'bg-white dark:bg-dark-bg-card ring-slate-200 dark:ring-dark-border'
+                            }`}
+                    >
+                        <div className="text-[12px] text-gray-500 dark:text-dark-text-secondary mb-1 flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-x-2 gap-y-1">
+                            <b className="text-gray-800 dark:text-dark-text-primary truncate max-w-[50%] sm:max-w-none">
                                 {node?.sender?.username || (node.system ? t('system') : t('user'))}
                             </b>
 
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-gray-500 text-[11px] sm:text-[12px]">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-gray-500 dark:text-dark-text-secondary text-[11px] sm:text-[12px]">
                                 <span className="whitespace-nowrap">
                                     {new Date(node.created_at).toLocaleDateString(undefined, {
                                         year: '2-digit',
@@ -348,49 +380,60 @@ function MessageNode({ node, onReply, messageById, meId, onJump, isDisputeClosed
                                 {!node.system && onReply && !isDisputeClosed && (
                                     <button
                                         onClick={() => onReply(node)}
-                                        className="text-gray-400 hover:text-main-600 transition underline "
+                                        className="text-gray-400 dark:text-dark-text-secondary hover:text-main-600 dark:hover:text-main-400 transition underline"
                                         title={t('replyToMessage')}
                                     >
                                         {t('reply')}
                                     </button>
                                 )}
                             </div>
-
                         </div>
-
 
                         {/* Reply preview chip */}
                         {parentSnippet && (
                             <div
-                                className='mb-1 inline-flex items-center gap-2 text-[12px] bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 w-full cursor-pointer hover:bg-gray-100'
+                                className='mb-1 inline-flex items-center gap-2 text-[12px] bg-gray-50 dark:bg-dark-bg-card border border-gray-200 dark:border-dark-border rounded-lg px-2 py-1 w-full cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-bg-card/50'
                                 onClick={() => parent?.id && onJump?.(parent.id)}
                                 title={t('goToParent')}
                             >
-                                <Reply className='h-3.5 w-3.5 text-gray-500' />
-                                <span className="truncate text-gray-600">
+                                <Reply className='h-3.5 w-3.5 text-gray-500 dark:text-dark-text-secondary' />
+                                <span className="truncate text-gray-600 dark:text-dark-text-primary">
                                     {t.rich('inReplyTo', {
                                         username: parent?.sender?.username || t('user'),
                                         message: parentSnippet + (parent?.message?.length > 120 ? '…' : ''),
-                                        strong: (chunk) => <strong>{chunk}</strong>,
+                                        strong: chunk => <strong>{chunk}</strong>,
                                     })}
                                 </span>
-
                             </div>
                         )}
 
-                        <div className='text-[14px] leading-relaxed whitespace-pre-wrap text-gray-800 break-words'>{node.message}</div>
+                        <div className='text-[14px] leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-dark-text-primary break-words'>
+                            {node.message}
+                        </div>
                     </div>
                 </div>
 
                 {/* Right-side avatar for my messages */}
-                {isMine && <div className='h-8 w-8 rounded-full bg-main-100 grid place-items-center text-[11px] font-semibold shrink-0 text-main-800'>{initialsFromName(node?.sender?.username) || 'ME'}</div>}
+                {isMine && (
+                    <div className='h-8 w-8 rounded-full bg-main-100 dark:bg-main-800 grid place-items-center text-[11px] font-semibold shrink-0 text-main-800 dark:text-main-50'>
+                        {initialsFromName(node?.sender?.username) || 'ME'}
+                    </div>
+                )}
             </div>
 
             {/* Children */}
             {node.children?.length ? (
                 <div className={`mt-2 ${isMine ? 'pr-6' : 'pl-6'}`}>
                     {node.children.map(c => (
-                        <MessageNode key={c.id} node={c} onReply={onReply} messageById={messageById} meId={meId} onJump={onJump} isDisputeClosed={isDisputeClosed} />
+                        <MessageNode
+                            key={c.id}
+                            node={c}
+                            onReply={onReply}
+                            messageById={messageById}
+                            meId={meId}
+                            onJump={onJump}
+                            isDisputeClosed={isDisputeClosed}
+                        />
                     ))}
                 </div>
             ) : null}

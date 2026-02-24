@@ -45,47 +45,46 @@ function AccountVerificationCard({ loading, user }) {
     const nafazVerified = user?.isIdentityVerified || false;
 
     return (
-        <Card className='lg:sticky lg:top-30'>
+        <Card className='lg:sticky lg:top-30 dark:bg-dark-bg-card'>
             <div className='px-6 py-7'>
-                <h2 className='text-xl font-semibold text-[#000000] mb-2'>{t('title')}</h2>
-                <p className='text-sm text-[#6B7280] mb-6'>{t('subtitle')}</p>
+                <h2 className='text-xl font-semibold text-[#000000] dark:text-dark-text-primary mb-2'>{t('title')}</h2>
+                <p className='text-sm text-[#6B7280] dark:text-dark-text-secondary mb-6'>{t('subtitle')}</p>
 
                 {loading ? (
                     <div className='space-y-4'>
-                        <div className='h-16 bg-slate-200/70 animate-pulse rounded-lg' />
-                        <div className='h-16 bg-slate-200/70 animate-pulse rounded-lg' />
-                        <div className='h-16 bg-slate-200/70 animate-pulse rounded-lg' />
+                        <div className='h-16 bg-slate-200/70 dark:bg-dark-bg-input animate-pulse rounded-lg' />
+                        <div className='h-16 bg-slate-200/70 dark:bg-dark-bg-input animate-pulse rounded-lg' />
+                        <div className='h-16 bg-slate-200/70 dark:bg-dark-bg-input animate-pulse rounded-lg' />
                     </div>
                 ) : (
                     <div className='space-y-0'>
                         {/* Email */}
                         <VerificationItem
-                            icon={<Mail className='h-5 w-5' />}
+                            icon={<Mail className='h-5 w-5 dark:text-dark-text-primary' />}
                             label={t('email')}
                             verified={emailVerified}
                             onEdit={() => setEmailOpen(true)}
                         />
-                        <Divider className='!my-0' />
+                        <Divider className='!my-0 dark:border-dark-border' />
 
                         {/* Phone */}
                         <VerificationItem
-                            icon={<Phone className='h-5 w-5' />}
+                            icon={<Phone className='h-5 w-5 dark:text-dark-text-primary' />}
                             label={t('phoneNumber')}
                             verified={phoneVerified}
                             onEdit={() => setPhoneOpen(true)}
                         />
-                        <Divider className='!my-0' />
+                        <Divider className='!my-0 dark:border-dark-border' />
 
                         {/* NAFAZ */}
                         <VerificationItem
                             icon={
-                                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg className="h-5 w-5 dark:stroke-dark-text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <rect x="3" y="4" width="18" height="16" rx="2" ry="2" />
                                     <circle cx="8" cy="10" r="2" />
                                     <line x1="14" y1="8" x2="18" y2="8" />
                                     <line x1="14" y1="12" x2="18" y2="12" />
                                 </svg>
-
                             }
                             label={t('nationalId')}
                             verified={nafazVerified}
@@ -133,24 +132,24 @@ function VerificationItem({ icon, label, verified, onEdit }) {
     return (
         <div className='flex items-center justify-between py-4'>
             <div className='flex items-center gap-3 flex-1 min-w-0'>
-                <div className='text-[#292D32] shrink-0'>{icon}</div>
-                <span className='text-[#292D32] font-medium'>{label}</span>
+                <div className='text-[#292D32] dark:text-dark-text-primary shrink-0'>{icon}</div>
+                <span className='text-[#292D32] dark:text-dark-text-primary font-medium'>{label}</span>
             </div>
             <div className='flex items-center gap-3 shrink-0'>
                 {verified ? (
-                    <div className="flex items-center gap-2 text-blue-600">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
                         <CheckCircle2 className="h-5 w-5" />
                         <span className="text-sm font-medium">{t('verified')}</span>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-2 text-red-600">
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
                         <AlertCircle className="h-5 w-5" />
                         <span className="text-sm font-medium">{t('notVerified')}</span>
                     </div>
                 )}
                 <button
                     onClick={onEdit}
-                    className='text-[#292D32] text-sm font-medium hover:text-blue-600 transition-colors'
+                    className='text-[#292D32] dark:text-dark-text-primary text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
                 >
                     {t('edit')}
                 </button>
@@ -158,7 +157,6 @@ function VerificationItem({ icon, label, verified, onEdit }) {
         </div>
     );
 }
-
 function EmailEditModal({ user, onClose, onUpdate }) {
     const tSettings = useTranslations('Settings.account');
     const t = useTranslations('Profile.accountVerification');
@@ -250,35 +248,35 @@ function EmailEditModal({ user, onClose, onUpdate }) {
     }
 
     return (
-        <Modal title={t('editEmail')} onClose={onClose} className={"overflow-hidden"}>
-            <div className='space-y-4'>
+        <Modal title={t('editEmail')} onClose={onClose} className="overflow-hidden">
+            <div className="space-y-4">
                 {pendingEmail && (
-                    <div className='p-4 border border-yellow-300 bg-yellow-50 rounded-md text-sm text-gray-800'>
+                    <div className="p-4 border border-yellow-300 bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-600 rounded-md text-sm text-gray-800 dark:text-yellow-200">
                         <p>
                             {tSettings.rich('pendingEmail', {
                                 email: maskEmail(pendingEmail),
-                                strong: (chunk) => <strong>{chunk}</strong>
+                                strong: (chunk) => <strong>{chunk}</strong>,
                             })}
                         </p>
 
-                        <div className='grid items-center grid-cols-1 xs:grid-cols-2 gap-2 mt-3'>
+                        <div className="grid items-center grid-cols-1 xs:grid-cols-2 gap-2 mt-3">
                             <Button
                                 name={cancelLoading ? tSettings('canceling') : tSettings('cancelRequest')}
-                                color='gray'
-                                className='text-sm !text-red-600 !bg-transparent'
+                                color="gray"
+                                className="text-sm !text-red-600 !bg-transparent dark:!text-red-400"
                                 onClick={cancelEmailChange}
                                 disabled={cancelLoading || resendLoading}
                             />
 
                             {resendCooldown > 0 ? (
-                                <span className='text-sm text-blue-600 text-nowrap text-center'>
+                                <span className="text-sm text-blue-600 dark:text-blue-400 text-nowrap text-center">
                                     {tSettings('resendIn', { seconds: resendCooldown })}
                                 </span>
                             ) : (
                                 <Button
                                     name={resendLoading ? tSettings('resending') : tSettings('resendEmail')}
-                                    color='green'
-                                    className='text-sm'
+                                    color="green"
+                                    className="text-sm"
                                     onClick={resendEmail}
                                     disabled={resendLoading || cancelLoading}
                                 />
@@ -287,30 +285,30 @@ function EmailEditModal({ user, onClose, onUpdate }) {
                     </div>
                 )}
 
-                <form onSubmit={onSubmit} className='space-y-4'>
+                <form onSubmit={onSubmit} className="space-y-4">
                     <div>
                         <Input
                             label={t('email')}
-                            placeholder='you@example.com'
-                            type='email'
+                            placeholder="you@example.com"
+                            type="email"
                             error={errors.email?.message}
                             {...register('email')}
                         />
                     </div>
 
-                    <div className='flex gap-3 justify-end'>
+                    <div className="flex gap-3 justify-end">
                         <Button
                             name={t('cancel')}
-                            color='gray'
+                            color="gray"
                             onClick={onClose}
-                            className='!w-auto !px-4'
+                            className="!w-auto !px-4"
                         />
                         <Button
                             name={saving ? '' : t('saveChanges')}
                             loading={saving}
-                            color='green'
-                            type='submit'
-                            className='!w-auto !px-4'
+                            color="green"
+                            type="submit"
+                            className="!w-auto !px-4"
                         />
                     </div>
                 </form>
@@ -451,7 +449,7 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
 
     return (
         <Modal title={t('editPhone')} onClose={onClose}>
-            <div className='space-y-4'>
+            <div className="space-y-4">
                 {step === 'edit' ? (
                     <>
                         <div>
@@ -464,77 +462,82 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
                             )}
                         </div>
 
-                        <div className='flex gap-3 justify-end'>
+                        <div className="flex gap-3 justify-end">
                             <Button
                                 name={t('cancel')}
-                                color='gray'
+                                color="gray"
                                 onClick={onClose}
-                                className='!w-auto !px-4'
+                                className="!w-auto !px-4"
                             />
                             <Button
                                 name={saving ? '' : t('saveChanges')}
                                 loading={saving}
                                 disabled={!canSave}
-                                color='green'
+                                color="green"
                                 onClick={handleSavePhone}
-                                className='!w-auto !px-4'
+                                className="!w-auto !px-4"
                             />
                         </div>
                     </>
                 ) : (
                     <div>
+                        {/* Display phone for verification */}
                         <Input
                             label={tBilling('phoneVerification.phoneLabel')}
                             value={`${phoneData.countryCode.dial_code} ${phoneData.phone.replace(/^\+/, '')}`}
                             disabled
-                            cnInput="cursor-not-allowed"
+                            cnInput="cursor-not-allowed bg-gray-50 dark:bg-dark-bg-card dark:text-dark-text-secondary"
                         />
 
-                        <form onSubmit={verifyOtp} className='mt-4 space-y-4'>
+                        {/* OTP Form */}
+                        <form onSubmit={verifyOtp} className="mt-4 space-y-4">
                             <div>
-                                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-dark-text-secondary mb-2">
                                     {tBilling('phoneVerification.enterOtpLabel')}
                                 </label>
                                 <OTPInput
                                     value={otp}
                                     onChange={setOtp}
                                     numInputs={4}
+                                    inputType="number"
                                     renderSeparator={<span className="mx-1">-</span>}
-                                    renderInput={props => (
+                                    renderInput={(props) => (
                                         <input
                                             {...props}
-                                            className="!w-10 h-10 border rounded-lg text-center text-xl"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
+                                            className="hide-number-input !w-10 h-10 border rounded-lg text-center text-xl dark:bg-dark-bg-card dark:text-dark-text-primary dark:border-gray-600"
                                         />
                                     )}
                                     containerStyle="flex justify-center flex-wrap gap-y-2"
                                 />
                             </div>
 
-                            <div className='flex gap-3 justify-end'>
+                            <div className="flex gap-3 justify-end">
                                 <Button
                                     name={t('cancel')}
-                                    color='gray'
+                                    color="gray"
                                     onClick={onClose}
-                                    className='!w-auto !px-4'
+                                    className="!w-auto !px-4"
                                 />
                                 <Button
                                     name={tBilling('phoneVerification.verify')}
-                                    type='submit'
+                                    type="submit"
                                     loading={otpLoading}
-                                    color='green'
-                                    className='!w-auto !px-4'
+                                    color="green"
+                                    className="!w-auto !px-4"
                                 />
                             </div>
                         </form>
 
-                        <p className='text-center text-gray-600 mt-4 text-sm'>
+                        {/* Resend OTP */}
+                        <p className="text-center text-gray-600 dark:text-dark-text-secondary mt-4 text-sm">
                             {tBilling('phoneVerification.didNotReceive')}{' '}
                             <button
-                                type='button'
+                                type="button"
                                 disabled={seconds > 0 || resending}
                                 onClick={resendOtp}
-                                className={`text-blue-600 hover:underline disabled:opacity-50 ${seconds > 0 ? 'cursor-not-allowed' : ''
-                                    }`}
+                                className={`text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50 ${seconds > 0 ? 'cursor-not-allowed' : ''}`}
                             >
                                 {seconds > 0
                                     ? tBilling('phoneVerification.resendIn', { seconds })
@@ -542,11 +545,12 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
                             </button>
                         </p>
 
-                        <div className='text-center mt-2'>
+                        {/* Edit again */}
+                        <div className="text-center mt-2">
                             <button
-                                type='button'
+                                type="button"
                                 onClick={() => setStep('edit')}
-                                className='text-sm text-blue-600 hover:underline'
+                                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                             >
                                 {t('editPhoneAgain')}
                             </button>
@@ -557,7 +561,6 @@ function PhoneEditModal({ user, onClose, onUpdate }) {
         </Modal>
     );
 }
-
 
 const DotLoader = () => {
 
@@ -570,7 +573,7 @@ const DotLoader = () => {
             {[0, 1, 2].map((i) => (
                 <motion.div
                     key={i}
-                    className="w-2 h-2 rounded-full bg-main-500 "
+                    className="w-2 h-2 rounded-full bg-main-500 dark:bg-main-400"
                     animate={{
                         y: [0, -8, 0],
                         opacity: [0.5, 1, 0.5],
@@ -771,25 +774,25 @@ function NafazEditModal({ user, onClose }) {
                 </form>
             ) : (
                 <div className="space-y-6 text-center">
-                    <p className="text-green-600 font-medium">
+                    <p className="text-green-600 font-medium dark:text-green-400">
                         {t('nafath.requestSent')}
                     </p>
 
-                    <div className="border rounded-lg p-4">
-                        <p className="text-gray-600 mb-2">
+                    <div className="border rounded-lg p-4 dark:border-gray-700 dark:bg-dark-bg-card">
+                        <p className="text-gray-600 dark:text-dark-text-secondary mb-2">
                             {t('nafath.randomNumber')}
                         </p>
-                        <p className="text-3xl font-bold">{random}</p>
+                        <p className="text-3xl font-bold dark:text-white">{random}</p>
                     </div>
 
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-600  dark:text-dark-text-secondary">
                         {t('nafath.openAppConfirm')}
                     </p>
 
                     {waiting && <DotLoader />}
 
                     {inlineMessage && (
-                        <p className="text-red-600 font-medium">{inlineMessage}</p>
+                        <p className="text-red-600 font-medium dark:text-red-400">{inlineMessage}</p>
                     )}
 
                     <div className="flex justify-center gap-3">
@@ -812,7 +815,6 @@ function NafazEditModal({ user, onClose }) {
                             />
                         )}
                     </div>
-
                 </div>
             )}
         </Modal>

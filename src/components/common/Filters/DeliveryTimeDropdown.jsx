@@ -96,12 +96,15 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
       <button
         type='button'
         onClick={() => onPick(id)}
-        className={`w-full px-3 py-2.5  rounded-md flex items-center justify-between text-left transition
-          cursor-pointer ${active ? 'gradient text-white' : 'hover:bg-main-100 text-slate-800'}`}>
+        className={`w-full px-3 py-2.5 rounded-md flex items-center justify-between text-left transition
+        cursor-pointer
+        ${active ? 'gradient text-white' : 'hover:bg-main-100 text-slate-800 dark:text-dark-text-primary dark:hover:bg-dark-bg-card'}`}
+      >
         <span className='flex items-center gap-3'>
           <span
             className={`w-5 h-5 rounded-full border flex items-center justify-center
-              ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513]'}`}>
+            ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513] dark:border-[#ffffff20] dark:bg-white/10'}`}
+          >
             {active && <Check className='w-3 h-3 text-white' />}
           </span>
           <span className={`text-sm ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
@@ -113,49 +116,75 @@ export default function DeliveryTimeDropdown({ onDeliveryTimeChange, selectedDel
   return (
     <>
       {/* overlay */}
-      {open && <div className='fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn' onClick={() => setOpen(false)} />}
+      {open && (
+        <div
+          className='fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn'
+          onClick={() => setOpen(false)}
+        />
+      )}
 
       <div ref={rootRef} className={`relative inline-block text-left ${open && 'z-[70]'}`}>
         {/* Trigger */}
         <button
           type='button'
           onClick={() => setOpen(o => !o)}
-          className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition
-            ${open ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]' : 'border-slate-300'}`}
+          className={`
+      h-[40px] px-4 rounded-md border w-full bg-white dark:bg-dark-bg-input dark:hover:bg-dark-bg-card flex items-center justify-between text-sm shadow-inner transition
+      ${open
+              ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]'
+              : 'border-slate-300 dark:border-dark-border'}
+      dark:text-dark-text-primary
+    `}
         >
           <span className='truncate'>{activeLabel()}</span>
-          <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
+          <ChevronDown
+            className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`}
+            style={{ color: open ? BRAND : undefined }}
+          />
         </button>
 
         {/* Panel */}
         <div
-          className={` border border-main-700/40 absolute left-0 mt-2 w-full rounded-lg  bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)]
-            transition origin-top z-[70]
-            ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
+          className={`
+      absolute left-0 mt-2 w-full rounded-lg border border-main-700/40
+      bg-white dark:bg-dark-bg-card shadow-[0_6px_24px_rgba(0,0,0,.08)] dark:shadow-[0_6px_24px_rgba(0,0,0,.4)]
+      transition origin-top z-[70]
+      ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}
+    `}
         >
           <div className='py-4'>
             <div className='px-4'>
-              <h4 className='text-lg font-bold text-slate-900 mb-2 text-start'>{t('deliveryTime')}</h4>
+              <h4 className='text-lg font-bold text-slate-900 dark:text-dark-text-primary mb-2 text-start'>{t('deliveryTime')}</h4>
             </div>
 
-            <div className=' px-2 '>
+            <div className='px-2'>
               {tiers.map(t => (
-                <RadioRow className key={t.id} id={t.id} label={t.label} />
+                <RadioRow key={t.id} id={t.id} label={t.label} className='dark:text-dark-text-primary' />
               ))}
 
               {/* Custom input */}
               <div
                 className={`overflow-hidden transition-[max-height,opacity,margin] duration-200 ease-out
-                  ${selectedId === 'custom' ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}>
-                <div className='h-[44px] rounded-md flex items-center px-2 text-sm' style={{ border: `2px solid ${BRAND}` }}>
-                  <span className='text-slate-400 rtl:ml-2 ltr:mr-2'>
-                    {' '}
-                    <TimerIcon />{' '}
+            ${selectedId === 'custom' ? 'max-h-40 opacity-100 mt-3' : 'max-h-0 opacity-0 mt-0'}`}
+              >
+                <div
+                  className='h-[44px] rounded-md flex items-center px-2 text-sm bg-transparent'
+                  style={{ border: `2px solid ${BRAND}` }}
+                >
+                  <span className='text-slate-400 dark:text-dark-text-secondary rtl:ml-2 ltr:mr-2'>
+                    <TimerIcon />
                   </span>
-                  <input type='text' inputMode='numeric' placeholder={t('enterMaxDeliveryTime')} value={customValue} onChange={onCustomInput} className='w-full outline-none text-slate-900 placeholder:text-slate-400 bg-transparent' />
+                  <input
+                    type='text'
+                    inputMode='numeric'
+                    placeholder={t('enterMaxDeliveryTime')}
+                    value={customValue}
+                    onChange={onCustomInput}
+                    className='w-full outline-none text-slate-900 dark:text-dark-text-primary placeholder:text-slate-400 dark:placeholder:text-dark-text-secondary bg-transparent'
+                  />
                 </div>
 
-                <div className='mt-3 border-t border-slate-200' />
+                <div className='mt-3 border-t border-slate-200 dark:border-dark-border' />
               </div>
             </div>
 

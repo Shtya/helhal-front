@@ -467,14 +467,17 @@ function ToolbarPlugin() {
                         />
 
                         {showLinkDialog && (
-                            <div ref={linkRef} className="absolute top-full left-0 mt-2 z-[60] p-4 border border-secondary/20 rounded-xl bg-white shadow-xl animate-in fade-in slide-in-from-top-2 duration-200 w-[300px]">
+                            <div
+                                ref={linkRef}
+                                className="absolute top-full left-0 mt-2 z-[60] p-4 border border-secondary/20 rounded-xl bg-white shadow-xl animate-in fade-in slide-in-from-top-2 duration-200 w-[300px] dark:border-dark-border dark:bg-dark-bg-card"
+                            >
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-sm font-bold text-dark flex items-center gap-2">
-                                        <MdLink className="text-secondary" /> {t('link_dialog.url_label')}
+                                    <span className="text-sm font-bold text-dark flex items-center gap-2 dark:text-dark-text-primary">
+                                        <MdLink className="text-secondary dark:text-dark-text-secondary" /> {t('link_dialog.url_label')}
                                     </span>
                                     <button
                                         onClick={() => setShowLinkDialog(false)}
-                                        className="text-gray-400 hover:text-dark transition-colors"
+                                        className="text-gray-400 hover:text-dark transition-colors dark:text-dark-text-secondary dark:hover:text-dark-text-primary"
                                     >
                                         <MdClose size={18} />
                                     </button>
@@ -487,15 +490,15 @@ function ToolbarPlugin() {
                                         value={linkUrl}
                                         onChange={(e) => setLinkUrl(e.target.value)}
                                         onKeyDown={(e) => { if (e.key === 'Enter') insertLink(); }}
-                                        className="w-full h-10 px-3 rounded-lg border border-gray/20 text-sm focus:border-main-600 focus:ring-2 focus:ring-secondary/10 focus:outline-none transition-all"
                                         autoFocus
+                                        className="w-full h-10 px-3 rounded-lg border border-gray/20 text-sm focus:border-main-600 focus:ring-2 focus:ring-secondary/10 focus:outline-none transition-all dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-primary dark:focus:border-dark-text-primary"
                                     />
 
                                     <div className="flex gap-2">
                                         <button
                                             disabled={!activeFormats.isLink}
                                             onClick={onUnlink}
-                                            className="flex-1 px-3 py-2 rounded-lg border border-red-100 text-red-500 text-xs font-bold hover:bg-red-50 transition-all flex items-center justify-center gap-1"
+                                            className="flex-1 px-3 py-2 rounded-lg border border-red-100 text-red-500 text-xs font-bold hover:bg-red-50 transition-all flex items-center justify-center gap-1 dark:border-dark-border dark:text-dark-text-secondary dark:hover:bg-dark-bg-card"
                                         >
                                             <MdLinkOff size={16} /> {t('link_dialog.unlink')}
                                         </button>
@@ -581,23 +584,23 @@ export default function RichTextEditor({
         namespace: 'RichTextEditor',
         editorState: value ? (typeof value === 'object' ? JSON.stringify(value) : value) : EMPTY_LEXICAL_STATE,
         theme: {
-            paragraph: 'mb-2',
-            quote: 'border-l-4 border-main-600 pl-4 italic my-4 text-dark/80',
+            paragraph: 'mb-2 text-slate-900 dark:text-dark-text-primary',
+            quote: 'border-l-4 border-main-600 pl-4 italic my-4 text-dark/80 dark:text-dark-text-secondary',
             heading: {
-                h1: 'text-3xl font-bold mb-4 text-dark',
-                h2: 'text-2xl font-bold mb-3 text-dark',
-                h3: 'text-xl font-semibold mb-2 text-dark',
+                h1: 'text-3xl font-bold mb-4 text-slate-900 dark:text-dark-text-primary',
+                h2: 'text-2xl font-bold mb-3 text-slate-900 dark:text-dark-text-primary',
+                h3: 'text-xl font-semibold mb-2 text-slate-900 dark:text-dark-text-primary',
             },
             list: {
-                ul: 'list-disc list-inside mb-2',
-                ol: 'list-decimal list-inside mb-2',
+                ul: 'list-disc list-inside mb-2 text-slate-700 dark:text-dark-text-secondary',
+                ol: 'list-decimal list-inside mb-2 text-slate-700 dark:text-dark-text-secondary',
             },
             text: {
                 bold: 'font-bold',
                 italic: 'italic',
                 underline: 'underline',
                 strikethrough: 'line-through',
-                code: 'bg-gray/10 px-1 py-0.5 rounded text-sm font-mono',
+                code: 'bg-gray/10 px-1 py-0.5 rounded text-sm font-mono dark:bg-dark-bg-input dark:text-dark-text-primary',
             },
             image: 'editor-image',
         },
@@ -623,7 +626,7 @@ export default function RichTextEditor({
     return (
         <div className={cn("flex flex-col gap-2 w-full", className)}>
             {label && (
-                <label className="text-input font-semibold text-sm flex items-center gap-1">
+                <label className="text-input font-semibold text-sm flex items-center gap-1 dark:text-dark-text-primary">
                     {label}
                     {required && <span className="text-red-500">*</span>}
                 </label>
@@ -631,18 +634,20 @@ export default function RichTextEditor({
 
             <div className="relative group/editor">
                 {/* Glow effect on focus */}
-                <div className={cn(
-                    "absolute -inset-0.5 bg-gradient-to-r from-secondary/20 to-main-800/20 rounded-xl opacity-0 blur-sm transition-opacity duration-200",
-                    !error && "group-focus-within/editor:opacity-100"
-                )} />
+                <div
+                    className={cn(
+                        "absolute -inset-0.5 bg-gradient-to-r from-secondary/20 to-main-800/20 rounded-xl opacity-0 blur-sm transition-opacity duration-200",
+                        !error && "group-focus-within/editor:opacity-100"
+                    )}
+                />
 
                 <div
                     className={cn(
-                        "relative rounded-xl border-1 bg-white transition-all duration-200",
+                        "relative rounded-xl border-1 transition-all duration-200",
                         error
-                            ? "border-red-300 bg-red-50/30"
-                            : "border-gray/20 hover:border-secondary/40 group-focus-within/editor:border-secondary",
-                        disabled && "bg-gray/5 opacity-60 cursor-not-allowed"
+                            ? "border-red-300 bg-red-50/30 dark:border-red-600 dark:bg-dark-bg-input/30"
+                            : "border-gray/20 hover:border-secondary/40 group-focus-within/editor:border-secondary dark:border-dark-border dark:bg-dark-bg-input",
+                        disabled && "bg-gray/5 opacity-60 cursor-not-allowed dark:bg-dark-bg-base"
                     )}
                 >
                     <LexicalComposer initialConfig={initialConfig}>
@@ -652,29 +657,31 @@ export default function RichTextEditor({
                                 contentEditable={
                                     <ContentEditable
                                         className={cn(
-                                            "p-4 focus:outline-none text-sm font-medium text-dark",
-                                            "prose prose-sm max-w-none",
+                                            "p-4 focus:outline-none text-sm font-medium text-dark dark:text-dark-text-primary",
+                                            "prose prose-sm max-w-none dark:prose-invert",
                                             "[&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-4",
                                             "[&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mb-3",
                                             "[&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mb-2",
                                             "[&_ul]:list-disc [&_ul]:list-inside [&_ul]:mb-2",
                                             "[&_ol]:list-decimal [&_ol]:list-inside [&_ol]:mb-2",
-                                            "[&_blockquote]:border-l-4 [&_blockquote]:border-main-600 [&_blockquote]:pl-4 [&_blockquote]:italic",
-                                            "[&_code]:bg-gray/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono"
+                                            "[&_blockquote]:border-l-4 [&_blockquote]:border-main-600 [&_blockquote]:pl-4 [&_blockquote]:italic dark:[&_blockquote]:border-amber-600",
+                                            "[&_code]:bg-gray/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono dark:[&_code]:bg-dark-bg-input dark:[&_code]:text-dark-text-primary"
                                         )}
                                         style={{ minHeight }}
                                     />
                                 }
                                 placeholder={
-                                    <div className="absolute top-4 rtl:right-4 ltr:left-4 text-placeholder text-sm font-medium pointer-events-none">
+                                    <div className="absolute top-4 rtl:right-4 ltr:left-4 text-placeholder text-sm font-medium pointer-events-none dark:text-dark-text-secondary">
                                         {defaultPlaceholder}
                                     </div>
                                 }
                                 ErrorBoundary={LexicalErrorBoundary}
                             />
-                            <OnChangePlugin onChange={(editorState) => {
-                                editorStateRef.current = editorState;
-                            }} />
+                            <OnChangePlugin
+                                onChange={(editorState) => {
+                                    editorStateRef.current = editorState;
+                                }}
+                            />
                             <HistoryPlugin />
                             <LinkPlugin />
                             <ListPlugin />

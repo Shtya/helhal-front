@@ -26,6 +26,9 @@
   --color-main-900: #1e3a8a;
   --color-main-950: #172554;
 
+  --shadow-main-glow: 0 8px 24px -6px theme(colors.main.600 / 25%),
+    0 2px 6px theme(colors.main.950 / 8%);
+
   --color-dark-bg-base: #1e1e24;
   /* Main dashboard background */
   --color-dark-bg-card: #22252a;
@@ -76,9 +79,9 @@ body {
   color: black;
 }
 
-.dark body {
-  color: var(--dark-text-primary);
-  background-color: var(--dark-bg-base);
+[data-theme="dark"] body {
+  color: var(--color-dark-text-primary);
+  background-color: var(--color-dark-bg-base);
 }
 
 [dir='ltr'] body {
@@ -98,7 +101,9 @@ body {
   font-family: var(--font-arabic), sans-serif !important;
 }
 
-
+[data-theme="dark"] .w-color-editable-input input {
+  color: var(--color-dark-text-primary) !important;
+}
 
 .scrollbar-custom {
   scrollbar-width: thin;
@@ -221,11 +226,14 @@ body {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.01), inset 0 2px 4px rgba(0, 0, 0, 0.02), inset 0 4px 12px rgba(0, 0, 0, 0.01) !important;
 }
 
+/* Headings and paragraphs */
 
+/* H1 */
 .h1 {
   font-size: 34px;
-  color: #000;
   font-weight: 800;
+  color: #000;
+  /* Light mode */
 }
 
 @media (max-width: 768px) {
@@ -234,10 +242,16 @@ body {
   }
 }
 
+/* Dark mode H1 */
+[data-theme="dark"] .h1 {
+  color: var(--color-dark-text-primary);
+}
+
+/* H2 */
 .h2 {
   font-size: 24px;
-  color: #000;
   font-weight: 600;
+  color: #000;
 }
 
 @media (max-width: 768px) {
@@ -246,11 +260,23 @@ body {
   }
 }
 
+[data-theme="dark"] .h2 {
+  color: var(--color-dark-text-primary);
+}
+
+/* Paragraphs */
 .p {
   font-size: 18px;
+  font-weight: 500;
   color: #000;
   opacity: 0.8;
-  font-weight: 500;
+}
+
+[data-theme="dark"] .p {
+  color: var(--color-dark-text-primary);
+  /* dark mode main text */
+  opacity: 0.9;
+  /* optional adjustment for readability */
 }
 
 @media (max-width: 768px) {
@@ -259,6 +285,11 @@ body {
   }
 }
 
+[data-theme="dark"] .p {
+  color: var(--color-dark-text-secondary);
+  opacity: 1;
+  /* Optional: remove opacity for better readability in dark mode */
+}
 
 ::-webkit-scrollbar-button:single-button:vertical:decrement {
   background: #fff;
@@ -370,7 +401,16 @@ body {
   animation: shimmerMove 1.3s ease-in-out infinite;
 }
 
-
+[data-theme="dark"] .shimmer {
+  background: linear-gradient(90deg,
+      var(--color-dark-border) 25%,
+      /* base dark skeleton color */
+      rgba(85, 85, 85, 0.85) 50%,
+      /* subtle highlight */
+      var(--color-dark-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmerMove 1.3s ease-in-out infinite;
+}
 
 .bg-second {
   position: absolute;
@@ -500,12 +540,23 @@ body {
 .card {
   background-color: #f9fafb;
   /* gray-50 */
-  border-radius: 1rem;
-  /* rounded-2xl */
   border: 1px solid #e2e8f0;
   /* slate-200 */
+  border-radius: 1rem;
+  /* rounded-2xl */
   padding: 1.5rem;
   /* p-6 */
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Dark Mode logic */
+[data-theme="dark"] .card {
+  background-color: var(--color-dark-bg-card);
+  /* #1e1e24 */
+  border-color: var(--color-dark-border);
+  /* #2d2d35 */
+  color: var(--color-dark-text-primary);
+  /* #ffffff */
 }
 
 @media (max-width: 768px) {
@@ -546,11 +597,25 @@ body {
 
 .message-disabled {
   cursor: not-allowed;
-  background-color: #f3f4f6
+  background-color: #f3f4f6;
+  /* light mode */
 }
 
 .message-disabled input {
-  background-color: #f3f4f6
+  background-color: #f3f4f6;
+  /* light mode */
+}
+
+/* Dark mode override */
+[data-theme="dark"] .message-disabled {
+  background-color: #1f2937;
+  /* dark gray card background */
+}
+
+[data-theme="dark"] .message-disabled input {
+  background-color: #1f2937;
+  color: #d1d5db;
+  /* optional: make text lighter for contrast */
 }
 
 .search-disputes input {
@@ -645,4 +710,22 @@ body {
 
 .left-input input {
   text-align: left !important;
+}
+
+/* Chrome, Safari, Edge */
+.hide-number-input::-webkit-outer-spin-button,
+.hide-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.hide-number-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+@media (max-width: 640px) {
+  input {
+    font-size: 16px !important;
+  }
 }

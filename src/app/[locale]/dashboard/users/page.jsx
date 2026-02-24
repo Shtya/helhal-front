@@ -26,6 +26,7 @@ import { PERMISSION_DOMAINS, Permissions } from '@/constants/permissions';
 import { useAuth } from '@/context/AuthContext';
 import { bitmaskToArray, has } from '@/utils/permissions';
 import { PermissionMatrix } from '@/components/dashboard/PermissionMatrix';
+import Button from '@/components/atoms/Button';
 
 const SellerLevel = {
   LVL1: 'lvl1',
@@ -266,10 +267,10 @@ export default function AdminUsersDashboard() {
       key: 'status',
       label: t('columns.status'),
       status: [
-        ['active', 'inline-flex items-center gap-1 text-main-700 bg-main-100 px-2 py-1 rounded-full text-xs'],
-        ['suspended', 'inline-flex items-center gap-1 text-red-700 bg-red-100 px-2 py-1 rounded-full text-xs'],
-        ['pending_verification', 'inline-flex items-center gap-1 text-amber-700 bg-amber-100 px-2 py-1 rounded-full text-xs'],
-        ['deleted', 'inline-flex items-center gap-1 text-slate-600 bg-slate-100 px-2 py-1 rounded-full text-xs'],
+        ['active', 'text-main-700 dark:text-main-400'],
+        ['suspended', 'text-red-700 dark:text-red-400'],
+        ['pending_verification', 'text-amber-700 dark:text-amber-400'],
+        ['deleted', 'text-slate-600 dark:text-slate-400'],
       ],
     },
     { key: 'memberSince', label: t('columns.joined'), type: 'date' },
@@ -372,10 +373,12 @@ export default function AdminUsersDashboard() {
           <ActionMenuPortal
           >
             {/* 🔐 Manage Permissions */}
+            {/* 🔐 Manage Permissions */}
             {canManagePermissions && (
               <button
                 onClick={() => openPermissionsModal(user)}
-                className="flex items-center w-full px-4 py-2 text-sm text-indigo-700 hover:bg-indigo-50"
+                className="flex items-center w-full px-4 py-2 text-sm text-indigo-700 hover:bg-indigo-50
+                dark:hover:bg-dark-bg-card"
               >
                 {t('permissions.actions.open')}
               </button>
@@ -383,7 +386,8 @@ export default function AdminUsersDashboard() {
             {canChangeStatus && user.status !== 'active' && (
               <button
                 onClick={() => handleStatusChange(user.id, 'active')}
-                className="flex items-center w-full px-4 py-2 text-sm text-main-700 hover:bg-main-50"
+                className="flex items-center w-full px-4 py-2 text-sm text-main-700 hover:bg-main-50
+                dark:hover:bg-dark-bg-card"
               >
                 {t('actions.activate')}
               </button>
@@ -391,17 +395,21 @@ export default function AdminUsersDashboard() {
             {canChangeStatus && user.status !== 'suspended' && (
               <button
                 onClick={() => handleStatusChange(user.id, 'suspended')}
-                className="flex items-center w-full px-4 py-2 text-sm text-amber-700 hover:bg-amber-50"
+                className="flex items-center w-full px-4 py-2 text-sm text-amber-700 hover:bg-amber-50
+                dark:hover:bg-dark-bg-card"
               >
                 {t('actions.suspend')}
               </button>
             )}
-            {canDelete && user.status !== 'deleted' && (<button
-              onClick={() => handleDeleteUser(user.id)}
-              className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
-            >
-              {t('actions.delete')}
-            </button>)}
+            {canDelete && user.status !== 'deleted' && (
+              <button
+                onClick={() => handleDeleteUser(user.id)}
+                className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50
+                dark:hover:bg-dark-bg-card"
+              >
+                {t('actions.delete')}
+              </button>
+            )}
           </ActionMenuPortal>
         </div>}
       </div>
@@ -462,7 +470,8 @@ export default function AdminUsersDashboard() {
         </GlassCard>
 
         {/* Table */}
-        <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
+        <div className="bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden
+                dark:bg-dark-bg-card dark:border-dark-border dark:ring-dark-border">
           <Table
             data={users}
             columns={userColumns}
@@ -526,66 +535,106 @@ export default function AdminUsersDashboard() {
               />
 
               <div className='mt-6 flex justify-end gap-3'>
-                <button
+                <Button
+                  type="button"
+                  color="secondary"
+                  name={t('modal.cancel')}
                   onClick={() => {
                     setShowUserModal(false);
                     setEditMode(false);
                     setEditingUser(null);
                   }}
-                  className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'
                   disabled={savingUser}
-                >
-                  {t('modal.cancel')}
-                </button>
-                <button
+                  className="!px-4 !py-2"
+                />
+
+                <Button
+                  type="button"
+                  color="green"
+                  name={savingUser ? t('modal.saving') : t('modal.saveChanges')}
                   onClick={() => handleSaveUser(editingUser)}
                   disabled={savingUser || phoneError || usernameError}
-                  className='px-4 py-2 bg-main-600 text-white rounded-lg hover:bg-main-700 disabled:opacity-50'
-                >
-                  {savingUser ? t('modal.saving') : t('modal.saveChanges')}
-                </button>
+                  loading={savingUser}
+                  className="!px-4 !py-2"
+                />
               </div>
             </>
           ) : (
             <>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div className='flex flex-col items-center text-center'>
-                  <Img src={selectedUser?.profileImage} alt={selectedUser?.username} altSrc='/images/placeholder-avatar.png' className='w-28 h-28 rounded-full object-cover mb-4 ring-2 ring-white shadow-sm' />
-                  <h3 className='text-lg font-semibold text-slate-900 hover:underline cursor-pointer' onClick={handleNavigate}>{selectedUser?.username}</h3>
-                  <p className='text-slate-600'>{selectedUser?.email}</p>
+                  <Img
+                    src={selectedUser?.profileImage}
+                    alt={selectedUser?.username}
+                    altSrc='/images/placeholder-avatar.png'
+                    className='w-28 h-28 rounded-full object-cover mb-4 ring-2 ring-white shadow-sm dark:ring-gray-700'
+                  />
+                  <h3
+                    className='text-lg font-semibold text-slate-900 dark:text-dark-text-primary hover:underline cursor-pointer'
+                    onClick={handleNavigate}
+                  >
+                    {selectedUser?.username}
+                  </h3>
+                  <p className='text-slate-600 dark:text-dark-text-secondary'>{selectedUser?.email}</p>
                   <div className='mt-4 flex flex-wrap gap-2'>
-                    <MetricBadge tone={selectedUser?.status === 'active' ? 'success' : selectedUser?.status === 'suspended' ? 'danger' : 'warning'}>{selectedUser?.status}</MetricBadge>
+                    <MetricBadge
+                      tone={
+                        selectedUser?.status === 'active'
+                          ? 'success'
+                          : selectedUser?.status === 'suspended'
+                            ? 'danger'
+                            : 'warning'
+                      }
+                    >
+                      {selectedUser?.status}
+                    </MetricBadge>
                     <MetricBadge tone='info'>{selectedUser?.role}</MetricBadge>
                   </div>
                 </div>
+
                 <div>
-                  <h4 className='font-semibold mb-3 text-slate-900'>{t('modal.userInformation')}</h4>
-                  <div className='space-y-2 text-sm text-slate-700'>
+                  <h4 className='font-semibold mb-3 text-slate-900 dark:text-dark-text-primary'>
+                    {t('modal.userInformation')}
+                  </h4>
+                  <div className='space-y-2 text-sm text-slate-700 dark:text-dark-text-secondary'>
                     <p>
-                      <span className='font-medium'>{t('modal.memberSince')}</span> {new Date(selectedUser?.memberSince).toLocaleDateString()}
+                      <span className='font-medium'>{t('modal.memberSince')}</span>{' '}
+                      {new Date(selectedUser?.memberSince).toLocaleDateString()}
                     </p>
                     <p>
-                      <span className='font-medium'>{t('modal.lastLogin')}</span> {selectedUser?.lastLogin ? new Date(selectedUser?.lastLogin).toLocaleString() : t('modal.never')}
+                      <span className='font-medium'>{t('modal.lastLogin')}</span>{' '}
+                      {selectedUser?.lastLogin
+                        ? new Date(selectedUser?.lastLogin).toLocaleString()
+                        : t('modal.never')}
                     </p>
                     <p>
-                      <span className='font-medium'>{t('modal.description')}</span> {selectedUser?.description || t('modal.noDescription')}
+                      <span className='font-medium'>{t('modal.description')}</span>{' '}
+                      {selectedUser?.description || t('modal.noDescription')}
                     </p>
                     <p>
-                      <span className='font-medium'>{t('modal.skills')}</span> {selectedUser?.skills?.join(', ') || t('modal.noSkills')}
+                      <span className='font-medium'>{t('modal.skills')}</span>{' '}
+                      {selectedUser?.skills?.join(', ') || t('modal.noSkills')}
                     </p>
                     <p>
-                      <span className='font-medium'>{t('modal.languages')}</span> {selectedUser?.languages?.join(', ') || t('modal.noLanguages')}
+                      <span className='font-medium'>{t('modal.languages')}</span>{' '}
+                      {selectedUser?.languages?.join(', ') || t('modal.noLanguages')}
                     </p>
                     <p>
-                      <span className='font-medium'>{t('modal.referralCode')}</span> {selectedUser?.referralCode || t('modal.noReferralCode')}
+                      <span className='font-medium'>{t('modal.referralCode')}</span>{' '}
+                      {selectedUser?.referralCode || t('modal.noReferralCode')}
                     </p>
                   </div>
                 </div>
               </div>
+
               <div className='mt-6 flex justify-end gap-3'>
-                <button onClick={() => setShowUserModal(false)} className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'>
-                  {t('modal.close')}
-                </button>
+                <Button
+                  type='button'
+                  color='secondary'
+                  name={t('modal.close')}
+                  onClick={() => setShowUserModal(false)}
+                  className='!px-4 !py-2 !w-fit'
+                />
               </div>
             </>
           )}
@@ -595,87 +644,80 @@ export default function AdminUsersDashboard() {
 
         <Modal
           open={showPermissionsModal}
-          title={`${t('permissions.modal.title')} ${selectedUser ? "( " + selectedUser.username + " )" : ''}`}
+          title={`${t('permissions.modal.title')} ${selectedUser ? `( ${selectedUser.username} )` : ''}`}
           size="lg"
           hideFooter
           onClose={() => setShowPermissionsModal(false)}
         >
-
-
           {/* Top actions */}
           <div className="flex justify-between mb-4">
             <button
               onClick={grantAll}
-              className="text-sm text-main-600 hover:underline"
+              className="text-sm text-main-600 hover:underline dark:text-main-400"
             >
               {t('permissions.modal.grantAll')}
             </button>
             <button
               onClick={removeAll}
-              className="text-sm text-red-600 hover:underline"
+              className="text-sm text-rose-600 hover:underline dark:text-rose-400"
             >
               {t('permissions.modal.removeAll')}
             </button>
           </div>
+
           {/* Selected User Info */}
           {selectedUser && (
-            <div className="flex items-center gap-4 p-4 mb-4 bg-white rounded-xl border border-gray-300">
+            <div className="flex items-center gap-4 p-4 mb-4 bg-white dark:bg-dark-bg-card rounded-xl border border-gray-300 dark:border-dark-border">
               {/* Avatar */}
-              <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
-
+              <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-semibold">
                 <Img
                   src={selectedUser.profileImage || '/images/placeholder-avatar.png'}
                   alt={selectedUser.username}
                   className="w-full h-full rounded-full object-cover"
                 />
-
               </div>
 
               {/* User Info */}
               <div className="flex-1">
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-gray-900 dark:text-dark-text-primary">
                   {selectedUser.username}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 dark:text-dark-text-secondary">
                   {selectedUser.email}
                 </div>
               </div>
 
               {/* Role Badge */}
-              <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 capitalize">
+              <span className="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-dark-bg-input text-gray-700 dark:text-dark-text-primary capitalize">
                 {selectedUser.role}
               </span>
             </div>
           )}
 
-
-          {/* Permission Matrix Container */}
-          <PermissionMatrix
-            permissions={permissions}
-            setPermissions={setPermissions}
-          />
-
+          {/* Permission Matrix */}
+          <PermissionMatrix permissions={permissions} setPermissions={setPermissions} />
 
           {/* Footer */}
-          <div className='mt-6 flex justify-end gap-3'>
-            <button
+          <div className="mt-6 flex justify-end gap-3">
+            <Button
+              type="button"
+              color="secondary"
+              name={t('modal.cancel')}
               onClick={() => setShowPermissionsModal(false)}
-              className='px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50'
+              className="!px-4 !py-2"
               disabled={updatingPermissions}
-            >
-              {t('modal.cancel')}
-            </button>
-            <button
+            />
+            <Button
+              type="button"
+              color="green"
+              name={updatingPermissions ? t('modal.saving') : t('modal.saveChanges')}
               onClick={savePermissions}
+              className="!px-5 !py-2"
               disabled={updatingPermissions}
-              className='px-4 py-2 bg-main-600 text-white rounded-lg hover:bg-main-700 disabled:opacity-50'
-            >
-              {updatingPermissions ? t('modal.saving') : t('modal.saveChanges')}
-            </button>
+              loading={updatingPermissions}
+            />
           </div>
-
         </Modal>
-
 
       </div>
     </div>

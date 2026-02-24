@@ -413,49 +413,120 @@ export default function CreateJobPage({ jobId: propJobId, isAdmin } = {}) {
   ];
 
   return (
-    <div className='container mx-auto px-4 py-6'>
+    <div className="container mx-auto px-4 py-6">
+      {/* Categories swiper for non-admin */}
       {!isAdmin && <HeaderCategoriesSwiper />}
-      <div className='mt-6 mb-8 max-lg:hidden' data-aos='fade-down'>
-        {isAdmin && <h2 className='h2 mt-6 mb-2'>{t("edit_title")}</h2>}
-        <StepBreadcrumbs items={steps} activeIndex={currentStep} onItemClick={handleToStep} onReset={handleReset} resetLabel={t('reset')} />
+
+      {/* Breadcrumbs */}
+      <div className="mt-6 mb-8 max-lg:hidden" data-aos="fade-down">
+        {isAdmin && <h2 className="h2 mt-6 mb-2">{t("edit_title")}</h2>}
+        <StepBreadcrumbs
+          items={steps}
+          activeIndex={currentStep}
+          onItemClick={handleToStep}
+          onReset={handleReset}
+          resetLabel={t("reset")}
+        />
       </div>
 
-      <div className={`grid grid-cols-1 duration-300 ${!isAdmin && "lg:grid-cols-[450_1fr] xl:grid-cols-[590px_1fr]"} xl:gap-6 gap-6 mb-18 mt-12`}>
-        {!isAdmin && <HeroCard currentStep={currentStep} className='lg:sticky lg:top-[100px]' />}
+      {/* Main grid */}
+      <div
+        className={`grid grid-cols-1 duration-300 gap-6 mb-18 mt-12 ${!isAdmin ? "lg:grid-cols-[450px_1fr] xl:grid-cols-[590px_1fr]" : ""
+          } xl:gap-6`}
+      >
+        {/* Hero card sticky on large screens for non-admin */}
+        {!isAdmin && <HeroCard currentStep={currentStep} className="lg:sticky lg:top-[100px]" />}
 
-        <div className='space-y-8'>
-          {currentStep === 0 && <ProjectForm isAdmin={isAdmin} getValues={getValues} key='step1' register={register} control={control} errors={errors} setValue={setValue} trigger={trigger} handleFileSelection={handleFileSelection} watch={watch} setCurrentStep={setCurrentStep} formValues={formValues} />}
+        {/* Step forms */}
+        <div className="space-y-8">
+          {currentStep === 0 && (
+            <ProjectForm
+              key="step1"
+              isAdmin={isAdmin}
+              getValues={getValues}
+              register={register}
+              control={control}
+              errors={errors}
+              setValue={setValue}
+              trigger={trigger}
+              handleFileSelection={handleFileSelection}
+              watch={watch}
+              setCurrentStep={setCurrentStep}
+              formValues={formValues}
+            />
+          )}
 
-          {currentStep === 1 && <BudgetAndDelivery key='step2' register={register} control={control} errors={errors} trigger={trigger} budgetTypeOptions={budgetTypeOptions} setCurrentStep={setCurrentStep} />}
+          {currentStep === 1 && (
+            <BudgetAndDelivery
+              key="step2"
+              register={register}
+              control={control}
+              errors={errors}
+              trigger={trigger}
+              budgetTypeOptions={budgetTypeOptions}
+              setCurrentStep={setCurrentStep}
+            />
+          )}
 
-          {currentStep === 2 && <ProjectReview isAdmin={isAdmin} key='step3' data={formValues} onEditProject={() => setCurrentStep(0)} onEditJob={() => setCurrentStep(1)} onBack={() => setCurrentStep(1)} onSubmit={handleSubmit(onSubmit)} isSubmitting={isSubmitting} errors={errors} />}
+          {currentStep === 2 && (
+            <ProjectReview
+              key="step3"
+              isAdmin={isAdmin}
+              data={formValues}
+              onEditProject={() => setCurrentStep(0)}
+              onEditJob={() => setCurrentStep(1)}
+              onBack={() => setCurrentStep(1)}
+              onSubmit={handleSubmit(onSubmit)}
+              isSubmitting={isSubmitting}
+              errors={errors}
+            />
+          )}
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 
-function StepBreadcrumbs({ items = [], activeIndex = 1, onItemClick, onReset, resetLabel, className = '', accentClass = 'text-main-600' }) {
-  const [revealedCount, setRevealedCount] = useState(Math.max(1, activeIndex + 1));
+function StepBreadcrumbs({
+  items = [],
+  activeIndex = 1,
+  onItemClick,
+  onReset,
+  resetLabel,
+  className = '',
+  accentClass = 'text-main-600',
+}) {
+  const [revealedCount, setRevealedCount] = React.useState(Math.max(1, activeIndex + 1));
 
-  useEffect(() => {
+  React.useEffect(() => {
     setRevealedCount(prev => Math.max(prev, activeIndex + 1));
   }, [activeIndex]);
 
   const visibleItems = items.slice(0, revealedCount);
 
   return (
-    <div className={`my-[20px] ${className}`} aria-label='Breadcrumb'>
-      <ol className='flex items-center gap-2 w-fit rounded-2xl bg-slate-50 px-4 py-2 border border-slate-100'>
-        <li className='flex items-center'>
-          <button onClick={onReset} className='inline-flex items-center -ml-1.5 p-1.5 rounded-lg hover:bg-slate-100' title='Reset'>
-            <svg width='30' height='30' className='ltr:mr-3 rtl:ml-3' viewBox='0 0 60 60' fill='none' xmlns='http://www.w3.org/2000/svg'>
-              <g clipPath='url(#clip0_91_17526)'>
-                <path d='M57.3816 23.6815L54.7066 21.0031C54.1406 20.44 53.8308 19.6892 53.8308 18.8937V15.1039C53.8308 10.176 49.8213 6.1658 44.8943 6.1658H41.1052C40.3217 6.1658 39.5532 5.84701 38.9991 5.29285L36.3211 2.61439C32.8359 -0.871465 27.1701 -0.871465 23.6848 2.61439L21.0009 5.29285C20.4468 5.84701 19.6783 6.1658 18.8948 6.1658H15.1058C10.1787 6.1658 6.1692 10.176 6.1692 15.1039V18.8937C6.1692 19.6892 5.8594 20.44 5.2964 21.0031L2.61841 23.6785C0.929402 25.3678 0 27.6143 0 30.0007C0 32.3872 0.93238 34.6337 2.61841 36.32L5.29342 38.9984C5.8594 39.5615 6.1692 40.3123 6.1692 41.1078V44.8976C6.1692 49.8255 10.1787 53.8357 15.1058 53.8357H18.8948C19.6783 53.8357 20.4468 54.1545 21.0009 54.7086L23.6789 57.3901C25.4215 59.13 27.7093 60 29.997 60C32.2848 60 34.5725 59.13 36.3152 57.3871L38.9932 54.7086C39.5532 54.1545 40.3217 53.8357 41.1052 53.8357H44.8943C49.8213 53.8357 53.8308 49.8255 53.8308 44.8976V41.1078C53.8308 40.3123 54.1406 39.5615 54.7066 38.9984L57.3816 36.323C59.0676 34.6337 60 32.3902 60 30.0007C60 27.6113 59.0706 25.3678 57.3816 23.6815ZM43.5687 26.5208L25.6956 38.4383C25.1921 38.775 24.6142 38.9388 24.0423 38.9388C23.2738 38.9388 22.5112 38.6409 21.9363 38.0659L15.9786 32.1072C14.8138 30.9422 14.8138 29.0593 15.9786 27.8943C17.1433 26.7294 19.0259 26.7294 20.1906 27.8943L24.4206 32.125L40.2621 21.5632C41.6354 20.6485 43.4823 21.0179 44.3938 22.3885C45.3083 23.759 44.9389 25.6092 43.5687 26.5208Z' fill='var(--color-main-600)' />
+    <div className={`my-5 ${className}`} aria-label="Breadcrumb">
+      <ol className="flex items-center gap-2 w-fit rounded-2xl bg-slate-50 dark:bg-dark-bg-card px-4 py-2 border border-slate-100 dark:border-dark-border">
+        {/* Reset Button */}
+        <li className="flex items-center">
+          <button
+            onClick={onReset}
+            className="inline-flex items-center -ml-1.5 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-bg-input transition"
+            title="Reset"
+          >
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 60 60"
+              xmlns="http://www.w3.org/2000/svg"
+              className="ltr:mr-3 rtl:ml-3 fill-main-600 dark:fill-dark-text-primary"
+            >
+              <g clipPath="url(#clip0_91_17526)">
+                <path d="M57.3816 23.6815L54.7066 21.0031C54.1406 20.44 53.8308 19.6892 53.8308 18.8937V15.1039C53.8308 10.176 49.8213 6.1658 44.8943 6.1658H41.1052C40.3217 6.1658 39.5532 5.84701 38.9991 5.29285L36.3211 2.61439C32.8359 -0.871465 27.1701 -0.871465 23.6848 2.61439L21.0009 5.29285C20.4468 5.84701 19.6783 6.1658 18.8948 6.1658H15.1058C10.1787 6.1658 6.1692 10.176 6.1692 15.1039V18.8937C6.1692 19.6892 5.8594 20.44 5.2964 21.0031L2.61841 23.6785C0.929402 25.3678 0 27.6143 0 30.0007C0 32.3872 0.93238 34.6337 2.61841 36.32L5.29342 38.9984C5.8594 39.5615 6.1692 40.3123 6.1692 41.1078V44.8976C6.1692 49.8255 10.1787 53.8357 15.1058 53.8357H18.8948C19.6783 53.8357 20.4468 54.1545 21.0009 54.7086L23.6789 57.3901C25.4215 59.13 27.7093 60 29.997 60C32.2848 60 34.5725 59.13 36.3152 57.3871L38.9932 54.7086C39.5532 54.1545 40.3217 53.8357 41.1052 53.8357H44.8943C49.8213 53.8357 53.8308 49.8255 53.8308 44.8976V41.1078C53.8308 40.3123 54.1406 39.5615 54.7066 38.9984L57.3816 36.323C59.0676 34.6337 60 32.3902 60 30.0007C60 27.6113 59.0706 25.3678 57.3816 23.6815ZM43.5687 26.5208L25.6956 38.4383C25.1921 38.775 24.6142 38.9388 24.0423 38.9388C23.2738 38.9388 22.5112 38.6409 21.9363 38.0659L15.9786 32.1072C14.8138 30.9422 14.8138 29.0593 15.9786 27.8943C17.1433 26.7294 19.0259 26.7294 20.1906 27.8943L24.4206 32.125L40.2621 21.5632C41.6354 20.6485 43.4823 21.0179 44.3938 22.3885C45.3083 23.759 44.9389 25.6092 43.5687 26.5208Z" />
               </g>
               <defs>
-                <clipPath id='clip0_91_17526'>
-                  <rect width='60' height='60' fill='white' />
+                <clipPath id="clip0_91_17526">
+                  <rect width="60" height="60" fill="white" />
                 </clipPath>
               </defs>
             </svg>
@@ -463,18 +534,25 @@ function StepBreadcrumbs({ items = [], activeIndex = 1, onItemClick, onReset, re
           </button>
         </li>
 
-        {visibleItems.map((it, i) => {
+        {visibleItems.map((item, i) => {
           const isActive = i === activeIndex;
-
           return (
-            <React.Fragment key={`${it.label}-${i}`}>
-              <li aria-hidden className='text-slate-400'>
-                <img src='/icons/arrow-right.svg' className='h-4 w-4' alt='' />
+            <React.Fragment key={`${item.label}-${i}`}>
+              <li aria-hidden className="text-slate-400 dark:text-dark-text-secondary">
+                <img src="/icons/arrow-right.svg" className="h-4 w-4" alt="" />
               </li>
-
-              <li className='min-w-0 text-lg'>
-                <button type='button' title={it.label} aria-current={isActive ? 'page' : undefined} onClick={() => onItemClick(i)} className={`truncate font-[500] transition ${isActive ? `${accentClass} opacity-100` : 'text-slate-700 opacity-80 hover:opacity-100'}`}>
-                  {it.label}
+              <li className="min-w-0 text-lg">
+                <button
+                  type="button"
+                  title={item.label}
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => onItemClick(i)}
+                  className={`truncate font-medium transition ${isActive
+                    ? `${accentClass} opacity-100 dark:text-dark-text-primary`
+                    : "text-slate-700 opacity-80 hover:opacity-100 dark:text-dark-text-secondary"
+                    }`}
+                >
+                  {item.label}
                 </button>
               </li>
             </React.Fragment>
@@ -484,6 +562,7 @@ function StepBreadcrumbs({ items = [], activeIndex = 1, onItemClick, onReset, re
     </div>
   );
 }
+
 
 function HeroCard({ currentStep, className = '' }) {
   const t = useTranslations('CreateJob.hero');
@@ -505,10 +584,23 @@ function HeroCard({ currentStep, className = '' }) {
   const { title, subtitle } = stepContent[currentStep] || stepContent[0];
 
   return (
-    <section className={`w-full h-fit p-6 py-12 rounded-2xl shadow-inner border border-slate-200 ${className}`} aria-label='matching-hero'>
-      <div className='space-y-6 md:space-y-7'>
-        <h1 className='font-extrabold tracking-tight leading-[1.05] text-4xl md:text-[44px] text-black'>{title}</h1>
-        <p className='text-gray-700 text-xl md:text-2xl leading-snug'>{subtitle}</p>
+    <section
+      className={`
+      w-full h-fit p-6 sm:p-8 py-12
+      rounded-2xl shadow-inner border border-slate-200 dark:border-dark-border
+      bg-white dark:bg-dark-bg-card
+      text-black dark:text-dark-text-primary
+      ${className}
+    `}
+      aria-label="matching-hero"
+    >
+      <div className="space-y-6 md:space-y-7">
+        <h1 className="font-extrabold tracking-tight leading-[1.05] text-4xl md:text-[44px]">
+          {title}
+        </h1>
+        <p className="text-gray-700 dark:text-dark-text-secondary text-xl md:text-2xl leading-snug">
+          {subtitle}
+        </p>
       </div>
     </section>
   );
@@ -529,15 +621,31 @@ function ProjectForm({ isAdmin, register, getValues, control, errors, setValue, 
 
 
   return (
-    <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
-      <h2 className='h2 mt-6 mb-2'>{!isAdmin ? t('titleLabel') : t('editTitleLabel')}</h2>
+    <div className="w-full p-6 rounded-2xl shadow-inner border border-slate-200 dark:border-dark-border dark:bg-dark-bg-card flex flex-col">
+      <h2 className="h2 mt-6 mb-2 text-black! dark:text-dark-text-primary!">
+        {!isAdmin ? t('titleLabel') : t('editTitleLabel')}
+      </h2>
 
-      <div className='mb-4'>
-        <Input {...register('title')} cnLabel='!text-[15px]' label={t('titleHint')} placeholder={t('titlePlaceholder')} error={errors.title?.message} />
+      <div className="mb-4">
+        <Input
+          {...register('title')}
+          cnLabel="!text-[15px] dark:text-dark-text-primary"
+          label={t('titleHint')}
+          placeholder={t('titlePlaceholder')}
+          error={errors.title?.message}
+        />
       </div>
 
-      <div className='mb-4'>
-        <Textarea cnInput='text-[14px]' {...register('description')} cnLabel={'!text-[15px]'} label={t('descriptionLabel')} placeholder={t('descriptionPlaceholder')} rows={5} error={errors.description?.message} />
+      <div className="mb-4">
+        <Textarea
+          cnInput="text-[14px] dark:text-dark-text-primary"
+          {...register('description')}
+          cnLabel="!text-[15px] dark:text-dark-text-primary"
+          label={t('descriptionLabel')}
+          placeholder={t('descriptionPlaceholder')}
+          rows={5}
+          error={errors.description?.message}
+        />
       </div>
 
       <div className='mb-4'>
@@ -663,28 +771,64 @@ function BudgetAndDelivery({ register, control, errors, trigger, budgetTypeOptio
   };
 
   return (
-    <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
-      <div className='space-y-3 mb-8 mt-6 '>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+    <div className="w-full p-6 rounded-2xl shadow-inner border border-slate-200 dark:border-dark-border dark:bg-dark-bg-card flex flex-col">
+      <div className="space-y-3 mb-8 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Budget input */}
           <div>
-            <Input {...register('budget')} cnLabel={'!text-[15px]'} placeholder={t('budgetPlaceholder')} label={t('budgetLabel')} type='number' error={errors.budget?.message} />
-            <p className='text-sm text-gray-600'>{t('budgetHint')}</p>
+            <Input
+              {...register('budget')}
+              cnLabel="!text-[15px] dark:text-dark-text-primary"
+              placeholder={t('budgetPlaceholder')}
+              label={t('budgetLabel')}
+              type="number"
+              error={errors.budget?.message}
+            />
+            <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
+              {t('budgetHint')}
+            </p>
           </div>
 
+          {/* Budget Type Select */}
           <div>
-            <Controller name='budgetType' control={control} render={({ field }) => <Select {...field} cnLabel={'!text-[15px]'} label={t('budgetTypeLabel')} options={budgetTypeOptions} error={errors.budgetType?.message} onChange={value => field.onChange(value.id)} />} />
+            <Controller
+              name="budgetType"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  cnLabel="!text-[15px] dark:text-dark-text-primary"
+                  label={t('budgetTypeLabel')}
+                  options={budgetTypeOptions}
+                  error={errors.budgetType?.message}
+                  onChange={(value) => field.onChange(value.id)}
+
+                />
+              )}
+            />
           </div>
         </div>
       </div>
 
-      <div className='space-y-3 mb-6'>
-        <Input {...register('preferredDeliveryDays')} cnLabel={'!text-[15px]'} label={t('preferredDeliveryLabel')} placeholder={t('preferredDeliveryPlaceholder')} type='number' error={errors.preferredDeliveryDays?.message} />
-        <p className='text-sm text-gray-600'>{t('preferredDeliveryHint')}</p>
+      {/* Preferred Delivery Days */}
+      <div className="space-y-3 mb-6">
+        <Input
+          {...register('preferredDeliveryDays')}
+          cnLabel="!text-[15px] dark:text-dark-text-primary"
+          label={t('preferredDeliveryLabel')}
+          placeholder={t('preferredDeliveryPlaceholder')}
+          type="number"
+          error={errors.preferredDeliveryDays?.message}
+        />
+        <p className="text-sm text-gray-600 dark:text-dark-text-secondary">
+          {t('preferredDeliveryHint')}
+        </p>
       </div>
 
-      <div className='flex items-center justify-between gap-4 mt-6'>
-        <Button className='!max-w-fit' name={t('back')} onClick={() => setCurrentStep(0)} color='secondary' />
-        <Button className='!max-w-fit' name={t('next')} onClick={handleNext} color='green' />
+      {/* Navigation Buttons */}
+      <div className="flex items-center justify-between gap-4 mt-6">
+        <Button className="!max-w-fit" name={t('back')} onClick={() => setCurrentStep(0)} color="secondary" />
+        <Button className="!max-w-fit" name={t('next')} onClick={handleNext} color="green" />
       </div>
     </div>
   );
@@ -698,71 +842,104 @@ function ProjectReview({ isAdmin, data, isPublishing, onPublishToggle, onEditPro
   const hasFiles = useMemo(() => (data.attachments || []).length > 0, [data.attachments]);
 
   return (
-    <div className='w-full p-6 rounded-2xl shadow-inner border border-slate-200 flex flex-col'>
+    <div className="w-full p-6 rounded-2xl shadow-inner border border-slate-200 dark:border-dark-border dark:bg-dark-bg-card flex flex-col">
 
-      <section className='pb-8  pt-5'>
-        <div className='flex items-start justify-between gap-4  '>
+      {/* Project Details */}
+      <section className="pb-8 pt-5">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className='text-[22px] md:text-[24px] font-semibold text-black'>{t('projectDetailsTitle')}</h2>
-            <p className='text-gray-700 mt-2'>{t('projectDetailsSubtitle')}</p>
+            <h2 className="text-[22px] md:text-[24px] font-semibold text-black dark:text-dark-text-primary">
+              {t('projectDetailsTitle')}
+            </h2>
+            <p className="text-gray-700 mt-2 dark:text-dark-text-secondary">
+              {t('projectDetailsSubtitle')}
+            </p>
           </div>
-          <button type='button' onClick={onEditProject} className='p-2 rounded-md hover:bg-gray-100 transition' aria-label='Edit project section' title={t('edit')}>
-            <Pencil className='w-4 h-4 text-gray-700' />
+          <button
+            type="button"
+            onClick={onEditProject}
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-dark-bg-input transition"
+            aria-label="Edit project section"
+            title={t('edit')}
+          >
+            <Pencil className="w-4 h-4 text-gray-700 dark:text-dark-text-primary" />
           </button>
         </div>
 
-        <div className='mt-6 space-y-5'>
+        <div className="mt-6 space-y-5">
           <Item label={t('title')} value={data.title || '—'} />
-          <Item label={t('description')} value={data.description || '—'} className cnValue='whitespace-pre-wrap' />
+          <Item label={t('description')} value={data.description || '—'} cnValue="whitespace-pre-wrap" />
           <Item label={t('category')} value={isArabic ? data.category?.name_ar || '—' : data.category?.name_en || '—'} />
-          {data.subcategoryId && <Item label={t('subcategory')} value={isArabic ? data.subcategory?.name_ar || '—' : data.subcategory?.name_en || '—'} />}
+          {data.subcategoryId && (
+            <Item label={t('subcategory')} value={isArabic ? data.subcategory?.name_ar || '—' : data.subcategory?.name_en || '—'} />
+          )}
           <Item label={t('country')} value={isArabic ? data.country?.name_ar || '—' : data.country?.name || '—'} />
           {data.stateId && <Item label={t('state')} value={isArabic ? data.state?.name_ar || '—' : data.state?.name || '—'} />}
 
           <ItemSkills label={t('skillsRequired')} value={data.skillsRequired} />
 
-          {data.additionalInfo && <Item label={t('additionalInformation')} value={data.additionalInfo} cnValue='whitespace-pre-wrap' />}
+          {data.additionalInfo && <Item label={t('additionalInformation')} value={data.additionalInfo} cnValue="whitespace-pre-wrap" />}
 
           <div>
-            <div className='flex items-center gap-2'>
-              <Paperclip className='w-4 h-4 text-gray-700' />
-              <div className='text-[15px] font-semibold text-black'>{t('attachments')}</div>
+            <div className="flex items-center gap-2">
+              <Paperclip className="w-4 h-4 text-gray-700 dark:text-dark-text-primary" />
+              <div className="text-[15px] font-semibold text-black dark:text-dark-text-primary">{t('attachments')}</div>
             </div>
 
-            {hasFiles ? <AttachmentList attachments={data.attachments} /> : <div className='mt-2 text-sm text-gray-500'>{t('noFilesAttached')}</div>}
+            {hasFiles ? (
+              <AttachmentList attachments={data.attachments} />
+            ) : (
+              <div className="mt-2 text-sm text-gray-500 dark:text-dark-text-secondary">{t('noFilesAttached')}</div>
+            )}
           </div>
         </div>
       </section>
 
-      <hr className='border-t border-gray-200 my-2' />
+      <hr className="border-t border-gray-200 dark:border-dark-border my-2" />
 
-      <section className='pt-6'>
-        <div className='flex items-start justify-between gap-4'>
+      {/* Budget & Delivery */}
+      <section className="pt-6">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className='text-[22px] md:text-[24px] font-semibold text-black'>{t('budgetDeliveryTitle')}</h3>
-            <p className='text-gray-700 mt-2'>{t('budgetDeliverySubtitle')}</p>
+            <h3 className="text-[22px] md:text-[24px] font-semibold text-black dark:text-dark-text-primary">
+              {t('budgetDeliveryTitle')}
+            </h3>
+            <p className="text-gray-700 mt-2 dark:text-dark-text-secondary">
+              {t('budgetDeliverySubtitle')}
+            </p>
           </div>
-          <button type='button' onClick={onEditJob} className='p-2 rounded-md hover:bg-gray-100 transition' aria-label='Edit job section' title={t('edit')}>
-            <Pencil className='w-4 h-4 text-gray-700' />
+          <button
+            type="button"
+            onClick={onEditJob}
+            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-dark-bg-input transition"
+            aria-label="Edit job section"
+            title={t('edit')}
+          >
+            <Pencil className="w-4 h-4 text-gray-700 dark:text-dark-text-primary" />
           </button>
         </div>
 
-        <div className='mt-6 grid grid-cols-1 sm:grid-cols-2 gap-8'>
+        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-8">
           <Item
             label={t('budget')}
             value={
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-black dark:text-dark-text-primary">
                 <Currency />
                 {`${data.budget} (${data.budgetType})`}
               </div>
             }
           />
 
-
-          <Item label={t('deliveryDays')} value={data.preferredDeliveryDays || t('notSpecified')} />
+          <Item
+            label={t('deliveryDays')}
+            value={
+              <span className="text-black dark:text-dark-text-primary">
+                {data.preferredDeliveryDays || t('notSpecified')}
+              </span>
+            }
+          />
         </div>
       </section>
-
 
       {/* Action Buttons */}
       <div className="mt-8 flex items-center gap-2 justify-between flex-1">
@@ -781,28 +958,39 @@ function ProjectReview({ isAdmin, data, isPublishing, onPublishToggle, onEditPro
           disabled={isSubmitting}
         />
       </div>
-
-
     </div>
   );
 }
 
 function Item({ label, value, cnValue }) {
   return (
-    <div className='flex  gap-3  '>
-      <div className='text-[16px] max-w-[140px] w-full  font-semibold text-black'>{label}</div>
-      <div className={`text-gray-800 mt-1 leading-relaxed ${cnValue}`}>{value}</div>
+    <div className="flex gap-3">
+      <div className="text-[16px] max-w-[140px] w-full font-semibold text-black dark:text-dark-text-primary">
+        {label}
+      </div>
+      <div
+        className={`mt-1 leading-relaxed text-gray-800 dark:text-dark-text-secondary ${cnValue}`}
+      >
+        {value}
+      </div>
     </div>
   );
 }
 
 export function ItemSkills({ label, value, cnLabel }) {
   return (
-    <div className='flex  gap-4 '>
-      <div className={`text-base text-slate-500 font-semibold w-full max-w-[140px] ${cnLabel}`}>{label}</div>
-      <div className='flex flex-wrap gap-2'>
+    <div className="flex gap-4">
+      <div
+        className={`text-base font-semibold w-full max-w-[140px] text-slate-500 dark:text-dark-text-secondary ${cnLabel}`}
+      >
+        {label}
+      </div>
+      <div className="flex flex-wrap gap-2">
         {value?.map((skill, index) => (
-          <span key={index} className='gradient text-white px-3 py-1 rounded-full text-sm font-medium flex items-center'>
+          <span
+            key={index}
+            className="gradient text-white px-3 py-1 rounded-full text-sm font-medium flex items-center"
+          >
             {skill}
           </span>
         ))}

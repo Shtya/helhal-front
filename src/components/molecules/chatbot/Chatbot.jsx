@@ -167,7 +167,7 @@ export default function Chatbot({ personalData = null }) {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleOpen}
-            className="fixed d bottom-3 ltr:left-3 rtl:right-3 sm:bottom-6 sm:ltr:left-6 sm:rtl:right-6  z-50 w-14 h-14 bg-gradient-to-br from-main-500 to-main-600 hover:from-main-600 hover:to-main-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center group"
+            className="fixed bottom-3 ltr:left-3 rtl:right-3 sm:bottom-6 sm:ltr:left-6 sm:rtl:right-6 z-50 w-14 h-14 bg-gradient-to-br from-main-500 to-main-600 hover:from-main-600 hover:to-main-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center group"
             aria-label={t('open')}
           >
             <MessageCircle className="w-6 h-6 group-hover:scale-110 transition-transform" />
@@ -181,7 +181,7 @@ export default function Chatbot({ personalData = null }) {
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5"
+                className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1.5 border-2 border-white dark:border-dark-bg-base"
               >
                 {unreadCount > 9 ? '9+' : unreadCount}
               </motion.span>
@@ -198,7 +198,7 @@ export default function Chatbot({ personalData = null }) {
             animate="show"
             exit="hidden"
             variants={fadeIn}
-            className={`fixed bottom-3 ltr:left-3 rtl:right-3 sm:bottom-6 sm:ltr:left-6 sm:rtl:right-6 z-50 bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all ${isMinimized
+            className={`fixed bottom-3 ltr:left-3 rtl:right-3 sm:bottom-6 sm:ltr:left-6 sm:rtl:right-6 z-50 bg-white dark:bg-dark-bg-card rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all border border-transparent dark:border-dark-border ${isMinimized
               ? 'w-[300px] h-[60px]'
               : 'w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-2rem)] sm:w-[400px] sm:h-[600px]'
               }`}
@@ -210,7 +210,7 @@ export default function Chatbot({ personalData = null }) {
                   <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                     <MessageCircle className="w-5 h-5" />
                   </div>
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white" />
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white dark:border-main-500" />
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-semibold text-base truncate">{t('title')}</h3>
@@ -219,7 +219,6 @@ export default function Chatbot({ personalData = null }) {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                {/* Minimize button */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -227,14 +226,9 @@ export default function Chatbot({ personalData = null }) {
                   className="p-1.5 hover:bg-white/10 rounded-lg transition"
                   aria-label={isMinimized ? t('maximize') : t('minimize')}
                 >
-                  {isMinimized ? (
-                    <Maximize2 className="w-4 h-4" />
-                  ) : (
-                    <Minimize2 className="w-4 h-4" />
-                  )}
+                  {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
                 </motion.button>
 
-                {/* Clear messages button */}
                 {messages.length > 0 && !isMinimized && (
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -247,7 +241,6 @@ export default function Chatbot({ personalData = null }) {
                   </motion.button>
                 )}
 
-                {/* Close button */}
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -260,10 +253,10 @@ export default function Chatbot({ personalData = null }) {
               </div>
             </div>
 
-            {/* Messages Container - Hidden when minimized */}
+            {/* Messages Container */}
             {!isMinimized && (
               <>
-                <div className="flex-1 overflow-y-auto p-4 bg-slate-50">
+                <div className="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-dark-bg-base/40 transition-colors">
                   {messages.length === 0 ? (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
@@ -271,28 +264,21 @@ export default function Chatbot({ personalData = null }) {
                       className="h-full flex items-center justify-center"
                     >
                       <div className="text-center max-w-xs">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-main-100 flex items-center justify-center">
-                          <MessageCircle className="w-8 h-8 text-main-600" />
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-main-100 dark:bg-main-900/20 flex items-center justify-center">
+                          <MessageCircle className="w-8 h-8 text-main-600 dark:text-main-400" />
                         </div>
-                        <h4 className="text-lg font-semibold text-slate-800 mb-2">
+                        <h4 className="text-lg font-semibold text-slate-800 dark:text-dark-text-primary mb-2">
                           {t('welcome')}
                         </h4>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-slate-600 dark:text-dark-text-secondary">
                           {t('welcomeMessage')}
                         </p>
                       </div>
                     </motion.div>
                   ) : (
-                    <motion.div
-                      variants={staggerContainer}
-                      className="space-y-4"
-                    >
+                    <motion.div variants={staggerContainer} className="space-y-4">
                       {messages.map((message) => (
-                        <MessageBubble
-                          key={message.id}
-                          message={message}
-                          t={t}
-                        />
+                        <MessageBubble key={message.id} message={message} t={t} />
                       ))}
                       {isLoading && <TypingIndicator />}
                     </motion.div>
@@ -301,89 +287,52 @@ export default function Chatbot({ personalData = null }) {
                 </div>
 
                 {/* Input Area */}
-                <div className="p-4 bg-white border-t border-slate-200 shrink-0">
-                  {/* Voice Mode Indicator */}
+                <div className="p-4 bg-white dark:bg-dark-bg-card border-t border-slate-200 dark:border-dark-border transition-colors shrink-0">
                   <AnimatePresence>
                     {isVoiceMode && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="mb-3 flex items-center justify-center gap-2 text-sm text-main-600 overflow-hidden"
+                        className="mb-3 flex items-center justify-center gap-2 text-sm text-main-600 dark:text-main-400 overflow-hidden"
                       >
                         {isSpeaking ? (
-                          <>
-                            <Volume2 className="w-4 h-4 animate-pulse" />
-                            <span>{t('speaking')}</span>
-                          </>
+                          <><Volume2 className="w-4 h-4 animate-pulse" /> <span>{t('speaking')}</span></>
                         ) : isRecording ? (
-                          <>
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ repeat: Infinity, duration: 1 }}
-                            >
-                              <Mic className="w-4 h-4 text-red-500" />
-                            </motion.div>
-                            <span className="text-red-500">{t('recording')}</span>
-                          </>
+                          <><motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 1 }}><Mic className="w-4 h-4 text-red-500" /></motion.div> <span className="text-red-500">{t('recording')}</span></>
                         ) : (
-                          <>
-                            <Mic className="w-4 h-4" />
-                            <span>{t('voiceModeActive')}</span>
-                          </>
+                          <><Mic className="w-4 h-4" /> <span>{t('voiceModeActive')}</span></>
                         )}
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   <form onSubmit={handleSendMessage} className="flex items-end gap-2">
-                    {/* Voice Toggle Button */}
                     <motion.button
                       type="button"
-                      whileHover={{ scale: isConnecting ? 1 : 1.05 }} // Disable hover effect when loading
+                      whileHover={{ scale: isConnecting ? 1 : 1.05 }}
                       whileTap={{ scale: isConnecting ? 1 : 0.95 }}
                       disabled={isConnecting}
                       onClick={handleToggleVoice}
                       className={`p-2.5 rounded-xl transition-colors shrink-0 ${isVoiceMode
-                        ? 'bg-main-500 text-white hover:bg-main-600'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        ? 'bg-main-500 text-white'
+                        : 'bg-slate-100 dark:bg-dark-bg-input text-slate-600 dark:text-dark-text-secondary hover:bg-slate-200 dark:hover:bg-dark-border'
                         } ${isConnecting ? 'opacity-70 cursor-wait' : ''}`}
-                      aria-label={isVoiceMode ? t('disableVoice') : t('enableVoice')}
                     >
-                      {isConnecting ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : isVoiceMode ? (
-                        <VolumeX className="w-5 h-5" />
-                      ) : (
-                        <Volume2 className="w-5 h-5" />
-                      )}
+                      {isConnecting ? <Loader2 className="w-5 h-5 animate-spin" /> : isVoiceMode ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                     </motion.button>
 
-                    {/* Text Input or Voice Button */}
                     {isVoiceMode & !isConnecting ? (
                       <motion.button
                         type="button"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={handleMicClick}
-                        className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${isRecording
-                          ? 'bg-red-500 hover:bg-red-600 text-white'
-                          : 'bg-main-500 hover:bg-main-600 text-white'
-                          }`}
+                        className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-main-500 hover:bg-main-600 text-white'}`}
                         disabled={isSpeaking}
                       >
                         <div className="flex items-center justify-center gap-2">
-                          {isRecording ? (
-                            <>
-                              <MicOff className="w-5 h-5" />
-                              <span className="hidden sm:inline">{t('stopRecording')}</span>
-                            </>
-                          ) : (
-                            <>
-                              <Mic className="w-5 h-5" />
-                              <span className="hidden sm:inline">{t('startRecording')}</span>
-                            </>
-                          )}
+                          {isRecording ? <><MicOff className="w-5 h-5" /> <span className="hidden sm:inline">{t('stopRecording')}</span></> : <><Mic className="w-5 h-5" /> <span className="hidden sm:inline">{t('startRecording')}</span></>}
                         </div>
                       </motion.button>
                     ) : (
@@ -394,7 +343,7 @@ export default function Chatbot({ personalData = null }) {
                           value={inputValue}
                           onChange={(e) => setInputValue(e.target.value)}
                           placeholder={t('placeholder')}
-                          className="flex-1 px-4 py-3 bg-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-main-500 transition-shadow text-slate-800 placeholder:text-slate-400"
+                          className="flex-1 px-4 py-3 bg-slate-100 dark:bg-dark-bg-input rounded-xl focus:outline-none focus:ring-2 focus:ring-main-500 transition-all text-slate-800 dark:text-dark-text-primary placeholder:text-slate-400 dark:placeholder:text-dark-text-secondary"
                           disabled={isLoading}
                         />
                         <motion.button
@@ -402,8 +351,7 @@ export default function Chatbot({ personalData = null }) {
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           disabled={!inputValue.trim() || isLoading}
-                          className="p-3 bg-main-500 text-white rounded-xl hover:bg-main-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
-                          aria-label={t('send')}
+                          className="p-3 bg-main-500 text-white rounded-xl hover:bg-main-600 disabled:opacity-50 transition-colors shrink-0"
                         >
                           <Send className="w-5 h-5" />
                         </motion.button>
@@ -425,49 +373,27 @@ function MessageBubble({ message, t }) {
   const isError = message.type === 'error';
 
   return (
-    <motion.div
-      variants={slideUp}
-      initial="hidden" // Bubbles added after mount will use this
-      animate="show"
-      className={`flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-2`}
-    >
+    <motion.div variants={slideUp} initial="hidden" animate="show" className={`flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-2`}>
       {!isUser && (
-        <div className="w-8 h-8 rounded-full bg-main-100 flex items-center justify-center shrink-0">
-          <MessageCircle className="w-4 h-4 text-main-600" />
+        <div className="w-8 h-8 rounded-full bg-main-100 dark:bg-main-900/30 flex items-center justify-center shrink-0">
+          <MessageCircle className="w-4 h-4 text-main-600 dark:text-main-400" />
         </div>
       )}
-
-      <div
-        className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm ${isUser
-          ? 'bg-gradient-to-br from-main-500 to-main-600 text-white rounded-tr-sm'
-          : isError
-            ? 'bg-red-50 text-red-700 rounded-tl-sm border border-red-200'
-            : 'bg-white text-slate-800 rounded-tl-sm'
-          }`}
-      >
+      <div className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-sm transition-colors ${isUser
+        ? 'bg-gradient-to-br from-main-500 to-main-600 text-white rounded-tr-sm'
+        : isError
+          ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-tl-sm border border-red-200 dark:border-red-900/50'
+          : 'bg-white dark:bg-dark-bg-input text-slate-800 dark:text-dark-text-primary rounded-tl-sm border border-transparent dark:border-dark-border'
+        }`}>
         <p className="text-sm whitespace-pre-wrap break-words">
-          {message.isVoice && isUser ? (
-            <span className="flex items-center gap-2">
-              <Mic className="w-4 h-4" />
-              {t('voiceMessage')}
-            </span>
-          ) : (
-            message.content
-          )}
+          {message.isVoice && isUser ? <span className="flex items-center gap-2"><Mic className="w-4 h-4" /> {t('voiceMessage')}</span> : message.content}
         </p>
-
-        {/* Timestamp */}
-        <p className={`text-xs mt-1.5 ${isUser ? 'text-white/70' : 'text-slate-500'
-          }`}>
-          {new Date(message.timestamp).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
+        <p className={`text-[10px] mt-1.5 ${isUser ? 'text-white/70' : 'text-slate-500 dark:text-dark-text-secondary'}`}>
+          {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </p>
       </div>
-
       {isUser && (
-        <div className="w-8 h-8 rounded-full bg-main-600 text-white flex items-center justify-center shrink-0 text-xs font-semibold">
+        <div className="w-8 h-8 rounded-full bg-main-600 text-white flex items-center justify-center shrink-0 text-[10px] font-semibold">
           {t('you')}
         </div>
       )}
@@ -477,33 +403,17 @@ function MessageBubble({ message, t }) {
 
 function TypingIndicator() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex items-start gap-2"
-    >
-      <div className="w-8 h-8 rounded-full bg-main-100 flex items-center justify-center shrink-0">
-        <MessageCircle className="w-4 h-4 text-main-600" />
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-start gap-2">
+      <div className="w-8 h-8 rounded-full bg-main-100 dark:bg-main-900/30 flex items-center justify-center shrink-0">
+        <MessageCircle className="w-4 h-4 text-main-600 dark:text-main-400" />
       </div>
-      <div className="bg-white rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+      <div className="bg-white dark:bg-dark-bg-input rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm border border-transparent dark:border-dark-border">
         <div className="flex gap-1.5">
-          <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ repeat: Infinity, duration: 1, delay: 0 }}
-            className="w-2 h-2 bg-slate-400 rounded-full"
-          />
-          <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
-            className="w-2 h-2 bg-slate-400 rounded-full"
-          />
-          <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
-            className="w-2 h-2 bg-slate-400 rounded-full"
-          />
+          {[0, 0.2, 0.4].map((delay) => (
+            <motion.div key={delay} animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: 1, delay }} className="w-2 h-2 bg-slate-400 dark:bg-dark-text-secondary rounded-full" />
+          ))}
         </div>
       </div>
     </motion.div>
-  );
+  )
 }

@@ -14,9 +14,9 @@ export default function CongratulationsModal({ open, onClose, selectedRow }) {
             <div className="space-y-6 text-center">
                 {/* Success Icon */}
                 <div className="flex justify-center">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center dark:bg-green-900/30">
                         <svg
-                            className="w-10 h-10 text-green-600"
+                            className="w-10 h-10 text-green-600 dark:text-green-400 dark:invert"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -33,32 +33,32 @@ export default function CongratulationsModal({ open, onClose, selectedRow }) {
 
                 {/* Message */}
                 <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-slate-800">
+                    <h3 className="text-xl font-semibold text-slate-800 dark:text-dark-text-primary">
                         {t('heading')}
                     </h3>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-slate-600 dark:text-dark-text-secondary">
                         {t('description')}
                     </p>
                 </div>
 
                 {/* Order Details */}
-                <div className="bg-slate-50 rounded-lg p-4 space-y-2">
+                <div className="bg-slate-50 rounded-lg p-4 space-y-2 dark:bg-dark-bg-input">
                     <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-600">{t('order')}:</span>
-                        <strong className="text-slate-800">{orderTitle}</strong>
+                        <span className="text-slate-600 dark:text-dark-text-secondary">{t('order')}:</span>
+                        <strong className="text-slate-800 dark:text-dark-text-primary">{orderTitle}</strong>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-600">{t('seller')}:</span>
-                        <strong className="text-slate-800">{sellerName}</strong>
+                        <span className="text-slate-600 dark:text-dark-text-secondary">{t('seller')}:</span>
+                        <strong className="text-slate-800 dark:text-dark-text-primary">{sellerName}</strong>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-600">{t('amount')}:</span>
-                        <strong className="text-green-600">${amount}</strong>
+                        <span className="text-slate-600 dark:text-dark-text-secondary">{t('amount')}:</span>
+                        <strong className="text-green-600 dark:text-green-400">${amount}</strong>
                     </div>
                 </div>
 
                 {/* Additional Info */}
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-dark-text-secondary">
                     {t('paymentInfo')}
                 </p>
 

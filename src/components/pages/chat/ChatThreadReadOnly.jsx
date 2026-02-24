@@ -74,22 +74,22 @@ export function ChatThreadReadOnly({
   return (
     <div className="relative flex-1 w-full max-h-[540px] h-full flex flex-col">
       {/* Header: Buyer & Seller abbreviations */}
-      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-b-slate-200 pb-2 mb-2">
+      <div className="flex flex-wrap items-start justify-between gap-4 border-b border-b-slate-200 dark:border-dark-border pb-2 mb-2">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Img src={buyer?.profileImage} altSrc="/no-user.png" alt={buyerName} className="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow" />
             <div>
-              <Link href={`/profile/${buyer?.id}`} className="text-sm font-semibold text-slate-900 hover:text-main-600">
+              <Link href={`/profile/${buyer?.id}`} className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
                 {buyerName}
               </Link>
               <span className="text-xs block text-emerald-600 font-medium">Buyer</span>
             </div>
           </div>
-          <span className="text-slate-400">↔</span>
+          <span className="text-slate-400 dark:text-dark-text-secondary">↔</span>
           <div className="flex items-center gap-2">
             <Img src={seller?.profileImage} altSrc="/no-user.png" alt={sellerName} className="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow" />
             <div>
-              <Link href={`/profile/${seller?.id}`} className="text-sm font-semibold text-slate-900 hover:text-main-600">
+              <Link href={`/profile/${seller?.id}`} className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
                 {sellerName}
               </Link>
               <span className="text-xs block text-main-600 font-medium">Seller</span>
@@ -118,15 +118,15 @@ export function ChatThreadReadOnly({
                 {loadingOlder ? (
                   <FaSpinner className="mx-auto h-5 w-5 animate-spin text-main-500" />
                 ) : (
-                  <button type="button" onClick={() => onLoadOlder?.()} className="text-blue-500 text-sm hover:underline">
+                  <button type="button" onClick={() => onLoadOlder?.()} className="text-blue-500 dark:text-main-400 text-sm hover:underline">
                     {t('loadOlderMessages')}
                   </button>
                 )}
               </div>
             )}
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 text-slate-500 rounded-xl p-6">
-                <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400" />
+              <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 dark:bg-dark-bg-input text-slate-500 dark:text-dark-text-secondary rounded-xl p-6">
+                <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400 dark:invert" />
                 <p className="text-sm max-w-xs">{t('noMessages.title')}</p>
               </div>
             ) : (
@@ -214,7 +214,7 @@ function Message({ avatar, name, text, attachments = [], me = false, createdAt, 
       </div>
       <div className={`flex-1 ${me ? 'flex flex-col items-end' : ''}`}>
         <div
-          className={`${me ? 'bg-main-500 text-white' : 'bg-slate-100 text-slate-800'} mt-1 inline-block max-w-[85%] rounded-2xl px-4 py-2 shadow-sm`}
+          className={`${me ? 'bg-main-500 text-white' : 'bg-slate-100 dark:bg-dark-bg-input text-slate-800 dark:text-dark-text-primary'} mt-1 inline-block max-w-[85%] rounded-2xl px-4 py-2 shadow-sm`}
         >
           {text && <p className="max-w-4xl text-sm leading-5 break-words whitespace-pre-wrap">{text}</p>}
           {attachments?.length > 0 && (
@@ -248,7 +248,7 @@ function Message({ avatar, name, text, attachments = [], me = false, createdAt, 
                         href={absolute}
                         target="_blank"
                         rel="noreferrer"
-                        className={`text-xs px-3 py-2 rounded-md inline-flex items-center gap-2 ${me ? 'bg-main-600/20 hover:bg-main-600/40' : 'bg-gray-100 hover:bg-gray-200'}`}
+                        className={`text-xs px-3 py-2 rounded-md inline-flex items-center gap-2 ${me ? 'bg-main-600/20 hover:bg-main-600/40' : 'bg-gray-100 hover:bg-gray-200 dark:bg-dark-bg-input dark:hover:bg-dark-bg-card'}`}
                       >
                         📎 <span className="truncate max-w-[160px]">{f.filename}</span>
                       </a>
@@ -258,7 +258,7 @@ function Message({ avatar, name, text, attachments = [], me = false, createdAt, 
             </div>
           )}
         </div>
-        <div className={`mt-1 text-xs text-slate-400 ${me ? 'text-right' : 'text-left'}`}>
+        <div className={`mt-1 text-xs text-slate-400 dark:text-dark-text-secondary ${me ? 'text-right' : 'text-left'}`}>
           {createdAt
             ? new Date(createdAt).toLocaleString('en-US', {
               month: 'numeric',

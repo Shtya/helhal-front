@@ -24,7 +24,7 @@ import TopRatedBadge from '@/components/atoms/TopRatedBadge';
 
 /* ------------------------------ SKELETONS ------------------------------ */
 export const Shimmer = ({ className = '', animated = false }) => (
-  <div className={`${animated ? "animate-pulse bg-slate-200" : "bg-slate-200/60 "} relative overflow-hidden rounded-lg ${className}`}>
+  <div className={`${animated ? "animate-pulse bg-slate-200 dark:bg-dark-border" : "bg-slate-200/60 dark:bg-dark-border/60"} relative overflow-hidden rounded-lg ${className}`}>
     <div className='absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent' />
   </div>
 );
@@ -34,7 +34,7 @@ export const MessageSkeletonBubble = ({ me = false, animated = false }) => (
     <Shimmer className="h-10 w-10 rounded-full flex-shrink-0" animated={animated} />
     <div className="flex flex-col gap-2 w-full max-w-[calc(100%-3.5rem)]">
       <Shimmer className="h-3 w-[40%] sm:w-24" animated={animated} />
-      <div className={`${animated ? me ? 'animate-pulse bg-main-500/50' : 'animate-pulse bg-slate-200/90' : me ? 'bg-main-500/30' : 'bg-slate-200/70'} rounded-2xl p-3`}>
+      <div className={`${animated ? me ? 'animate-pulse bg-main-500/50' : 'animate-pulse bg-slate-200/90 dark:bg-dark-border' : me ? 'bg-main-500/30' : 'bg-slate-200/70 dark:bg-dark-border/70'} rounded-2xl p-3`}>
         <Shimmer className="h-4 w-full max-w-[80%] mb-2" animated={animated} />
         <Shimmer className="h-4 w-full max-w-[60%]" animated={animated} />
       </div>
@@ -1013,23 +1013,23 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
             {activeThreadId && activeThread ? (
               <div className="flex flex-col w-full h-full">
                 {/* Mobile Header */}
-                <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white rounded-t-xl">
+                <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card rounded-t-xl">
                   <button
                     onClick={() => setShowConversationsSidebar(true)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input/50 transition-colors"
                     aria-label="Show conversations"
                   >
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                   </button>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">
+                    <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary truncate">
                       {activeThread.otherUser?.username || activeThread.title}
                     </h3>
                     {activeThread.otherUser?.email && (
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-500 dark:text-dark-text-secondary truncate">
                         {activeThread.otherUser.email}
                       </p>
                     )}
@@ -1037,10 +1037,10 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
 
                   <button
                     onClick={() => setShowAboutSidebar(true)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input/50 transition-colors"
                     aria-label="Show details"
                   >
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </button>
@@ -1072,16 +1072,16 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
             ) : (
               <div className="w-full">
                 {/* Empty State Header */}
-                <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white rounded-t-xl">
+                <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card rounded-t-xl">
                   <button
                     onClick={() => setShowConversationsSidebar(true)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input/50 transition-colors"
                   >
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                   </button>
-                  <h3 className="font-semibold text-gray-900">{t('messages') || 'Messages'}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary">{t('messages') || 'Messages'}</h3>
                 </div>
 
                 <EmptyState t={t} MessageSkeletonBubble={MessageSkeletonBubble} />
@@ -1145,8 +1145,8 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
 
 export function Panel({ children, cdCard, className }) {
   return (
-    <div className={`card-glow rounded-xl bg-white border border-slate-200 shadow-custom h-fit ${className}`}>
-      <div className={`h-fit min-h-[400px] rounded-xl bg-slate-50 p-6 ${cdCard}`}>{children}</div>
+    <div className={`card-glow rounded-xl bg-white dark:bg-dark-bg-card border border-slate-200 dark:border-dark-border shadow-custom h-fit ${className}`}>
+      <div className={`h-fit min-h-[400px] rounded-xl bg-slate-50 dark:bg-dark-bg-base p-6 ${cdCard}`}>{children}</div>
     </div>
   );
 }
@@ -1162,13 +1162,13 @@ export function AboutPanel({ about = {} }) {
       {/* Header Section */}
       <div className="mb-3 lg:mb-6 p-3">
         <div className="flex items-start justify-between gap-3 mb-2">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-dark-text-primary">
             {about.name || t('about_user')}
           </h2>
           <TopRatedBadge isTopRated={about.topRated} />
         </div>
         {about.email && (
-          <p className="text-sm text-gray-500 break-all">{about.email}</p>
+          <p className="text-sm text-gray-500 dark:text-dark-text-secondary break-all">{about.email}</p>
         )}
       </div>
 
@@ -1229,17 +1229,17 @@ export function AboutPanel({ about = {} }) {
 
 function InfoCard({ icon, label, value }) {
   return (
-    <div className='flex items-start gap-3 p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors'>
-      <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white rounded-lg border border-slate-200">
+    <div className='flex items-start gap-3 p-3 bg-slate-50/90 dark:bg-dark-bg-input/80 hover:bg-slate-100/80 dark:hover:bg-dark-bg-input/10 transition-colors duration-300'>
+      <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white/90 dark:bg-dark-bg-card/80 rounded-lg border border-slate-200/50 dark:border-dark-border/50 transition-colors duration-300">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <dt className='text-xs font-medium text-gray-500 uppercase tracking-wide mb-1'>
+        <dt className='text-xs font-medium text-gray-500 dark:text-dark-text-secondary uppercase tracking-wide mb-1'>
           {label}
         </dt>
         <dd
           title={typeof value === 'string' ? value : undefined}
-          className='text-sm font-semibold text-gray-900 break-words'
+          className='text-sm font-semibold text-gray-900 dark:text-dark-text-primary break-words'
         >
           {value || '—'}
         </dd>
@@ -1251,7 +1251,7 @@ function InfoCard({ icon, label, value }) {
 // Icon Components (using inline SVG for simplicity)
 function MessageIcon() {
   return (
-    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-blue-600 dark:text-main-400 dark:invert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
     </svg>
   );
@@ -1259,7 +1259,7 @@ function MessageIcon() {
 
 function CalendarIcon() {
   return (
-    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-green-600 dark:invert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
     </svg>
   );
@@ -1267,7 +1267,7 @@ function CalendarIcon() {
 
 function LanguageIcon() {
   return (
-    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-purple-600 dark:invert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
     </svg>
   );
@@ -1275,7 +1275,7 @@ function LanguageIcon() {
 
 function StarIcon() {
   return (
-    <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-yellow-600 dark:invert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
     </svg>
   );
@@ -1283,7 +1283,7 @@ function StarIcon() {
 
 function ChartIcon() {
   return (
-    <svg className="w-5 h-5 text-main-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-main-600 dark:text-main-400 dark:invert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
     </svg>
   );
@@ -1291,7 +1291,7 @@ function ChartIcon() {
 
 function CheckIcon() {
   return (
-    <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-teal-600 dark:invert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   );
@@ -1299,7 +1299,7 @@ function CheckIcon() {
 
 function UserIcon() {
   return (
-    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-gray-600 dark:text-dark-text-secondary dark:invert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
   );
@@ -1307,9 +1307,9 @@ function UserIcon() {
 // Empty State Component
 const EmptyState = ({ t, MessageSkeletonBubble }) => (
   <div className='flex-1 max-h-[540px] h-full flex flex-col items-center justify-center p-6 text-center'>
-    <Image src='/icons/chat-placeholder.png' alt='Start a conversation' width={200} height={200} />
-    <p className='text-gray-600 text-lg -mt-4 mb-1'>{t('placeholders.selectConversation')}</p>
-    <p className='text-gray-400 text-sm'>{t('placeholders.searchUsers')}</p>
+    <Image src='/icons/chat-placeholder.png' alt='Start a conversation' width={200} height={200} className='dark:invert' />
+    <p className='text-gray-600 dark:text-dark-text-secondary text-lg -mt-4 mb-1'>{t('placeholders.selectConversation')}</p>
+    <p className='text-gray-400 dark:text-dark-text-secondary text-sm'>{t('placeholders.searchUsers')}</p>
     <div className='w-full max-w-xl mt-8 space-y-4'>
       <MessageSkeletonBubble />
       <MessageSkeletonBubble me />
@@ -1329,7 +1329,7 @@ const Sidebar = ({ isOpen, onClose, title, children, position = 'left' }) => {
 
       {/* Sidebar Panel */}
       <div
-        className={`fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen
+        className={`fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white dark:bg-dark-bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen
           ? 'translate-x-0'
           : position === 'left'
             ? '-translate-x-full'
@@ -1337,14 +1337,14 @@ const Sidebar = ({ isOpen, onClose, title, children, position = 'left' }) => {
           }`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card sticky top-0 z-10">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary">{title}</h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input/50 transition-colors"
             aria-label="Close sidebar"
           >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -1364,8 +1364,8 @@ const Sidebar = ({ isOpen, onClose, title, children, position = 'left' }) => {
 
 function Rating({ value }) {
   return (
-    <div className='flex items-center gap-2 text-slate-500'>
-      <Star size={16} className='text-yellow-500 fill-yellow-500' />
+    <div className='flex items-center gap-2 text-slate-500 dark:text-dark-text-secondary'>
+      <Star size={16} className='text-yellow-500 fill-yellow-500 dark:invert' />
       <span className='text-sm'>{value}</span>
     </div>
   );

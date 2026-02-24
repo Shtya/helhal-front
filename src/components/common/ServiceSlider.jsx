@@ -17,8 +17,21 @@ import ErrorState from './ErrorState';
 /* ---------- small states ---------- */
 function EmptyState({ onReset }) {
   return (
-    <div className='col-span-full grid place-items-center rounded-2xl border border-slate-200 bg-white p-10 text-slate-600'>
-      <NoResults onClick={onReset} buttonText='Reset' mainText='No services found.' additionalText='Try again later.' />
+    <div className='col-span-full grid place-items-center rounded-2xl 
+                    border border-slate-200 
+                    bg-white 
+                    p-10 
+                    text-slate-600
+                    dark:bg-dark-bg-card
+                    dark:border-dark-border
+                    dark:text-dark-text-secondary
+                    transition-colors duration-300'>
+      <NoResults
+        onClick={onReset}
+        buttonText='Reset'
+        mainText='No services found.'
+        additionalText='Try again later.'
+      />
     </div>
   );
 }
@@ -69,18 +82,70 @@ export default function ServiceSlider({ title, className, swiperConfig = swiperS
   // --- header (shared) ---
   const Header = (
     <div className='mb-8 flex items-center justify-between'>
-      <h1 className='text-3xl max-md:text-xl font-[900]'>{title}</h1>
+      <h1 className='text-3xl max-md:text-xl font-[900] dark:text-dark-text-primary'>
+        {title}
+      </h1>
 
       <div className='flex items-center gap-2'>
-        <button className='rtl:rotate-180 cards-prev2 cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 backdrop-blur transition hover:bg-slate-200 duration-300 border border-slate-200' aria-label='Previous'>
-          <svg width='18' height='18' viewBox='0 0 24 24' fill='none'>
-            <path d='M15 6l-6 6 6 6' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+        <button
+          className='rtl:rotate-180 cards-prev2 cursor-pointer inline-flex h-9 w-9 items-center justify-center 
+                   rounded-full 
+                   bg-white/10 
+                   backdrop-blur 
+                   border border-slate-200
+                   transition duration-300
+                   hover:bg-slate-200
+                   dark:bg-dark-bg-card
+                   dark:border-dark-border
+                   dark:hover:bg-dark-bg-input
+                   dark:text-dark-text-primary'
+          aria-label='Previous'
+        >
+          <svg
+            width='18'
+            height='18'
+            viewBox='0 0 24 24'
+            fill='none'
+            className=''
+          >
+            <path
+              d='M15 6l-6 6 6 6'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
           </svg>
         </button>
 
-        <button className='rtl:rotate-180 cards-next2 cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 backdrop-blur transition hover:bg-slate-200 duration-300 border border-slate-200' aria-label='Next'>
-          <svg width='18' height='18' viewBox='0 0 24 24' fill='none'>
-            <path d='M9 6l6 6-6 6' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+        <button
+          className='rtl:rotate-180 cards-next2 cursor-pointer inline-flex h-9 w-9 items-center justify-center 
+                   rounded-full 
+                   bg-white/10 
+                   backdrop-blur 
+                   border border-slate-200
+                   transition duration-300
+                   hover:bg-slate-200
+                   dark:bg-dark-bg-card
+                   dark:border-dark-border
+                   dark:hover:bg-dark-bg-input
+                   dark:text-dark-text-primary'
+          aria-label='Next'
+        >
+          <svg
+            width='18'
+            height='18'
+            viewBox='0 0 24 24'
+            fill='none'
+            className=''
+          >
+            <path
+              d='M9 6l6 6-6 6'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
           </svg>
         </button>
       </div>

@@ -30,20 +30,27 @@ export default function InputDate({ cnLabel, cnInput, className, label, placehol
     }
   }, []);
 
-  return (
-    <div className={`w-full ${className}`}>
-      {label && <label className={`mb-1 block text-sm font-medium text-gray-600 ${cnLabel}`}>{label}</label>}
+  <div
+    className={` ${cnInput} relative flex items-center rounded-md h-[40px] px-2 py-2 text-sm gap-1 
+  transition-colors duration-300 border 
+  ${value
+        ? 'border-main-600'
+        : 'border-gray-300 dark:border-dark-border'
+      } 
+  bg-white dark:bg-dark-bg-input
+  focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}
+  >
+    <span className='flex-none text-slate-400 dark:text-dark-text-secondary'>
+      <Image src={'/icons/calendar.svg'} alt='icon' width={20} height={20} className="dark:invert-[0.2]" />
+    </span>
 
-      <div
-        className={` ${cnInput} relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1 
-        transition border ${value ? 'border-main-600' : 'border-gray-300'} focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}>
-        <span className='flex-none text-slate-400'>
-          <Image src={'/icons/calendar.svg'} alt='icon' width={20} height={20} />
-        </span>
-
-        {/* ✅ Flatpickr input */}
-        <input ref={inputRef} type='text' placeholder={placeholder} value={value} readOnly className='w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400 cursor-pointer' />
-      </div>
-    </div>
-  );
+    <input
+      ref={inputRef}
+      type='text'
+      placeholder={placeholder}
+      value={value}
+      readOnly
+      className='w-full bg-transparent outline-none text-slate-700 dark:text-dark-text-primary placeholder:text-gray-400 dark:placeholder:text-dark-text-secondary cursor-pointer transition-colors duration-300'
+    />
+  </div>
 }

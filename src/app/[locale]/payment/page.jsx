@@ -36,23 +36,23 @@ const initials = name =>
 // ---- Skeleton Loader (UI only) ----
 function PaymentSkeleton() {
   return (
-    <div className='rounded-2xl border border-slate-200 bg-white p-8 shadow-lg'>
-      <div className='mb-6 h-6 w-2/3 animate-pulse rounded bg-slate-200' />
+    <div className='rounded-2xl border border-slate-200 bg-white p-8 shadow-lg dark:bg-dark-bg-card dark:border-dark-border'>
+      <div className='mb-6 h-6 w-2/3 animate-pulse rounded bg-slate-200 dark:bg-dark-border' />
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
         {[0, 1].map(i => (
           <div key={i} className='flex items-center gap-3'>
-            <div className='h-10 w-10 animate-pulse rounded-full bg-slate-200' />
+            <div className='h-10 w-10 animate-pulse rounded-full bg-slate-200 dark:bg-dark-border' />
             <div className='space-y-2'>
-              <div className='h-3 w-24 animate-pulse rounded bg-slate-200' />
-              <div className='h-4 w-32 animate-pulse rounded bg-slate-200' />
+              <div className='h-3 w-24 animate-pulse rounded bg-slate-200 dark:bg-dark-border' />
+              <div className='h-4 w-32 animate-pulse rounded bg-slate-200 dark:bg-dark-border' />
             </div>
           </div>
         ))}
       </div>
-      <div className='my-6 h-px w-full bg-slate-100' />
+      <div className='my-6 h-px w-full bg-slate-100 dark:bg-dark-border' />
       <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-        <div className='h-11 animate-pulse rounded-xl bg-slate-200' />
-        <div className='h-11 animate-pulse rounded-xl bg-slate-200' />
+        <div className='h-11 animate-pulse rounded-xl bg-slate-200 dark:bg-dark-border' />
+        <div className='h-11 animate-pulse rounded-xl bg-slate-200 dark:bg-dark-border' />
       </div>
     </div>
   );
@@ -296,14 +296,16 @@ export default function PaymentPage() {
     }
   }, [loading]);
 
-  if (loading) return <div className="container !py-12"><PaymentSkeleton /></div>;
+  if (loading) return <div className="container !py-12 dark:bg-dark-bg-base"><PaymentSkeleton /></div>;
 
   return (
-    <div className='container !py-12'>
-      <h1 className='mb-2 text-center text-3xl font-extrabold tracking-tight'>
-        <span className='bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent'>{t('payNow')}</span>
+    <div className='container !py-12 dark:bg-dark-bg-base'>
+      <h1 className="mb-2 text-center text-3xl font-extrabold tracking-tight">
+        <span className="bg-gradient-to-r from-slate-900 to-slate-600 dark:from-dark-text-primary dark:to-dark-text-secondary bg-clip-text text-transparent">
+          {t('payNow')}
+        </span>
       </h1>
-      <p className='mb-8 text-center text-sm text-slate-500'>{t('subtitle')}</p>
+      <p className='mb-8 text-center text-sm text-slate-500 dark:text-dark-text-secondary'>{t('subtitle')}</p>
 
       {order ? (
         <div className='max-w-6xl mx-auto'>
@@ -311,34 +313,34 @@ export default function PaymentPage() {
 
             {/* Left Column - Invoice Summary */}
             <div className='lg:col-span-1'>
-              <div className='sticky top-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg'>
-                <h2 className='text-lg font-bold text-slate-900 mb-4'>{t('orderSummary')}</h2>
+              <div className='sticky top-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-lg dark:bg-dark-bg-card dark:border-dark-border'>
+                <h2 className='text-lg font-bold text-slate-900 mb-4 dark:text-dark-text-primary'>{t('orderSummary')}</h2>
 
-                <div className='mb-4 pb-4 border-b border-slate-200'>
-                  <h3 className='font-semibold text-slate-800 mb-2'>{order.title}</h3>
+                <div className='mb-4 pb-4 border-b border-slate-200 dark:border-dark-border'>
+                  <h3 className='font-semibold text-slate-800 mb-2 dark:text-dark-text-primary'>{order.title}</h3>
                 </div>
 
                 {/* Invoice Details */}
                 {invoice && (
-                  <div className='rounded-xl bg-slate-50 p-4 border border-slate-200'>
-                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200/60">
+                  <div className='rounded-xl bg-slate-50 p-4 border border-slate-200 dark:bg-dark-bg-input dark:border-dark-border'>
+                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200/60 dark:border-dark-border">
                       <FileText className='h-4 w-4 text-main-600' />
-                      <span className='text-sm font-bold text-slate-800'>{t('invoice', { number: invoice.invoiceNumber })}</span>
+                      <span className='text-sm font-bold text-slate-800 dark:text-dark-text-primary'>{t('invoice', { number: invoice.invoiceNumber })}</span>
                     </div>
 
                     <div className="space-y-3 mb-4">
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-500">{t('subtotal')}</span>
-                        <span className="font-medium text-slate-700">{formatMoney(Number(invoice.subtotal), currency)}</span>
+                        <span className="text-slate-500 dark:text-dark-text-secondary">{t('subtotal')}</span>
+                        <span className="font-medium text-slate-700 dark:text-dark-text-primary">{formatMoney(Number(invoice.subtotal), currency)}</span>
                       </div>
 
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-slate-500">{t('serviceFee')}</span>
-                        <span className="font-medium text-slate-700">{formatMoney(Number(invoice.platformPercent), currency)}</span>
+                        <span className="text-slate-500 dark:text-dark-text-secondary">{t('serviceFee')}</span>
+                        <span className="font-medium text-slate-700 dark:text-dark-text-primary">{formatMoney(Number(invoice.platformPercent), currency)}</span>
                       </div>
 
-                      <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-100">
-                        <span className="text-slate-500">{t('status')}</span>
+                      <div className="flex justify-between items-center text-sm pt-2 border-t border-slate-100 dark:border-dark-border">
+                        <span className="text-slate-500 dark:text-dark-text-secondary">{t('status')}</span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${invoice.paymentStatus === 'pending'
                             ? 'bg-amber-100 text-amber-700'
@@ -353,7 +355,7 @@ export default function PaymentPage() {
                     </div>
 
                     <div className="flex justify-between items-center pt-3 border-t-2 border-dashed border-slate-200">
-                      <span className="font-bold text-slate-900">{t('total')}</span>
+                      <span className="font-bold text-slate-900 dark:text-dark-text-primary">{t('total')}</span>
                       <div className="text-right">
                         <span className="text-xl font-black text-main-600">
                           {formatMoney(Number(invoice.totalAmount), currency)}
@@ -370,8 +372,8 @@ export default function PaymentPage() {
 
             {/* Right Column - Billing Form */}
             <div className='lg:col-span-2'>
-              <div className='rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-lg'>
-                <h2 className="text-xl font-bold mb-6 text-slate-900">{t('billingInformation')}</h2>
+              <div className='rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-lg dark:bg-dark-bg-card dark:border-dark-border'>
+                <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-dark-text-primary">{t('billingInformation')}</h2>
 
                 <div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -478,9 +480,9 @@ export default function PaymentPage() {
           </div>
         </div>
       ) : (
-        <div className='rounded-2xl border border-slate-200 bg-slate-50 p-10 text-center'>
-          <AlertCircle className='mx-auto mb-3 h-10 w-10 text-slate-500' />
-          <p className='text-slate-600'>{t('noOrderFound')}</p>
+        <div className='rounded-2xl border border-slate-200 bg-slate-50 p-10 text-center dark:bg-dark-bg-input dark:border-dark-border'>
+          <AlertCircle className='mx-auto mb-3 h-10 w-10 text-slate-500 dark:text-dark-text-secondary' />
+          <p className='text-slate-600 dark:text-dark-text-secondary'>{t('noOrderFound')}</p>
         </div>
       )}
 
@@ -494,7 +496,7 @@ export default function PaymentPage() {
           }}
         >
           <div className="space-y-2">
-            <p className="text-gray-700 leading-relaxed">{t('termsMessage')}</p>
+            <p className="text-gray-700 leading-relaxed dark:text-dark-text-secondary">{t('termsMessage')}</p>
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -503,13 +505,13 @@ export default function PaymentPage() {
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
                 className="h-4 w-4 text-main-600 border-gray-300 rounded"
               />
-              <label htmlFor="acceptTerms" className="text-sm text-gray-700">
-                {t('acceptTerms')} <Link href='/terms' target="_blank" className='text-main-600 underline'>{t("terms")}</Link>
+              <label htmlFor="acceptTerms" className="text-sm text-gray-700 dark:text-dark-text-secondary">
+                {t('acceptTerms')} <Link href='/terms' target="_blank" className='text-main-600 underline dark:text-main-400'>{t("terms")}</Link>
               </label>
             </div>
             {/* Contact Seller */}
 
-            <div className="mt-4 p-3 rounded-lg bg-gray-50 border border-gray-200 ">
+            <div className="mt-4 p-3 rounded-lg bg-gray-50 border border-gray-200 dark:bg-dark-bg-input dark:border-dark-border ">
               <Link
                 href={`/chat?userId=${order?.sellerId || ''}`}
                 className="flex items-center justify-between group"

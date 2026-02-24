@@ -165,10 +165,14 @@ export default function AdminServicesDashboard() {
       label: t('columns.image'),
       render: v =>
         v.gallery && v.gallery.length > 0 ? (
-          <Img src={v.gallery[0].url} alt='Service' className='w-10 h-10 rounded-md object-cover' />
+          <Img
+            src={v.gallery[0].url}
+            alt='Service'
+            className='w-10 h-10 rounded-md object-cover'
+          />
         ) : (
-          <div className='w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center'>
-            <Folder size={16} className='text-slate-400' />
+          <div className='w-10 h-10 rounded-md bg-slate-200 dark:bg-dark-bg-card flex items-center justify-center'>
+            <Folder size={16} className='text-slate-400 dark:text-dark-text-secondary' />
           </div>
         ),
     },
@@ -177,7 +181,7 @@ export default function AdminServicesDashboard() {
       label: t('columns.title'),
       render: v => (
         <span
-          className="max-w-[200px] truncate block"
+          className="max-w-[200px] truncate block text-slate-700 dark:text-dark-text-primary"
           title={v.title}
         >
           {v.title}
@@ -189,7 +193,7 @@ export default function AdminServicesDashboard() {
       label: t('columns.slug'),
       render: v => (
         <span
-          className="max-w-[200px] truncate block"
+          className="max-w-[200px] truncate block text-slate-700 dark:text-dark-text-primary"
           title={v.slug}
         >
           {v.slug}
@@ -213,17 +217,23 @@ export default function AdminServicesDashboard() {
     {
       key: 'seller',
       label: t('columns.seller'),
-      render: v => v.seller?.username || '—',
+      render: v => <span className='text-slate-700 dark:text-dark-text-primary'>{v.seller?.username || '—'}</span>,
     },
     {
       key: 'performance',
       label: t('columns.performance'),
       render: v => (
         <div className='flex gap-2'>
-          <span className='text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full' title={t('columns.clicks')}>
+          <span
+            className='text-xs bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 px-2 py-1 rounded-full'
+            title={t('columns.clicks')}
+          >
             {v.clicks || 0} {t('columns.clicks')}
           </span>
-          <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full' title={t('columns.orders')}>
+          <span
+            className='text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-1 rounded-full'
+            title={t('columns.orders')}
+          >
             {v.ordersCount || 0} {t('columns.orders')}
           </span>
         </div>
@@ -231,7 +241,6 @@ export default function AdminServicesDashboard() {
     },
     { key: 'created_at', label: t('columns.created'), type: 'date' },
   ], [t]);
-
 
   const Actions = ({ row }) => {
     const isPopular = row.popular;
@@ -312,7 +321,8 @@ export default function AdminServicesDashboard() {
 
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
-        <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
+        <div className="bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden
+                dark:bg-dark-bg-card dark:border-dark-border dark:ring-dark-border">
           <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
@@ -765,7 +775,8 @@ function PopularForm({ service, onCancel, onSaved }) {
     <div className="flex flex-col gap-4">
       {/* Upload Button + Preview */}
       <div className="flex items-center gap-3">
-        <label className="relative inline-flex items-center justify-center h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm hover:bg-slate-50 cursor-pointer">
+        <label className="relative inline-flex items-center justify-center h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm hover:bg-slate-50 cursor-pointer
+                        dark:border-dark-border dark:bg-dark-bg-input dark:hover:bg-dark-bg-card dark:text-dark-text-primary">
           <input
             type="file"
             accept="image/*"
@@ -782,21 +793,21 @@ function PopularForm({ service, onCancel, onSaved }) {
           <img
             src={iconUrl.startsWith("blob:") ? iconUrl : resolveUrl(iconUrl)}
             alt="Popular icon"
-            className="h-10 w-10 rounded-lg border border-slate-200 object-contain"
+            className="h-10 w-10 rounded-lg border border-slate-200 object-contain dark:border-dark-border"
           />
         ) : (
-          <div className="grid h-10 w-10 place-items-center rounded-lg border border-dashed border-slate-300 text-slate-400">
+          <div className="grid h-10 w-10 place-items-center rounded-lg border border-dashed border-slate-300 text-slate-400 dark:border-dark-border dark:text-dark-text-secondary">
             <ImageIcon size={16} />
           </div>
         )}
       </div>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-500 dark:text-dark-text-secondary">
         {t('modal.chooseFileHint')}
       </p>
 
       {/* Footer Actions */}
-      <div className="flex justify-end gap-3 border-t pt-4">
+      <div className="flex justify-end gap-3 border-t pt-4 dark:border-dark-border">
         <Button
           type="button"
           color="secondary"

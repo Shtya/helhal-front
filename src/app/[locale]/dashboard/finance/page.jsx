@@ -32,18 +32,36 @@ const formatMoney = (n, currency = 'SAR') => {
 const getStatusStyles = (status) => {
   switch (status) {
     case 'completed':
-      return 'bg-green-50 text-green-700 border-green-200'; // Success green
+      return `
+        bg-green-50 text-green-700 border-green-200
+        dark:bg-green-500/15 dark:text-green-400 dark:border-green-500/30
+      `;
+
     case 'pending':
-      return 'bg-orange-50 text-orange-700 border-orange-200'; // Warning orange
+      return `
+        bg-orange-50 text-orange-700 border-orange-200
+        dark:bg-orange-500/15 dark:text-orange-400 dark:border-orange-500/30
+      `;
+
     case 'failed':
-      return 'bg-red-50 text-red-700 border-red-200'; // Danger red
+      return `
+        bg-red-50 text-red-700 border-red-200
+        dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/30
+      `;
+
     case 'refunded':
-      return 'bg-blue-50 text-blue-700 border-blue-200'; // Info blue
+      return `
+        bg-blue-50 text-blue-700 border-blue-200
+        dark:bg-blue-500/15 dark:text-blue-400 dark:border-blue-500/30
+      `;
+
     default:
-      return 'bg-slate-50 text-slate-700 border-slate-200';
+      return `
+        bg-slate-50 text-slate-700 border-slate-200
+        dark:bg-dark-bg-card dark:text-dark-text-secondary dark:border-dark-border
+      `;
   }
 };
-
 export default function WithdrawManagement() {
   const tBilling = useTranslations('MyBilling.billingHistory');
   const t = useTranslations('Dashboard.finance');
@@ -154,19 +172,31 @@ export default function WithdrawManagement() {
 
   const columns = useMemo(
     () => [
-      { key: 'id', title: t('columns.id'), render: v => <span className='text-slate-700'>{v.slice(0, 8)}…</span> },
+      {
+        key: 'id',
+        title: t('columns.id'),
+        render: v => (
+          <span className="text-slate-700 dark:text-dark-text-primary">
+            {v.slice(0, 8)}…
+          </span>
+        ),
+      },
       {
         key: 'type',
         title: t('columns.type'),
         render: v => (
-          <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${v === 'earning'
-            ? 'bg-main-100 text-main-800'
-            : v === 'withdrawal'
-              ? 'bg-amber-100 text-amber-800'
-              : v === 'refund'
-                ? 'bg-sky-100 text-sky-800'
-                : 'bg-slate-100 text-slate-700'
-            }`}>
+          <span
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs
+            ${v === 'earning'
+                ? 'bg-main-100 text-main-800'
+                : v === 'withdrawal'
+                  ? 'bg-amber-100 text-amber-800'
+                  : v === 'refund'
+                    ? 'bg-sky-100 text-sky-800'
+                    : 'bg-slate-100 text-slate-700'
+              }
+            dark:bg-dark-bg-card dark:text-dark-text-primary dark:border dark:border-dark-border`}
+          >
             {v}
           </span>
         ),
@@ -175,9 +205,11 @@ export default function WithdrawManagement() {
         key: 'amount',
         title: t('columns.amount'),
         render: v => (
-          <span className={`font-medium ${Number(v) < 0 ? 'text-amber-700' : 'text-main-700'}`}>
+          <span
+            className={`font-medium ${Number(v) < 0 ? 'text-amber-700' : 'text-main-700'
+              } dark:text-dark-text-primary`}
+          >
             {formatMoney(Number(v))}
-            {/* {Number(v) < 0 ? t('debit') : ''} */}
           </span>
         ),
       },
@@ -190,16 +222,34 @@ export default function WithdrawManagement() {
           const styleClasses = getStatusStyles(status);
 
           return (
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${styleClasses}`}>
+            <span
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${styleClasses}`}
+            >
               {localizedLabel}
             </span>
           );
-        }
+        },
       },
-      { key: 'description', title: t('columns.description'), render: v => <span className='text-slate-600'>{v || '—'}</span> },
-      { key: 'created_at', title: t('columns.date'), render: v => new Date(v).toLocaleString() },
+      {
+        key: 'description',
+        title: t('columns.description'),
+        render: v => (
+          <span className="text-slate-600 dark:text-dark-text-primary">
+            {v || '—'}
+          </span>
+        ),
+      },
+      {
+        key: 'created_at',
+        title: t('columns.date'),
+        render: v => (
+          <span className="dark:text-dark-text-primary">
+            {new Date(v).toLocaleString()}
+          </span>
+        ),
+      },
     ],
-    [t],
+    [t]
   );
 
   return (
@@ -249,25 +299,28 @@ export default function WithdrawManagement() {
 
 function KpiCard({ icon: Icon, label, value, hint, currency, iconBg = 'bg-main-50 text-main-600' }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-4 sm:p-6 flex flex-col justify-between">
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition p-4 sm:p-6 flex flex-col justify-between
+                    dark:border-dark-border dark:bg-dark-bg-card">
       {/* Header */}
       <div className="flex justify-between items-start">
-        <p className="text-sm sm:text-base md:text-lg text-gray-600 font-medium">{label}</p>
+        <p className="text-sm sm:text-base md:text-lg text-gray-600 font-medium dark:text-dark-text-secondary">{label}</p>
         <span className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full ${iconBg}`}>
-          {Icon && <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
+          {Icon && <Icon className="w-4 h-4 sm:w-5 sm:h-5 dark:text-dark-text-primary" />}
         </span>
       </div>
 
       {/* Value */}
       <div className="mt-4">
-        <p className="text-2xl xl:text-3xl 2xl:text-3xl font-extrabold text-gray-900">
+        <p className="text-2xl xl:text-3xl 2xl:text-3xl font-extrabold text-gray-900 dark:text-dark-text-primary">
           {value}
-          {currency ? <span className="text-base sm:text-lg md:text-xl font-semibold ml-1">{currency}</span> : null}
+          {currency ? <span className="text-base sm:text-lg md:text-xl font-semibold ml-1 dark:text-dark-text-primary">{currency}</span> : null}
         </p>
       </div>
 
       {/* Hint/Description */}
-      {hint ? <p className="mt-2 text-xs sm:text-sm md:text-base font-[600] text-gray-700">{hint}</p> : null}
+      {hint ? (
+        <p className="mt-2 text-xs sm:text-sm md:text-base font-[600] text-gray-700 dark:text-dark-text-secondary">{hint}</p>
+      ) : null}
     </div>
   );
 }
@@ -285,8 +338,19 @@ function MiniStat({ label, value }) {
 
 function GlassCard({ children, className = '', gradient = 'from-sky-400 via-indigo-400 to-violet-500' }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={` border border-slate-200 relative rounded-2xl bg-white/90 ring-1 ring-slate-200 p-5 sm:p-6 ${className}`}>
-      <div className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`} style={{ border: '2px solid transparent' }} />
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`
+        relative rounded-2xl border border-slate-200 bg-white/90 ring-1 ring-slate-200 p-5 sm:p-6
+        dark:border-dark-border dark:bg-dark-bg-card dark:ring-dark-border
+        ${className}
+      `}
+    >
+      <div
+        className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`}
+        style={{ border: '2px solid transparent' }}
+      />
       <div className={`absolute -inset-px rounded-2xl ${gradient}`} />
       <div className='relative'>{children}</div>
     </motion.div>

@@ -178,9 +178,9 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
 
   const tChat = useTranslations('Chat');
   const Trigger = (
-    <button type='button' onClick={toggleModal} aria-label={tChat('attachFiles')} className={[' border-slate-200 text-slate-700 ', ' text-[13px] font-medium transition-colors', 'focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60', className || ''].join(' ')}>
-      <span className='grid h-8 w-8 place-items-center rounded-full bg-slate-100'>
-        <Paperclip size={14} />
+    <button type='button' onClick={toggleModal} aria-label={tChat('attachFiles')} className={[' border-slate-200 dark:border-dark-border text-slate-700 dark:text-dark-text-primary ', ' text-[13px] font-medium transition-colors', 'focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60', className || ''].join(' ')}>
+      <span className='grid h-8 w-8 place-items-center rounded-full bg-slate-100 dark:bg-dark-bg-card'>
+        <Paperclip size={14} className='dark:text-dark-text-secondary' />
       </span>
       {selectedCount > 0 && <span className='ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-main-500 px-1 text-[11px] font-semibold text-white'>{selectedCount}</span>}
     </button>
@@ -188,23 +188,23 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
 
   const modalContent = (
     <div className='fixed inset-0 z-50 bg-black/30 backdrop-blur-[2px] flex items-end sm:items-center justify-center' onClick={e => e.target === e.currentTarget && toggleModal()}>
-      <div className='w-full max-w-[720px] sm:rounded-xl sm:my-6 bg-white shadow-xl'>
+      <div className='w-full max-w-[720px] sm:rounded-xl sm:my-6 bg-white dark:bg-dark-bg-card shadow-xl'>
         {/* header */}
-        <div className='flex items-center justify-between px-4 py-3 border-b'>
-          <h3 className='text-sm font-semibold'>{tChat('yourFiles')}</h3>
-          <label className='relative inline-flex items-center gap-2 text-[13px] font-medium cursor-pointer'>
+        <div className='flex items-center justify-between px-4 py-3 border-b dark:border-dark-border'>
+          <h3 className='text-sm font-semibold dark:text-dark-text-primary'>{tChat('yourFiles')}</h3>
+          <label className='relative inline-flex items-center gap-2 text-[13px] font-medium cursor-pointer dark:text-dark-text-primary'>
             <input type='file' className='sr-only' multiple onChange={handleFileChange} disabled={uploading || loading} />
-            <span className='grid h-8 w-8 place-items-center rounded-md border border-slate-200 hover:bg-slate-50 transition'>{uploading || loading ? <FaSpinner className='animate-spin h-4 w-4' /> : <FiUpload className='h-4 w-4' />}</span>
+            <span className='grid h-8 w-8 place-items-center rounded-md border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-dark-bg-input transition'>{uploading || loading ? <FaSpinner className='animate-spin h-4 w-4' /> : <FiUpload className='h-4 w-4' />}</span>
             <span>{tChat('upload')}</span>
           </label>
         </div>
 
         {/* SEARCH BAR */}
-        <div className='p-3 border-b'>
+        <div className='p-3 border-b dark:border-dark-border'>
           <input
             value={query}
             onChange={e => onSearch(e.target.value)}
-            className='w-full bg-slate-100 text-sm p-2 rounded-md'
+            className='w-full bg-slate-100 dark:bg-dark-bg-input dark:text-dark-text-primary dark:placeholder-dark-text-secondary text-sm p-2 rounded-md'
             placeholder={tChat('fileSearch')}
           />
         </div>
@@ -213,12 +213,12 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
         <div className='max-h-[65vh] overflow-auto p-3 sm:p-4'>
           <div className='grid grid-cols-3 sm:grid-cols-4 gap-3'>
             {loading && Array.from({ length: 8 }).map((_, i) => (
-              <div key={`skeleton-${i}`} className='relative rounded-lg border border-slate-100 p-2 bg-white'>
+              <div key={`skeleton-${i}`} className='relative rounded-lg border border-slate-100 dark:border-dark-border p-2 bg-white dark:bg-dark-bg-input'>
                 {/* File/Image Square Placeholder */}
-                <div className='mx-auto aspect-square w-[88px] bg-slate-100 rounded animate-pulse' />
+                <div className='mx-auto aspect-square w-[88px] bg-slate-100 dark:bg-dark-border rounded animate-pulse' />
 
                 {/* Filename Text Placeholder */}
-                <div className='mt-2 h-3 w-3/4 mx-auto bg-slate-100 rounded animate-pulse' />
+                <div className='mt-2 h-3 w-3/4 mx-auto bg-slate-100 dark:bg-dark-border rounded animate-pulse' />
               </div>
             ))}
 
@@ -244,8 +244,8 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
                   onClick={() => handleFileSelect(asset)}
                   className={[
                     'relative group cursor-pointer rounded-lg border p-2',
-                    'border-slate-200 hover:border-main-400 transition',
-                    isSelected ? 'ring-2 ring-main-500/60 border-main-300 bg-main-50/40' : 'bg-white'
+                    'border-slate-200 dark:border-dark-border hover:border-main-400 dark:hover:border-main-500 transition',
+                    isSelected ? 'ring-2 ring-main-500/60 border-main-300 bg-main-50/40 dark:bg-main-900/20' : 'bg-white dark:bg-dark-bg-input'
                   ].join(' ')}
                 >
                   {isImage ? (
@@ -256,11 +256,11 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
                       loading='lazy'
                     />
                   ) : (
-                    <div className='mx-auto aspect-square w-[88px] grid place-items-center rounded bg-slate-50'>
+                    <div className='mx-auto aspect-square w-[88px] grid place-items-center rounded bg-slate-50 dark:bg-dark-bg-input'>
                       {getFileIcon(asset.mimeType)}
                     </div>
                   )}
-                  <p className='mt-1.5 text-[11px] text-slate-600 text-center truncate' title={asset.filename}>
+                  <p className='mt-1.5 text-[11px] text-slate-600 dark:text-dark-text-secondary text-center truncate' title={asset.filename}>
                     {asset.filename}
                   </p>
                 </div>
@@ -288,11 +288,11 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
           />
         </div>
         {/* footer */}
-        <div className='flex items-center justify-between gap-2 px-4 py-3 border-t'>
-          <button type='button' onClick={toggleModal} className='text-[13px] px-3 py-1.5 rounded-md border border-slate-200 hover:bg-slate-50'>
+        <div className='flex items-center justify-between gap-2 px-4 py-3 border-t dark:border-dark-border'>
+          <button type='button' onClick={toggleModal} className='text-[13px] px-3 py-1.5 rounded-md border border-slate-200 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-dark-bg-input dark:text-dark-text-primary'>
             {tChat('close')}
           </button>
-          <button onClick={handleOkClick} disabled={!selectedCount} className={['text-[13px] px-3 py-1.5 rounded-md transition', selectedCount ? 'bg-main-600 text-white hover:bg-main-700' : 'bg-slate-200 text-slate-500 cursor-not-allowed'].join(' ')}>
+          <button onClick={handleOkClick} disabled={!selectedCount} className={['text-[13px] px-3 py-1.5 rounded-md transition', selectedCount ? 'bg-main-600 text-white hover:bg-main-700' : 'bg-slate-200 dark:bg-dark-border text-slate-500 dark:text-dark-text-secondary cursor-not-allowed'].join(' ')}>
             {tChat('useFiles', { count: selectedCount || 0 })}
           </button>
         </div>
@@ -308,12 +308,12 @@ export function AttachFilesButton({ hiddenFiles, className, onChange }) {
         {!hiddenFiles && selectedFiles.length > 0 && (
           <ul className='flex flex-wrap items-center gap-1.5'>
             {selectedFiles.map(f => (
-              <li key={f.id} className='flex items-center gap-1.5 bg-slate-100 px-2 py-1 rounded-full text-[12px]'>
+              <li key={f.id} className='flex items-center gap-1.5 bg-slate-100 dark:bg-dark-bg-input px-2 py-1 rounded-full text-[12px] dark:text-dark-text-primary'>
                 <span className='truncate max-w-[120px]' title={f.filename}>
                   {f.filename}
                 </span>
-                <button onClick={() => setSelectedFiles(prev => prev.filter(x => x.id !== f.id))} className='text-slate-500 hover:text-red-600' aria-label={`Remove ${f.filename}`}>
-                  <FiX className='w-3 h-3' />
+                <button onClick={() => setSelectedFiles(prev => prev.filter(x => x.id !== f.id))} className='text-slate-500 hover:text-red-600 dark:text-dark-text-secondary dark:hover:text-red-400' aria-label={`Remove ${f.filename}`}>
+                  <FiX className='w-3 h-3 dark:invert' />
                 </button>
               </li>
             ))}

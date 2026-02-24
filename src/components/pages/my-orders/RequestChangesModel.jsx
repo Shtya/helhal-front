@@ -89,7 +89,7 @@ export default function RequestChangesModel({ open, onClose, onSend, selectedRow
         <Modal title={t('title')} onClose={onClose} open={open} className="!z-[106]">
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                    <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                         {t('message')} *
                     </label>
                     <Textarea

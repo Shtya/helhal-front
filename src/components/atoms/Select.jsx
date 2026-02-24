@@ -159,7 +159,12 @@ const Select = forwardRef(({ firstOne, onOpenToggle, isVirtualized, VirtualizeWi
   const rowRenderer = ({ index, key, style }) => {
     const opt = internalOptions[index];
     return (
-      <li style={style} key={opt.id} onClick={() => handleSelect(opt)} className={`cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white'}`}>
+      <li
+        style={style}
+        key={opt.id}
+        onClick={() => handleSelect(opt)}
+        className={`cursor-pointer px-4 py-2 text-sm transition dark:text-dark-text-primary ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400 hover:text-white'}`}
+      >
         {opt.name}
       </li>
     )
@@ -197,7 +202,7 @@ const Select = forwardRef(({ firstOne, onOpenToggle, isVirtualized, VirtualizeWi
         }}>
         {showSearch && <InputSearch showAction={false} className='menu-search' onChange={onFilter} />}
         <div
-          className={`${cnMenu || ''} overflow-auto ${showSearch ? 'rounded-b-md' : 'rounded-md'} border border-gray-200 bg-white shadow-lg transition-all duration-150 ease-out origin-top-left max-h-[350px]`}
+          className={`${cnMenu || ''} overflow-auto ${showSearch ? 'rounded-b-md' : 'rounded-md'} border border-gray-200 bg-white shadow-lg transition-all duration-150 ease-out origin-top-left max-h-[350px] dark:bg-dark-bg-card dark:border-dark-border dark:shadow-none`}
           style={{
             transformOrigin: menuStyle.transformOrigin,
             maxHeight: menuStyle.maxHeight,
@@ -205,17 +210,15 @@ const Select = forwardRef(({ firstOne, onOpenToggle, isVirtualized, VirtualizeWi
           {isLoading ? (
             <div className='p-3 space-y-2'>
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className='h-4 bg-slate-200 rounded animate-pulse' />
+                <div key={i} className='h-4 bg-slate-200 dark:bg-dark-border rounded animate-pulse' />
               ))}
             </div>)
             : internalOptions.length === 0 ? (
-              <div className='p-4 text-sm text-gray-500 text-center'>
-
+              <div className='p-4 text-sm text-gray-500 dark:text-dark-text-secondary text-center'>
                 {t('noOptions')}
               </div>
             )
               : isVirtualized ? (
-
                 <List
                   width={VirtualizeWidth || 300}
                   className={cnVirtualize || ''}
@@ -224,29 +227,30 @@ const Select = forwardRef(({ firstOne, onOpenToggle, isVirtualized, VirtualizeWi
                   rowHeight={37}
                   rowRenderer={rowRenderer}
                 />
-
               )
                 : (
-                  <ul className='flex flex-col divide-y divide-gray-100'>
+                  <ul className='flex flex-col divide-y divide-gray-100 dark:divide-dark-border'>
                     {internalOptions.map(opt => (
-                      <li key={opt.id} onClick={() => handleSelect(opt)} className={`${firstOne?.(opt) ? "order-first " : null} group/option cursor-pointer px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400  hover:text-white option-selected'}`}>
+                      <li
+                        key={opt.id}
+                        onClick={() => handleSelect(opt)}
+                        className={`${firstOne?.(opt) ? "order-first " : ""} group/option cursor-pointer px-4 py-2 text-sm transition dark:text-dark-text-primary ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r from-main-500 to-main-400 hover:text-white option-selected'}`}
+                      >
                         {opt.name}
                       </li>
                     ))}
-                  </ul>)}
+                  </ul>
+                )}
         </div>
       </div>,
       document.body,
     )
     : null;
-
   const formated = useMemo(() => formatSelected && selected ? formatSelected(selected) : selected?.name, [selected, formatSelected]);
-
-
   return (
     <div className={`${className || ''} w-full`} ref={rootRef}>
       {label && (
-        <label className={`${cnLabel || ''} mb-1 block text-sm font-medium text-gray-600`}>
+        <label className={`${cnLabel || ''} mb-1 block text-sm font-medium text-gray-600 dark:text-dark-text-secondary`}>
           {label}
           {required && <span className='text-red-500 ml-1'>*</span>}
         </label>
@@ -259,21 +263,28 @@ const Select = forwardRef(({ firstOne, onOpenToggle, isVirtualized, VirtualizeWi
           onClick={handleButtonClick}
           className={`${cnSelect || ''} ${getBorderClass()} h-[40px] cursor-pointer w-full flex items-center justify-between rounded-md border px-4 py-2 text-sm transition
               bg-white text-gray-700 
-              hover:bg-gray-50 hover:border-main-600/70 
+              dark:bg-dark-bg-input dark:text-dark-text-primary
+              hover:bg-gray-50 dark:hover:bg-dark-bg-card hover:border-main-600/70 
               focus:outline-none focus:ring-2 focus:ring-main-600/50`}
           aria-haspopup='listbox'
           aria-expanded={open}
           name={name}
           {...props}>
 
-          {isLoading ? <span className={`truncate text-gray-900 font-medium`}>{defaultLoadingText || defaultPlaceholder}</span>
-            : <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{formated && selectkey ? `${selectkey}: ` : ''} {formated || defaultPlaceholder}</span>}
-          {!hideIcon && <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-main-600' : 'text-gray-400'}`} />}
+          {isLoading ? (
+            <span className={`truncate text-gray-900 dark:text-dark-text-primary font-medium`}>
+              {defaultLoadingText || defaultPlaceholder}
+            </span>
+          ) : (
+            <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 dark:text-dark-text-primary font-medium' : 'text-gray-400 dark:text-dark-text-secondary'}`}>
+              {formated && selectkey ? `${selectkey}: ` : ''} {formated || defaultPlaceholder}
+            </span>
+          )}
+          {!hideIcon && <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-main-600' : 'text-gray-400 dark:text-dark-text-secondary'}`} />}
         </button>
       </div>
 
       {error && <FormErrorMessage message={error} />}
-
       {menu}
     </div>
   );

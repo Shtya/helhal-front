@@ -18,11 +18,11 @@ import { cn } from '@/utils/helper';
 export const EMPTY_LEXICAL_STATE = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 const DefaultSkeleton = () => (
     <div className="space-y-4 animate-pulse w-full">
-        <div className="h-8 bg-gray-100 rounded-xl w-1/3" />
+        <div className="h-8 bg-gray-100 dark:bg-dark-border rounded-xl w-1/3" />
         <div className="space-y-2">
-            <div className="h-4 bg-gray-50 rounded-lg w-full" />
-            <div className="h-4 bg-gray-50 rounded-lg w-5/6" />
-            <div className="h-4 bg-gray-50 rounded-lg w-4/6" />
+            <div className="h-4 bg-gray-50 dark:bg-dark-border rounded-lg w-full" />
+            <div className="h-4 bg-gray-50 dark:bg-dark-border rounded-lg w-5/6" />
+            <div className="h-4 bg-gray-50 dark:bg-dark-border rounded-lg w-4/6" />
         </div>
     </div>
 );
@@ -57,11 +57,11 @@ export default function RichTextRenderer({ content, className, loader = <Default
         ],
         theme: {
             paragraph: 'mb-2',
-            quote: 'border-l-4 border-main-600 pl-4 italic my-4 text-dark/80',
+            quote: 'border-l-4 border-main-600 pl-4 italic my-4 text-dark/80 dark:text-dark-text-secondary',
             heading: {
-                h1: 'text-3xl font-bold mb-4 text-dark',
-                h2: 'text-2xl font-bold mb-3 text-dark',
-                h3: 'text-xl font-semibold mb-2 text-dark',
+                h1: 'text-3xl font-bold mb-4 text-dark dark:text-dark-text-primary',
+                h2: 'text-2xl font-bold mb-3 text-dark dark:text-dark-text-primary',
+                h3: 'text-xl font-semibold mb-2 text-dark dark:text-dark-text-primary',
             },
             list: {
                 ul: 'list-disc list-inside mb-2',
@@ -72,9 +72,9 @@ export default function RichTextRenderer({ content, className, loader = <Default
                 italic: 'italic',
                 underline: 'underline',
                 strikethrough: 'line-through',
-                code: 'bg-gray/10 px-1 py-0.5 rounded text-sm font-mono',
+                code: 'bg-gray/10 dark:bg-dark-border px-1 py-0.5 rounded text-sm font-mono',
             },
-            image: 'editor-image', // Matches your CSS class
+            image: 'editor-image',
         },
         onError: (error) => console.error(error),
     };
@@ -90,16 +90,15 @@ export default function RichTextRenderer({ content, className, loader = <Default
                     contentEditable={
                         <ContentEditable
                             className={cn(
-                                "focus:outline-none text-sm font-medium text-dark",
+                                "focus:outline-none text-sm font-medium text-dark dark:text-dark-text-primary",
                                 "prose prose-sm max-w-none",
-                                // These must match your editor's ContentEditable classes exactly
-                                "[&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-4",
-                                "[&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mb-3",
-                                "[&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mb-2",
+                                "[&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mb-4 [&_h1]:dark:text-dark-text-primary",
+                                "[&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mb-3 [&_h2]:dark:text-dark-text-primary",
+                                "[&_h3]:text-xl [&_h3]:font-semibold [&_h3]:mb-2 [&_h3]:dark:text-dark-text-primary",
                                 "[&_ul]:list-disc [&_ul]:list-inside [&_ul]:mb-2",
                                 "[&_ol]:list-decimal [&_ol]:list-inside [&_ol]:mb-2",
-                                "[&_blockquote]:border-l-4 [&_blockquote]:border-main-600 [&_blockquote]:pl-4 [&_blockquote]:italic",
-                                "[&_code]:bg-gray/10 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono"
+                                "[&_blockquote]:border-l-4 [&_blockquote]:border-main-600 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:dark:text-dark-text-secondary",
+                                "[&_code]:bg-gray/10 [&_code]:dark:bg-dark-border [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono"
                             )}
                         />
                     }

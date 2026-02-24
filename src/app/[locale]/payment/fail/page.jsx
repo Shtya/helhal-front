@@ -85,12 +85,12 @@ export default function PaymentFailPage() {
 
     if (loading) {
         return (
-            <div className='py-16'>
+            <div className='py-16 dark:bg-dark-bg-base'>
                 <div className="container max-w-lg text-center">
                     <div className="animate-pulse space-y-6">
-                        <div className="h-8 w-2/3 mx-auto rounded bg-slate-200" />
-                        <div className="h-4 w-1/2 mx-auto rounded bg-slate-200" />
-                        <div className="h-24 w-full rounded bg-slate-200" />
+                        <div className="h-8 w-2/3 mx-auto rounded bg-slate-200 dark:bg-dark-border" />
+                        <div className="h-4 w-1/2 mx-auto rounded bg-slate-200 dark:bg-dark-border" />
+                        <div className="h-24 w-full rounded bg-slate-200 dark:bg-dark-border" />
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@ export default function PaymentFailPage() {
     const ErrorIcon = errorCode === 'secure_verification_failed' ? ShieldAlert : XCircle;
     const invoice = order.invoices?.[0];
     return (
-        <div className='py-16'>
+        <div className='py-16 dark:bg-dark-bg-base'>
             <div className="container max-w-2xl text-center">
                 {/* Failure banner */}
                 <div className={`mx-auto mb-8 w-20 h-20 rounded-full flex items-center justify-center ${errorCode === 'secure_verification_failed'
@@ -138,12 +138,12 @@ export default function PaymentFailPage() {
                     </p>
                 </div>
 
-                <p className="mb-10 text-slate-700">{t('description')}</p>
+                <p className="mb-10 text-slate-700 dark:text-dark-text-secondary">{t('description')}</p>
 
                 {/* Order summary - only show if order exists */}
                 {order && (
-                    <div className="rounded-2xl border bg-white shadow-sm p-6 text-start space-y-4 mb-8">
-                        <h2 className="text-xl font-semibold text-slate-900">{t('orderSummary')}</h2>
+                    <div className="rounded-2xl border bg-white shadow-sm p-6 text-start space-y-4 mb-8 dark:bg-dark-bg-card dark:border-dark-border">
+                        <h2 className="text-xl font-semibold text-slate-900 dark:text-dark-text-primary">{t('orderSummary')}</h2>
                         <p><span className="font-medium">{t('orderId')}</span> {order.id}</p>
                         <p><span className="font-medium">{t('titleLabel')}</span> {order.title}</p>
                         <p><span className="font-medium">{t('amount')}</span> {order.totalAmount} {order.invoices?.[0]?.currencyId || 'SAR'}</p>
@@ -158,33 +158,33 @@ export default function PaymentFailPage() {
                             <p><span className="font-medium">{t('invoice')}</span> {invoice.invoiceNumber}</p>
                         )}
                         {order && order.invoices?.[0] && (
-                            <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+                            <div className="bg-slate-50 rounded-lg p-4 space-y-3 dark:bg-dark-bg-input">
                                 <div className="flex items-center justify-between">
-                                    <p className="text-sm font-semibold text-slate-900">{tDetials('invoice')} #{invoice.invoiceNumber}</p>
+                                    <p className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary">{tDetials('invoice')} #{invoice.invoiceNumber}</p>
                                     <span className="text-xs px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 font-medium">
                                         {invoice.paymentStatus}
                                     </span>
                                 </div>
 
-                                <div className="bg-white rounded-lg p-4 border border-slate-200">
+                                <div className="bg-white rounded-lg p-4 border border-slate-200 dark:bg-dark-bg-card dark:border-dark-border">
                                     <div className="grid grid-cols-2 gap-y-4 text-sm">
                                         {buyerView ? (
                                             <>
                                                 <div>
-                                                    <p className="text-slate-500 text-xs">{tDetials('servicePrice')}</p>
-                                                    <p className="font-medium text-slate-900 flex gap-1">
+                                                    <p className="text-slate-500 text-xs dark:text-dark-text-secondary">{tDetials('servicePrice')}</p>
+                                                    <p className="font-medium text-slate-900 flex gap-1 dark:text-dark-text-primary">
                                                         <Currency /> <span>{Number(invoice.subtotal).toFixed(2)}</span>
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-slate-500 text-xs">{tDetials('platformFee')}</p>
-                                                    <p className="font-medium text-slate-900 flex gap-1">
+                                                    <p className="text-slate-500 text-xs dark:text-dark-text-secondary">{tDetials('platformFee')}</p>
+                                                    <p className="font-medium text-slate-900 flex gap-1 dark:text-dark-text-primary">
                                                         <Currency /> <span>{(Number(invoice.totalAmount) - Number(invoice.subtotal)).toFixed(2)}</span>
                                                     </p>
                                                 </div>
-                                                <div className="col-span-2 pt-3 border-t border-slate-100">
-                                                    <p className="text-slate-500 text-xs">{tDetials('totalAmount')}</p>
-                                                    <p className="text-xl font-bold text-slate-900 flex gap-1">
+                                                <div className="col-span-2 pt-3 border-t border-slate-100 dark:border-dark-border">
+                                                    <p className="text-slate-500 text-xs dark:text-dark-text-secondary">{tDetials('totalAmount')}</p>
+                                                    <p className="text-xl font-bold text-slate-900 flex gap-1 dark:text-dark-text-primary">
                                                         <Currency /> <span>{Number(invoice.totalAmount).toFixed(2)}</span>
                                                     </p>
                                                 </div>
@@ -192,19 +192,19 @@ export default function PaymentFailPage() {
                                         ) : (
                                             <>
                                                 <div>
-                                                    <p className="text-slate-500 text-xs">{tDetials('subtotal')}</p>
-                                                    <p className="font-medium text-slate-900 flex gap-1">
+                                                    <p className="text-slate-500 text-xs dark:text-dark-text-secondary">{tDetials('subtotal')}</p>
+                                                    <p className="font-medium text-slate-900 flex gap-1 dark:text-dark-text-primary">
                                                         <Currency /> <span>{Number(invoice.subtotal).toFixed(2)}</span>
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-slate-500 text-xs">{tDetials('sellingCommission')} ({invoice.sellerServiceFee}%)</p>
+                                                    <p className="text-slate-500 text-xs dark:text-dark-text-secondary">{tDetials('sellingCommission')} ({invoice.sellerServiceFee}%)</p>
                                                     <p className="font-medium text-rose-600 flex gap-1">
                                                         <Currency /> <span>-{(Number(invoice.subtotal) * (Number(invoice.sellerServiceFee) / 100)).toFixed(2)}</span>
                                                     </p>
                                                 </div>
-                                                <div className="col-span-2 pt-3 border-t border-slate-100">
-                                                    <p className="text-slate-500 text-xs">{tDetials('netEarnings')}</p>
+                                                <div className="col-span-2 pt-3 border-t border-slate-100 dark:border-dark-border">
+                                                    <p className="text-slate-500 text-xs dark:text-dark-text-secondary">{tDetials('netEarnings')}</p>
                                                     <p className="text-xl font-bold text-main-700 flex gap-1">
                                                         <Currency /> <span>{(Number(invoice.subtotal) * (1 - Number(invoice.sellerServiceFee) / 100)).toFixed(2)}</span>
                                                     </p>
@@ -214,7 +214,7 @@ export default function PaymentFailPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex flex-col gap-1 text-[11px] text-slate-500 px-1">
+                                <div className="flex flex-col gap-1 text-[11px] text-slate-500 px-1 dark:text-dark-text-secondary">
                                     {invoice.paymentMethod && (
                                         <p><span className="font-medium">{tDetials('paymentMethod')}:</span> {invoice.paymentMethod}</p>
                                     )}

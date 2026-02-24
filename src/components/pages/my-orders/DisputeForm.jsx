@@ -61,14 +61,14 @@ export function DisputeModal({ selectedRow, open, onClose, patchOrderRow, setRow
     return (
         <Modal title={t('title')} onClose={() => { setApiError(''); onClose() }}>
             <div className="space-y-4">
-                <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">
+                <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700 dark:bg-dark-bg-input dark:text-dark-text-secondary">
                     {t('order')}: <span className="font-medium">
                         {selectedRow?._raw?.title || selectedRow?._raw?.service?.title || selectedRow?.id}
                     </span>
                 </div>
 
                 {apiError && (
-                    <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                    <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400">
                         {apiError}
                     </div>
                 )}
@@ -115,19 +115,19 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Contextual header */}
-            <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700">
+            <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700 dark:bg-dark-bg-input dark:text-dark-text-secondary">
                 <p>
                     {t('aboutToOpen')} <span className="font-semibold">{t('dispute')}</span> {t('against')} <span className="font-semibold">{counterpartRole}</span>{' '}
-                    <Link href={`/profile/${counterpart.id}`} className="font-medium text-slate-900 hover:underline">@{counterpart?.username}</Link> {t('forOrder')}
+                    <Link href={`/profile/${counterpart.id}`} className="font-medium text-slate-900 hover:underline dark:text-dark-text-primary dark:hover:text-main-400">@{counterpart?.username}</Link> {t('forOrder')}
                 </p>
-                <p className="mt-1 font-medium text-slate-800">
+                <p className="mt-1 font-medium text-slate-800 dark:text-dark-text-primary">
                     {selectedRow?._raw?.title} — ${selectedRow?._raw?.totalAmount}
                 </p>
             </div>
 
             {/* Dispute Type */}
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                     {t('whatAbout')} *
                 </label>
                 <Select
@@ -147,7 +147,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
 
             {/* Subject */}
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                     {t('subject')} *
                 </label>
                 <Input
@@ -160,7 +160,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
 
             {/* Message */}
             <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                     {t('detailedExplanation')} *
                 </label>
                 <Textarea
@@ -170,7 +170,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
                     {...register('message')}
                     error={errors.message?.message}
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-dark-text-secondary">
                     {t('explanationHint')}
                 </p>
             </div>

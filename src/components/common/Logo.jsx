@@ -6,14 +6,25 @@ import Image from "next/image";
 const springy = { type: 'spring', stiffness: 500, damping: 30, mass: 0.6 };
 
 export default function Logo({ textHideMobile = true }) {
-    const { role } = useAuth()
+    const { role } = useAuth();
 
     return (
         <Link href={`${role === 'seller' ? '/jobs' : '/'}`} className='flex items-center gap-1 group'>
             <motion.div whileHover={{ rotate: -4, scale: 1.05 }} transition={springy}>
-                <Image src='/images/helhal-logo.png' alt='Logo' width={42} height={42} priority className='rounded-xl shadow-sm' />
+                <Image
+                    src='/images/helhal-logo.png'
+                    alt='Logo'
+                    width={42}
+                    height={42}
+                    priority
+                    className='rounded-xl shadow-sm dark:brightness-110' // Slight brightness boost for dark backgrounds
+                />
             </motion.div>
-            <span className={`ml-2 text-slate-900 ${textHideMobile ? "hidden sm:block" : 'block'} font-semibold tracking-tight`}>Helhal</span>
+
+            {/* Updated text color to support dark mode */}
+            <span className={`ml-2 text-slate-900 dark:text-dark-text-primary ${textHideMobile ? "hidden sm:block" : 'block'} font-semibold tracking-tight transition-colors`}>
+                Helhal
+            </span>
         </Link>
     );
 }

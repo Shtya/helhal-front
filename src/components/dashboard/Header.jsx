@@ -9,6 +9,7 @@ import api from '@/lib/axios';
 import NotificationPopup from '../common/NotificationPopup';
 import { useTranslations } from 'next-intl';
 import SmallLanguageSwitcher from '../molecules/SmallLanguageSwitcher';
+import { ThemeToggle } from '../molecules/Header';
 
 /* --------------------------------- Header --------------------------------- */
 
@@ -28,12 +29,13 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
   return (
     <header
       className='
-        sticky top-0 z-40
-        bg-transparent backdrop-blur-xl
-        supports-[backdrop-filter]:bg-white/40
-      '
-      aria-label='Page header'>
-      <div className='flex flex-col gap-1  py-2'>
+      sticky top-0 z-40
+      bg-transparent backdrop-blur-xl
+    
+    '
+      aria-label='Page header'
+    >
+      <div className='flex flex-col gap-1 py-2'>
         <div className='flex items-center justify-between gap-3'>
           {/* Left: hamburger + titles */}
           <div className='flex items-center gap-3'>
@@ -44,13 +46,22 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 className='
-                  text-xl sm:text-xl font-semibold tracking-tight
-                  bg-clip-text text-transparent
-                  bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900
-                '>
+                text-xl sm:text-xl font-semibold tracking-tight
+                bg-clip-text text-transparent
+                bg-gradient-to-r
+                from-slate-900 via-slate-700 to-slate-900
+                dark:from-dark-text-primary dark:via-dark-text-primary dark:to-dark-text-primary
+              '
+              >
                 {computedMeta.title}
               </motion.h1>
-              <motion.p initial={{ y: 4, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.25 }} className='text-sm text-slate-600'>
+
+              <motion.p
+                initial={{ y: 4, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.25 }}
+                className='text-sm text-slate-600 dark:text-dark-text-secondary'
+              >
                 {computedMeta.desc}
               </motion.p>
             </div>
@@ -59,22 +70,37 @@ export default function Header({ sidebarOpen, setSidebarOpen }) {
           {/* Right: actions */}
           <div className='flex items-center gap-2'>
             <SmallLanguageSwitcher />
+            <ThemeToggle />
             <NotificationPopup admin />
           </div>
         </div>
       </div>
 
-      <div className='h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent' />
+      <div className='h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent dark:via-dark-border' />
     </header>
   );
 }
 
 function HamburgerButton({ open, onToggle, className = '' }) {
   return (
-    <motion.button type='button' onClick={onToggle} aria-label={open ? 'Close sidebar' : 'Open sidebar'} aria-pressed={open} aria-expanded={open} className={`  relative inline-flex h-[33px] w-[33px] items-center justify-center rounded-lg bg-slate-100 text-slate-700 border border-slate-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60 transition cursor-pointer ${className}`} whileTap={{ scale: 0.96 }}>
+    <motion.button
+      type='button'
+      onClick={onToggle}
+      aria-label={open ? 'Close sidebar' : 'Open sidebar'}
+      aria-pressed={open}
+      aria-expanded={open}
+      className={`
+        relative inline-flex h-[33px] w-[33px] items-center justify-center
+        rounded-lg bg-slate-100 dark:bg-dark-bg-card text-slate-700 dark:text-dark-text-primary
+        border border-slate-200 dark:border-dark-border
+        group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500/60
+        transition cursor-pointer ${className}
+      `}
+      whileTap={{ scale: 0.96 }}
+    >
       {/* hover sheen */}
       <motion.span
-        className='absolute inset-0 rounded-xl bg-white/55'
+        className='absolute inset-0 rounded-xl bg-white/55 dark:bg-white/20'
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
         transition={{ duration: 0.15 }}
@@ -87,11 +113,26 @@ function HamburgerButton({ open, onToggle, className = '' }) {
       {/* Hamburger/X lines */}
       <span className='relative z-10 block h-5 w-5'>
         {/* top */}
-        <motion.span className='absolute left-1/2 top-1/2 block h-[2px] !w-4 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-800' initial={false} animate={open ? { rotate: 45, y: 0, width: 20 } : { rotate: 0, y: -6, width: 20 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
+        <motion.span
+          className='absolute left-1/2 top-1/2 block h-[2px] !w-4 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-800 dark:bg-dark-text-primary'
+          initial={false}
+          animate={open ? { rotate: 45, y: 0, width: 20 } : { rotate: 0, y: -6, width: 20 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        />
         {/* middle */}
-        <motion.span className='absolute left-1/2 top-1/2 block h-[2px] !w-4 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-800' initial={false} animate={open ? { opacity: 0, scaleX: 0.3 } : { opacity: 1, scaleX: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
+        <motion.span
+          className='absolute left-1/2 top-1/2 block h-[2px] !w-4 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-800 dark:bg-dark-text-primary'
+          initial={false}
+          animate={open ? { opacity: 0, scaleX: 0.3 } : { opacity: 1, scaleX: 1 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        />
         {/* bottom */}
-        <motion.span className='absolute left-1/2 top-1/2 block h-[2px] !w-4 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-800' initial={false} animate={open ? { rotate: -45, y: 0, width: 20 } : { rotate: 0, y: 6, width: 20 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }} />
+        <motion.span
+          className='absolute left-1/2 top-1/2 block h-[2px] !w-4 -translate-x-1/2 -translate-y-1/2 rounded bg-slate-800 dark:bg-dark-text-primary'
+          initial={false}
+          animate={open ? { rotate: -45, y: 0, width: 20 } : { rotate: 0, y: 6, width: 20 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        />
       </span>
     </motion.button>
   );

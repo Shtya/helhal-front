@@ -69,51 +69,51 @@ export default function OrderDeliveryTimer({ order }) {
 
     return (
         <div>
-            <div className="pt-5 border-t border-slate-200">
-                <p className="text-lg font-semibold text-slate-900 mb-2 flex items-center gap-1">
+            <div className="pt-5 border-t border-slate-200 dark:border-dark-border">
+                <p className="text-lg font-semibold text-slate-900 mb-2 flex items-center gap-1 dark:text-dark-text-primary">
                     <span className="text-main-600">⏳</span> {t('timeRemaining')}
                 </p>
-                {remaining.expired ? (<p className="text-center text-sm text-red-600 mt-4">{t('expired')}</p>)
+                {remaining.expired ? (<p className="text-center text-sm text-red-600 mt-4 dark:text-red-400">{t('expired')}</p>)
                     : (<div className="inline-flex items-center px-3 py-1.5">
                         <div className="flex items-center justify-center w-full gap-6 count-down-main">
                             {/* Days */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max ">
-                                    <h3 className="countdown-element days font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max dark:bg-dark-bg-input">
+                                    <h3 className="countdown-element days font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20 dark:text-main-400">
                                         {remaining.days}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full">{t('days')}</p>
+                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full dark:text-main-400">{t('days')}</p>
                             </div>
 
                             {/* Hours */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max ">
-                                    <h3 className="countdown-element hours font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max dark:bg-dark-bg-input">
+                                    <h3 className="countdown-element hours font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20 dark:text-main-400">
                                         {remaining.hours}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full">{t('hours')}</p>
+                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full dark:text-main-400">{t('hours')}</p>
                             </div>
 
                             {/* Minutes */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max ">
-                                    <h3 className="countdown-element minutes font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max dark:bg-dark-bg-input">
+                                    <h3 className="countdown-element minutes font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20 dark:text-main-400">
                                         {remaining.minutes}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full">{t('minutes')}</p>
+                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full dark:text-main-400">{t('minutes')}</p>
                             </div>
 
                             {/* Seconds */}
                             <div className="timer">
-                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max ">
-                                    <h3 className="countdown-element seconds font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20">
+                                <div className="pr-1.5 pl-2 relative bg-main-50 w-max dark:bg-dark-bg-input">
+                                    <h3 className="countdown-element seconds font-manrope font-semibold text-2xl text-main-600 tracking-[6px] max-w-[44px] text-center relative z-20 dark:text-main-400">
                                         {remaining.seconds}
                                     </h3>
                                 </div>
-                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full">{t('seconds')}</p>
+                                <p className="text-sm font-normal text-main-700 mt-1 text-center w-full dark:text-main-400">{t('seconds')}</p>
                             </div>
                         </div>
                     </div>

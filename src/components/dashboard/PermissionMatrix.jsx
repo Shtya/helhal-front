@@ -7,9 +7,7 @@ export const PermissionMatrix = React.memo(function PermissionMatrix({
     setPermissions,
 }) {
     return (
-        <div
-            className="bg-gray-50 rounded-xl"
-        >
+        <div className="bg-gray-50 dark:bg-dark-bg-card rounded-xl">
             {PERMISSION_DOMAINS.map(domain => (
                 <PermissionRow
                     key={domain.key}

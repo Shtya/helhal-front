@@ -23,7 +23,8 @@ export default function SmallLanguageSwitcher() {
       text-slate-700 hover:text-main-700 
       /* Dark Mode */
       dark:text-dark-text-secondary dark:hover:text-main-400
-      group`}
+      group
+            ${isAr ? "english-font " : "arabic-font"}`}
         >
             {/* The Label */}
             <span>{label}</span>

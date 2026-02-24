@@ -39,14 +39,14 @@ export default function DataTable({
 
   const tokens = useMemo(() => buildPageTokens({ page, totalPages }), [page, totalPages]);
   return (
-    <div className="bg-white shadow rounded-lg overflow-hidden">
+    <div className="bg-white shadow rounded-lg overflow-hidden dark:bg-dark-bg-card dark:border dark:border-dark-border">
       {/* Search and controls */}
-      <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+      <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0 dark:border-dark-border">
         <DataTableSearchBox onSearch={onSearch} search={search} placeholder={t('searchPlaceholder')} />
 
         <div className="flex items-center space-x-2">
           <select
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary"
             value={limit}
             onChange={(e) => onLimitChange(e.target.value)}
           >
@@ -60,25 +60,25 @@ export default function DataTable({
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-dark-border">
+          <thead className="bg-gray-50 dark:bg-dark-bg-input">
             <tr>
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-dark-text-secondary"
                 >
                   {loading ? <Skeleton className='h-4 w-24' /> : column.title}
                 </th>
               ))}
               {actions && (
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-dark-text-secondary">
                   {loading ? <Skeleton className='h-4 w-16' /> : t('actionsHeader')}
                 </th>
               )}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200 dark:bg-dark-bg-card dark:divide-dark-border">
             {!loading && data.length === 0 && (
               <tr>
                 <td colSpan={columns.length + (actions ? 1 : 0)} className='px-4'>
@@ -89,7 +89,7 @@ export default function DataTable({
             {displayRows.map((row, idx) => {
               const isSkeleton = loading || row.__skeleton !== undefined;
               return (
-                <tr key={row.__skeleton ?? idx} className="hover:bg-gray-50 odd:bg-main-50/20">
+                <tr key={row.__skeleton ?? idx} className="hover:bg-gray-50 odd:bg-main-50/20 dark:hover:bg-dark-bg-input">
                   {columns.map(column => {
                     if (isSkeleton) {
                       return (
@@ -116,16 +116,16 @@ export default function DataTable({
 
                     // Render actual cell
                     return (
-                      <td key={column.key} className="px-6 py-4 whitespace-nowrap">
+                      <td key={column.key} className="px-6 py-4 whitespace-nowrap text-slate-900 dark:text-dark-text-primary">
                         {column.render ? (
                           column.render(row[column.key], row)
                         ) : column.type === 'img' ? (
                           <div className="relative cursor-zoom-in w-[42px] h-[42px]">
-                            <Img
-                              src={row[column.key] || ''}
-                              alt="Avatar"
-                              className="w-full h-full object-cover rounded-full ring-1 ring-slate-200"
-                            />
+                              <Img
+                                src={row[column.key] || ''}
+                                alt="Avatar"
+                                className="w-full h-full object-cover rounded-full ring-1 ring-slate-200 dark:ring-dark-border"
+                              />
                           </div>
                         ) : column.key === 'status' ? (
                           <span className={getStatusClass(row[column.key], column)}>
@@ -186,10 +186,10 @@ export default function DataTable({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 flex items-center justify-between">
+        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6 flex items-center justify-between dark:bg-dark-bg-input dark:border-dark-border">
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-gray-700 dark:text-dark-text-secondary">
                 {t('showing', { from: showingFrom, to: showingTo, total: totalCount })}
               </p>
             </div>
@@ -198,7 +198,7 @@ export default function DataTable({
                 <button
                   onClick={() => onPageChange(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-s-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-s-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-secondary dark:hover:bg-dark-bg-card"
                 >
                   {t('previous')}
                 </button>
@@ -215,7 +215,7 @@ export default function DataTable({
                           : t('jumpForward', { count: jumpBy })}
                         className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === p
                           ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-secondary dark:hover:bg-dark-bg-card'
                           }`}
                       >
                         <MoreHorizontal className='w-4 h-4' />
@@ -228,7 +228,7 @@ export default function DataTable({
                       onClick={() => onPageChange(p)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === p
                         ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                        : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50 dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-secondary dark:hover:bg-dark-bg-card'
                         }`}
                     >
                       {p}
@@ -238,7 +238,7 @@ export default function DataTable({
                 <button
                   onClick={() => onPageChange(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="relative inline-flex items-center px-2 py-2 rounded-e-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-e-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-secondary dark:hover:bg-dark-bg-card"
                 >
                   {t('next')}
                 </button>

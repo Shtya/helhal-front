@@ -83,10 +83,10 @@ export default function ReviewSubmissionModel({
         <>
             <Modal title={readOnly ? t('titleReadOnly') : t('title')} onClose={onClose}>
                 <div className="space-y-4">
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-slate-600 dark:text-dark-text-secondary">
                         {t('order')}: <strong>{orderTitle}</strong>
                     </p>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-slate-600 dark:text-dark-text-secondary">
                         {t('submittedBy')} <strong>{sellerName}</strong>
                     </p>
 
@@ -95,17 +95,17 @@ export default function ReviewSubmissionModel({
                     ) : submission ? (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                                     {t('message')}
                                 </label>
-                                <p className="text-sm text-slate-800 whitespace-pre-line bg-slate-50 p-3 rounded">
+                                <p className="text-sm text-slate-800 dark:text-dark-text-primary whitespace-pre-line bg-slate-50 dark:bg-dark-bg-input p-3 rounded">
                                     {submission.message}
                                 </p>
                             </div>
 
                             {submission.files?.length > 0 && (
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    <label className="block text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                                         {t('files')}
                                     </label>
                                     <AttachmentList attachments={submission.files} variant='list' />
@@ -113,11 +113,11 @@ export default function ReviewSubmissionModel({
                             )}
                         </>
                     ) : (
-                        <p className="text-sm text-red-600">{t('noSubmission')}</p>
+                        <p className="text-sm text-red-600 dark:text-red-400">{t('noSubmission')}</p>
                     )}
 
                     {!readOnly && <>
-                        {submission && <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2">
+                        {submission && <div className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded px-3 py-2 dark:text-dark-text-secondary dark:bg-dark-bg-input dark:border-dark-border">
                             {t('deliverySubmitted')} <strong>{formatDate(submission?.created_at)}</strong>.
                             {t('ifNoAction')} <strong>{formatDate(releaseDate)}</strong>, {t('paymentReleased')} <strong>${amount}</strong> {t('willBeReleased')} <strong>{sellerName}</strong>.
                         </div>
@@ -164,23 +164,23 @@ function ModalSkeleton() {
     return (
         <div className="space-y-4 animate-pulse">
             {/* Title */}
-            <div className="h-6 w-1/2 bg-slate-200 rounded" />
+            <div className="h-6 w-1/2 bg-slate-200 rounded dark:bg-dark-border" />
 
             {/* Subtitle lines */}
-            <div className="h-4 w-3/4 bg-slate-200 rounded" />
-            <div className="h-4 w-2/3 bg-slate-200 rounded" />
+            <div className="h-4 w-3/4 bg-slate-200 rounded dark:bg-dark-border" />
+            <div className="h-4 w-2/3 bg-slate-200 rounded dark:bg-dark-border" />
 
             {/* Message field */}
             <div className="space-y-2">
-                <div className="h-4 w-1/3 bg-slate-200 rounded" />
-                <div className="h-24 w-full bg-slate-200 rounded" />
+                <div className="h-4 w-1/3 bg-slate-200 rounded dark:bg-dark-border" />
+                <div className="h-24 w-full bg-slate-200 rounded dark:bg-dark-border" />
             </div>
 
 
             {/* Buttons */}
             <div className="flex gap-3 pt-2">
-                <div className="h-10 w-32 bg-slate-200 rounded" />
-                <div className="h-10 w-32 bg-slate-200 rounded" />
+                <div className="h-10 w-32 bg-slate-200 rounded dark:bg-dark-border" />
+                <div className="h-10 w-32 bg-slate-200 rounded dark:bg-dark-border" />
             </div>
         </div>
     );

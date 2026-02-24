@@ -7,8 +7,8 @@ export default function MonitorPage() {
   const t = useTranslations('Dashboard.monitor');
 
   return (
-    <div className="min-h-[calc(100vh-120px)]">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">{t('title')}</h1>
+    <div className="min-h-[calc(100vh-120px)] dark:bg-dark-bg-base">
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-dark-text-primary mb-6">{t('title')}</h1>
       <MonitorChatApp />
     </div>
   );

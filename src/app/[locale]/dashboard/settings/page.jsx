@@ -132,8 +132,13 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
   return (
     <div>
       <div className='flex items-center gap-3'>
-        <label className='relative inline-flex items-center justify-center h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm hover:bg-slate-50 cursor-pointer'>
-          <input type='file' accept='image/*' className='absolute inset-0 opacity-0 cursor-pointer' onChange={e => handleFile(e.target.files?.[0])} />
+        <label className='relative inline-flex items-center justify-center h-10 rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-card px-3 text-sm hover:bg-slate-50 dark:hover:bg-dark-bg-input cursor-pointer'>
+          <input
+            type='file'
+            accept='image/*'
+            className='absolute inset-0 opacity-0 cursor-pointer'
+            onChange={e => handleFile(e.target.files?.[0])}
+          />
           {uploading ? (
             <span className='inline-flex items-center'>
               <RefreshCw size={16} className='mr-2 animate-spin' /> Uploading…
@@ -146,21 +151,35 @@ function LogoUploader({ value, onUploaded, onChangeUrl }) {
         </label>
 
         {value ? (
-          <img src={resolveUrl(value)} alt='logo preview' className='h-10 w-10 rounded-lg border border-slate-200 object-contain' />
+          <img
+            src={resolveUrl(value)}
+            alt='logo preview'
+            className='h-10 w-10 rounded-lg border border-slate-200 dark:border-dark-border object-contain'
+          />
         ) : (
-          <div className='grid h-10 w-10 place-items-center rounded-lg border border-dashed border-slate-300 text-slate-400'>
+          <div className='grid h-10 w-10 place-items-center rounded-lg border border-dashed border-slate-300 dark:border-dark-border text-slate-400 dark:text-dark-text-secondary'>
             <ImageIcon size={16} />
           </div>
         )}
       </div>
 
       <div className='mt-3'>
-        <label className='mb-1 block text-xs font-medium text-slate-600'>Or paste image URL</label>
-        <Input value={resolveImageUrl(value) || ''} onChange={e => {
-          onChangeUrl(e.target.value)
-        }} placeholder='/logo.png' iconLeft={<ImageIcon size={16} />} />
+        <label className='mb-1 block text-xs font-medium text-slate-600 dark:text-dark-text-secondary'>
+          Or paste image URL
+        </label>
+        <Input
+          value={resolveImageUrl(value) || ''}
+          onChange={e => {
+            onChangeUrl(e.target.value)
+          }}
+          placeholder='/logo.png'
+          iconLeft={<ImageIcon size={16} />}
+        />
       </div>
-      <p className='mt-1 text-xs text-slate-500'>PNG/SVG recommended. Square works best.</p>
+
+      <p className='mt-1 text-xs text-slate-500 dark:text-dark-text-secondary'>
+        PNG/SVG recommended. Square works best.
+      </p>
     </div>
   );
 }
@@ -303,16 +322,18 @@ export default function AdminSettingsDashboard() {
   const [activeLegalTab, setActiveLegalTab] = useState('privacy'); // 'privacy' | 'terms'
   const [showPreview, setShowPreview] = useState(false);
 
-
   if (loading) {
     return (
       <div>
         <div className='p-6'>
           <div className=''>
-            <div className='shimmer mb-6 h-8 w-1/4 rounded bg-slate-200'></div>
+            <div className='shimmer mb-6 h-8 w-1/4 rounded bg-slate-200 dark:bg-dark-bg-input'></div>
             <div className='space-y-4'>
               {[...Array(7)].map((_, i) => (
-                <div key={i} className='shimmer h-12 rounded bg-slate-200'></div>
+                <div
+                  key={i}
+                  className='shimmer h-12 rounded bg-slate-200 dark:bg-dark-bg-card'
+                ></div>
               ))}
             </div>
           </div>
@@ -323,22 +344,36 @@ export default function AdminSettingsDashboard() {
 
 
   return (
-    <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-900'>
+    <div className='min-h-screen bg-gradient-to-b from-white via-slate-50 to-white dark:from-dark-bg-base dark:via-dark-bg-base dark:to-dark-bg-base text-slate-900 dark:text-dark-text-primary'>
       <div className='p-4 sm:p-6'>
         {/* Header */}
         <GlassCard gradient='bg-main-500/60' className='mb-6'>
           <div className='flex max-sm:flex-col items-center justify-between gap-2'>
             <div>
-              <h1 className='text-2xl font-bold text-black'>{t('title')}</h1>
-              <p className='text-black'> {t('subtitle')}</p>
+              <h1 className='text-2xl font-bold text-black dark:text-dark-text-primary'>{t('title')}</h1>
+              <p className='text-black dark:text-dark-text-primary'> {t('subtitle')}</p>
             </div>
-            <Button icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin ' /> : <Save size={16} className='mr-2' />} name={saving ? t('saving') : t('saveSettings')} onClick={handleSave} disabled={saving} className='!w-full sm:!w-fit' />
+            <Button
+              icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin ' /> : <Save size={16} className='mr-2' />}
+              name={saving ? t('saving') : t('saveSettings')}
+              onClick={handleSave}
+              disabled={saving}
+              className='!w-full sm:!w-fit'
+            />
           </div>
         </GlassCard>
 
         {/* Alerts */}
-        {apiError && <div className='mb-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-red-800'>{apiError}</div>}
-        {successMessage && <div className='mb-6 rounded-md border border-main-200 bg-main-50 px-4 py-3 text-main-800'>{successMessage}</div>}
+        {apiError && (
+          <div className='mb-6 rounded-md border border-red-200 bg-red-50 dark:border-red-700 dark:bg-red-900/40 px-4 py-3 text-red-800 dark:text-red-300'>
+            {apiError}
+          </div>
+        )}
+        {successMessage && (
+          <div className='mb-6 rounded-md border border-main-200 bg-main-50 dark:border-dark-border dark:bg-dark-bg-card px-4 py-3 text-main-800 dark:text-dark-text-primary'>
+            {successMessage}
+          </div>
+        )}
 
         {/* KPI Row (No affiliate, no platform wallet KPI) */}
         <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
@@ -351,9 +386,16 @@ export default function AdminSettingsDashboard() {
           />
 
           {/* Platform Fee Badge */}
-          <MetricBadge icon={<Currency style={{ fill: "var(--color-main-600)" }} size={16} />} label={t('platformFee')} value={<div className='flex gap-1 items-center '>
-            {Number(settings.platformPercent || 0).toFixed(1)}  <Currency style={{ fill: "var(--color-main-600)" }} size={14} />
-          </div>} intent='success' />
+          <MetricBadge
+            icon={<Currency style={{ fill: "var(--color-main-600)" }} size={16} />}
+            label={t('platformFee')}
+            value={
+              <div className='flex gap-1 items-center '>
+                {Number(settings.platformPercent || 0).toFixed(1)} <Currency style={{ fill: "var(--color-main-600)" }} size={14} />
+              </div>
+            }
+            intent='success'
+          />
 
           {/* Seller Fee Badge (New) */}
           <MetricBadge
@@ -371,71 +413,104 @@ export default function AdminSettingsDashboard() {
         {/* Top row: General + Financial */}
         <div className='mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2'>
           {/* General */}
-          <GlassCard className='p-3 sm:p-6'>
+          <GlassCard className='p-3 sm:p-6 dark:bg-dark-bg-card'>
             <div className='mb-4 flex items-center'>
               <Globe size={20} className='mr-2 text-blue-600' />
-              <h2 className='text-lg font-semibold'>{t('sections.general')}</h2>
+              <h2 className='text-lg font-semibold dark:text-dark-text-primary'>{t('sections.general')}</h2>
             </div>
 
             <div className='grid grid-cols-1 gap-4'>
               <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.siteName')}</label>
+                <label className='mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('fields.siteName')}</label>
                 <Input value={settings.siteName} onChange={e => updateField('siteName', e.target.value)} placeholder={t('fields.siteNamePlaceholder')} />
               </div>
 
               <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.logo')}</label>
-                <LogoUploader value={settings.siteLogo} onUploaded={url => updateField('siteLogo', url)} onChangeUrl={url => updateField('siteLogo', url)} />
+                <label className='mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('fields.logo')}</label>
+                <LogoUploader
+                  value={settings.siteLogo}
+                  onUploaded={url => updateField('siteLogo', url)}
+                  onChangeUrl={url => updateField('siteLogo', url)}
+                />
                 {formErrors?.siteLogo && <FormErrorMessage message={formErrors?.siteLogo} />}
               </div>
 
               <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                 <div>
-                  <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.contactEmail')}</label>
-                  <Input error={formErrors?.contactEmail} value={settings.contactEmail} onChange={e => updateField('contactEmail', e.target.value)} placeholder={t('fields.contactEmailPlaceholder')} iconLeft={<Mail size={16} />} />
-
+                  <label className='mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('fields.contactEmail')}</label>
+                  <Input
+                    error={formErrors?.contactEmail}
+                    value={settings.contactEmail}
+                    onChange={e => updateField('contactEmail', e.target.value)}
+                    placeholder={t('fields.contactEmailPlaceholder')}
+                    iconLeft={<Mail size={16} />}
+                  />
                 </div>
 
                 <div>
-                  <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.supportPhone')}</label>
-                  <Input value={settings.supportPhone} onChange={e => updateField('supportPhone', e.target.value)} placeholder={t('fields.supportPhonePlaceholder')} iconLeft={<Phone size={16} />} />
+                  <label className='mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('fields.supportPhone')}</label>
+                  <Input
+                    value={settings.supportPhone}
+                    onChange={e => updateField('supportPhone', e.target.value)}
+                    placeholder={t('fields.supportPhonePlaceholder')}
+                    iconLeft={<Phone size={16} />}
+                  />
                 </div>
               </div>
             </div>
           </GlassCard>
 
           {/* Financial */}
-          <GlassCard className='p-3 sm:p-6'>
+          <GlassCard className='p-3 sm:p-6 dark:bg-dark-bg-card'>
             <div className='mb-4 flex items-center'>
               <Currency style={{ fill: "var(--color-main-600)" }} size={20} />
-              <h2 className='text-lg font-semibold'>{t('sections.financial')}</h2>
+              <h2 className='text-lg font-semibold dark:text-dark-text-primary'>{t('sections.financial')}</h2>
             </div>
 
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-1'>
               <div>
-                <label className='mb-1 text-sm font-medium text-slate-700 flex items-center gap-1'>{t('fields.platformFee')} (<Currency style={{ fill: "#314158" }} size={14} />)</label>
-                <Input type='number' error={formErrors?.platformPercent} value={settings.platformPercent} onChange={e => updateField('platformPercent', parseFloat(e.target.value))} min='0' step='0.1' />
+                <label className='mb-1 text-sm font-medium text-slate-700 dark:text-dark-text-secondary flex items-center gap-1'>
+                  {t('fields.platformFee')} (<Currency style={{ fill: "#314158" }} size={14} />)
+                </label>
+                <Input
+                  type='number'
+                  error={formErrors?.platformPercent}
+                  value={settings.platformPercent}
+                  onChange={e => updateField('platformPercent', parseFloat(e.target.value))}
+                  min='0'
+                  step='0.1'
+                />
               </div>
 
               <div>
-                <label className='mb-1 text-sm font-medium text-slate-700 flex items-center gap-1'>{t('serviceFee')} (<Percent size={16} />)</label>
-                <Input type='number' error={formErrors?.sellerServiceFee} value={settings.sellerServiceFee} onChange={e => updateField('sellerServiceFee', parseFloat(e.target.value))} min='0' max='100' step='0.1' />
+                <label className='mb-1 text-sm font-medium text-slate-700 dark:text-dark-text-secondary flex items-center gap-1'>
+                  {t('serviceFee')} (<Percent size={16} />)
+                </label>
+                <Input
+                  type='number'
+                  error={formErrors?.sellerServiceFee}
+                  value={settings.sellerServiceFee}
+                  onChange={e => updateField('sellerServiceFee', parseFloat(e.target.value))}
+                  min='0'
+                  max='100'
+                  step='0.1'
+                />
               </div>
-              {/* 
-              <div>
-                <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.defaultCurrency')}</label>
-                <Input type='number' value={settings.defaultCurrency} onChange={e => updateField('defaultCurrency', parseInt(numberOnly(e.target.value), 10) || 1)} min='1' />
-              </div> */}
             </div>
 
-            <div className='mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3'>
-              <label className='mb-1 block text-sm font-medium text-slate-700'>{t('fields.platformWalletOwner')}</label>
-              <Input value={settings.platformAccountUserId || ''} onChange={e => updateField('platformAccountUserId', e.target.value)} placeholder={t('fields.platformWalletPlaceholder')} iconLeft={<Wallet size={16} />} />
-              <div className='mt-2 flex items-start gap-2 text-xs text-slate-600'>
-                <Info className='mt-0.5 h-4 w-4 text-slate-500' />
-                <p>
-                  {t('fields.platformWalletHint')}
-                </p>
+            <div className='mt-4 rounded-lg border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-bg-input p-3'>
+              <label className='mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>
+                {t('fields.platformWalletOwner')}
+              </label>
+              <Input
+                value={settings.platformAccountUserId || ''}
+                onChange={e => updateField('platformAccountUserId', e.target.value)}
+                placeholder={t('fields.platformWalletPlaceholder')}
+                iconLeft={<Wallet size={16} />}
+              />
+              <div className='mt-2 flex items-start gap-2 text-xs text-slate-600 dark:text-dark-text-secondary'>
+                <Info className='mt-0.5 h-4 w-4 text-slate-500 dark:text-dark-text-secondary' />
+                <p>{t('fields.platformWalletHint')}</p>
               </div>
             </div>
           </GlassCard>
@@ -444,15 +519,15 @@ export default function AdminSettingsDashboard() {
 
 
 
-        <GlassCard className="p-3 sm:p-6">
+        <GlassCard className="p-3 sm:p-6 dark:bg-dark-bg-card">
           <div className="mb-4 flex items-center">
             <Share2 size={20} className="mr-2 text-blue-600" />
-            <h2 className="text-lg font-semibold">{t('sections.socialMedia')}</h2>
+            <h2 className="text-lg font-semibold dark:text-dark-text-primary">{t('sections.socialMedia')}</h2>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:sm:grid-cols-3">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
                 {t('fields.facebook')}
               </label>
               <Input
@@ -464,7 +539,7 @@ export default function AdminSettingsDashboard() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
                 {t('fields.linkedin')}
               </label>
               <Input
@@ -476,7 +551,7 @@ export default function AdminSettingsDashboard() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
                 {t('fields.twitter')}
               </label>
               <Input
@@ -488,7 +563,7 @@ export default function AdminSettingsDashboard() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
                 {t('fields.instagram')}
               </label>
               <Input
@@ -500,7 +575,7 @@ export default function AdminSettingsDashboard() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
                 {t('fields.pinterest')}
               </label>
               <Input
@@ -512,7 +587,7 @@ export default function AdminSettingsDashboard() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
                 {t('fields.tiktok')}
               </label>
               <Input
@@ -524,27 +599,27 @@ export default function AdminSettingsDashboard() {
             </div>
           </div>
 
-          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
-            <label className="mb-1 block text-sm font-medium text-slate-700">
+          <div className="mt-4 rounded-lg border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-bg-input p-3">
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
               {t('fields.socialMediaHint')}
             </label>
-            <div className="mt-2 flex items-start gap-2 text-xs text-slate-600">
-              <Info className="mt-0.5 h-4 w-4 text-slate-500" />
+            <div className="mt-2 flex items-start gap-2 text-xs text-slate-600 dark:text-dark-text-secondary">
+              <Info className="mt-0.5 h-4 w-4 text-slate-500 dark:text-dark-text-secondary" />
               <p>{t('fields.socialMediaControllerHint')}</p>
             </div>
           </div>
         </GlassCard>
 
         <div className="my-6 grid grid-cols-1 gap-6">
-          <GlassCard className="p-3 sm:p-6">
+          <GlassCard className="p-3 sm:p-6 dark:bg-dark-bg-card">
             {/* Header */}
             <div className="mb-4 flex items-center">
-              <Info size={20} className="mr-2 text-main-600" />
-              <h2 className="text-lg font-semibold">{t('faqs')}</h2>
+              <Info size={20} className="mr-2 text-main-600 dark:text-dark-text-primary" />
+              <h2 className="text-lg font-semibold dark:text-dark-text-primary">{t('faqs')}</h2>
             </div>
 
             {/* Tabs */}
-            <div className="mb-4 inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+            <div className="mb-4 inline-flex rounded-lg border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-bg-input p-1 gap-2">
               {[
                 { id: 'seller', label: t('fields.sellerFaqs') },
                 { id: 'invite', label: t('fields.inviteFaqs') },
@@ -556,8 +631,8 @@ export default function AdminSettingsDashboard() {
                   className={[
                     'px-3 py-1.5 text-sm rounded-md transition',
                     activeFaqTab === tab.id
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900',
+                      ? 'bg-white dark:bg-dark-bg-card text-slate-900 dark:text-dark-text-primary shadow-sm'
+                      : 'text-slate-600 dark:text-dark-text-secondary hover:text-slate-900 dark:hover:text-dark-text-primary dark:hover:bg-dark-bg-card ',
                   ].join(' ')}
                 >
                   {tab.label}
@@ -573,7 +648,7 @@ export default function AdminSettingsDashboard() {
                   hint={t('fields.sellerFaqsHint_en')}
                   value={settings.sellerFaqs_en}
                   onChange={v => updateField('sellerFaqs_en', v)}
-                  icon={<Info size={16} className="text-slate-500" />}
+                  icon={<Info size={16} className="text-slate-500 dark:text-dark-text-secondary" />}
                 />
 
                 <FaqsEditor
@@ -582,7 +657,7 @@ export default function AdminSettingsDashboard() {
                   value={settings.sellerFaqs_ar}
                   dir="rtl"
                   onChange={v => updateField('sellerFaqs_ar', v)}
-                  icon={<Info size={16} className="text-slate-500" />}
+                  icon={<Info size={16} className="text-slate-500 dark:text-dark-text-secondary" />}
                 />
               </div>
             )}
@@ -594,7 +669,7 @@ export default function AdminSettingsDashboard() {
                   hint={t('fields.inviteFaqsHint_en')}
                   value={settings.inviteFaqs_en}
                   onChange={v => updateField('inviteFaqs_en', v)}
-                  icon={<Info size={16} className="text-slate-500" />}
+                  icon={<Info size={16} className="text-slate-500 dark:text-dark-text-secondary" />}
                 />
 
                 <FaqsEditor
@@ -603,7 +678,7 @@ export default function AdminSettingsDashboard() {
                   value={settings.inviteFaqs_ar}
                   dir="rtl"
                   onChange={v => updateField('inviteFaqs_ar', v)}
-                  icon={<Info size={16} className="text-slate-500" />}
+                  icon={<Info size={16} className="text-slate-500 dark:text-dark-text-secondary" />}
                 />
               </div>
             )}
@@ -615,7 +690,7 @@ export default function AdminSettingsDashboard() {
                   hint={t('fields.becomeSellerFaqsHint_en')}
                   value={settings.becomeSellerFaqs_en}
                   onChange={v => updateField('becomeSellerFaqs_en', v)}
-                  icon={<Info size={16} className="text-slate-500" />}
+                  icon={<Info size={16} className="text-slate-500 dark:text-dark-text-secondary" />}
                 />
 
                 <FaqsEditor
@@ -624,26 +699,23 @@ export default function AdminSettingsDashboard() {
                   value={settings.becomeSellerFaqs_ar}
                   dir="rtl"
                   onChange={v => updateField('becomeSellerFaqs_ar', v)}
-                  icon={<Info size={16} className="text-slate-500" />}
+                  icon={<Info size={16} className="text-slate-500 dark:text-dark-text-secondary" />}
                 />
               </div>
             )}
           </GlassCard>
         </div>
 
-
-
-        {/* Legal & Compliance – Tabs + Preview */}
-        <div className='grid grid-cols-1 gap-6 mt-6'>
-          <GlassCard className='p-3 sm:p-6'>
-            <div className='mb-4 flex items-center'>
-              <Shield size={20} className='mr-2 text-amber-600' />
-              <h2 className='text-lg font-semibold'>{t('legalCompliance')}</h2>
+        <div className="grid grid-cols-1 gap-6 mt-6">
+          <GlassCard className="p-3 sm:p-6 dark:bg-dark-bg-card">
+            <div className="mb-4 flex items-center">
+              <Shield size={20} className="mr-2 text-amber-600 dark:text-dark-text-primary" />
+              <h2 className="text-lg font-semibold dark:text-dark-text-primary">{t('legalCompliance')}</h2>
             </div>
 
             {/* Tabs */}
-            <div className='mb-3 flex max-sm:flex-col items-center justify-between gap-2'>
-              <div className='inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1'>
+            <div className="mb-3 flex max-sm:flex-col items-center justify-between gap-2">
+              <div className="inline-flex gap-2 rounded-lg border border-slate-200 dark:border-dark-border bg-slate-50 dark:bg-dark-bg-input p-1">
                 {[
                   { id: 'privacy', label: t('privacyPolicy') },
                   { id: 'terms', label: t('termsOfService') },
@@ -654,8 +726,8 @@ export default function AdminSettingsDashboard() {
                     className={[
                       'px-3 py-1.5 text-sm rounded-md',
                       activeLegalTab === tab.id
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-600 hover:text-slate-900',
+                        ? 'bg-white dark:bg-dark-bg-card text-slate-900 dark:text-dark-text-primary shadow-sm'
+                        : 'text-slate-600 dark:text-dark-text-secondary hover:text-slate-900 dark:hover:text-dark-text-primary dark:hover:bg-dark-bg-card',
                     ].join(' ')}
                   >
                     {tab.label}
@@ -663,11 +735,11 @@ export default function AdminSettingsDashboard() {
                 ))}
               </div>
 
-              <div className='flex items-center gap-3'>
-                <label className='inline-flex items-center gap-2 text-sm text-slate-600'>
+              <div className="flex items-center gap-3">
+                <label className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-dark-text-secondary">
                   <input
-                    type='checkbox'
-                    className='accent-slate-700'
+                    type="checkbox"
+                    className="accent-slate-700"
                     checked={showPreview}
                     onChange={e => setShowPreview(e.target.checked)}
                   />
@@ -678,14 +750,13 @@ export default function AdminSettingsDashboard() {
 
             {/* Editors */}
             {activeLegalTab === 'privacy' ? (
-              /* Add a unique key to the container */
-              <div key="privacy-tab-container" className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+              <div key="privacy-tab-container" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* English */}
                 <div key="privacy-en-section">
-                  <h3 className='text-sm font-medium mb-2'>{t('privacyPolicyEn')}</h3>
+                  <h3 className="text-sm font-medium mb-2 dark:text-dark-text-primary">{t('privacyPolicyEn')}</h3>
                   {!showPreview ? (
                     <RichTextEditor
-                      key={`editor-privacy-en-${settings.id}`} // Unique key ensures fresh init
+                      key={`editor-privacy-en-${settings.id}`}
                       value={privacyEnRef.current || settings.privacyPolicy_en || ''}
                       editorStateRef={privacyEnRef}
                       minHeight="400px"
@@ -696,8 +767,8 @@ export default function AdminSettingsDashboard() {
                 </div>
 
                 {/* Arabic */}
-                <div key="privacy-ar-section" dir='rtl'>
-                  <h3 className='text-sm font-medium mb-2'>{t('privacyPolicyAr')}</h3>
+                <div key="privacy-ar-section" dir="rtl">
+                  <h3 className="text-sm font-medium mb-2 dark:text-dark-text-primary">{t('privacyPolicyAr')}</h3>
                   {!showPreview ? (
                     <RichTextEditor
                       key={`editor-privacy-ar-${settings.id}`}
@@ -711,10 +782,10 @@ export default function AdminSettingsDashboard() {
                 </div>
               </div>
             ) : (
-              <div key="terms-tab-container" className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+              <div key="terms-tab-container" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* English Terms */}
                 <div key="terms-en-section">
-                  <h3 className='text-sm font-medium mb-2'>{t('termsOfServiceEn')}</h3>
+                  <h3 className="text-sm font-medium mb-2 dark:text-dark-text-primary">{t('termsOfServiceEn')}</h3>
                   {!showPreview ? (
                     <RichTextEditor
                       key={`editor-terms-en-${settings.id}`}
@@ -728,8 +799,8 @@ export default function AdminSettingsDashboard() {
                 </div>
 
                 {/* Arabic Terms */}
-                <div key="terms-ar-section" dir='rtl'>
-                  <h3 className='text-sm font-medium mb-2'>{t('termsOfServiceAr')}</h3>
+                <div key="terms-ar-section" dir="rtl">
+                  <h3 className="text-sm font-medium mb-2 dark:text-dark-text-primary">{t('termsOfServiceAr')}</h3>
                   {!showPreview ? (
                     <RichTextEditor
                       key={`editor-terms-ar-${settings.id}`}
@@ -749,23 +820,35 @@ export default function AdminSettingsDashboard() {
 
 
         {/* Sticky Save */}
-        <div className='pointer-events-none sticky bottom-4 mt-6 flex justify-end'>
-          <div className='pointer-events-auto rounded-2xl border border-slate-200 bg-white/90 p-2 shadow-lg backdrop-blur'>
-            <Button onClick={handleSave} disabled={saving} icon={saving ? <RefreshCw size={16} className='mr-2 animate-spin' /> : <Save size={16} className='mr-2' />} name={saving ? 'Saving...' : 'Save Changes'} />
+        <div className="pointer-events-none sticky bottom-4 mt-6 flex justify-end">
+          <div className="pointer-events-auto rounded-2xl border border-slate-200 bg-white/90 p-2 shadow-lg backdrop-blur dark:border-dark-border dark:bg-dark-bg-card/90">
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              icon={
+                saving
+                  ? <RefreshCw size={16} className="mr-2 animate-spin dark:invert" />
+                  : <Save size={16} className="mr-2 dark:invert" />
+              }
+              name={saving ? 'Saving...' : 'Save Changes'}
+            />
           </div>
         </div>
       </div>
     </div>
   );
 }
-
 /* ------------------------------ Preview ------------------------------ */
 function PreviewBox({ content }) {
   if (!content) {
-    return <div className='rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-slate-500'>Nothing to preview yet.</div>;
+    return (
+      <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-slate-500 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-secondary">
+        Nothing to preview yet.
+      </div>
+    );
   }
   return (
-    <div className='prose max-w-none rounded-lg border border-slate-200 bg-white p-4 whitespace-pre-line'>
+    <div className="prose max-w-none rounded-lg border border-slate-200 bg-white p-4 whitespace-pre-line dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-primary">
       <RichTextRenderer content={content} />
     </div>
   );
@@ -774,29 +857,29 @@ function PreviewBox({ content }) {
 /* ----------------------------- MetricBadge --------------------------- */
 const intentStyles = {
   success: {
-    chip: 'bg-main-100 text-main-700',
-    value: 'text-main-700',
-    ring: 'ring-main-100',
+    chip: 'bg-main-100 text-main-700 dark:bg-main-700/20 dark:text-main-200',
+    value: 'text-main-700 dark:text-main-200',
+    ring: 'ring-main-100 dark:ring-main-700/20',
   },
   warn: {
-    chip: 'bg-amber-100 text-amber-700',
-    value: 'text-amber-700',
-    ring: 'ring-amber-100',
+    chip: 'bg-amber-100 text-amber-700 dark:bg-amber-700/20 dark:text-amber-200',
+    value: 'text-amber-700 dark:text-amber-200',
+    ring: 'ring-amber-100 dark:ring-amber-700/20',
   },
   danger: {
-    chip: 'bg-rose-100 text-rose-700',
-    value: 'text-rose-700',
-    ring: 'ring-rose-100',
+    chip: 'bg-rose-100 text-rose-700 dark:bg-rose-700/20 dark:text-rose-200',
+    value: 'text-rose-700 dark:text-rose-200',
+    ring: 'ring-rose-100 dark:ring-rose-700/20',
   },
   info: {
-    chip: 'bg-sky-100 text-sky-700',
-    value: 'text-sky-700',
-    ring: 'ring-sky-100',
+    chip: 'bg-sky-100 text-sky-700 dark:bg-sky-700/20 dark:text-sky-200',
+    value: 'text-sky-700 dark:text-sky-200',
+    ring: 'ring-sky-100 dark:ring-sky-700/20',
   },
   neutral: {
-    chip: 'bg-slate-100 text-slate-700',
-    value: 'text-slate-900',
-    ring: 'ring-slate-100',
+    chip: 'bg-slate-100 text-slate-700 dark:bg-dark-bg-card dark:text-dark-text-primary',
+    value: 'text-slate-900 dark:text-dark-text-primary',
+    ring: 'ring-slate-100 dark:ring-dark-border',
   },
 };
 
@@ -805,73 +888,93 @@ function MetricBadge({ icon, label, value, hint, intent = 'neutral', size = 'md'
   const isSm = size === 'sm';
 
   return (
-    <div className={['rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ring-1', i.ring, className].join(' ')}>
-      <div className='flex items-start justify-between gap-3'>
-        <div className='min-w-0'>
-          <div className='mb-1 flex items-center gap-2'>
+    <div className={['rounded-2xl border border-slate-200 bg-white p-4 shadow-sm ring-1 dark:border-dark-border dark:bg-dark-bg-card', i.ring, className].join(' ')}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="mb-1 flex items-center gap-2">
             <span className={['inline-grid h-8 w-8 place-items-center rounded-xl', i.chip].join(' ')}>
-              <span className='grid place-items-center'>{icon}</span>
+              <span className="grid place-items-center">{icon}</span>
             </span>
-            <span className='truncate text-sm font-medium text-slate-600'>{label}</span>
+            <span className="truncate text-sm font-medium text-slate-600 dark:text-dark-text-secondary">{label}</span>
           </div>
 
-          {loading ? <div className='mt-1 h-6 w-24 animate-pulse rounded bg-slate-200' /> : <div className={['text-2xl font-semibold', i.value].join(' ')}>{value ?? '—'}</div>}
+          {loading ? (
+            <div className="mt-1 h-6 w-24 animate-pulse rounded bg-slate-200 dark:bg-dark-bg-card" />
+          ) : (
+            <div className={['text-2xl font-semibold', i.value].join(' ')}>{value ?? '—'}</div>
+          )}
 
-          {hint ? <div className='mt-1 text-xs text-slate-500'>{hint}</div> : null}
+          {hint ? <div className="mt-1 text-xs text-slate-500 dark:text-dark-text-secondary">{hint}</div> : null}
         </div>
-
-        {/* {isSm ? null : <div className={['ml-auto hidden items-center gap-2 rounded-full px-2 py-1 text-xs sm:inline-flex', i.chip].join(' ')}>{label}</div>} */}
       </div>
     </div>
   );
 }
-
 function cx(...classes) {
   return classes.filter(Boolean).join(' ');
 }
-
-function GlassCard({ children, className, gradient, padding = 'p-4', header, footer, shadow = true, as: Tag = 'div' }) {
+function GlassCard({
+  children,
+  className,
+  gradient,
+  padding = 'p-4',
+  header,
+  footer,
+  shadow = true,
+  as: Tag = 'div',
+}) {
   const isGlass = Boolean(gradient);
 
   if (isGlass) {
-    // Glass over gradient
+    // Glass over gradient version
     return (
       <Tag className={cx('relative overflow-hidden rounded-2xl', className)}>
         {/* Gradient background */}
         <div className={cx('pointer-events-none absolute inset-0 bg-gradient-to-r', gradient)} aria-hidden />
+
         {/* Subtle vignette for depth */}
         <div
-          className='pointer-events-none absolute inset-0 opacity-40'
+          className="pointer-events-none absolute inset-0 opacity-40"
           style={{
-            background: 'radial-gradient(120% 120% at 0% 0%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 40%), radial-gradient(100% 100% at 100% 100%, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)',
+            background:
+              'radial-gradient(120% 120% at 0% 0%, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 40%), radial-gradient(100% 100% at 100% 100%, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 45%)',
           }}
           aria-hidden
         />
 
         {/* Glass panel */}
-        <div className='relative m-[1px] rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl ring-1 ring-black/5'>
-          {header ? <div className={cx('border-b border-white/20/50 px-4 py-3 text-white/90', padding === 'none' ? 'px-4 py-3' : '')}>{header}</div> : null}
+        <div className="relative m-[1px] rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl ring-1 ring-black/5 dark:border-white/10 dark:bg-white/5 dark:ring-black/10">
+          {header && (
+            <div className={cx('border-b border-white/20 px-4 py-3 text-white/90 dark:text-white/70', padding === 'none' ? '' : padding)}>
+              {header}
+            </div>
+          )}
 
-          <div className={cx('text-white', padding !== 'none' ? padding : 'p-4')}>{children}</div>
+          <div className={cx('text-white dark:text-white/90', padding !== 'none' ? padding : 'p-4')}>
+            {children}
+          </div>
 
-          {footer ? <div className={cx('border-t border-white/20/50 px-4 py-3 text-white/80', padding === 'none' ? 'px-4 py-3' : '')}>{footer}</div> : null}
+          {footer && (
+            <div className={cx('border-t border-white/20 px-4 py-3 text-white/80 dark:text-white/60', padding === 'none' ? '' : padding)}>
+              {footer}
+            </div>
+          )}
         </div>
       </Tag>
     );
   }
 
-  // Plain card
+  // Plain card version
   return (
-    <Tag className={cx('rounded-2xl border border-slate-200 bg-white', shadow && 'shadow-sm', className)}>
-      {header ? <div className={cx('border-b border-slate-200', padding !== 'none' ? padding : 'p-4')}>{header}</div> : null}
+    <Tag className={cx('rounded-2xl border border-slate-200 bg-white dark:border-dark-border dark:bg-dark-bg-card', shadow && 'shadow-sm', className)}>
+      {header && <div className={cx('border-b border-slate-200 dark:border-dark-border', padding !== 'none' ? padding : 'p-4')}>{header}</div>}
 
       <div className={padding !== 'none' ? padding : 'p-4'}>{children}</div>
 
-      {footer ? <div className={cx('border-t border-slate-200', padding !== 'none' ? padding : 'p-4')}>{footer}</div> : null}
+      {footer && <div className={cx('border-t border-slate-200 dark:border-dark-border', padding !== 'none' ? padding : 'p-4')}>{footer}</div>}
     </Tag>
   );
 }
-
 function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
   const [draftQ, setDraftQ] = useState('');
   const [draftA, setDraftA] = useState('');
@@ -914,21 +1017,21 @@ function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
 
   return (
     <div>
-      <label className="mb-1 flex items-center gap-2 text-sm font-medium text-slate-700">
+      <label className="mb-1 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
         {icon}
         {label}
-        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600">
+        <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-600 dark:bg-dark-bg-input dark:text-dark-text-secondary">
           {items.length}
         </span>
       </label>
-      {hint ? <div className="mb-2 text-xs text-slate-500">{hint}</div> : null}
+      {hint ? <div className="mb-2 text-xs text-slate-500 dark:text-dark-text-secondary">{hint}</div> : null}
 
-      <div className={`${dir === 'rtl' ? 'arabic-font' : 'english-font'} flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2 `}>
+      <div className={`${dir === 'rtl' ? 'arabic-font' : 'english-font'} flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-2 dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-primary`}>
 
         {/* List */}
         <div className='flex flex-col gap-2 max-h-64 overflow-y-auto'>
           {items.length === 0 ? (
-            <span className="text-xs text-slate-400">{dir === 'rtl' ? 'لا توجد أسئلة شائعة بعد' : 'No FAQs yet'}</span>
+            <span className="text-xs text-slate-400 dark:text-dark-text-secondary">{dir === 'rtl' ? 'لا توجد أسئلة شائعة بعد' : 'No FAQs yet'}</span>
           ) : (
             items.map((faq, idx) => {
               const isEditing = editIndex === idx;
@@ -936,13 +1039,12 @@ function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
               return (
                 <div
                   key={idx}
-                  className="flex flex-col gap-2 rounded bg-slate-50 p-2 text-xs text-slate-700"
+                  className="flex flex-col gap-2 rounded bg-slate-50 p-2 text-xs text-slate-700 dark:bg-dark-bg-input dark:text-dark-text-primary"
                 >
 
                   {isEditing ? (
                     <>
-                      <div className='flex flex-col gap-2 '
-                        dir={dir}>
+                      <div className='flex flex-col gap-2' dir={dir}>
                         <Input
                           value={draftQ}
                           onChange={(e) => setDraftQ(e.target.value)}
@@ -958,7 +1060,7 @@ function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
                       <div className="flex gap-1 justify-end">
                         <button
                           onClick={cancelEdit}
-                          className="rounded bg-slate-200 px-2 py-1 text-[11px]"
+                          className="rounded bg-slate-200 px-2 py-1 text-[11px] dark:bg-dark-bg-input dark:text-dark-text-secondary"
                         >
                           {dir === 'rtl' ? 'إلغاء' : 'Cancel'}
                         </button>
@@ -972,17 +1074,15 @@ function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
                     </>
                   ) : (
                     <>
-                      <div className='flex flex-col gap-2 ' dir={dir}>
-
-                        <div className="font-semibold">Q: {faq.question}</div>
-                        <div>A: {faq.answer}</div>
+                      <div className='flex flex-col gap-2' dir={dir}>
+                        <div className="font-semibold text-slate-900 dark:text-dark-text-primary">Q: {faq.question}</div>
+                        <div className="text-slate-700 dark:text-dark-text-secondary">A: {faq.answer}</div>
                       </div>
 
                       <div className="flex gap-1 self-end">
-
                         <button
                           onClick={() => startEdit(idx)}
-                          className="rounded bg-white/70 px-2 text-[11px] text-blue-600 hover:bg-white"
+                          className="rounded bg-white/70 px-2 text-[11px] text-blue-600 hover:bg-white dark:bg-dark-bg-input/70 dark:text-blue-400"
                           title="Edit"
                         >
                           {dir === 'rtl' ? 'تعديل' : 'Edit'}
@@ -990,12 +1090,11 @@ function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
 
                         <button
                           onClick={() => remove(idx)}
-                          className="rounded bg-white/70 px-2 text-[11px] text-red-600 hover:bg-white"
+                          className="rounded bg-white/70 px-2 text-[11px] text-red-600 hover:bg-white dark:bg-dark-bg-input/70 dark:text-red-400"
                           title="Remove"
                         >
                           ×
                         </button>
-
                       </div>
                     </>
                   )}
@@ -1003,7 +1102,6 @@ function FaqsEditor({ label, hint, value = [], onChange, icon, dir = 'ltr' }) {
               );
             })
           )}
-
         </div>
 
         {/* Bottom add form */}

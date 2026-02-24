@@ -56,7 +56,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
   return (
     <>
       {variant === 'list' ? (
-        // Old/list view (default)
+        // ── List View ──
         <div className={`mt-2 ${className}`}>
           <ul className="space-y-3">
             {attachments?.map((f, i) => (
@@ -76,11 +76,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                       title={f?.name || f?.filename}
                       target="_blank"
                       rel="noreferrer"
-                      // onClick={e => {
-                      //   e.preventDefault();
-                      //   handleAttachmentClick(f);
-                      // }}
-                      className="block w-full truncate text-sm font-medium text-slate-900 hover:underline"
+                      className="block w-full truncate text-sm font-medium text-slate-900 dark:text-dark-text-primary hover:underline"
                       data-file-type={(f?.name || f?.filename || '').split('.').pop()?.toLowerCase()}
                     >
                       {((f?.name || f?.filename) || '').length > 40
@@ -88,7 +84,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                         : (f?.name || f?.filename)}
                     </a>
                   </bdi>
-                  <small className="text-xs text-slate-500">
+                  <small className="text-xs text-slate-500 dark:text-dark-text-secondary">
                     {typeof f?.size === 'number' ? `(${formatBytes(f.size)})` : ''}
                   </small>
                 </div>
@@ -97,11 +93,11 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleAttachmentClick(f)}
-                    className="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-800"
+                    className="inline-flex items-center gap-2 text-xs text-slate-600 dark:text-dark-text-primary hover:text-slate-800 dark:hover:text-dark-text-primary transition-colors duration-300"
                     title={t('preview')}
                     aria-label={t('preview')}
                   >
-                    <Paperclip className="w-4 h-4 text-main-600" />
+                    <Paperclip className="w-4 h-4 text-main-600 dark:text-main-500" />
                     <span className="hidden sm:inline">{t('preview')}</span>
                   </button>
                 </div>
@@ -111,17 +107,17 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
         </div>
 
       ) : (
-        // New/grid/card view (existing style, single color icon)
+        // ── Grid/Card View ──
         <div className={`mt-3 flex flex-wrap gap-3 ${className}`}>
           {attachments?.length > 0 &&
             attachments.map((f, i) => (
               <div
                 key={i}
                 onClick={() => handleAttachmentClick(f)}
-                className={`flex items-center gap-3 w-full sm:w-[calc(50%-0.375rem)]  bg-white rounded-lg border border-slate-200 p-3 cursor-pointer hover:shadow-md transition ${cnAttachment}`}
+                className={`flex items-center gap-3 w-full sm:w-[calc(50%-0.375rem)] bg-white dark:bg-dark-bg-card rounded-lg border border-slate-200 dark:border-dark-border p-3 cursor-pointer hover:shadow-md dark:hover:shadow-none dark:hover:bg-dark-bg-input transition ${cnAttachment}`}
                 title={f?.name || f?.filename}
               >
-                <div className="flex-shrink-0 h-12 w-16 rounded-md overflow-hidden bg-slate-100 flex items-center justify-center">
+                <div className="flex-shrink-0 h-12 w-16 rounded-md overflow-hidden bg-slate-100 dark:bg-dark-bg-input flex items-center justify-center">
                   {isImageFile(f) ? (
                     <Img
                       src={f?.url.startsWith('http') ? f?.url : baseImg + (f?.url || f?.path || '')}
@@ -136,40 +132,41 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                 </div>
 
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-slate-900">{f?.name || f?.filename}</div>
-                  <div className="mt-1 text-xs text-slate-500 flex items-center gap-2">
+                  <div className="truncate text-sm font-medium text-slate-900 dark:text-dark-text-primary">
+                    {f?.name || f?.filename}
+                  </div>
+                  <div className="mt-1 text-xs text-slate-500 dark:text-dark-text-secondary flex items-center gap-2">
                     <span className="truncate">{f?.type || f?.mimeType || 'file'}</span>
                     {typeof f?.size === 'number' && <span>• {formatBytes(f.size)}</span>}
                   </div>
                 </div>
 
-                <div className="ml-auto text-xs text-slate-400">{t('preview')}</div>
+                <div className="ml-auto text-xs text-slate-400 dark:text-dark-text-primary">{t('preview')}</div>
               </div>
             ))}
         </div>
       )}
 
+      {/* ── Modal Preview ── */}
       {isModalOpen && selectedFile && (
         <Modal title={t('previewFile')} onClose={handleCloseModal}>
           {isImageFile(selectedFile) ? (
-            <div>
-              {/* {isImageLoading ? <div className="animate-pulse bg-gray-200 rounded-md w-full" style={{ height: '464px' }} /> */}
-              {/* :
-                ( */}
+            <div className="overflow-hidden rounded-lg">
               <Img
                 src={selectedFile?.url.startsWith('http') ? selectedFile?.url : baseImg + (selectedFile?.url || selectedFile?.path || '')}
                 alt={selectedFile?.name || selectedFile?.filename}
-                className="w-full rounded"
+                className="w-full h-auto max-h-[70vh] object-contain bg-slate-50 dark:bg-dark-bg-input"
                 onLoad={() => setIsImageLoading(false)}
               />
-              {/* )
-              } */}
             </div>
           ) : (
-            <div className="text-center pt-4">
-              <p className="text-gray-600 mb-4">{t('cannotPreview')}</p>
-              <div className="flex items-center justify-center gap-3">
-                <button onClick={() => handleOpenInNewTab(selectedFile)} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+            <div className="text-center py-8">
+              <p className="text-slate-600 dark:text-dark-text-secondary mb-6">{t('cannotPreview')}</p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  onClick={() => handleOpenInNewTab(selectedFile)}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition"
+                >
                   {t('openInNewTab')}
                 </button>
                 <a
@@ -177,7 +174,7 @@ const AttachmentList = ({ attachments = [], className = '', cnAttachment = '', v
                   target="_blank"
                   rel="noreferrer"
                   download={selectedFile?.name || selectedFile?.filename}
-                  className="px-4 py-2 bg-main-600 text-white rounded-md hover:bg-main-700 transition"
+                  className="px-4 py-2 bg-main-600 hover:bg-main-700 text-white rounded-md transition"
                 >
                   {t('download')}
                 </a>

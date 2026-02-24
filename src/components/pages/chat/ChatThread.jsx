@@ -16,8 +16,8 @@ import { formatDate } from '@/utils/date';
 export const NoMessagesPlaceholder = () => {
   const t = useTranslations('Chat');
   return (
-    <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 text-slate-500 rounded-xl p-6">
-      <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400" />
+    <div className="h-full flex flex-col items-center justify-center text-center bg-slate-100 dark:bg-dark-bg-input text-slate-500 dark:text-dark-text-secondary rounded-xl p-6">
+      <HiOutlineChatBubbleLeftRight className="h-10 w-10 mb-3 text-slate-400 dark:invert" />
       <p className="text-sm max-w-xs">
         {t('noMessages.title')}
       </p>
@@ -204,7 +204,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
     <div className='relative flex-1 w-full max-h-[540px] h-full flex flex-col'>
       {/* Header */}
 
-      <div className='flex flex-wrap items-start justify-between gap-4 border-b border-b-slate-200 pb-2 mb-2'>
+      <div className='flex flex-wrap items-start justify-between gap-4 border-b border-b-slate-200 dark:border-dark-border pb-2 mb-2'>
         <div className='flex items-center gap-3'>
           <div className='relative '>
             <Img src={thread?.avatar} altSrc={'/no-user.png'} alt={thread?.name} className='border-main-500 border-[2px] h-10 w-10 rounded-full object-cover ring-2 ring-white shadow' />
@@ -215,23 +215,23 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
                 <Link href={`/profile/${thread?.about?.id}`} className='text-lg font-semibold tracking-tight'>{thread?.name}</Link>
                 <span className='text-xs  mt-[-3px] font-[500] block '>{thread?.email}</span>
               </div>
-              {isPinned && <Pin size={16} className='text-blue-500' />}
-              {isArchived && <Archive size={16} className='text-slate-500' />}
+              {isPinned && <Pin size={16} className='text-blue-500 dark:text-main-400 dark:invert' />}
+              {isArchived && <Archive size={16} className='text-slate-500 dark:text-dark-text-secondary dark:invert' />}
             </div>
           </div>
         </div>
 
         <div className='flex items-center gap-2'>
-          <AccessibleButton title={isFavorite ? t('removeFavorite') : t('addFavorite')} onClick={toggleFavorite} ariaLabel={isFavorite ? t('removeFavorite') : t('addFavorite')} className={`p-2 rounded-lg transition-colors ${isFavorite ? 'text-yellow-600 bg-yellow-50' : 'text-gray-500 hover:bg-gray-100'}`}>
-            <Star size={20} fill={isFavorite ? 'currentColor' : 'none'} />
+          <AccessibleButton title={isFavorite ? t('removeFavorite') : t('addFavorite')} onClick={toggleFavorite} ariaLabel={isFavorite ? t('removeFavorite') : t('addFavorite')} className={`p-2 rounded-lg transition-colors ${isFavorite ? 'text-yellow-600 bg-yellow-50 dark:bg-main-900/20' : 'text-gray-500 hover:bg-gray-100 dark:text-dark-text-secondary dark:hover:bg-dark-bg-input'}`}>
+            <Star size={20} fill={isFavorite ? 'currentColor' : 'none'} className='dark:invert' />
           </AccessibleButton>
 
-          <AccessibleButton title={isArchived ? t('unarchive') : t('archive')} onClick={toggleArchive} ariaLabel={isArchived ? t('unarchive') : t('archive')} className={`p-2 rounded-lg transition-colors ${isArchived ? 'text-slate-700 bg-slate-100' : 'text-gray-500 hover:bg-gray-100'}`}>
-            <Archive size={20} />
+          <AccessibleButton title={isArchived ? t('unarchive') : t('archive')} onClick={toggleArchive} ariaLabel={isArchived ? t('unarchive') : t('archive')} className={`p-2 rounded-lg transition-colors ${isArchived ? 'text-slate-700 bg-slate-100 dark:bg-dark-bg-input' : 'text-gray-500 hover:bg-gray-100 dark:text-dark-text-secondary dark:hover:bg-dark-bg-input'}`}>
+            <Archive size={20} className='dark:invert' />
           </AccessibleButton>
 
-          <AccessibleButton title={isPinned ? t('unpin') : t('pin')} onClick={togglePin} ariaLabel={isPinned ? t('unpin') : t('pin')} className={`p-2 rounded-lg transition-colors ${isPinned ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-100'}`}>
-            <Pin size={20} />
+          <AccessibleButton title={isPinned ? t('unpin') : t('pin')} onClick={togglePin} ariaLabel={isPinned ? t('unpin') : t('pin')} className={`p-2 rounded-lg transition-colors ${isPinned ? 'text-blue-600 bg-blue-50 dark:bg-main-900/20' : 'text-gray-500 hover:bg-gray-100 dark:text-dark-text-secondary dark:hover:bg-dark-bg-input'}`}>
+            <Pin size={20} className='dark:invert' />
           </AccessibleButton>
         </div>
       </div>
@@ -261,7 +261,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
                   <button
                     type='button'
                     onClick={() => onLoadOlder?.()}
-                    className='text-blue-500 text-sm hover:underline'
+                    className='text-blue-500 dark:text-main-400 text-sm hover:underline'
                   >
                     {t('loadOlderMessages')}
                   </button>
@@ -316,7 +316,7 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
       {/* </div> */}
       {/* Selected assets preview */}
       {assets.length > 0 && (
-        <div className='mt-3 flex flex-wrap gap-3 p-3 bg-gray-50 rounded-lg'>
+        <div className='mt-3 flex flex-wrap gap-3 p-3 bg-gray-50 dark:bg-dark-bg-input rounded-lg'>
           {assets.map((f, i) => {
             const url = f.url || f.path || '';
             const absolute = url ? (url.startsWith('http') ? url : baseImg + url) : '';
@@ -326,8 +326,8 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
                 {isImage ? (
                   <img src={absolute} alt={f.filename} className='h-20 w-24 rounded-xl object-cover ring-1 ring-slate-200' />
                 ) : (
-                  <a href={absolute} target='_blank' className='hover:underline cursor-pointer h-20 w-40 rounded-xl ring-1 ring-slate-200 bg-slate-50 p-3 flex items-center gap-2 text-xs'>
-                    <Paperclip size={16} />
+                  <a href={absolute} target='_blank' className='hover:underline cursor-pointer h-20 w-40 rounded-xl ring-1 ring-slate-200 dark:ring-dark-border bg-slate-50 dark:bg-dark-bg-input p-3 flex items-center gap-2 text-xs dark:text-dark-text-primary'>
+                    <Paperclip size={16} className='dark:invert' />
                     <span className='line-clamp-2'>{f.filename}</span>
                   </a>
                 )}
@@ -341,21 +341,21 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
       )}
       {/* Message Input */}
       <div className='mt-3'>
-        <form className='flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 ' onSubmit={handleSubmit}>
-          <input ref={inputRef} type='text' placeholder={t('placeholders.message')} aria-label={t('placeholders.message')} className='w-full bg-transparent text-[14px] placeholder:text-slate-400 focus:outline-none' value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown} disabled={sending} />
+        <form className='flex items-center gap-1 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input px-3 py-2 ' onSubmit={handleSubmit}>
+          <input ref={inputRef} type='text' placeholder={t('placeholders.message')} aria-label={t('placeholders.message')} className='w-full bg-transparent text-[14px] placeholder:text-slate-400 dark:placeholder-dark-text-secondary dark:text-dark-text-primary focus:outline-none' value={text} onChange={e => setText(e.target.value)} onKeyDown={handleKeyDown} disabled={sending} />
 
           {/* Attach */}
           <AttachFilesButton hiddenFiles={true} onChange={selectedAssets => setAssets(selectedAssets)} className='!m-0' />
 
           {/* Emoji */}
           <div className='relative' ref={emojiRef}>
-            <AccessibleButton type='button' data-emoji-toggle ariaLabel={t('emoji')} title={t('emoji')} onClick={() => setShowEmoji(v => !v)} ariaExpanded={showEmoji} disabled={sending} className='grid h-8 w-8 place-items-center rounded-full text-slate-600 bg-slate-100 transition'>
-              <Smile size={16} />
+            <AccessibleButton type='button' data-emoji-toggle ariaLabel={t('emoji')} title={t('emoji')} onClick={() => setShowEmoji(v => !v)} ariaExpanded={showEmoji} disabled={sending} className='grid h-8 w-8 place-items-center rounded-full text-slate-600 dark:text-dark-text-secondary bg-slate-100 dark:bg-dark-bg-card transition'>
+              <Smile size={16} className='dark:text-dark-text-secondary' />
             </AccessibleButton>
 
             <AnimatePresence>
               {showEmoji && (
-                <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.15 }} className='max-h-[150px] overflow-y-auto absolute w-[210px] right-0 bottom-10 z-50 grid grid-cols-7 gap-1.5 rounded-xl border border-slate-200 bg-white p-2 shadow-xl'>
+                <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }} transition={{ duration: 0.15 }} className='max-h-[150px] overflow-y-auto absolute w-[210px] right-0 bottom-10 z-50 grid grid-cols-7 gap-1.5 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-card p-2 shadow-xl'>
                   {/* {['😀', '😁', '😂', '🤣', '😊', '😍', '😅', '🤩', '🤔', '👍', '👏', '🙏', '🔥', '🚀', '✅', '❗', '💡', '📎'] */}
                   {emojiRange.map(e => (
                     <AccessibleButton key={e} type='button' className='text-lg hover:scale-110 transition' onClick={() => addEmoji(e)} ariaLabel={`Emoji: ${e}`}>
@@ -396,7 +396,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
       </div>
 
       <div className={`flex-1 ${me ? 'flex flex-col items-end' : ''}`}>
-        <div className={`${me ? 'bg-main-500 text-white' : 'bg-slate-100 text-slate-800'} mt-1 inline-block max-w-[85%] rounded-2xl px-4 py-2 shadow-sm  ${failed ? 'bg-red-100 text-red-800' : ''}`}>
+        <div className={`${me ? 'bg-main-500 text-white' : 'bg-slate-100 dark:bg-dark-bg-input text-slate-800 dark:text-dark-text-primary'} mt-1 inline-block max-w-[85%] rounded-2xl px-4 py-2 shadow-sm  ${failed ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400' : ''}`}>
           {text && <p className='max-w-4xl text-sm leading-5 break-words whitespace-pre-wrap'>{text}</p>}
 
           {attachments.length > 0 && (
@@ -459,7 +459,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
                         title={f.filename}
                         className={`text-xs px-3 py-2 rounded-md inline-flex items-center gap-2 ${me
                           ? 'bg-main-600/20 hover:bg-main-600/40'
-                          : 'bg-gray-100 hover:bg-gray-200'
+                          : 'bg-gray-100 hover:bg-gray-200 dark:bg-dark-bg-input dark:hover:bg-dark-bg-card'
                           }`}
                       >
                         📎
@@ -473,7 +473,7 @@ function Message({ avatar, avatarBg = 'bg-slate-200', name, text, attachments = 
 
         </div>
 
-        <div className={`mt-1 text-xs text-slate-400 ${me ? 'text-right' : 'text-left'}`}>
+        <div className={`mt-1 text-xs text-slate-400 dark:text-dark-text-secondary ${me ? 'text-right' : 'text-left'}`}>
           {createdAt
             ? new Date(createdAt).toLocaleString('en-US', {
               month: 'numeric',
@@ -585,7 +585,7 @@ export default function ActiveOrdersButton({ otherUserId, otherUserName }) {
         className="absolute top-3 right-3 z-10 flex items-center gap-2 px-3 py-2 rounded-xl bg-main-500 hover:bg-main-600 text-white shadow-sm shadow-main-900/20 transition-all hover:shadow-xl hover:scale-105 text-sm font-semibold"
         title={t('viewActiveOrders')}
       >
-        <FileText className="h-4 w-4" />
+        <FileText className="h-4 w-4 dark:invert" />
         <span className="hidden sm:inline">{t('viewContracts')}</span>
       </motion.button>
 
@@ -608,19 +608,19 @@ export default function ActiveOrdersButton({ otherUserId, otherUserName }) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -20 }}
               transition={{ duration: 0.2 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md max-h-[70vh] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] max-w-md max-h-[70vh] bg-white dark:bg-dark-bg-card rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-dark-border">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800">{t('activeOrdersTitle')}</h3>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-dark-text-primary">{t('activeOrdersTitle')}</h3>
+                  <p className="text-xs text-slate-500 dark:text-dark-text-secondary mt-0.5">
                     {t('withUser', { name: otherUserName || 'User' })}
                   </p>
                 </div>
                 <button
                   onClick={() => setShowPopover(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-dark-bg-input/50 text-slate-400 hover:text-slate-600 dark:text-dark-text-secondary dark:hover:text-dark-text-primary transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -660,10 +660,10 @@ function OrderCard({ order, onClose }) {
       onClick={onClose}
       className="block group"
     >
-      <div className="bg-white border border-slate-200 hover:border-main-300 rounded-xl p-4 transition-all hover:shadow-md">
+      <div className="bg-white dark:bg-dark-bg-input border border-slate-200 dark:border-dark-border hover:border-main-300 dark:hover:border-main-500 rounded-xl p-4 transition-all hover:shadow-md">
         {/* Title + Status */}
         <div className="flex items-start justify-between gap-3 mb-3">
-          <h4 className="text-sm font-semibold text-slate-800 line-clamp-1 group-hover:text-main-600 transition-colors">
+          <h4 className="text-sm font-semibold text-slate-800 dark:text-dark-text-primary line-clamp-1 group-hover:text-main-600 dark:group-hover:text-main-400 transition-colors">
             {order.title || 'Untitled Order'}
           </h4>
           <span
@@ -679,8 +679,8 @@ function OrderCard({ order, onClose }) {
             <Package className="h-3 w-3" />
             <span className="capitalize">{order.packageType || 'Standard'} Package</span>
           </div> */}
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Clock className="h-3 w-3" />
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-dark-text-secondary">
+            <Clock className="h-3 w-3 dark:invert" />
             <span>{t('ordered')}: {formatDate(order.created_at)}</span>
           </div>
         </div>
@@ -704,8 +704,8 @@ function OrderCard({ order, onClose }) {
 function LoadingState() {
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <Loader2 className="h-8 w-8 text-main-500 animate-spin mb-3" />
-      <p className="text-sm text-slate-500">Loading orders...</p>
+      <Loader2 className="h-8 w-8 text-main-500 animate-spin mb-3 dark:invert" />
+      <p className="text-sm text-slate-500 dark:text-dark-text-secondary">Loading orders...</p>
     </div>
   );
 }
@@ -714,11 +714,11 @@ function LoadingState() {
 function ErrorState({ message }) {
   return (
     <div className="flex flex-col items-center justify-center py-12">
-      <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center mb-3">
-        <AlertCircle className="h-5 w-5 text-rose-500" />
+      <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-red-900/20 border border-rose-200 dark:border-red-500/30 flex items-center justify-center mb-3">
+        <AlertCircle className="h-5 w-5 text-rose-500 dark:invert" />
       </div>
-      <p className="text-sm font-medium text-slate-700 mb-1">Failed to load orders</p>
-      <p className="text-xs text-slate-500">{message}</p>
+      <p className="text-sm font-medium text-slate-700 dark:text-dark-text-primary mb-1">Failed to load orders</p>
+      <p className="text-xs text-slate-500 dark:text-dark-text-secondary">{message}</p>
     </div>
   );
 }
@@ -728,13 +728,13 @@ function EmptyState({ userName }) {
   const t = useTranslations('Chat.activeOrders');
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mb-4">
-        <FileText className="h-6 w-6 text-slate-400" />
+      <div className="w-14 h-14 rounded-2xl bg-slate-50 dark:bg-dark-bg-input border border-slate-200 dark:border-dark-border flex items-center justify-center mb-4">
+        <FileText className="h-6 w-6 text-slate-400 dark:invert" />
       </div>
-      <p className="text-sm font-medium text-slate-700 mb-1">
+      <p className="text-sm font-medium text-slate-700 dark:text-dark-text-primary mb-1">
         {t('noActiveOrders')}
       </p>
-      <p className="text-xs text-slate-500 max-w-[240px]">
+      <p className="text-xs text-slate-500 dark:text-dark-text-secondary max-w-[240px]">
         {t('noActiveOrdersDesc', { name: userName || 'this user' })}
       </p>
     </div>

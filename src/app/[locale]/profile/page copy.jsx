@@ -105,7 +105,7 @@ function CertificationForm({ onSubmit }) {
 function ProfileCard({ me, loading, editing, setEditing, state, setState, meta, onCopyReferral }) {
   return (
     <Card>
-      <div className='rounded-t-2xl px-6 py-7' style={{ background: 'linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0) 100%)' }}>
+      <div className='rounded-t-2xl px-6 py-7 bg-gradient-to-b from-white to-transparent dark:from-dark-bg-card dark:to-dark-bg-card/0'>
         <div className='flex items-center justify-between'>
           <div className='flex flex-wrap items-center gap-2'>
             <Pill>{state?.type || '—'}</Pill>

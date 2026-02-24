@@ -54,16 +54,30 @@ export default function DashboardLayout({ children, title, className }) {
   return (
     <MotionConfig reducedMotion='user'>
       {/* Frame never exceeds viewport; kill horizontal scroll globally */}
-      <div className='flex h-dvh w-screen overflow-x-hidden bg-slate-50'>
+      <div className='flex h-dvh w-screen overflow-x-hidden bg-slate-50 dark:bg-dark-bg-base'>
         {/* Sidebar */}
         {isMobile ? (
           <AnimatePresence initial={false}>
             {open && (
               <>
                 {/* Backdrop */}
-                <motion.div key='backdrop' className='fixed inset-0 z-40 bg-black/30 lg:hidden' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)} />
+                <motion.div
+                  key='backdrop'
+                  className='fixed inset-0 z-40 bg-black/30 lg:hidden'
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setOpen(false)}
+                />
                 {/* Drawer */}
-                <motion.aside key='drawer' initial={{ x: -320, opacity: 0.6 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -320, opacity: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 38 }} className='fixed left-0 top-0 z-50 h-full w-full max-w-[280px] bg-white border-r border-slate-200 shadow-xl'>
+                <motion.aside
+                  key='drawer'
+                  initial={{ x: -320, opacity: 0.6 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -320, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 38 }}
+                  className='fixed left-0 top-0 z-50 h-full w-full max-w-[280px] bg-white dark:bg-dark-bg-card border-r border-slate-200 dark:border-dark-border shadow-xl'
+                >
                   <Sidebar open={true} isMobile setOpen={setOpen} />
                 </motion.aside>
               </>
@@ -71,7 +85,13 @@ export default function DashboardLayout({ children, title, className }) {
           </AnimatePresence>
         ) : (
           // Desktop: keep mounted and just animate width (no unmount = smooth close)
-          <motion.aside layout initial={false} animate={{ width: open ? 260 : 76 }} transition={{ type: 'spring', stiffness: 320, damping: 32 }} className='hidden lg:block h-full bg-white border-r border-slate-200 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.12)]'>
+          <motion.aside
+            layout
+            initial={false}
+            animate={{ width: open ? 260 : 76 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+            className='hidden lg:block h-full bg-white dark:bg-dark-bg-card border-r border-slate-200 dark:border-dark-border shadow-[0_10px_30px_-12px_rgba(0,0,0,0.12)]'
+          >
             <Sidebar open={open} setOpen={setOpen} />
           </motion.aside>
         )}
@@ -79,14 +99,19 @@ export default function DashboardLayout({ children, title, className }) {
         {/* Main column (must be shrinkable to avoid x-overflow) */}
         <div className='flex min-w-0 min-h-dvh flex-1 flex-col'>
           {/* Header constrained to a container that fits viewport width */}
-          <motion.header layout className='sticky top-0 z-30 w-full border-b border-slate-200 bg-white/75 backdrop-blur supports-[backdrop-filter]:bg-white/60'>
-            <div className='container  max-w-screen-xl '>
+          <motion.header
+            layout
+            className='sticky top-0 z-30 w-full border-b border-slate-200 dark:border-dark-border bg-white/75 dark:bg-dark-bg-header/75 backdrop-blur   supports-[backdrop-filter]:bg-white/40
+      
+      dark:bg-dark-bg-input shadow-[0_1px_0_0_rgba(0,0,0,0.06)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.06)]'
+          >
+            <div className='container max-w-screen-xl'>
               <Header title={title} sidebarOpen={open} setSidebarOpen={setOpen} isMobile={isMobile} onHamburgerClick={toggle} />
             </div>
           </motion.header>
 
           <motion.main layout className={`flex-1 overflow-y-auto overflow-x-hidden ${className}`}>
-            <div className='container  max-w-screen-xl !py-6 min-w-0'>
+            <div className='container max-w-screen-xl !py-6 min-w-0'>
               {children}
             </div>
           </motion.main>

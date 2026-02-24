@@ -11,7 +11,12 @@ import { memo, useMemo } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import TopRatedBadge from '@/components/atoms/TopRatedBadge';
 
-export const Stars = ({ value = 0, size = 12, stroke = 'stroke-white', dim = 'stroke-slate-400' }) => {
+export const Stars = ({
+  value = 0,
+  size = 12,
+  stroke = 'stroke-white',
+  dim = 'stroke-slate-400 dark:stroke-dark-text-secondary',
+}) => {
   const full = Math.floor(Math.min(Math.max(value, 0), 5));
   const half = value - full >= 0.5 ? 1 : 0;
   const empty = 5 - full - half;
@@ -19,11 +24,27 @@ export const Stars = ({ value = 0, size = 12, stroke = 'stroke-white', dim = 'st
   return (
     <div className='flex items-center gap-0.5'>
       {Array.from({ length: full }).map((_, i) => (
-        <Star size={size} key={`full-${i}`} className={`${stroke} fill-main-500 !stroke-main-500`} />
+        <Star
+          size={size}
+          key={`full-${i}`}
+          className={`${stroke} fill-main-500 !stroke-main-500`}
+        />
       ))}
-      {half === 1 && <Star size={size} key='half' className={`${stroke} !stroke-main-500`} />}
+
+      {half === 1 && (
+        <Star
+          size={size}
+          key='half'
+          className={`${stroke} !stroke-main-500`}
+        />
+      )}
+
       {Array.from({ length: empty }).map((_, i) => (
-        <Star size={size} key={`empty-${i}`} className={`${dim} !stroke-main-500`} />
+        <Star
+          size={size}
+          key={`empty-${i}`}
+          className={`${dim} !stroke-main-500`}
+        />
       ))}
     </div>
   );
@@ -87,19 +108,27 @@ export default memo(function AmazingServiceCard({
   if (loading) {
     // ---------- SKELETON ----------
     return (
-      <motion.article variants={cardVariants} initial='initial' animate='in' role='article' className='relative pb-[60px] h-full group service-card !rounded-[10px] !overflow-hidden bg-white text-black border border-slate-200 shadow-sm'>
+      <motion.article
+        variants={cardVariants}
+        initial='initial'
+        animate='in'
+        role='article'
+        className='relative pb-[60px] h-full group service-card !rounded-[10px] !overflow-hidden bg-white dark:bg-dark-bg-card text-black dark:text-white border border-slate-200 dark:border-dark-border shadow-sm transition-colors duration-200'
+      >
         <div className='relative group animate-pulse'>
-          <div className='relative w-full aspect-[16/10] overflow-hidden rounded-[20px_20px_0_0]'>
+          {/* Image Area Skeleton */}
+          <div className='relative w-full aspect-[16/10] overflow-hidden rounded-[20px_20px_0_0] bg-slate-100 dark:bg-dark-bg-input'>
             <Sk className='absolute inset-0' />
+
             {/* Seller pill skeleton */}
             <div className='pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3'>
-              <div className='flex items-center gap-3 bg-black/30 backdrop-blur-sm rounded-full px-2 md:px-2.5 py-1.5 text-white'>
-                <SkAvatar />
+              <div className='flex items-center gap-3 bg-black/30 dark:bg-black/50 backdrop-blur-sm rounded-full px-2 md:px-2.5 py-1.5 text-white'>
+                <SkAvatar className="dark:bg-dark-border" />
                 <div className='min-w-0'>
-                  <SkLine w='w-28' h='h-3.5' />
+                  <SkLine w='w-28' h='h-3.5' className="dark:bg-dark-border" />
                   <div className='mt-1 flex items-center gap-2'>
-                    <SkLine w='w-6' h='h-3' />
-                    <SkStars />
+                    <SkLine w='w-6' h='h-3' className="dark:bg-dark-border" />
+                    <SkStars className="dark:opacity-30" />
                   </div>
                 </div>
               </div>
@@ -108,26 +137,26 @@ export default memo(function AmazingServiceCard({
 
           {/* Favorite / Level placeholders */}
           <div className='absolute top-3 right-3'>
-            <Sk className='h-8 w-8 rounded-full' />
+            <Sk className='h-8 w-8 rounded-full dark:bg-dark-bg-input/80' />
           </div>
           <div className='absolute top-3 left-3'>
-            <Sk className='h-6 w-20 rounded-full' />
+            <Sk className='h-6 w-20 rounded-full dark:bg-dark-bg-input/80' />
           </div>
         </div>
 
         {/* Body skeleton */}
         <div className='p-4 animate-pulse space-y-3'>
-          <SkLine w='w-10/12' h='h-4' />
-          <SkLine w='w-9/12' />
-          <div className='flex items-center justify-between'>
-            <SkLine w='w-24' />
-            <SkLine w='w-20' />
+          <SkLine w='w-10/12' h='h-4' className="dark:bg-dark-bg-input" />
+          <SkLine w='w-9/12' className="dark:bg-dark-bg-input" />
+          <div className='flex items-center justify-between pt-1'>
+            <SkLine w='w-24' className="dark:bg-dark-bg-input" />
+            <SkLine w='w-20' className="dark:bg-dark-bg-input" />
           </div>
         </div>
 
         {/* CTA button skeleton */}
         <div className='absolute bottom-[10px] left-[10px] right-[10px]'>
-          <Sk className='h-10 w-full rounded-[12px]' />
+          <Sk className='h-10 w-full rounded-[12px] dark:bg-dark-bg-input' />
         </div>
       </motion.article>
     );
@@ -136,29 +165,36 @@ export default memo(function AmazingServiceCard({
   // ---------- REAL CARD ----------
   return (
     <div className='relative'>
-
-
-
-      <motion.article className={`${isHoverScale ? 'hover:scale-[1.05]' : 'hover:scale-[1.01]'} relative  h-full group service-card !rounded-[10px] !overflow-hidden bg-white text-black border border-slate-200 shadow-sm transition-all duration-300 will-change-transform`} variants={cardVariants} initial='initial' animate='in' whileHover='hover' role='article'>
-        {/* Cover */}
+      <motion.article
+        variants={cardVariants}
+        initial='initial'
+        animate='in'
+        whileHover='hover'
+        role='article'
+        className={`${isHoverScale ? 'hover:scale-[1.05]' : 'hover:scale-[1.01]'
+          } relative h-full group service-card !rounded-[10px] !overflow-hidden bg-white dark:bg-dark-bg-card text-black dark:text-dark-text-primary border border-slate-200 dark:border-dark-border shadow-sm transition-all duration-300 will-change-transform`}
+      >
         <Link href={to}>
+          {/* Cover Section */}
           <div className='relative group'>
-            <div className='relative w-full aspect-[16/10] overflow-hidden rounded-[10px_10px_0_0]'>
-              {/* Image + subtle zoom on group hover */}
-              <Img src={cover} alt={serviceTitle} className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]' />
-              <Img src={cover} alt='' aria-hidden='true' className='absolute inset-0 blur-[80px] scale-110 opacity-40 object-cover pointer-events-none' />
+            <div className='relative w-full aspect-[16/10] overflow-hidden rounded-[10px_10px_0_0] bg-slate-100 dark:bg-dark-bg-input'>
+              <Img
+                src={cover}
+                alt={serviceTitle}
+                className='h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.06]'
+              />
+              {/* Ambient blur effect - keeping opacity low for dark mode */}
+              <Img src={cover} alt='' aria-hidden='true' className='absolute inset-0 blur-[80px] scale-110 opacity-30 dark:opacity-20 object-cover pointer-events-none' />
 
-              {/* Seller pill */}
+              {/* Seller Info Pill */}
               <div className='pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3'>
-                <div className='relative flex items-center gap-3 bg-black/45 backdrop-blur-sm rounded-full px-1.5 md:px-2.5  py-1.5 text-white'>
+                <div className='relative flex items-center gap-3 bg-black/45 dark:bg-black/60 backdrop-blur-md rounded-full px-1.5 md:px-2.5 py-1.5 text-white'>
                   <div className='relative'>
                     <Img
                       src={sellerAvatar}
                       alt={sellerName}
-                      className='w-8 h-8 md:h-10 md:w-10 rounded-full object-cover border border-white/40'
+                      className='w-8 h-8 md:h-10 md:w-10 rounded-full object-cover border border-white/20'
                     />
-
-                    {/* Badge positioned at bottom start (bottom-0) */}
                     {service?.seller?.topRated && (
                       <div className='absolute -bottom-1 -start-1'>
                         <TopRatedBadge isTopRated={true} size='xs' />
@@ -167,64 +203,65 @@ export default memo(function AmazingServiceCard({
                   </div>
                   <div className='min-w-0'>
                     <div className='text-xs md:text-sm font-semibold truncate'>{sellerName}</div>
-                    <div className='text-white flex items-center gap-1.5'>
-                      {ratingText && <span className='text-xs font-semibold'>{ratingText}</span>}
-                      {rating ? <Stars value={rating} size={16} stroke='stroke-white' dim='stroke-white/30' className="max-md:w-1! max-md:h-1!" /> : null}
+                    <div className='flex items-center gap-1.5'>
+                      {ratingText && <span className='text-[10px] md:text-xs font-medium opacity-90'>{ratingText}</span>}
+                      {rating ? <Stars value={rating} size={14} stroke='stroke-white' dim='stroke-white/30' /> : null}
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Hover overlay */}
-              <div className='absolute inset-0 text-white p-4 flex flex-col justify-end backdrop-blur-xs bg-gradient-to-t from-black/70 via-black/30 to-transparent translate-y-full opacity-0 transition-all duration-400 ease-out group-hover:translate-y-0 group-hover:opacity-100 overflow-hidden'>
-                <ul className='space-y-2 max-h-[50%] overflow-hidden pr-1'>
+              {/* Hover Features Overlay */}
+              <div className='absolute inset-0 text-white p-4 flex flex-col justify-end backdrop-blur-sm bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-full opacity-0 transition-all duration-400 ease-out group-hover:translate-y-0 group-hover:opacity-100 overflow-hidden'>
+                <ul className='space-y-2 max-h-[50%] overflow-hidden'>
                   {(featureBullets?.length ? featureBullets.slice(0, 4) : ['No details provided']).map((b, i) => (
                     <li key={i} className='flex items-start gap-2 text-sm leading-snug'>
-                      <CheckCircle2 className='text-main-500 w-4 h-4 mt-0.5 flex-none' />
+                      <CheckCircle2 className='text-main-400 w-4 h-4 mt-0.5 flex-none' />
                       <span className='whitespace-nowrap truncate'>{b}</span>
                     </li>
                   ))}
                 </ul>
 
-                <div className='mt-3 flex items-center justify-between text-xs opacity-95'>
-                  <div className='flex items-center gap-2'>
-                    <Clock className='w-4 h-4' />
-                    {deliveryTime ? `${deliveryTime} day${deliveryTime > 1 ? 's' : ''}` : '—'}
+                <div className='mt-3 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-medium uppercase tracking-wider opacity-90'>
+                  <div className='flex items-center gap-1.5'>
+                    <Clock className='w-3.5 h-3.5' />
+                    {deliveryTime ? `${deliveryTime}d` : '—'}
                   </div>
-                  <div className='flex items-center gap-2'>
-                    <Zap className='w-4 h-4' />
-                    {service?.fastDelivery ? 'Fast' : 'Standard'}
+                  <div className='flex items-center gap-1.5'>
+                    <Zap className='w-3.5 h-3.5' />
+                    {service?.fastDelivery ? 'Fast' : 'Std'}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Favorite / seller level */}
-
             <SellerLevelBadge level={service?.seller?.sellerLevel} />
           </div>
 
-          {/* Body */}
-          <div className='p-4 space-y-3'>
-            <div className='block focus:outline-none focus:ring-2 focus:ring-blue-500 rounded'>
-              <h3 className='text-[17px] font-semibold line-clamp-1  '>{serviceTitle}</h3>
-            </div>
-            {serviceBrief ? (
-              <p className='text-[13px] text-slate-600 line-clamp-2 [overflow-wrap:anywhere] [word-break:normal]'>
+          {/* Content Body */}
+          <div className='p-4 space-y-2.5'>
+            <h3 className='text-[16px] font-bold line-clamp-1 group-hover:text-main-600 dark:group-hover:text-main-400 transition-colors'>
+              {serviceTitle}
+            </h3>
+
+            {serviceBrief && (
+              <p className='text-[13px] text-slate-500 dark:text-dark-text-secondary line-clamp-2 leading-relaxed'>
                 {serviceBrief}
               </p>
-            ) : null}
+            )}
 
-            <div className='flex items-center justify-between'>
-              <div className='text-[14px] text-slate-700'>{categoryName || '—'}</div>
-              <div className='text-[14px] font-semibold'>
-                {t('from')} <PriceTag price={minPrice ?? 0} />
+            <div className='flex items-center justify-between pt-1'>
+              <div className='text-[12px] font-medium text-slate-400 dark:text-dark-text-secondary/60 uppercase tracking-wide'>
+                {categoryName || 'General'}
+              </div>
+              <div className='text-[14px] font-bold'>
+                <span className="text-[11px] font-normal text-slate-400 mr-1">{t('from')}</span>
+                <PriceTag price={minPrice ?? 0} className="text-main-600 dark:text-main-400" />
               </div>
             </div>
           </div>
         </Link>
 
-        {/* <Button icon={<CircleArrowOutUpRight className='-mb-1' size={18} />} className='absolute bottom-[10px] !w-[calc(100%-20px)] mx-[10px]' name={t('discovery.showMore')} href={to} /> */}
         <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' />
       </motion.article>
     </div>
@@ -234,13 +271,26 @@ export default memo(function AmazingServiceCard({
 
 const SellerLevelBadge = ({ level }) => {
   const levelConfig = {
-    lvl1: { text: 'Level 1', color: 'bg-gray-200 text-gray-800' },
-    lvl2: { text: 'Level 2', color: 'bg-blue-200 text-blue-800' },
-    new: { text: 'New', color: 'bg-main-200 text-main-800' },
-    top: { text: 'Top Rated', color: 'bg-yellow-300 text-yellow-900 font-semibold' },
+    lvl1: { text: 'Level 1', color: 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100' },
+    lvl2: { text: 'Level 2', color: 'bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-100' },
+    new: { text: 'New', color: 'bg-main-200 text-main-800 dark:bg-main-700 dark:text-white' },
+    top: { text: 'Top Rated', color: 'bg-yellow-300 text-yellow-900 dark:bg-yellow-500 dark:text-black font-semibold' },
   };
 
-  const { text, color } = levelConfig[level] || { text: level, color: 'bg-slate-200 text-slate-700' };
+  const { text, color } =
+    levelConfig[level] || {
+      text: level,
+      color: 'bg-slate-200 text-slate-700 dark:bg-dark-bg-input dark:text-dark-text-primary',
+    };
 
-  return <div className={` border border-white/20 backdrop-blur-sm absolute top-3 left-3 z-[10] px-3 py-1 rounded-lg text-xs shadow-md ${color}`}>{text}</div>;
-};
+  return (
+    <div
+      className={`border border-white/20 backdrop-blur-sm 
+                  absolute top-3 left-3 z-[10] 
+                  px-3 py-1 rounded-lg text-xs shadow-md 
+                  ${color}`}
+    >
+      {text}
+    </div>
+  );
+};;

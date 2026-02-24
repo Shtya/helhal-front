@@ -149,25 +149,33 @@ export default function AdminOrdersDashboard() {
 
   // Columns
   const columns = [
-    { key: 'title', label: t('columns.title'), render: (value) => <TruncatedText text={value?.title} maxLength={300} /> },
+    {
+      key: 'title',
+      label: t('columns.title'),
+      render: (value) => (
+        <TruncatedText text={value?.title} maxLength={300} />
+      ),
+    },
     {
       key: 'status',
       label: t('columns.status'),
       render: v => {
         const statusColors = {
-          'Pending': 'warning',
-          'Accepted': 'info',
-          'Delivered': 'success',
-          'Completed': 'success',
-          'Cancelled': 'danger'
+          Pending: 'warning',
+          Accepted: 'info',
+          Delivered: 'success',
+          Completed: 'success',
+          Cancelled: 'danger',
         };
+
         const statusIcons = {
-          'Pending': <Clock size={14} className="mr-1" />,
-          'Accepted': <RefreshCw size={14} className="mr-1" />,
-          'Delivered': <Truck size={14} className="mr-1" />,
-          'Completed': <CheckCircle size={14} className="mr-1" />,
-          'Cancelled': <XCircle size={14} className="mr-1" />
+          Pending: <Clock size={14} className="mr-1" />,
+          Accepted: <RefreshCw size={14} className="mr-1" />,
+          Delivered: <Truck size={14} className="mr-1" />,
+          Completed: <CheckCircle size={14} className="mr-1" />,
+          Cancelled: <XCircle size={14} className="mr-1" />,
         };
+
         return (
           <MetricBadge tone={statusColors[v.status] || 'neutral'}>
             {statusIcons[v.status]} {v.status}
@@ -178,27 +186,48 @@ export default function AdminOrdersDashboard() {
     {
       key: 'totalAmount',
       label: t('columns.amount'),
-      render: v => <div className='flex gap-1 text-gray-500'>
-        <Currency style={{ fill: "#6a7282" }} size={14} />
-        {v.totalAmount}
-      </div>,
+      render: v => (
+        <div className="flex gap-1 text-gray-500 dark:text-dark-text-primary items-center">
+          <Currency
+            size={14}
+            className="text-gray-500 dark:text-dark-text-primary"
+          />
+          {v.totalAmount}
+        </div>
+      ),
     },
     {
       key: 'buyer',
       label: t('columns.buyer'),
-      render: v => v.buyer?.username || 'N/A'
+      render: v => (
+        <span className="dark:text-dark-text-primary">
+          {v.buyer?.username || 'N/A'}
+        </span>
+      ),
     },
     {
       key: 'seller',
       label: t('columns.seller'),
-      render: v => v.seller?.username || 'N/A'
+      render: v => (
+        <span className="dark:text-dark-text-primary">
+          {v.seller?.username || 'N/A'}
+        </span>
+      ),
     },
     {
       key: 'packageType',
       label: t('columns.package'),
-      render: v => <MetricBadge tone="neutral">{v.packageType}</MetricBadge>
+      render: v => (
+        <MetricBadge tone="neutral">
+          {v.packageType}
+        </MetricBadge>
+      ),
     },
-    { key: 'orderDate', label: t('columns.orderDate'), type: 'date' },
+    {
+      key: 'orderDate',
+      label: t('columns.orderDate'),
+      type: 'date',
+    },
   ];
 
   const [finalizeModal, setFinalizeModal] = useState({ open: false, orderId: null });
@@ -326,7 +355,8 @@ export default function AdminOrdersDashboard() {
 
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
-        <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
+        <div className="bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden
+                dark:bg-dark-bg-card dark:border-dark-border dark:ring-dark-border">
           <Table
             data={rows}
             columns={columns}
@@ -371,14 +401,13 @@ const FinalizePaymentModal = ({ open, onClose, onConfirm, loading }) => {
       <div className="p-4">
         {/* Warning Icon & Message */}
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+          <div className="w-12 h-12 bg-amber-100 dark:bg-dark-bg-card rounded-full flex items-center justify-center mb-4">
             <ShieldCheck className="w-6 h-6 text-amber-600" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-dark-text-primary mb-2">
             {t('adminActions.confirmTitle')} {/* "Are you sure?" */}
           </h3>
-          <p className="text-sm text-gray-500">
-            {/* "The order price will be calculated to the system balance (Escrow) and the order will be marked as PAID immediately." */}
+          <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
             {t('adminActions.finalizeWarning')}
           </p>
         </div>

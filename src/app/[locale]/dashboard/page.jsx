@@ -129,31 +129,42 @@ export default function StatisticsPage() {
 
 
   return (
-    <div className="!py-6" >
+    <div className="!py-6 dark:bg-dark-bg-base">
       {/* Page header */}
-      <div className='  flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+      <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <div>
-          <h1 className='text-2xl font-semibold tracking-tight text-slate-900'> {t('title')}</h1>
-          <p className="text-slate-600">{t('subtitle')}</p>
+          <h1 className='text-2xl font-semibold tracking-tight text-slate-900 dark:text-dark-text-primary'> {t('title')}</h1>
+          <p className="text-slate-600 dark:text-dark-text-secondary">{t('subtitle')}</p>
         </div>
         <div className='flex items-center gap-2'>
-          <div className='hidden sm:flex items-center gap-1 rounded-xl border border-main-200 bg-white px-2 py-1'>
-            <Calendar className='h-4 w-4 text-main-600' />
+          <div className='hidden sm:flex items-center gap-1 rounded-xl border border-main-200 bg-white px-2 py-1 dark:bg-dark-bg-card dark:border-dark-border'>
+            <Calendar className='h-4 w-4 text-main-600 dark:invert' />
             <QuickPreset label='7D' active={preset === '7'} onClick={() => setPreset('7')} />
             <QuickPreset label='30D' active={preset === '30'} onClick={() => setPreset('30')} />
             <QuickPreset label='90D' active={preset === '90'} onClick={() => setPreset('90')} />
           </div>
-          <button onClick={() => exportCSV({ recent, statusSummary, countsSummary, overview })} className='inline-flex items-center gap-2 rounded-xl border border-main-200 bg-white px-3 py-2 text-sm text-main-700 hover:bg-main-50'>
-            <Download className='h-4 w-4' /> Export CSV
+          <button
+            onClick={() => exportCSV({ recent, statusSummary, countsSummary, overview })}
+            className='inline-flex items-center gap-2 rounded-xl border border-main-200 bg-white px-3 py-2 text-sm text-main-700 hover:bg-main-50 dark:bg-dark-bg-card dark:border-dark-border dark:text-main-300 dark:hover:bg-dark-bg-input'
+          >
+            <Download className='h-4 w-4 dark:invert' /> Export CSV
           </button>
-          <button onClick={() => Refreash()} title='Refresh' className='inline-grid place-items-center rounded-xl border border-main-200 bg-white h-10 w-10 text-main-700 hover:bg-main-50'>
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <button
+            onClick={() => Refreash()}
+            title='Refresh'
+            className='inline-grid place-items-center rounded-xl border border-main-200 bg-white h-10 w-10 text-main-700 hover:bg-main-50 dark:bg-dark-bg-card dark:border-dark-border dark:text-main-300 dark:hover:bg-dark-bg-input'
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''} dark:invert`} />
           </button>
         </div>
       </div>
 
       {/* Error */}
-      {error && <div className='mt-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 px-4 py-3'>{t('error')}</div>}
+      {error && (
+        <div className='mt-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 px-4 py-3 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400'>
+          {t('error')}
+        </div>
+      )}
 
       {/* KPI row */}
       <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -248,28 +259,37 @@ export default function StatisticsPage() {
     </div>
   );
 }
-
 function RecentTable({ rows, loading, empty }) {
   const t = useTranslations('Dashboard.overview');
+
   if (loading) {
     return (
-      <div className='rounded-2xl border border-main-200 bg-white p-4'>
+      <div className='rounded-2xl border border-main-200 bg-white dark:border-dark-border dark:bg-dark-bg-card p-4'>
         <div className='space-y-2'>
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className='h-12 w-full rounded-lg bg-main-50 animate-pulse' />
+            <div
+              key={i}
+              className='h-12 w-full rounded-lg bg-main-50 dark:bg-dark-bg-input animate-pulse'
+            />
           ))}
         </div>
       </div>
     );
   }
+
   if (!rows || rows.length === 0) {
-    return <div className='rounded-2xl border border-main-200 bg-white p-6 text-slate-500'>{empty}</div>;
+    return (
+      <div className='rounded-2xl border border-main-200 bg-white dark:border-dark-border dark:bg-dark-bg-card p-6 text-slate-500 dark:text-dark-text-secondary'>
+        {empty}
+      </div>
+    );
   }
+
   return (
-    <div className='overflow-hidden rounded-2xl border border-main-200 bg-white overflow-x-auto'>
+    <div className='overflow-hidden rounded-2xl border border-main-200 bg-white dark:border-dark-border dark:bg-dark-bg-card overflow-x-auto'>
       <table className='min-w-full'>
-        <thead className='bg-main-50/60'>
-          <tr className='text-justify text-sm text-slate-600'>
+        <thead className='bg-main-50/60 dark:bg-dark-bg-input'>
+          <tr className='text-justify text-sm text-slate-600 dark:text-dark-text-secondary'>
             <th className='px-4 py-3'>{t('table.headers.ref')}</th>
             <th className='px-4 py-3'>{t('table.headers.customer')}</th>
             <th className='px-4 py-3'>{t('table.headers.status')}</th>
@@ -277,16 +297,38 @@ function RecentTable({ rows, loading, empty }) {
             <th className='px-4 py-3'>{t('table.headers.date')}</th>
           </tr>
         </thead>
+
         <tbody>
           {rows.map((r, idx) => (
-            <tr key={idx} className='border-t border-main-100 text-sm hover:bg-main-50/40'>
-              <td className='px-4 py-3 text-nowrap font-medium text-slate-800'>{r.ref || r.id || '-'}</td>
-              <td className='px-4 py-3 text-nowrap text-slate-700'>{r?.buyer?.username || r?.user?.username || '-'}</td>
-              <td className='px-4 py-3 text-nowrap'>
-                <span className={`inline-flex text-nowrap items-center rounded-lg px-2 py-1 text-xs font-medium ${statusTone(r.status)}`}>{r.status || '-'}</span>
+            <tr
+              key={idx}
+              className='border-t border-main-100 dark:border-dark-border text-sm hover:bg-main-50/40 dark:hover:bg-dark-bg-input'
+            >
+              <td className='px-4 py-3 text-nowrap font-medium text-slate-800 dark:text-dark-text-primary'>
+                {r.ref || r.id || '-'}
               </td>
-              <td className='px-4 py-3 text-nowrap text-slate-800'>{typeof (r.amount || r.totalAmount) === 'number' ? `SAR ${formatNumber(r.amount || r.totalAmount)}` : (r.amount || r.totalAmount) || '-'}</td>
-              <td className='px-4 py-3 text-nowrap text-slate-600'>{formatDate(r.created_at)}</td>
+
+              <td className='px-4 py-3 text-nowrap text-slate-700 dark:text-dark-text-secondary'>
+                {r?.buyer?.username || r?.user?.username || '-'}
+              </td>
+
+              <td className='px-4 py-3 text-nowrap'>
+                <span
+                  className={`inline-flex text-nowrap items-center rounded-lg px-2 py-1 text-xs font-medium ${statusTone(r.status)}`}
+                >
+                  {r.status || '-'}
+                </span>
+              </td>
+
+              <td className='px-4 py-3 text-nowrap text-slate-800 dark:text-dark-text-primary'>
+                {typeof (r.amount || r.totalAmount) === 'number'
+                  ? `SAR ${formatNumber(r.amount || r.totalAmount)}`
+                  : (r.amount || r.totalAmount) || '-'}
+              </td>
+
+              <td className='px-4 py-3 text-nowrap text-slate-600 dark:text-dark-text-secondary'>
+                {formatDate(r.created_at)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -409,8 +451,10 @@ function formatLabel(dateString) {
 function ChartCard({ title, loading, empty, children }) {
 
   return (
-    <div className='rounded-2xl border border-main-200 bg-white p-4'>
-      <h3 className='text-sm font-semibold text-slate-700 mb-4'>{title}</h3>
+    <div className='rounded-2xl border border-main-200 bg-white dark:border-dark-border dark:bg-dark-bg-card p-4'>
+      <h3 className='text-sm font-semibold text-slate-700 dark:text-dark-text-primary mb-4'>
+        {title}
+      </h3>
 
       {loading
         ? <ChartSkeleton />
@@ -426,7 +470,13 @@ function ChartCard({ title, loading, empty, children }) {
 
 function QuickPreset({ label, active, onClick }) {
   return (
-    <button onClick={onClick} className={`px-2 py-1 text-xs rounded-lg transition ${active ? 'bg-main-600 text-white' : 'text-main-700 hover:bg-main-50'}`}>
+    <button
+      onClick={onClick}
+      className={`px-2 py-1 text-xs rounded-lg transition ${active
+        ? 'bg-main-600 text-white'
+        : 'text-main-700 hover:bg-main-50 dark:text-main-300 dark:hover:bg-dark-bg-input'
+        }`}
+    >
       {label}
     </button>
   );
@@ -434,10 +484,16 @@ function QuickPreset({ label, active, onClick }) {
 
 function SectionHeader({ title, subtitle }) {
   return (
-    <div className=' mb-2 flex items-center justify-between'>
+    <div className='mb-2 flex items-center justify-between'>
       <div>
-        <h2 className='text-base font-semibold text-slate-900'>{title}</h2>
-        {subtitle && <p className='text-sm text-slate-600'>{subtitle}</p>}
+        <h2 className='text-base font-semibold text-slate-900 dark:text-dark-text-primary'>
+          {title}
+        </h2>
+        {subtitle && (
+          <p className='text-sm text-slate-600 dark:text-dark-text-secondary'>
+            {subtitle}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -451,21 +507,33 @@ function StatCard({ label, value, lastDaysCount, icon: Icon, prefix }) {
     : 0; // avoid division by zero
 
   return (
-    <div className='group rounded-2xl border border-main-200 bg-white p-6 shadow-sm hover:shadow-lg transition-all'>
+    <div className='group rounded-2xl border border-main-200 bg-white dark:border-dark-border dark:bg-dark-bg-card p-6 shadow-sm hover:shadow-lg transition-all'>
       <div className='flex flex-col items-start justify-between gap-4'>
         <div className='flex gap-3 justify-between w-full'>
-          <p className='text-lg font-medium text-slate-700'>{label}</p>
-          <div className='h-12 w-12 rounded-xl bg-main-50 border border-main-200 grid place-items-center text-main-700'>
+          <p className='text-lg font-medium text-slate-700 dark:text-dark-text-secondary'>
+            {label}
+          </p>
+
+          <div className='h-12 w-12 rounded-xl bg-main-50 border border-main-200 dark:bg-dark-bg-input dark:border-dark-border grid place-items-center text-main-700 dark:text-main-300'>
             <Icon className='h-6 w-6' />
           </div>
         </div>
+
         <div className='flex gap-3 justify-between w-full'>
-          <h3 className='text-3xl font-bold text-slate-900'>
+          <h3 className='text-3xl font-bold text-slate-900 dark:text-dark-text-primary'>
             {prefix}
             {formatNumber(value)}
           </h3>
-          <span className={`inline-flex items-center gap-1 text-sm ${positive ? 'text-main-600' : 'text-rose-600'}`}>
-            {positive ? <ArrowUpRight className='h-4 w-4' /> : <ArrowDownRight className='h-4 w-4' />}
+
+          <span
+            className={`inline-flex items-center gap-1 text-sm ${positive
+              ? 'text-main-600 dark:text-main-400'
+              : 'text-rose-600 dark:text-rose-400'
+              }`}
+          >
+            {positive
+              ? <ArrowUpRight className='h-4 w-4' />
+              : <ArrowDownRight className='h-4 w-4' />}
             {Math.abs(percentChange)}%
           </span>
         </div>
@@ -507,39 +575,40 @@ function SparkArea({ data = [], width = 260, height = 56 }) {
 function MiniBar({ value = 0 }) {
   const v = Math.max(0, Math.min(100, Number(value)));
   return (
-    <div className='h-2 w-full rounded-full bg-main-50 border border-main-100'>
-      <div className='h-full rounded-full bg-main-500' style={{ width: v + '%' }} />
+    <div className='h-2 w-full rounded-full bg-main-50 border border-main-100 dark:bg-dark-bg-input dark:border-dark-border'>
+      <div
+        className='h-full rounded-full bg-main-500'
+        style={{ width: v + '%' }}
+      />
     </div>
   );
 }
 
 function SkeletonCard() {
   return (
-    <div className='rounded-2xl border border-main-200 bg-white p-4'>
-      <div className='h-5 w-28 bg-main-50 rounded animate-pulse' />
-      <div className='mt-3 h-7 w-36 bg-main-50 rounded animate-pulse' />
-      <div className='mt-4 h-10 w-full bg-main-50 rounded animate-pulse' />
+    <div className='rounded-2xl border border-main-200 bg-white dark:border-dark-border dark:bg-dark-bg-card p-4'>
+      <div className='h-5 w-28 bg-main-50 dark:bg-dark-bg-input rounded animate-pulse' />
+      <div className='mt-3 h-7 w-36 bg-main-50 dark:bg-dark-bg-input rounded animate-pulse' />
+      <div className='mt-4 h-10 w-full bg-main-50 dark:bg-dark-bg-input rounded animate-pulse' />
     </div>
   );
 }
 
 function ChartSkeleton() {
   return (
-    <div className="rounded-2xl bg-white p-4 h-[400px] animate-pulse">
-      <div className="h-[340px] bg-main-50 rounded" />
+    <div className="rounded-2xl bg-white dark:bg-dark-bg-card p-4 h-[400px] animate-pulse">
+      <div className="h-[340px] bg-main-50 dark:bg-dark-bg-input rounded" />
     </div>
   );
 }
 
-
 function EmptyChart({ message = "No data available" }) {
   return (
-    <div className="h-[400px] flex items-center justify-center rounded-2xl border bg-white border-slate-200 text-slate-500">
+    <div className="h-[400px] flex items-center justify-center rounded-2xl border bg-white dark:bg-dark-bg-card border-slate-200 dark:border-dark-border text-slate-500 dark:text-dark-text-secondary">
       {message}
     </div>
   );
 }
-
 
 /* ------------------------------ Utilities ------------------------------- */
 

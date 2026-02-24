@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-
 export const SubmitButton = ({
   isLoading,
   children,
@@ -13,9 +12,10 @@ export const SubmitButton = ({
       relative flex items-center justify-center cursor-pointer
       ${isLoading ? "w-fit px-4 py-4 rounded-full" : "w-full px-6 py-3 rounded-2xl"} 
       font-semibold text-white 
-      bg-gradient-to-r from-main-500 to-main-400 
+      bg-gradient-to-r from-main-500 to-main-400
+      dark:shadow-md dark:from-main-500 dark:to-main-400
       shadow-sm transition-all duration-300
-      hover:shadow-lg hover:from-main-600 hover:to-main-500 over:!scale-1
+      hover:shadow-lg hover:from-main-600 hover:to-main-500
       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-main-500
       disabled:opacity-70 mx-auto disabled:cursor-not-allowed
       ${className}

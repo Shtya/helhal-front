@@ -109,7 +109,9 @@ export function DoughnutChart({
                             className="block w-3 h-3 shrink-0 rounded-full"
                             style={{ backgroundColor: colors[i] }}
                         />
-                        <span className="text-xs text-slate-700">{label}</span>
+                        <span className="text-xs text-slate-700 dark:text-dark-text-secondary">
+                            {label}
+                        </span>
                     </li>
                 ))}
             </ul>

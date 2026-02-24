@@ -169,39 +169,57 @@ export default function AdminJobsDashboard() {
 
   // Table columns
   const columns = [
-    { key: 'title', label: t('columns.jobTitle'), render: (value) => <TruncatedText text={value?.title} maxLength={300} /> },
+    {
+      key: 'title',
+      label: t('columns.jobTitle'),
+      render: (value) => <TruncatedText text={value?.title} maxLength={300} />,
+    },
     {
       key: 'status',
       label: t('columns.status'),
-      render: v => {
+      render: (v) => {
         const s = v.status;
-        return <StatusBadge status={s} />
+        return <StatusBadge status={s} />;
       },
     },
     {
       key: 'budget',
       label: t('columns.budget'),
-      render: v => <div className='flex gap-1 text-gray-500'>
-        <Currency style={{ fill: "#6a7282" }} size={14} />
-        {v.budget}
-      </div>,
+      render: (v) => (
+        <div className="flex gap-1 text-gray-500 dark:text-dark-text-primary">
+          <Currency style={{ fill: "#6a7282" }} size={14} />
+          {v.budget}
+        </div>
+      ),
     },
     {
       key: 'budgetType',
       label: t('columns.type'),
-      render: v => <MetricBadge tone='neutral'>{v.budgetType}</MetricBadge>,
+      render: (v) => (
+        <MetricBadge tone="neutral" className="dark:bg-dark-bg-card dark:text-dark-text-primary">
+          {v.budgetType}
+        </MetricBadge>
+      ),
     },
     {
       key: 'buyer',
       label: t('columns.postedBy'),
-      render: v => v.buyer?.username || 'N/A',
+      render: (v) => <span className="text-gray-700 dark:text-dark-text-primary">{v.buyer?.username || 'N/A'}</span>,
     },
     {
       key: 'proposals',
       label: t('columns.proposals'),
-      render: v => <span className='bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs'>{v.proposalsLength || 0}</span>,
+      render: (v) => (
+        <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-400">
+          {v.proposalsLength || 0}
+        </span>
+      ),
     },
-    { key: 'created_at', label: t('columns.created'), type: 'date' },
+    {
+      key: 'created_at',
+      label: t('columns.created'),
+      type: 'date',
+    },
   ];
 
   const Actions = ({ row }) => {
@@ -272,7 +290,8 @@ export default function AdminJobsDashboard() {
 
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
-        <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
+        <div className="bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden
+                dark:bg-dark-bg-card dark:border-dark-border dark:ring-dark-border">
           <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
@@ -286,8 +305,9 @@ export default function AdminJobsDashboard() {
 
 function JobView({ value, onClose }) {
   const t = useTranslations('Dashboard.jobs');
-  const locale = useLocale()
+  const locale = useLocale();
   if (!value) return null;
+
   const createdAt = value?.created_at;
   const formatted = createdAt
     ? new Date(createdAt).toLocaleString('en-US', {
@@ -297,61 +317,108 @@ function JobView({ value, onClose }) {
     : '—';
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
+      {/* Job Title */}
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.jobTitle')}</label>
-        <div className='p-2 bg-slate-50 rounded-md font-semibold'>{value.title}</div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.jobTitle')}
+        </label>
+        <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md font-semibold dark:text-dark-text-primary">
+          {value.title}
+        </div>
       </div>
-      <div className='grid grid-cols-1 items-center md:grid-cols-2 gap-4'>
 
-        <div className='text-sm'>{getDateAgo(value?.created_at)}</div>
-        <div className='flex gap-2 items-center'>
-          <label className='text-sm font-medium text-slate-700'>{t('modal.status')}:</label>
-          <div className='p-2 bg-slate-50 rounded-md'>
-            <MetricBadge tone={value.status === 'completed' ? 'success' : value.status === 'awarded' ? 'success' : value.status === 'published' ? 'info' : value.status === 'closed' ? 'danger' : value.status === 'pending' ? 'neutral' : 'neutral'}>{value.status}</MetricBadge>
+      {/* Status & Created */}
+      <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-4">
+        <div className="text-sm text-slate-700 dark:text-dark-text-secondary">
+          {getDateAgo(value?.created_at)}
+        </div>
+        <div className="flex gap-2 items-center">
+          <label className="text-sm font-medium text-slate-700 dark:text-dark-text-secondary">
+            {t('modal.status')}:
+          </label>
+          <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md">
+            <MetricBadge
+              tone={
+                value.status === 'completed'
+                  ? 'success'
+                  : value.status === 'awarded'
+                    ? 'success'
+                    : value.status === 'published'
+                      ? 'info'
+                      : value.status === 'closed'
+                        ? 'danger'
+                        : 'neutral'
+              }
+              className="dark:bg-dark-bg-card dark:text-dark-text-primary"
+            >
+              {value.status}
+            </MetricBadge>
           </div>
         </div>
       </div>
 
+      {/* Description */}
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.description')}</label>
-        <div className='p-3 bg-slate-50 rounded-md whitespace-pre-wrap'>{value.description}</div>
-      </div>
-
-      <Client isVerifed={value.buyer?.isIdentityVerified} name={value.buyer?.username} subtitle={value.buyer?.email} id={value.buyer?.id} />
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.budget')}</label>
-          <div className='p-2 bg-slate-50 rounded-md font-semibold'>${value.budget}</div>
-        </div>
-
-        <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.budgetType')}</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{value.budgetType}</div>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.description')}
+        </label>
+        <div className="p-3 bg-slate-50 dark:bg-dark-bg-card rounded-md dark:text-dark-text-primary whitespace-pre-wrap">
+          {value.description}
         </div>
       </div>
 
+      {/* Buyer Info */}
+      <Client
+        isVerifed={value.buyer?.isIdentityVerified}
+        name={value.buyer?.username}
+        subtitle={value.buyer?.email}
+        id={value.buyer?.id}
+      />
+
+      {/* Budget & Budget Type */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+            {t('modal.budget')}
+          </label>
+          <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md font-semibold dark:text-dark-text-primary">
+            ${value.budget}
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+            {t('modal.budgetType')}
+          </label>
+          <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md dark:text-dark-text-primary">
+            {value.budgetType}
+          </div>
+        </div>
+      </div>
+
+      {/* Location */}
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.location')}</label>
-        <div className='p-3 bg-slate-50 rounded-md whitespace-pre-wrap'>
-          <span className='flex gap-1'>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.location')}
+        </label>
+        <div className="p-3 bg-slate-50 dark:bg-dark-bg-card rounded-md dark:text-dark-text-primary whitespace-pre-wrap">
+          <span className="flex gap-1">
             {(() => {
-              const JobCountry = locale === 'ar'
-                ? (value?.country?.name_ar || value?.country?.name || '—')
-                : (value?.country?.name || '—');
-
-              const JobState = locale === 'ar'
-                ? (value?.state?.name_ar || value?.state?.name || '—')
-                : (value?.state?.name || '—');
-
-              // Only show if at least one exists
+              const JobCountry =
+                locale === 'ar'
+                  ? value?.country?.name_ar || value?.country?.name || '—'
+                  : value?.country?.name || '—';
+              const JobState =
+                locale === 'ar'
+                  ? value?.state?.name_ar || value?.state?.name || '—'
+                  : value?.state?.name || '—';
               if (JobCountry === '—' && JobState === '—') return null;
-
               return (
-                <span className='flex gap-1'>
+                <span className="flex gap-1">
                   {value?.country?.iso2 && <CountryFlag countryCode={value.country.iso2} />}
-                  {JobCountry}{JobCountry && JobState ? ' · ' : ''}{JobState}
+                  {JobCountry}
+                  {JobCountry && JobState ? ' · ' : ''}
+                  {JobState}
                 </span>
               );
             })()}
@@ -359,70 +426,105 @@ function JobView({ value, onClose }) {
         </div>
       </div>
 
-
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+      {/* Preferred Delivery & Proposals */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.preferredDelivery')}</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{value.preferredDeliveryDays} {t('modal.days')}</div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+            {t('modal.preferredDelivery')}
+          </label>
+          <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md dark:text-dark-text-primary">
+            {value.preferredDeliveryDays} {t('modal.days')}
+          </div>
         </div>
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.proposals')}</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{value.proposals?.length || 0} {t('modal.proposalsCount')}</div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+            {t('modal.proposals')}
+          </label>
+          <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md dark:text-dark-text-primary">
+            {value.proposals?.length || 0} {t('modal.proposalsCount')}
+          </div>
         </div>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-
-
+      {/* Posted Date */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.posted')}</label>
-          <div className='p-2 bg-slate-50 rounded-md'>{formatted}</div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+            {t('modal.posted')}
+          </label>
+          <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md dark:text-dark-text-primary">
+            {formatted}
+          </div>
         </div>
-
       </div>
+
+      {/* Skills */}
       <div>
-        <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.skillsRequired')}</label>
-        <div className='p-2 bg-slate-50 rounded-md'>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.skillsRequired')}
+        </label>
+        <div className="p-2 bg-slate-50 dark:bg-dark-bg-card rounded-md">
           {value.skillsRequired?.map((skill, i) => (
-            <span key={i} className='inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-1 mb-1'>
+            <span
+              key={i}
+              className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-1 mb-1 dark:bg-blue-900 dark:text-blue-400"
+            >
               {skill}
             </span>
           ))}
         </div>
       </div>
 
-      {
-        value.attachments?.length > 0 && (
-          <div>
-            <label className='block text-sm font-medium text-slate-700 mb-1'>{t('modal.attachments')}</label>
-            <div className='p-3 bg-slate-50 rounded-md'>
-              {value.attachments.map((a, i) => (
-                <div key={i} className='flex items-center justify-between py-2 border-b last:border-b-0'>
-                  <span className='text-sm'>{a.name}</span>
-                  <a href={resolveUrl(a.url)} target='_blank' rel='noopener noreferrer' className='text-blue-600 hover:underline text-sm'>
-                    {t('modal.download')}
-                  </a>
-                </div>
-              ))}
-            </div>
+      {/* Attachments */}
+      {value.attachments?.length > 0 && (
+        <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+            {t('modal.attachments')}
+          </label>
+          <div className="p-3 bg-slate-50 dark:bg-dark-bg-card rounded-md">
+            {value.attachments.map((a, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between py-2 border-b last:border-b-0 dark:border-dark-border"
+              >
+                <span className="text-sm dark:text-dark-text-primary">{a.name}</span>
+                <a
+                  href={resolveUrl(a.url)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                >
+                  {t('modal.download')}
+                </a>
+              </div>
+            ))}
           </div>
-        )
-      }
+        </div>
+      )}
 
-      {
-        value?.additionalInfo && (
-          <section>
-            <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('modal.additionalDetails')}</h4>
-            <p className='text-sm text-slate-700 whitespace-pre-wrap'>{value?.additionalInfo}</p>
-          </section>
-        )
-      }
+      {/* Additional Info */}
+      {value?.additionalInfo && (
+        <section>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary mb-2">
+            {t('modal.additionalDetails')}
+          </h4>
+          <p className="text-sm text-slate-700 dark:text-dark-text-secondary whitespace-pre-wrap">
+            {value?.additionalInfo}
+          </p>
+        </section>
+      )}
 
-      <div className='flex justify-end'>
-        <Button color='white' name={t('modal.close')} onClick={onClose} className='!w-fit'>
+      {/* Close Button */}
+      <div className="flex justify-end">
+        <Button
+          color="secondary"
+          name={t('modal.close')}
+          onClick={onClose}
+          className="!w-fit dark:bg-dark-bg-card dark:text-dark-text-primary"
+        >
           {t('modal.close')}
         </Button>
       </div>
-    </div >
+    </div>
   );
 }

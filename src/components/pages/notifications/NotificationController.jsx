@@ -169,11 +169,11 @@ const NotificationController = () => {
         return (
             <div className='container mx-auto px-4 py-8 max-w-4xl !mt-6'>
                 <div className='animate-pulse space-y-4'>
-                    <div className='h-8 bg-gray-200 rounded w-1/4'></div>
+                    <div className='h-8 bg-gray-200 dark:bg-dark-bg-card rounded w-1/4'></div>
                     {[1, 2, 3, 4, 5].map(i => (
-                        <div key={i} className='p-4 border border-gray-200 rounded-lg'>
-                            <div className='h-4 bg-gray-200 rounded w-3/4 mb-2'></div>
-                            <div className='h-3 bg-gray-200 rounded w-1/2'></div>
+                        <div key={i} className='p-4 border border-gray-200 dark:border-dark-border rounded-lg dark:bg-dark-bg-card'>
+                            <div className='h-4 bg-gray-200 dark:bg-dark-bg-input rounded w-3/4 mb-2'></div>
+                            <div className='h-3 bg-gray-200 dark:bg-dark-bg-input rounded w-1/2'></div>
                         </div>
                     ))}
                 </div>
@@ -181,15 +181,14 @@ const NotificationController = () => {
         );
     }
 
-
     return (
-        <div className=' !my-8 container  '>
+        <div className='!my-8 container'>
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t('title')}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-dark-text-primary">{t('title')}</h1>
                 {unreadNotificationCount > 0 && (
                     <button
                         onClick={markAllAsRead}
-                        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base dark:bg-dark-bg-card dark:text-dark-text-primary dark:hover:bg-dark-bg-input"
                     >
                         {t('markAllAsRead', { count: unreadNotificationCount })}
                     </button>
@@ -201,27 +200,30 @@ const NotificationController = () => {
                     <NoResults mainText={t('noNotifications')} additionalText={t('noNotificationsDesc')} />
                 </div>
             ) : (
-                <div className='bg-white shadow-sm rounded-lg overflow-hidden'>
-                    <div className='divide-y divide-gray-200'>
+                <div className='bg-white shadow-sm rounded-lg dark:bg-dark-bg-card dark:shadow-none'>
+                    <div className='divide-y divide-gray-200 dark:divide-dark-border'>
                         {pageNotifications.map(notification => (
-                            <div key={notification.id} data-notification-id={notification.id} className={`p-4 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}>
+                            <div
+                                key={notification.id}
+                                data-notification-id={notification.id}
+                                className={`p-4 hover:bg-gray-50 dark:hover:bg-dark-bg-input transition-colors ${!notification.isRead ? 'bg-blue-50 dark:bg-dark-bg-card' : ''}`}
+                            >
                                 <div className='flex gap-4'>
                                     <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${getNotificationColor(notification.type)}`}>
                                         <img src={getNotificationIcon(notification.type)} alt={notification.type} className='w-5 h-5' />
                                     </div>
                                     <div className='flex-1 min-w-0'>
                                         <div className='flex flex-col xs:flex-row items-start justify-between'>
-                                            <h3 className='text-sm font-medium text-gray-900'>{notification.title}</h3>
-                                            <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2'>{formatDate(notification.created_at)}</span>
+                                            <h3 className='text-sm font-medium text-gray-900 dark:text-dark-text-primary'>{notification.title}</h3>
+                                            <span className='text-xs text-gray-500 dark:text-dark-text-secondary whitespace-nowrap xs:ml-2'>{formatDate(notification.created_at)}</span>
                                         </div>
-                                        <p className='text-sm text-gray-600 mt-2'>{notification.message}</p>
+                                        <p className='text-sm text-gray-600 dark:text-dark-text-secondary mt-2'>{notification.message}</p>
                                         {getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type) && (
                                             <div className='mt-3'>
-                                                <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer'>
+                                                <Link href={getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type)} className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 hover:text-blue-700 transition-all duration-300 ease-in-out shadow-sm cursor-pointer dark:text-dark-text-primary dark:bg-dark-bg-input dark:hover:bg-dark-bg-card dark:hover:text-dark-text-primary'>
                                                     <span className='text-xs'>{notification.relatedEntityType === 'proposal' ? t('viewProposal') : t('viewOrder')}</span>
-                                                    <span className='text-blue-600 text-sm'>
-                                                        {' '}
-                                                        <MoveRight size={16} />{' '}
+                                                    <span className='text-blue-600 text-sm dark:text-dark-text-primary'>
+                                                        <MoveRight size={16} />
                                                     </span>
                                                 </Link>
                                             </div>
@@ -230,7 +232,7 @@ const NotificationController = () => {
                                 </div>
                                 {!notification.isRead && (
                                     <div className='mt-3'>
-                                        <button onClick={() => markOneAsRead(notification.id)} className='text-xs text-blue-600 hover:text-blue-800 font-medium'>
+                                        <button onClick={() => markOneAsRead(notification.id)} className='text-xs text-blue-600 hover:text-blue-800 font-medium dark:text-dark-text-primary dark:hover:text-dark-text-secondary'>
                                             {t('markAsRead')}
                                         </button>
                                     </div>
@@ -241,9 +243,17 @@ const NotificationController = () => {
                 </div>
             )}
 
-            <TabsPagination loading={loading} recordsCount={pageNotifications.length} currentPage={pagination.page} totalPages={pagination.pages} onPageChange={handlePageChange} onItemsPerPageChange={handleItemsPerPageChange} itemsPerPage={pagination.limit} />
+            <TabsPagination
+                loading={loading}
+                recordsCount={pageNotifications.length}
+                currentPage={pagination.page}
+                totalPages={pagination.pages}
+                onPageChange={handlePageChange}
+                onItemsPerPageChange={handleItemsPerPageChange}
+                itemsPerPage={pagination.limit}
+            />
         </div>
     );
-};
+}
 
 export default NotificationController;

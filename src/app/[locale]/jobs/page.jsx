@@ -310,16 +310,23 @@ export default function SellerJobsPage() {
   }, [page, limit, debouncedQ?.trim(), filters]);
 
   return (
-    <div className='container !mb-12 !pt-8 '>
+    <div className='container !mb-12 !pt-8'>
       {role === 'seller' && <HeroHeader />}
 
-      {/* Filters Panel */}
-      <motion.section variants={fadeItem} initial='hidden' animate='show' transition={spring} className='card'>
+      {/* Filters Panel - Applied your card background and border */}
+      <motion.section
+        variants={fadeItem}
+        initial='hidden'
+        animate='show'
+        transition={spring}
+        className='card p-4 rounded-xl border border-[#EDEDED] bg-white dark:bg-dark-bg-card dark:border-dark-border dark:shadow-none transition-colors duration-300'
+      >
         <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'>
           <CategorySelect
             type='category'
             loadingText={t('page.selectCategory')}
-            cnPlaceholder='!text-gray-900'
+            // Trimmed !text-gray-900 for dark-text-primary
+            cnPlaceholder='!text-gray-900 dark:!text-dark-text-primary'
             value={filters?.category}
             onChange={opt => {
               setFilter('category', opt?.id ?? '');
@@ -330,7 +337,7 @@ export default function SellerJobsPage() {
           <LocationSelect
             type='country'
             value={filters?.country}
-            cnPlaceholder='!text-gray-900'
+            cnPlaceholder='!text-gray-900 dark:!text-dark-text-primary'
             onChange={opt => {
               setFilter('country', opt?.id ?? '');
             }}
@@ -339,9 +346,9 @@ export default function SellerJobsPage() {
 
           <LocationSelect
             type='state'
-            parentId={filters?.country} // Pass selected countryId here
+            parentId={filters?.country}
             value={filters?.state}
-            cnPlaceholder='!text-gray-900'
+            cnPlaceholder='!text-gray-900 dark:!text-dark-text-primary'
             onChange={opt => {
               setFilter('state', opt?.id ?? '');
             }}
@@ -353,16 +360,16 @@ export default function SellerJobsPage() {
             value={filters.budgetType}
             onChange={opt => {
               setFilter('budgetType', opt?.id ?? '');
-            }
-            }
+            }}
             options={[
               { id: '', name: t('page.anyBudgetType') },
               { id: 'fixed', name: t('page.fixed') },
               { id: 'hourly', name: t('page.hourly') },
             ]}
-            className='!text-xs min-w-0 truncate'
+            className='!text-xs min-w-0 truncate dark:text-dark-text-primary'
             variant='minimal'
           />
+
           <SellerBudgetDropdown onBudgetChange={(priceRange, customBudget) => {
             setFiltersState(prev => {
               const updated = {
@@ -390,16 +397,22 @@ export default function SellerJobsPage() {
                   withAttachments: next.withAttachments,
                 }))
                 resetPage();
-              }
-              }
+              }}
             />
           </div>
 
-          <InputSearch iconLeft={'/icons/search.svg'} value={q} onChange={v => setQ(v)} placeholder={t('page.searchPlaceholder')} className='!max-w-full' showAction={false} />
+          <InputSearch
+            iconLeft={'/icons/search.svg'}
+            value={q}
+            onChange={v => setQ(v)}
+            placeholder={t('page.searchPlaceholder')}
+            className='!max-w-full'
+            showAction={false}
+          />
         </div>
       </motion.section>
 
-      {/* Grid */}
+      {/* Grid - Standardized text for the empty state */}
       <motion.div className='mt-6 grid grid-cols-1' variants={fadeStagger} initial='hidden' animate='show'>
         {loading ? (
           Array.from({ length: 9 }).map((_, i) => <JobCardSkeleton key={i} />)
@@ -411,19 +424,32 @@ export default function SellerJobsPage() {
           ))
         ) : (
           <div className='md:col-span-2 lg:col-span-3'>
-            <NoResults mainText={t('page.noJobs')} additionalText={t('page.noJobsDescription')} buttonText={t('page.resetFilters')} onClick={resetFilters} />
+            <NoResults
+              mainText={t('page.noJobs')}
+              additionalText={t('page.noJobsDescription')}
+              buttonText={t('page.resetFilters')}
+              onClick={resetFilters}
+              className="dark:text-dark-text-primary"
+            />
           </div>
         )}
       </motion.div>
 
       <div className='mt-8'>
-        <TabsPagination loading={loading} recordsCount={jobs.length} currentPage={page} totalPages={pages} onPageChange={p => setPage(p)} onItemsPerPageChange={sz => {
-          setLimit(sz)
-          setPage(1);
-        }} itemsPerPage={limit} />
+        <TabsPagination
+          loading={loading}
+          recordsCount={jobs.length}
+          currentPage={page}
+          totalPages={pages}
+          onPageChange={p => setPage(p)}
+          onItemsPerPageChange={sz => {
+            setLimit(sz)
+            setPage(1);
+          }}
+          itemsPerPage={limit}
+        />
       </div>
 
-      {/* Drawer (details + apply) */}
       <JobDrawer
         open={drawerOpen}
         job={selectedJob}
@@ -456,14 +482,31 @@ export default function SellerJobsPage() {
 function HeroHeader() {
   const t = useTranslations('Jobs');
   return (
-    <motion.header initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={spring} className='card relative mb-6 overflow-hidden'>
-      <div className='pointer-events-none absolute inset-0 -z-10 opacity-80 [background:radial-gradient(1000px_300px_at_20%_-10%,#ecfeff,transparent),radial-gradient(1000px_300px_at_80%_120%,#eef2ff,transparent)]' />
-      <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
+    <motion.header
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={spring}
+      className='card relative mb-6 overflow-hidden bg-white dark:bg-dark-bg-card border border-slate-200 dark:border-dark-border p-6 rounded-2xl'
+    >
+      {/* Refined Background Gradient for Dark Mode */}
+      <div className='pointer-events-none absolute inset-0 -z-10 opacity-80 dark:opacity-20 [background:radial-gradient(1000px_300px_at_20%_-10%,#ecfeff,transparent),radial-gradient(1000px_300px_at_80%_120%,#eef2ff,transparent)] dark:[background:radial-gradient(1000px_300px_at_20%_-10%,rgba(0,122,85,0.15),transparent),radial-gradient(1000px_300px_at_80%_120%,rgba(0,122,85,0.1),transparent)]' />
+
+      <div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
         <div>
-          <h1 className='text-4xl font-extrabold tracking-tight text-slate-900'>{t('page.findWork')}</h1>
-          <p className='mt-1 text-slate-600'>{t('page.findWorkSubtitle')}</p>
+          <h1 className='text-4xl font-extrabold tracking-tight text-slate-900 dark:text-dark-text-primary'>
+            {t('page.findWork')}
+          </h1>
+          <p className='mt-1 text-slate-600 dark:text-dark-text-secondary'>
+            {t('page.findWorkSubtitle')}
+          </p>
         </div>
-        <motion.a whileHover={{ x: 2 }} whileTap={{ scale: 0.98 }} href='/jobs/proposals' className='inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold shadow-sm'>
+
+        <motion.a
+          whileHover={{ x: 2 }}
+          whileTap={{ scale: 0.98 }}
+          href='/jobs/proposals'
+          className='inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input px-4 py-2.5 text-sm font-semibold shadow-sm text-slate-900 dark:text-dark-text-primary transition-colors'
+        >
           {t('page.myProposals')} <ArrowUpRight className='h-4 w-4' />
         </motion.a>
       </div>
@@ -484,55 +527,64 @@ function JobCard({ job, onOpen, index }) {
   const budgetLine = formatBudget?.(job, t) || `${job?.pricing || ''}`;
   const buyer = job?.buyer || {};
 
-  // get country and state based on locale
   const country = locale === 'ar' ? (job?.country?.name_ar || job?.country?.name || '—') : (job?.country?.name || '—');
   const state = locale === 'ar' ? (job?.state?.name_ar || job?.state?.name || '—') : (job?.state?.name || '—');
 
-
-  // determine relation to current user
   const isRelatedToUser = Boolean(
     user && (job?.buyer?.id === user?.id || job?.seller?.id === user?.id)
   );
 
   return (
-    <motion.article className='group  border-b border-b-slate-200 p-5 sm:p-6 hover:bg-gray-100 bg-gray-50/50 transition-all duration-200 cursor-pointer' onClick={onOpen} role='button' tabIndex={0} onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onOpen()} transition={spring}>
+    <motion.article
+      className='group border-b border-b-slate-200 dark:border-b-dark-border p-5 sm:p-6 hover:bg-gray-100 dark:hover:bg-dark-bg-input bg-gray-50/50 dark:bg-dark-bg-card transition-all duration-200 cursor-pointer'
+      onClick={onOpen}
+      role='button'
+      tabIndex={0}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onOpen()}
+      transition={spring}
+    >
       {/* Top bar (posted + actions) */}
       <div className='mb-1 flex items-center justify-between'>
-        <div className='text-xs text-slate-500'>{t('page.posted')} {posted || createdDate}</div>
+        <div className='text-xs text-slate-500 dark:text-dark-text-secondary'>{t('page.posted')} {posted || createdDate}</div>
         <div className='relative flex items-center gap-2 opacity-70 group-hover:opacity-100'
           onClick={e => e.stopPropagation()}
           onKeyDown={e => e.stopPropagation()} >
-          {/* relation badge */}
+
           {isRelatedToUser && (
-            <span className='inline-flex items-center rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs font-semibold text-main-700'>
+            <span className='inline-flex items-center rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs font-semibold text-main-700 dark:border-main-500/30 dark:bg-main-500/10 dark:text-main-400'>
               {t('page.relatedToYou')}
             </span>
           )}
-          {/* <FavoriteButton className=' !top-0 !right-0 !relative' /> */}
         </div>
       </div>
 
       <UserAvatar buyer={buyer} />
 
-      <h2 className='text-lg sm:text-xl font-semibold text-slate-900 leading-snug'>{job.title}</h2>
-      {/* Display country and state if exist */}
+      <h2 className='text-lg sm:text-xl font-semibold text-slate-900 dark:text-dark-text-primary leading-snug'>{job.title}</h2>
+
       {(country || state) && (
-        <div className='mt-1 text-sm text-slate-600 flex gap-1'>
+        <div className='mt-1 text-sm text-slate-600 dark:text-dark-text-secondary flex gap-1'>
           {country}{country && state ? ' · ' : ''}{state}
         </div>
       )}
 
-
-      <div className='mt-1 text-sm text-slate-600 flex gap-1'> {budgetLine || `{t('page.fixedPrice')} · Intermediate`}<Currency style={{ fill: "#45556c" }} /></div>
+      <div className='mt-1 text-sm text-slate-600 dark:text-dark-text-secondary flex gap-1 items-center'>
+        {budgetLine || `{t('page.fixedPrice')} · Intermediate`}
+        <Currency className="dark:opacity-70" style={{ fill: "currentColor" }} />
+      </div>
 
       {/* Description */}
-      {job.description ? <p className='mt-2 text-slate-700 text-[15px] md:text-base line-clamp-6   md:line-clamp-2'>{job.description}</p> : null}
+      {job.description ? (
+        <p className='mt-2 text-slate-700 dark:text-dark-text-secondary/90 text-[15px] md:text-base line-clamp-6 md:line-clamp-2'>
+          {job.description}
+        </p>
+      ) : null}
 
       {/* Skill chips */}
       {Array.isArray(job.skillsRequired) && job.skillsRequired.length > 0 && (
         <div className='mt-3 flex flex-wrap gap-2'>
           {job.skillsRequired.map((s, i) => (
-            <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
+            <span key={i} className='inline-flex items-center rounded-full bg-slate-100 dark:bg-dark-bg-input text-slate-700 dark:text-dark-text-primary px-2.5 py-1 text-xs font-semibold border border-slate-200 dark:border-dark-border'>
               {s}
             </span>
           ))}
@@ -541,7 +593,7 @@ function JobCard({ job, onOpen, index }) {
 
       <div className='mt-5 flex items-center justify-end'>
         <div className='flex items-center gap-2'>
-          <span className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800'>
+          <span className='inline-flex items-center gap-1 rounded-xl border border-slate-300 dark:border-dark-border bg-white dark:bg-dark-bg-input px-3 py-2 text-sm font-medium text-slate-800 dark:text-dark-text-primary'>
             {t('page.viewAndApply')} <ArrowUpRight className='h-4 w-4' />
           </span>
         </div>
@@ -552,17 +604,30 @@ function JobCard({ job, onOpen, index }) {
 
 function JobCardSkeleton() {
   return (
-    <motion.div className=' border-b border-b-slate-200 bg-white p-6 animate-pulse' initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <div className='h-3 w-24 rounded bg-slate-200' />
-      <div className='mt-3 h-6 w-2/3 rounded bg-slate-200' />
-      <div className='mt-2 h-4 w-full rounded bg-slate-200' />
-      <div className='mt-2 h-4 w-5/6 rounded bg-slate-200' />
+    <motion.div
+      className='border-b border-b-slate-200 dark:border-b-dark-border bg-white dark:bg-dark-bg-card p-6 animate-pulse'
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+      {/* Posted Date */}
+      <div className='h-3 w-24 rounded bg-slate-200 dark:bg-dark-border' />
+
+      {/* Title */}
+      <div className='mt-3 h-6 w-2/3 rounded bg-slate-200 dark:bg-dark-border' />
+
+      {/* Description Lines */}
+      <div className='mt-2 h-4 w-full rounded bg-slate-200 dark:bg-dark-border' />
+      <div className='mt-2 h-4 w-5/6 rounded bg-slate-200 dark:bg-dark-border' />
+
+      {/* Skill Chips */}
       <div className='mt-4 flex gap-2'>
-        <div className='h-6 w-20 rounded-full bg-slate-200' />
-        <div className='h-6 w-20 rounded-full bg-slate-200' />
-        <div className='h-6 w-20 rounded-full bg-slate-200' />
+        <div className='h-6 w-20 rounded-full bg-slate-200 dark:bg-dark-border' />
+        <div className='h-6 w-20 rounded-full bg-slate-200 dark:bg-dark-border' />
+        <div className='h-6 w-20 rounded-full bg-slate-200 dark:bg-dark-border' />
       </div>
-      <div className='mt-5 h-9 w-36 rounded bg-slate-200' />
+
+      {/* Footer Button */}
+      <div className='mt-5 h-9 w-36 rounded-xl bg-slate-200 dark:bg-dark-border' />
     </motion.div>
   );
 }
@@ -605,12 +670,12 @@ function createApplySchema(t) {
           .filter((url) => url.length > 0);
       })
       .test('is-array', t('page.validation.invalidPortfolioUrls'), (value) => Array.isArray(value))
-      .test('max-links', t('page.validation.max10Links'), (value) => value.length <= 10)
+      .test('max-links', t('page.validation.max10Links'), (value) => value?.length <= 10)
       .test('valid-urls', t('page.validation.validUrls'), (value) =>
-        value.every((url) => yup.string().url().isValidSync(url))
+        value?.every((url) => yup.string().url().isValidSync(url))
       )
       .test('max-length', t('page.validation.maxLength'), (value) =>
-        value.every((url) => url.length <= 500)
+        value?.every((url) => url.length <= 500)
       )
       .optional(),
   });
@@ -678,16 +743,6 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
     if (!open) reset();
   }, [open, reset]);
 
-  const submit = async values => {
-    if (!canSubmitProposal) return;
-    const payload = {
-      ...values,
-      portfolioUrls: values?.portfolioUrls.join('\n')
-    }
-    await onSubmitProposal?.(payload);
-    reset();
-    onClose?.();
-  };
 
 
   const canSubmitProposal = user && role === 'seller' && localJob?.buyer?.id !== user?.id;
@@ -703,218 +758,190 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
   // get country and state based on locale
 
+  const onSubmit = async values => {
+    if (!canSubmitProposal) return;
+    const payload = {
+      ...values,
+      portfolioUrls: values?.portfolioUrls.join('\n')
+    }
+    await onSubmitProposal?.(payload);
+    reset();
+    onClose?.();
+  };
+
 
   return (
     <AnimatePresence>
       {open && (
         <>
           {/* Overlay */}
-          <motion.div className='fixed inset-0 bg-black/40 backdrop-blur-[1px] z-40' onClick={onClose} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+          <motion.div
+            className='fixed inset-0 bg-black/40 dark:bg-black/70 backdrop-blur-[1px] z-40'
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
 
           {/* Drawer */}
-          <motion.aside className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white shadow-2xl flex flex-col' initial={{ x: -580 }} animate={{ x: 0 }} exit={{ x: -580 }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
+          <motion.aside
+            className='fixed inset-y-0 left-0 z-50 w-full max-w-[560px] bg-white dark:bg-dark-bg-card shadow-2xl flex flex-col'
+            initial={{ x: -580 }}
+            animate={{ x: 0 }}
+            exit={{ x: -580 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 36 }}
+          >
             {jobLoading ? (
               <JobDrawerSkeleton onClose={onClose} />
             ) : !localJob ? (
-              // Not found state
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-dark-bg-card">
                 <AlertTriangle className="w-12 h-12 text-amber-500 mb-4" />
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary">
                   {t("page.errors.jobNotFoundTitle")}
                 </h3>
-                <p className="text-sm text-slate-600 mt-2 max-w-sm">
+                <p className="text-sm text-slate-600 dark:text-dark-text-secondary mt-2 max-w-sm">
                   {t("page.errors.jobNotFoundDescription")}
                 </p>
-                <button
-                  onClick={onClose}
-                  className="mt-6 px-4 py-2 rounded-md bg-main-600 text-white hover:bg-main-700"
-                >
+                <button onClick={onClose} className="mt-6 px-4 py-2 rounded-md bg-main-600 text-white hover:bg-main-700">
                   {t("page.close")}
                 </button>
               </div>
-            )
-              : (
-                <>
-
-                  {/* Header */}
-                  <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200'>
-                    <div className='flex items-center flex-wrap gap-3'>
-                      <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{localJob?.title || t('page.jobDetails')}</h3>
-                      {/* show relation badge in drawer header */}
-                      {user && (localJob?.buyer?.id === user?.id || localJob?.seller?.id === user?.id) && (
-                        <span className='inline-flex items-center rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs font-semibold text-main-700'>
-                          {t('page.youPostedThis')}
-                        </span>
-                      )}
-                    </div>
-                    <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
-                      <X className='h-5 w-5 text-slate-700' />
-                    </button>
+            ) : (
+              <>
+                {/* Header */}
+                <div className='flex items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-200 dark:border-dark-border'>
+                  <div className='flex items-center flex-wrap gap-3'>
+                    <h3 className='text-lg font-semibold text-slate-900 dark:text-dark-text-primary line-clamp-1'>
+                      {localJob?.title || t('page.jobDetails')}
+                    </h3>
+                    {user && (localJob?.buyer?.id === user?.id || localJob?.seller?.id === user?.id) && (
+                      <span className='inline-flex items-center rounded-full border border-main-200 bg-main-50 dark:bg-main-500/10 dark:border-main-500/30 px-2 py-0.5 text-xs font-semibold text-main-700 dark:text-main-400'>
+                        {t('page.youPostedThis')}
+                      </span>
+                    )}
                   </div>
+                  <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100 dark:hover:bg-dark-bg-input transition-colors'>
+                    <X className='h-5 w-5 text-slate-700 dark:text-dark-text-secondary' />
+                  </button>
+                </div>
 
-                  {/* Scrollable body */}
-                  <div className='flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-6'>
-                    {/* Summary */}
-                    {localJob?.description && (
-                      <section>
-                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.summary')}</h4>
-
-                        <p className="text-sm text-slate-700 whitespace-pre-wrap">
-                          {localJob?.description}
-                        </p>
-
-                      </section>
-                    )}
-
-
-                    {/* Basic meta */}
-                    <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {/* Budget + Price Type */}
-                      <div className="rounded-xl border border-slate-200 p-4">
-                        <div className="text-slate-900 font-semibold flex gap-1">{fmtMoney(budget)}<Currency /></div>
-                        <div className="text-xs text-slate-500">{priceType}</div>
-                      </div>
-
-                      {/* Preferred Delivery */}
-                      <div className="rounded-xl border border-slate-200 p-4">
-                        <div className="text-slate-900 font-semibold">
-                          {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? t('page.day') : t('page.days')}
-                        </div>
-                        <div className="text-xs text-slate-500">{t('page.preferredDelivery')}</div>
-                      </div>
-                    </section>
-
-                    {/* Skills */}
-                    {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
-                      <section>
-                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.skillsAndExpertise')}</h4>
-                        <div className='flex flex-wrap gap-2'>
-                          {localJob?.skillsRequired.map((s, i) => (
-                            <span key={i} className='inline-flex items-center rounded-full bg-slate-100 text-slate-700 px-2.5 py-1 text-xs font-semibold border border-slate-200'>
-                              {s}
-                            </span>
-                          ))}
-                        </div>
-                      </section>
-                    )}
-
-                    {/* Location */}
-                    <section className="rounded-xl border border-slate-200 p-4 mt-4">
-                      <h4 className="text-sm font-semibold text-slate-900 mb-2">{t('page.location')}</h4>
-                      <div className="text-slate-700 text-sm flex flex-col gap-1">
-                        {/** Determine country and state based on locale */}
-                        {(() => {
-                          const JobCountry = locale === 'ar'
-                            ? (localJob?.country?.name_ar || localJob?.country?.name || '—')
-                            : (localJob?.country?.name || '—');
-
-                          const JobState = locale === 'ar'
-                            ? (localJob?.state?.name_ar || localJob?.state?.name || '—')
-                            : (localJob?.state?.name || '—');
-
-                          // Only show if at least one exists
-                          if (JobCountry === '—' && JobState === '—') return null;
-
-                          return (
-                            <span className='flex gap-1'>
-                              {localJob?.country?.iso2 && <CountryFlag countryCode={localJob.country.iso2} />}
-                              {JobCountry}{JobCountry && JobState ? ' · ' : ''}{JobState}
-                            </span>
-                          );
-                        })()}
-                      </div>
-                    </section>
-
-
-
-                    {/* Client */}
+                {/* Scrollable body */}
+                <div className='flex-1 overflow-y-auto px-5 sm:px-6 py-5 space-y-6 custom-scrollbar'>
+                  {/* Summary */}
+                  {localJob?.description && (
                     <section>
-                      <Client isVerifed={localJob?.buyer?.isIdentityVerified} name={buyerName} subtitle={country} id={localJob?.buyer?.id} />
+                      <h4 className='text-sm font-semibold text-slate-900 dark:text-dark-text-primary mb-2'>{t('page.summary')}</h4>
+                      <p className="text-sm text-slate-700 dark:text-dark-text-secondary whitespace-pre-wrap leading-relaxed">
+                        {localJob?.description}
+                      </p>
+                    </section>
+                  )}
 
-                      <div className='mt-3 space-y-2 text-sm'>
-                        <div className='flex items-center gap-2'>
+                  {/* Basic meta */}
+                  <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="rounded-xl border border-slate-200 dark:border-dark-border p-4 bg-gray-50/30 dark:bg-dark-bg-input/50">
+                      <div className="text-slate-900 dark:text-dark-text-primary font-semibold flex items-center gap-1">
+                        {fmtMoney(budget)}<Currency className="w-4 h-4" />
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-dark-text-secondary">{priceType}</div>
+                    </div>
 
-                          {localJob?.buyer?.paymentVerified ?
-                            <CheckCircle2 className='h-4 w-4 text-main-600' />
-                            : <CircleX className='h-4 w-4 text-red-600' />}
-                          <span>{t('page.paymentMethodVerified')}</span>
-                        </div>
-                        <div className='flex items-center gap-2 text-slate-700'>
-                          <CalendarDays className='h-4 w-4' />
-                          <span>{t('page.posted')} {created || '—'}</span>
-                        </div>
+                    <div className="rounded-xl border border-slate-200 dark:border-dark-border p-4 bg-gray-50/30 dark:bg-dark-bg-input/50">
+                      <div className="text-slate-900 dark:text-dark-text-primary font-semibold">
+                        {localJob?.preferredDeliveryDays} {localJob?.preferredDeliveryDays === 1 ? t('page.day') : t('page.days')}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-dark-text-secondary">{t('page.preferredDelivery')}</div>
+                    </div>
+                  </section>
+
+                  {/* Skills */}
+                  {Array.isArray(localJob?.skillsRequired) && localJob?.skillsRequired.length > 0 && (
+                    <section>
+                      <h4 className='text-sm font-semibold text-slate-900 dark:text-dark-text-primary mb-2'>{t('page.skillsAndExpertise')}</h4>
+                      <div className='flex flex-wrap gap-2'>
+                        {localJob?.skillsRequired.map((s, i) => (
+                          <span key={i} className='inline-flex items-center rounded-full bg-slate-100 dark:bg-dark-bg-input text-slate-700 dark:text-dark-text-primary px-2.5 py-1 text-xs font-semibold border border-slate-200 dark:border-dark-border'>
+                            {s}
+                          </span>
+                        ))}
                       </div>
                     </section>
+                  )}
 
-                    {/* Attachments */}
-                    {Array.isArray(localJob?.attachments) && localJob?.attachments.length > 0 && (
-                      <section>
-                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.attachments')}</h4>
-                        <div className='rounded-xl border border-slate-200 p-3'>
-                          <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                            <FolderOpen className='h-4 w-4' /> {t('page.files')}
-                          </div>
-                          <AttachmentList attachments={localJob?.attachments} />
+                  {/* Client Section */}
+                  <section className="space-y-4">
+                    <Client isVerifed={localJob?.buyer?.isIdentityVerified} name={buyerName} subtitle={country} id={localJob?.buyer?.id} />
+                    <div className='mt-3 space-y-2 text-sm'>
+                      <div className='flex items-center gap-2 text-slate-700 dark:text-dark-text-secondary'>
+                        {localJob?.buyer?.paymentVerified ?
+                          <CheckCircle2 className='h-4 w-4 text-main-600' /> :
+                          <CircleX className='h-4 w-4 text-rose-500' />}
+                        <span>{t('page.paymentMethodVerified')}</span>
+                      </div>
+                      <div className='flex items-center gap-2 text-slate-700 dark:text-dark-text-secondary'>
+                        <CalendarDays className='h-4 w-4' />
+                        <span>{t('page.posted')} {created || '—'}</span>
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Apply Form */}
+                  <section id='apply' className="pt-6 border-t border-slate-200 dark:border-dark-border">
+                    <h4 className='text-sm font-semibold text-slate-900 dark:text-dark-text-primary mb-4'>{t('page.apply')}</h4>
+                    <form className='space-y-4' onSubmit={handleSubmit(onSubmit)}>
+                      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                        <div>
+                          <label className='block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('page.bidAmount')}</label>
+                          <input
+                            disabled={!canSubmitProposal}
+                            type='number'
+                            className='mt-1 w-full dark:bg-dark-bg-input dark:text-dark-text-primary dark:border-dark-border rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500 disabled:opacity-50'
+                            placeholder='90'
+                            {...register('bidAmount')}
+                          />
                         </div>
-                      </section>
-                    )}
-                    {/* additionalInfo */}
-                    {localJob?.additionalInfo && (
-                      <section>
-                        <h4 className='text-sm font-semibold text-slate-900 mb-2'>{t('page.additionalDetails')}</h4>
-                        <p className='text-sm text-slate-700 whitespace-pre-wrap'>{localJob?.additionalInfo}</p>
-                      </section>
-                    )}
-
-                    {/* APPLY FORM */}
-                    <section id='apply'>
-                      <div className='flex items-center justify-between mb-2'>
-                        <h4 className='text-sm font-semibold text-slate-900'>{t('page.apply')}</h4>
+                        <div>
+                          <label className='block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('page.delivery')}</label>
+                          <input
+                            disabled={!canSubmitProposal}
+                            type='number'
+                            className='mt-1 w-full dark:bg-dark-bg-input dark:text-dark-text-primary dark:border-dark-border rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500 disabled:opacity-50'
+                            placeholder='3'
+                            {...register('deliveryDays')}
+                          />
+                        </div>
                       </div>
 
-                      <form className='space-y-4' onSubmit={handleSubmit(submit)}>
-                        {/* Bid + Delivery */}
-                        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                          <div>
-                            <label className='block text-sm font-medium text-slate-700'>{t('page.bidAmount')}</label>
-                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder='90' {...register('bidAmount')} />
-                            {errors.bidAmount && <p className='mt-1 text-xs text-rose-600'>{errors.bidAmount.message}</p>}
-                          </div>
-                          <div>
-                            <label className='block text-sm font-medium text-slate-700'>{t('page.delivery')}</label>
-                            <input disabled={!canSubmitProposal} type='number' step='1' className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder='3' {...register('deliveryDays')} />
-                            {errors.deliveryDays && <p className='mt-1 text-xs text-rose-600'>{errors.deliveryDays.message}</p>}
-                          </div>
-                        </div>
-
-                        {/* Cover letter */}
-                        <div>
-                          <label className='block text-sm font-medium text-slate-700'>{t('page.coverLetter')}</label>
-                          <textarea disabled={!canSubmitProposal} rows={6} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder={t('page.coverLetterPlaceholder')} {...register('coverLetter')} />
-                          {errors.coverLetter && <p className='mt-1 text-xs text-rose-600'>{errors.coverLetter.message}</p>}
-                        </div>
-
-                        {/* Portfolio links */}
-                        <div>
-                          <label className='block text-sm font-medium text-slate-700'>{t('page.portfolioLinks')}</label>
-                          <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full disabled:bg-slate-100 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500' placeholder={t('page.portfolioLinksPlaceholder')} {...register('portfolioUrls')} />
-                          {errors.portfolioUrls && (
-                            <p className="mt-1 text-xs text-rose-600">{errors.portfolioUrls.message}</p>
-                          )}
-                        </div>
-
-                        <div className='flex items-center justify-end gap-2'>
-                          <button type='button' onClick={onClose} className='inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-50'>
-                            {t('page.cancel')}
-                          </button>
-                          <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='inline-flex items-center rounded-xl bg-main-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-main-700 disabled:opacity-60'>
-                            {isSubmitting ? t('page.submitting') : t('page.applyNow')}
-                          </button>
-                        </div>
-                      </form>
-                    </section>
-                  </div>
-                </>)}
+                      <div>
+                        <label className='block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('page.coverLetter')}</label>
+                        <textarea
+                          disabled={!canSubmitProposal}
+                          rows={6}
+                          className='mt-1 w-full dark:bg-dark-bg-input dark:text-dark-text-primary dark:border-dark-border rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500 disabled:opacity-50'
+                          placeholder={t('page.coverLetterPlaceholder')}
+                          {...register('coverLetter')}
+                        />
+                      </div>
+                      <div>
+                        <label className='block text-sm font-medium text-slate-700 dark:text-dark-text-secondary'>{t('page.portfolioLinks')}</label>
+                        <textarea disabled={!canSubmitProposal} rows={3} className='mt-1 w-full dark:bg-dark-bg-input dark:text-dark-text-primary dark:border-dark-border rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-500 disabled:opacity-50' placeholder={t('page.portfolioLinksPlaceholder')} {...register('portfolioUrls')} />
+                        {errors.portfolioUrls && (
+                          <p className="mt-1 text-xs text-rose-600">{errors.portfolioUrls.message}</p>
+                        )}
+                      </div>
+                      <div className='flex items-center justify-end gap-2 pt-2'>
+                        <button type='button' onClick={onClose} className='rounded-xl border border-slate-300 dark:border-dark-border bg-white dark:bg-dark-bg-input px-4 py-2 text-sm font-medium text-slate-800 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card transition-colors'>
+                          {t('page.cancel')}
+                        </button>
+                        <button type='submit' disabled={!canSubmitProposal || isSubmitting} className='rounded-xl bg-main-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-main-700 disabled:opacity-60 transition-all'>
+                          {isSubmitting ? t('page.submitting') : t('page.applyNow')}
+                        </button>
+                      </div>
+                    </form>
+                  </section>
+                </div>
+              </>
+            )}
           </motion.aside>
         </>
       )}
@@ -924,75 +951,77 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
 
 function JobDrawerSkeleton({ onClose }) {
+  // Common skeleton bar class to keep code clean
+  const skeletonBar = "bg-slate-200 dark:bg-dark-bg-input rounded";
+
   return (
-    <div className="space-y-6 animate-pulse p-4">
+    <div className="space-y-6 animate-pulse p-4 bg-white dark:bg-dark-bg-base">
       {/* header */}
-      <div className='flex items-center justify-between  pb-4 border-b border-slate-200'>
+      <div className='flex items-center justify-between pb-4 border-b border-slate-200 dark:border-dark-border'>
+        <div className={`h-6 w-2/3 ${skeletonBar}`} />
 
-        <div className="h-6 w-2/3 bg-slate-200 rounded" />
-
-        <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100'>
-          <X className='h-5 w-5 text-slate-700' />
+        <button onClick={onClose} className='rounded-full p-2 hover:bg-slate-100 dark:hover:bg-dark-bg-card transition-colors'>
+          <X className='h-5 w-5 text-slate-700 dark:text-dark-text-secondary' />
         </button>
       </div>
 
       {/* summary */}
       <div className="space-y-2">
-        <div className="h-4 w-1/3 bg-slate-200 rounded" />
-        <div className="h-3 w-full bg-slate-200 rounded" />
-        <div className="h-3 w-full bg-slate-200 rounded" />
-        <div className="h-3 w-full bg-slate-200 rounded" />
-        <div className="h-3 w-5/6 bg-slate-200 rounded" />
+        <div className={`h-4 w-1/3 ${skeletonBar}`} />
+        <div className={`h-3 w-full ${skeletonBar}`} />
+        <div className={`h-3 w-full ${skeletonBar}`} />
+        <div className={`h-3 w-full ${skeletonBar}`} />
+        <div className={`h-3 w-5/6 ${skeletonBar}`} />
       </div>
 
       {/* meta grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-slate-200 p-4">
-          <div className="h-5 w-24 bg-slate-200 rounded mb-2" />
-          <div className="h-3 w-16 bg-slate-200 rounded" />
+        <div className="rounded-xl border border-slate-200 dark:border-dark-border p-4 dark:bg-dark-bg-card/30">
+          <div className={`h-5 w-24 ${skeletonBar} mb-2`} />
+          <div className={`h-3 w-16 ${skeletonBar}`} />
         </div>
-        <div className="rounded-xl border border-slate-200 p-4">
-          <div className="h-5 w-20 bg-slate-200 rounded mb-2" />
-          <div className="h-3 w-24 bg-slate-200 rounded" />
+        <div className="rounded-xl border border-slate-200 dark:border-dark-border p-4 dark:bg-dark-bg-card/30">
+          <div className={`h-5 w-20 ${skeletonBar} mb-2`} />
+          <div className={`h-3 w-24 ${skeletonBar}`} />
         </div>
       </div>
 
       {/* skills */}
       <div className="flex flex-wrap gap-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-6 w-20 bg-slate-200 rounded-full" />
+          <div key={i} className={`h-6 w-20 ${skeletonBar} !rounded-full`} />
         ))}
       </div>
 
       {/* client */}
       <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-full bg-slate-200" />
+        <div className={`h-10 w-10 rounded-full ${skeletonBar}`} />
         <div className="flex-1">
-          <div className="h-4 w-36 bg-slate-200 rounded mb-2" />
-          <div className="h-3 w-20 bg-slate-200 rounded" />
+          <div className={`h-4 w-36 ${skeletonBar} mb-2`} />
+          <div className={`h-3 w-20 ${skeletonBar}`} />
         </div>
       </div>
 
       {/* attachments */}
-      <div className="rounded-xl border border-slate-200 p-3 space-y-2">
-        <div className="h-4 w-28 bg-slate-200 rounded" />
-        <div className="h-8 w-full bg-slate-200 rounded" />
+      <div className="rounded-xl border border-slate-200 dark:border-dark-border p-3 space-y-2 dark:bg-dark-bg-card/30">
+        <div className={`h-4 w-28 ${skeletonBar}`} />
+        <div className={`h-8 w-full ${skeletonBar}`} />
       </div>
 
       {/* additional info */}
-      <div className="h-12 w-full bg-slate-200 rounded" />
+      <div className={`h-12 w-full ${skeletonBar}`} />
 
       {/* apply form skeleton */}
-      <div className="space-y-3">
+      <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-dark-border">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><div className="h-10 w-full bg-slate-200 rounded" /></div>
-          <div><div className="h-10 w-full bg-slate-200 rounded" /></div>
+          <div><div className={`h-10 w-full ${skeletonBar}`} /></div>
+          <div><div className={`h-10 w-full ${skeletonBar}`} /></div>
         </div>
-        <div className="h-24 w-full bg-slate-200 rounded" />
-        <div className="h-16 w-full bg-slate-200 rounded" />
+        <div className={`h-24 w-full ${skeletonBar}`} />
+        <div className={`h-16 w-full ${skeletonBar}`} />
         <div className="flex items-center justify-end gap-2">
-          <div className="h-9 w-24 bg-slate-200 rounded" />
-          <div className="h-9 w-32 bg-slate-200 rounded" />
+          <div className={`h-9 w-24 ${skeletonBar}`} />
+          <div className={`h-9 w-32 ${skeletonBar} bg-main-600/20 dark:bg-main-600/10`} />
         </div>
       </div>
     </div>

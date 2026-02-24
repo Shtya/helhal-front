@@ -301,18 +301,18 @@ export default function FilterServices({ category = 'all' }) {
 
             {/* ===== Filters ===== */}
             <div className='mb-8 mt-8 relative z-[30]'>
-                <motion.div className='rounded-xl border border-slate-200 bg-white/70 p-4 shadow-custom hover:!shadow-[0_8px_24px_-6px_rgba(16,185,129,0.25),0_2px_6px_rgba(15,23,42,0.08)] transition-shadow duration-300 md:p-8' initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
+                <motion.div className='rounded-xl border border-slate-200 bg-white/70 p-4 shadow-custom hover:!shadow-main-glow transition-shadow duration-300 md:p-8 dark:bg-dark-bg-card dark:border-dark-border' initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}>
                     <div className='mb-4'>
                         <div className='flex items-center gap-2 justify-between w-full'>
                             <div className='flex items-center gap-2'>
                                 <SlidersHorizontal className='h-5 w-5 text-main-600' aria-hidden='true' />
-                                <h2 className='text-lg font-bold text-slate-800'>{t('filterTitle') || tServices('filters.title')}</h2>
+                                <h2 className='text-lg font-bold text-slate-800 dark:text-dark-text-primary'>{t('filterTitle') || tServices('filters.title')}</h2>
                             </div>
-                            <span className='text-slate-500 text-base'>
+                            <span className='text-slate-500 text-base dark:text-dark-text-secondary'>
                                 ({pagination.total}) {Number(pagination.total) === 1 ? tServices('filters.result') : tServices('filters.results')}
                             </span>
                         </div>
-                        <p className='mt-1 text-sm text-slate-500'>{t('filterSubtitle') || tServices('filters.subtitle')}</p>
+                        <p className='mt-1 text-sm text-slate-500 dark:text-dark-text-secondary'>{t('filterSubtitle') || tServices('filters.subtitle')}</p>
                     </div>
 
                     <div className='grid grid-cols-1 gap-3 items-center sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6'>
@@ -320,7 +320,7 @@ export default function FilterServices({ category = 'all' }) {
                         <LocationSelect
                             type='country'
                             value={formData?.country}
-                            cnPlaceholder='!text-gray-900'
+                            // cnPlaceholder='!text-gray-900'
                             onChange={opt => {
                                 handleSelectChange('country', opt?.id ?? '');
                             }}
@@ -331,7 +331,7 @@ export default function FilterServices({ category = 'all' }) {
                             type='state'
                             parentId={formData?.country} // Pass selected countryId here
                             value={formData?.state}
-                            cnPlaceholder='!text-gray-900'
+                            // cnPlaceholder='!text-gray-900'
                             onChange={opt => {
                                 handleSelectChange('state', opt?.id ?? '');
                             }}
@@ -372,7 +372,6 @@ export default function FilterServices({ category = 'all' }) {
                         <Select
                             options={sortByOptions}
                             placeholder={t('sortBy')}
-                            cnPlaceholder='!text-gray-900'
                             value={formData?.sortBy?.id}
                             onChange={val => handleSelectChange('sortBy', val)}
                         />
@@ -413,14 +412,14 @@ const TrustedFilter = ({ checked, onChange, label }) => {
                 h-[40px] cursor-pointer w-full flex items-center justify-between rounded-md border px-4 py-2 text-sm transition
                 focus:outline-none focus:ring-2 focus:ring-main-600/50
                 ${checked
-                    ? 'border-main-600 bg-main-50/30 text-main-700 ring-1 ring-main-600/20'
-                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-main-600/70'
+                    ? 'border-main-600 bg-main-50/30 text-main-700 ring-1 ring-main-600/20 dark:bg-main-900/20 dark:text-main-400'
+                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-main-600/70 dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-primary dark:hover:bg-dark-bg-card'
                 }
             `}
         >
             <div className="flex items-center gap-2 overflow-hidden">
                 {/* Optional: Icon to make it stand out */}
-                <BadgeCheck className={`h-4 w-4 shrink-0 ${checked ? 'text-main-600' : 'text-gray-400'}`} />
+                <BadgeCheck className={`h-4 w-4 shrink-0 ${checked ? 'text-main-600' : 'text-gray-400'} dark:text-main-400`} />
 
                 <span className={`truncate ${checked ? 'font-semibold' : 'font-medium'}`}>
                     {label}

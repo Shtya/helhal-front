@@ -8,7 +8,7 @@ import { FaFileContract } from "react-icons/fa"; // 👈 nice contract icon
 
 export default function TermsPage() {
     const { settings, loadingSettings } = useValues();
-    const locale = useLocale()
+    const locale = useLocale();
     const t = useTranslations("terms"); // 👈 namespace for translations
     const termsContent = locale === 'ar' ? settings?.termsOfService_ar || null : settings?.termsOfService_en || null;
 
@@ -19,16 +19,14 @@ export default function TermsPage() {
             ) : termsContent ? (
                 <RichTextRenderer
                     content={termsContent}
-                    className="text-lg leading-loose text-dark"
+                    className="text-lg leading-loose text-gray-900  dark:text-dark-text-primary"
                     loader={<LegalSkeleton />}
                 />
             ) : (
-                <div className="flex flex-col items-center justify-center mt-8 p-6 border border-dashed border-slate-300 rounded-lg bg-slate-50">
+                <div className="flex flex-col items-center justify-center mt-8 p-6 border border-dashed border-slate-300 rounded-lg bg-slate-50 dark:bg-dark-bg-card">
                     <FaFileContract className="w-10 h-10 text-main-600 mb-3" />
-                    <p className="text-lg font-semibold text-slate-700">
-                        {t("notFoundTitle")}
-                    </p>
-                    <p className="text-sm text-slate-500 mt-1 text-center max-w-md">
+                    <p className="text-lg font-semibold text-slate-700 dark:text-dark-text">{t("notFoundTitle")}</p>
+                    <p className="text-sm text-slate-500 mt-1 text-center max-w-md dark:text-dark-text-secondary">
                         {t("notFoundDescription")}
                     </p>
                 </div>

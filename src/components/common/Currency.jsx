@@ -1,8 +1,8 @@
-export default function Currency({ style, size = 16 }) {
+export default function Currency({ style, size = 16, className }) {
     return (
         <svg
             style={style || { fill: "#000" }}
-            className="object-contain"
+            className={`object-contain dark:invert ${className}`}
             width={size}
             height={size}
             viewBox="0 0 160 180"

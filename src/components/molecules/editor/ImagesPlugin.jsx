@@ -258,26 +258,27 @@ export function InsertImageDialog({
 
     return (
         <Modal
-            open={true} // Logic should control this, but following your code
+            open={true}
             onClose={onClose}
             title={
                 <div className="flex items-center gap-2 flex-1">
                     <div className="p-1.5 bg-secondary/10 rounded-lg text-secondary">
                         <MdImage size={20} />
                     </div>
-                    <h2 className="text-lg font-bold text-gray-800">
+                    <h2 className="text-lg font-bold text-dark-text-primary">
                         {t('image_dialog.title')}
                     </h2>
                 </div>
             }
+            className="dark:bg-color-dark-bg-base dark:text-dark-text-primary"
         >
             {/* Tabs */}
-            <div className="flex p-1 m-4 bg-gray-100 rounded-lg">
+            <div className="flex p-1 m-4 rounded-lg bg-gray-100 dark:bg-dark-bg-card">
                 <button
                     onClick={() => setMode('file')}
                     className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all ${mode === 'file'
-                        ? 'bg-white text-main-600 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-700'
+                        ? 'bg-white text-main-600 shadow-sm dark:bg-dark-bg-input dark:text-dark-text-primary'
+                        : 'text-gray-500 hover:text-gray-700 dark:text-dark-text-secondary dark:hover:text-dark-text-primary'
                         }`}
                 >
                     <MdCloudUpload /> {t('upload')}
@@ -285,46 +286,46 @@ export function InsertImageDialog({
                 <button
                     onClick={() => setMode('url')}
                     className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-all ${mode === 'url'
-                        ? 'bg-white text-main-600 shadow-sm'
-                        : 'text-gray-500 hover:text-gray-700'
+                        ? 'bg-white text-main-600 shadow-sm dark:bg-dark-bg-input dark:text-dark-text-primary'
+                        : 'text-gray-500 hover:text-gray-700 dark:text-dark-text-secondary dark:hover:text-dark-text-primary'
                         }`}
                 >
                     <MdLink /> {t('image_dialog.url_label')}
                 </button>
             </div>
-
             {/* Body */}
             <div className="p-4 space-y-4">
-                {/* Input Area */}
                 {mode === 'file' ? (
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors relative">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition-colors relative dark:border-dark-border dark:bg-dark-bg-input dark:hover:bg-dark-bg-card">
                         <input
                             type="file"
                             accept="image/*"
                             onChange={handleImageUpload}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         />
-                        <div className="flex flex-col items-center gap-2 text-gray-500">
-                            <MdCloudUpload size={32} className="text-gray-300" />
+                        <div className="flex flex-col items-center gap-2 text-gray-500 dark:text-dark-text-secondary">
+                            <MdCloudUpload size={32} className="text-gray-300 dark:text-dark-text-secondary" />
                             <span className="text-sm">{t('image_dialog.upload_text')}</span>
                         </div>
                     </div>
                 ) : (
                     <div>
-                        <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase">Image URL</label>
+                        <label className="block text-xs font-semibold mb-1 uppercase text-gray-500 dark:text-dark-text-secondary">
+                            Image URL
+                        </label>
                         <input
                             type="text"
                             placeholder="https://example.com/image.jpg"
                             value={src}
                             onChange={(e) => setSrc(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-main-600 text-sm"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-main-600 text-sm dark:bg-dark-bg-input dark:border-dark-border dark:text-dark-text-primary"
                         />
                     </div>
                 )}
 
                 {/* Preview */}
                 {src && (
-                    <div className="relative h-32 w-full bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    <div className="relative h-32 w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-100 dark:border-color-dark-border dark:bg-color-dark-bg-card">
                         <img src={src} alt="Preview" className="w-full h-full object-contain" />
                     </div>
                 )}
@@ -332,33 +333,37 @@ export function InsertImageDialog({
                 {/* Meta Data */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-2">
-                        <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase">{t('image_dialog.alt_text_label')}</label>
+                        <label className="block text-xs font-semibold mb-1 uppercase text-gray-500 dark:text-dark-text-primary">
+                            {t('image_dialog.alt_text_label')}
+                        </label>
                         <input
                             type="text"
                             placeholder={t('image_dialog.placeholders.alt_text')}
                             value={altText}
                             onChange={(e) => setAltText(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-main-600 text-sm"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-main-600 text-sm dark:bg-dark-bg-input dark:border-color-dark-border dark:text-dark-text-primary"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase">{t('image_dialog.width_label')}</label>
+                        <label className="block text-xs font-semibold mb-1 uppercase text-gray-500 dark:text-dark-text-secondary">
+                            {t('image_dialog.width_label')}
+                        </label>
                         <input
                             type="number"
                             value={width}
                             placeholder={t('image_dialog.placeholders.url')}
                             onChange={(e) => setWidth(Number(e.target.value))}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-main-600 text-sm"
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary/20 focus:border-main-600 text-sm dark:bg-dark-bg-input dark:border-color-dark-border dark:text-dark-text-primary"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2 dark:border-dark-border dark:bg-dark-bg-card">
                 <button
                     onClick={onClose}
-                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors"
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-200 transition-colors dark:text-dark-text-secondary dark:hover:bg-dark-bg-input"
                 >
                     {t('cancel')}
                 </button>

@@ -52,7 +52,7 @@ export function BarChart({
         },
         scales: {
             x: {
-                grid: { display: false },
+            grid: { display: false },
                 ticks: {
                     font: {
                         size: 12,
@@ -60,7 +60,7 @@ export function BarChart({
                 },
             },
             y: {
-                grid: { color: 'rgba(0,0,0,0.05)', lineWidth: 1.5 },
+                grid: { color: 'rgba(0,0,0,0.25)', lineWidth: 1.5 },
                 ticks: {
                     font: {
                         size: 12,

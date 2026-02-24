@@ -18,8 +18,8 @@ export default function UserAvatar({ buyer, href }) {
   return (
     <div className="mb-4">
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-        {/* Letter avatar only */}
-        <div className="h-10 w-10 grid place-items-center rounded-full gradient text-white font-semibold flex-shrink-0">
+        {/* Letter avatar - Gradient remains fine as it's on a base color */}
+        <div className="h-10 w-10 grid place-items-center rounded-full gradient text-white font-semibold flex-shrink-0 shadow-sm">
           {initials}
         </div>
 
@@ -28,23 +28,28 @@ export default function UserAvatar({ buyer, href }) {
           onKeyDown={e => e.stopPropagation()}>
           <Link
             href={profileHref}
-            className="flex flex-wrap items-center gap-2 font-semibold text-slate-900 hover:text-indigo-600 truncate"
+            className="flex flex-wrap items-center gap-2 font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 transition-colors truncate"
             title={name}
           >
             <span className="truncate max-w-[140px] sm:max-w-none">{toTitle(name)}</span>
+
+            {/* Role Badge */}
             <span
-              className={`inline-flex items-center text-[11px] gap-1 px-2 py-0.5 rounded-full border ${roleTone(role)}`}
+              className={`inline-flex items-center text-[11px] gap-1 px-2 py-0.5 rounded-full border 
+                ${roleTone(role)} 
+                dark:bg-dark-bg-card dark:border-dark-border dark:text-dark-text-secondary`}
             >
               {role}
             </span>
           </Link>
-          <div className="text-xs mt-1 text-slate-500 truncate max-w-[180px] sm:max-w-none" title={email}>
+
+          {/* Email Text */}
+          <div className="text-xs mt-1 text-slate-500 dark:text-dark-text-secondary truncate max-w-[180px] sm:max-w-none" title={email}>
             {email}
           </div>
         </div>
       </div>
     </div>
-
   );
 }
 
@@ -72,8 +77,20 @@ function toTitle(s) {
 
 function roleTone(role) {
   const r = String(role || '').toLowerCase();
-  if (r === 'buyer') return 'bg-indigo-50 text-indigo-700 border-indigo-200';
-  if (r === 'seller') return 'bg-amber-50 text-amber-800 border-amber-200';
-  if (r === 'admin') return 'bg-slate-800 text-white border-slate-700';
-  return 'bg-slate-50 text-slate-700 border-slate-200';
+
+  if (r === 'buyer') {
+    return 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border-indigo-500/30';
+  }
+
+  if (r === 'seller') {
+    return 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30';
+  }
+
+  if (r === 'admin') {
+    // Admin is already dark, so we make it pop slightly against the #1e1e24 background
+    return 'bg-slate-800 text-white border-slate-700 dark:bg-dark-bg-card dark:border-dark-border';
+  }
+
+  // Default / Other
+  return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-dark-bg-input dark:text-dark-text-secondary dark:border-dark-border';
 }

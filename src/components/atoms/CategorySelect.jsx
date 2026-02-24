@@ -46,7 +46,8 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
   const getBorderClass = () => {
     if (error) return 'border-red-500 ring-2 ring-red-500/20';
     if (selected || open) return 'border-main-600';
-    return 'border-gray-300';
+    // Applied dark-border for idle state
+    return 'border-gray-300 dark:border-dark-border';
   };
 
   // Fetch once per scopeKey (limit=100). No server-side search.
@@ -174,7 +175,7 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
   return (
     <div className={`${className || ''} w-full relative`} ref={rootRef}>
       {label && (
-        <label className={`${cnLabel || ''} mb-1 block text-sm font-medium text-gray-600`}>
+        <label className={`${cnLabel || ''} mb-1 block text-sm font-medium text-gray-600 dark:text-dark-text-secondary`}>
           {label}
           {required && <span className='text-red-500 ml-1'>*</span>}
         </label>
@@ -187,23 +188,32 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
           onClick={handleButtonClick}
           disabled={disabled}
           className={`${cnSelect || ''} ${getBorderClass()} h-[40px] cursor-pointer w-full flex items-center justify-between rounded-md border px-4 py-2 text-sm transition
-                bg-white text-gray-700 
-                hover:bg-gray-50 hover:border-main-600/70 
-                focus:outline-none focus:ring-2 focus:ring-main-600/50`}
+                    bg-white text-gray-700 
+                    dark:bg-dark-bg-input dark:text-dark-text-primary
+                    hover:bg-gray-50 dark:hover:bg-dark-bg-card hover:border-main-600/70 
+                    focus:outline-none focus:ring-2 focus:ring-main-600/50`}
           aria-haspopup='listbox'
           aria-expanded={open}
           name={name}>
-          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>{loading ? defaultLoadingText : selected ? locale === 'ar' ? selected?.name_ar : selected?.name_en : defaultPlaceholder}</span>
-          <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-main-600' : 'text-gray-400'}`} />
+          <span className={`truncate ${cnPlaceholder || ''} ${selected ? 'text-gray-900 dark:text-dark-text-primary font-medium' : 'text-gray-400 dark:text-dark-text-secondary'}`}>
+            {loading ? defaultLoadingText : selected ? (locale === 'ar' ? selected?.name_ar : selected?.name_en) : defaultPlaceholder}
+          </span>
+          <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180 text-main-600' : 'text-gray-400 dark:text-dark-text-secondary'}`} />
         </button>
 
         {open && (
-          <div ref={menuRef} className='absolute mt-2 w-full rounded-md border border-gray-200 bg-white shadow-lg z-50'>
+          <div ref={menuRef} className='absolute mt-2 w-full rounded-md border border-gray-200 bg-white shadow-lg z-50 dark:bg-dark-bg-card dark:border-dark-border'>
             {/* Search / Create */}
-            <div className='p-2 border-b border-gray-200'>
-              <input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder={t('search', { type })} className='w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-main-500' />
+            <div className='p-2 border-b border-gray-200 dark:border-dark-border'>
+              <input
+                autoFocus
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder={t('search', { type })}
+                className='w-full rounded-md border border-gray-300 dark:border-dark-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-main-500 dark:bg-dark-bg-input dark:text-dark-text-primary'
+              />
               {canCreate && filtered?.length === 0 && (
-                <button onClick={createIfNotExists} disabled={creating || (type === 'subcategory' && !parentId)} className='mt-2 w-full flex items-center gap-2 px-3 py-2 text-sm text-main-700 hover:bg-main-50 disabled:opacity-60'>
+                <button onClick={createIfNotExists} disabled={creating || (type === 'subcategory' && !parentId)} className='mt-2 w-full flex items-center gap-2 px-3 py-2 text-sm text-main-700 dark:text-main-400 hover:bg-main-50 dark:hover:bg-dark-bg-input disabled:opacity-60'>
                   {creating ? <Loader2 className='w-4 h-4 animate-spin' /> : <Plus className='w-4 h-4' />}
                   {t('create', { name: query.trim() })}
                 </button>
@@ -215,24 +225,26 @@ const CategorySelect = forwardRef(({ type = 'category', excludes = [], parentId,
               {loading ? (
                 <div className='p-3 space-y-2'>
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className='h-4 bg-slate-200 rounded animate-pulse w-full' />
+                    <div key={i} className='h-4 bg-slate-200 dark:bg-dark-border rounded animate-pulse w-full' />
                   ))}
                 </div>
               ) : filtered?.length === 0 ? (
-                <div className='p-3 text-sm text-gray-500'>{t('noFound', { type })}</div>
+                <div className='p-3 text-sm text-gray-500 dark:text-dark-text-secondary'>{t('noFound', { type })}</div>
               ) : (
-                <ul className='flex flex-col divide-y divide-gray-100'>
+                <ul className='flex flex-col divide-y divide-gray-100 dark:divide-dark-border'>
                   {filtered?.map(opt => {
                     const name = locale === 'ar' ? opt.name_ar : opt.name_en;
-                    // Check if it's Saudi Arabia
-
-                    return <li key={opt.id}>
-                      <button onClick={() => handleSelect(opt)} className={`w-full text-start px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'hover:bg-gradient-to-r  from-main-500 to-main-400 hover:text-white'}`}>
-                        {name}
-                      </button>
-                    </li>
-                  }
-                  )}
+                    return (
+                      <li key={opt.id}>
+                        <button
+                          onClick={() => handleSelect(opt)}
+                          className={`w-full text-start px-4 py-2 text-sm transition ${selected?.id === opt.id ? 'gradient !text-white' : 'dark:text-dark-text-primary hover:bg-gradient-to-r from-main-500 to-main-400 hover:text-white'}`}
+                        >
+                          {name}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>

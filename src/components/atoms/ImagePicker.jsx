@@ -5,17 +5,33 @@ import { baseImg } from '@/lib/axios';
 
 export default function ImagePicker({ value = '', onChange, disabled, allowManual = true, label = 'Image' }) {
   return (
-    <div className='' >
-      <label className={`block text-sm font-medium text-slate-700 ${!disabled ? "-mb-3" : 'mb-3'}`}>{label}</label>
+    <div>
+      {/* Label */}
+      <label
+        className={`block text-sm font-medium text-slate-700 dark:text-dark-text-secondary ${!disabled ? "-mb-3" : "mb-3"}`}
+      >
+        {label}
+      </label>
 
-      <div className='flex items-center gap-2'>
-        {allowManual && <Input disabled={disabled} type='url' value={value} onChange={e => onChange(e.target?.value ?? e)} placeholder='https://example.com/image.jpg' className='flex-1' />}
+      <div className="flex items-center gap-2">
+        {/* Manual URL input */}
+        {allowManual && (
+          <Input
+            disabled={disabled}
+            type="url"
+            value={value}
+            onChange={e => onChange(e.target?.value ?? e)}
+            placeholder="https://example.com/image.jpg"
+            className="flex-1 dark:bg-dark-bg-card dark:border-dark-border dark:text-dark-text-primary placeholder-slate-400 dark:placeholder-dark-text-secondary"
+          />
+        )}
 
+        {/* Attach file button */}
         {!disabled && (
           <AttachFilesButton
             hiddenFiles
             iconOnly
-            className={""}
+            className=""
             onChange={files => {
               if (!files?.length) return;
               const img = files.find(f => String(f.mimeType || '').startsWith('image/')) || files[0];
@@ -28,7 +44,6 @@ export default function ImagePicker({ value = '', onChange, disabled, allowManua
           />
         )}
       </div>
-
     </div>
   );
 }

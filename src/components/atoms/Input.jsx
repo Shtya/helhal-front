@@ -4,31 +4,73 @@
 import { forwardRef } from 'react';
 import FormErrorMessage from './FormErrorMessage';
 
-const Input = forwardRef(({ error, cnLabel, cnInput, className, label, placeholder = 'Enter text', iconLeft, icon, actionIcon, onAction, onChange, onBlur, name, type = 'text', required = false, showMsgError = true, ...props }, ref) => {
+const Input = forwardRef(({
+  error,
+  cnLabel,
+  cnInput,
+  className,
+  label,
+  placeholder = 'Enter text',
+  iconLeft,
+  icon,
+  actionIcon,
+  onAction,
+  onChange,
+  onBlur,
+  name,
+  type = 'text',
+  required = false,
+  showMsgError = true,
+  ...props
+}, ref) => {
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <label htmlFor={name} className={`mb-1 block text-sm font-medium text-gray-600 ${cnLabel}`}>
+        <label
+          htmlFor={name}
+          className={`mb-1 block text-sm font-medium text-gray-600 dark:text-dark-text-secondary ${cnLabel}`}
+        >
           {label}
           {required && <span className='text-red-500 ml-1'>*</span>}
         </label>
       )}
 
       <div
-        className={`${cnInput} overflow-hidden relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1 
-        transition border ${error ? 'border-red-500 ring-2 ring-red-500/20' : props.value ? 'border-main-600' : 'border-gray-300'} focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}>
+        className={`${cnInput} overflow-hidden relative flex items-center rounded-md bg-white dark:bg-dark-bg-input h-[40px] px-2 py-2 text-sm gap-1 
+        transition border ${error
+            ? 'border-red-500 ring-2 ring-red-500/20'
+            : props.value
+              ? 'border-main-600'
+              : 'border-gray-300 dark:border-dark-border'
+          } focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}
+      >
         {iconLeft && (
-          <span className='flex-none text-slate-400'>
+          <span className='flex-none text-slate-400 dark:opacity-70'>
             <img src={iconLeft} alt='' className='w-4' />
           </span>
         )}
 
-        {icon}
+        {icon && <span className="dark:text-dark-text-secondary">{icon}</span>}
 
-        <input required ref={ref} id={name} name={name} type={type} placeholder={placeholder} onChange={onChange} onBlur={onBlur} className={`${actionIcon && 'w-[calc(100%-50px)]'} w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400`} {...props} />
+        <input
+          required
+          ref={ref}
+          id={name}
+          name={name}
+          type={type}
+          placeholder={placeholder}
+          onChange={onChange}
+          onBlur={onBlur}
+          className={`${actionIcon && 'w-[calc(100%-50px)]'} w-full bg-transparent outline-none text-slate-700 dark:text-dark-text-primary placeholder:text-gray-400 dark:placeholder:text-dark-text-secondary/40`}
+          {...props}
+        />
 
         {actionIcon && (
-          <button type='button' onClick={onAction} className='cursor-pointer flex items-center justify-center aspect-1/1 absolute rtl:left-1 ltr:right-[5px] h-[calc(100%-10px)] rounded-lg top-1/2 -translate-y-1/2 flex-none gradient p-2 text-white transition'>
+          <button
+            type='button'
+            onClick={onAction}
+            className='cursor-pointer flex items-center justify-center aspect-square absolute rtl:left-1 ltr:right-[5px] h-[calc(100%-10px)] rounded-lg top-1/2 -translate-y-1/2 flex-none gradient p-2 text-white transition'
+          >
             <img src={actionIcon} alt='' className='w-[25px]' />
           </button>
         )}

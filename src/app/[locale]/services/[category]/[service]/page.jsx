@@ -242,11 +242,10 @@ export default function ServiceDetailsPage({ params }) {
   if (!serviceData) return <NotFound />;
 
 
-
   return (
-    <div className='min-h-screen'>
+    <div className='min-h-screen dark:bg-dark-bg-base'>
       <div className='container'>
-        <div className=' flex flex-col lg:flex-row gap-6  mt-8 '>
+        <div className='flex flex-col lg:flex-row gap-6 mt-8'>
           {/* Main */}
           <div className='w-full lg:w-[calc(100%-400px)]'>
             <HeaderPanel serviceData={serviceData} />
@@ -256,38 +255,68 @@ export default function ServiceDetailsPage({ params }) {
             <DocumentViewer gallery={serviceData.gallery} />
             <AboutService serviceData={serviceData} />
 
-            {!!serviceData.packages?.length && <PackagesSection packages={serviceData.packages} selectedPackage={selectedPackage} setSelectedPackage={setSelectedPackage} />}
+            {!!serviceData.packages?.length && (
+              <PackagesSection
+                packages={serviceData.packages}
+                selectedPackage={selectedPackage}
+                setSelectedPackage={setSelectedPackage}
+              />
+            )}
 
-            {!!serviceData.requirements?.length && <RequirementsSection triedSubmit={triedSubmit} requirements={serviceData.requirements} answers={requirementAnswers} onChange={handleRequirementChange} validationErrors={validationErrors} />}
+            {!!serviceData.requirements?.length && (
+              <RequirementsSection
+                triedSubmit={triedSubmit}
+                requirements={serviceData.requirements}
+                answers={requirementAnswers}
+                onChange={handleRequirementChange}
+                validationErrors={validationErrors}
+              />
+            )}
 
             <AboutSeller serviceData={serviceData} />
 
             {!!serviceData.faq?.length && (
-              <div className='bg-white rounded-xl  border border-slate-200  shadow-custom  md:py-12 py-6 mb-6'>
+              <div className='bg-white dark:bg-dark-bg-card rounded-xl border border-slate-200 dark:border-dark-border shadow-custom md:py-12 py-6 mb-6'>
                 <FAQSection className='!my-0' faqs={serviceData.faq} showTitle={true} />
               </div>
             )}
+
             <ServiceRatings serviceSlug={service} />
           </div>
 
           {/* Sidebar */}
-          <PurchaseSidebar canOrder={canOrder} selectedPackage={selectedPackage} setIsSidebarOpen={setIsSidebarOpen} serviceData={serviceData} onTryOpenOrderOptions={tryOpenOrderOptions} />
+          <PurchaseSidebar
+            canOrder={canOrder}
+            selectedPackage={selectedPackage}
+            setIsSidebarOpen={setIsSidebarOpen}
+            serviceData={serviceData}
+            onTryOpenOrderOptions={tryOpenOrderOptions}
+          />
         </div>
 
-        <div className=' mt-8 bg-white rounded-xl  border border-slate-200  shadow-custom  p-6'>
-          <ServiceSlider services={serviceData.relatedServices} className={"!mt-4"} title='Related Services' />
+        <div className='mt-8 bg-white dark:bg-dark-bg-card rounded-xl border border-slate-200 dark:border-dark-border shadow-custom p-6'>
+          <ServiceSlider
+            services={serviceData.relatedServices}
+            className={"!mt-4"}
+            title='Related Services'
+          />
         </div>
       </div>
 
       {selectedPackage && (
-        <div className='lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-4 z-50'>
+        <div className='lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-bg-card border-t border-gray-200 dark:border-dark-border shadow-lg p-4 z-50'>
           <div className='container mx-auto flex flex-col sm:flex-row gap-2 items-center justify-between'>
             <div>
               <PriceTag price={selectedPackage.price} className='text-lg font-bold' />
-              <p className='text-xs text-gray-500'>{selectedPackage.name} Package</p>
+              <p className='text-xs text-gray-500 dark:text-gray-400'>{selectedPackage.name} Package</p>
             </div>
             <div className='flex gap-2'>
-              <Link href={`/chat?userId=${serviceData?.seller?.id}`} className='text-sm' onClick={() => router.push(`/chat?userId=${serviceData?.seller?.id}`)} icon={<MessageCircle size={14} className='mr-1' />} />
+              <Link
+                href={`/chat?userId=${serviceData?.seller?.id}`}
+                className='text-sm'
+                onClick={() => router.push(`/chat?userId=${serviceData?.seller?.id}`)}
+                icon={<MessageCircle size={14} className='mr-1' />}
+              />
               <Button name='Continue' className='text-sm' onClick={tryOpenOrderOptions} />
             </div>
           </div>
@@ -295,28 +324,40 @@ export default function ServiceDetailsPage({ params }) {
       )}
 
       {/* Drawer */}
-      <OrderOptions loadingSubmit={loadingSubmit} isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} serviceData={serviceData} selectedPackage={selectedPackage} onComplete={handleCompleteOrder} />
+      <OrderOptions
+        loadingSubmit={loadingSubmit}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        serviceData={serviceData}
+        selectedPackage={selectedPackage}
+        onComplete={handleCompleteOrder}
+      />
     </div>
   );
 }
+export const Divider = ({ className = '' }) => (
+  <div
+    className={`my-8 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent dark:via-dark-border ${className}`}
+  />
+);
 
-export const Divider = ({ className = '' }) => <div className={`my-8 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent ${className}`} />;
-
-const Separator = () => <span aria-hidden className='h-4 w-px bg-slate-200' />;
+const Separator = () => (
+  <span aria-hidden className='h-4 w-px bg-slate-200 dark:bg-dark-border' />
+);
 
 const Stat = ({ icon: Icon, value, label, title }) => (
   <div className='flex items-center gap-2' title={title}>
-    <Icon className='h-4 w-4 text-slate-700' />
-    <span className='font-semibold text-slate-900'>{value}</span>
-    <span className='text-slate-500'>{label}</span>
+    <Icon className='h-4 w-4 text-slate-700 dark:text-dark-text-secondary' />
+    <span className='font-semibold text-slate-900 dark:text-dark-text-primary'>{value}</span>
+    <span className='text-slate-500 dark:text-dark-text-secondary'>{label}</span>
   </div>
 );
 
-const countryFlag = code => {
+const countryFlag = (code) => {
   if (!code) return '🏳️';
   try {
     const cc = code.trim().slice(0, 2).toUpperCase();
-    return cc.replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt(0)));
+    return cc.replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)));
   } catch {
     return '🏳️';
   }
@@ -401,7 +442,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
       title: t('pod.title'),
       desc: t('pod.desc'),
       Icon: (
-        <svg className='stroke-main-600' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg className='stroke-main-600 dark:invert' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M16 16h6" />
           <path d="M19 13v6" />
           <rect width="20" height="12" x="2" y="5" rx="2" />
@@ -417,12 +458,12 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} className='relative mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-custom hover:shadow-md'>
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} className='relative mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-custom hover:shadow-md dark:bg-dark-bg-card dark:border-dark-border'>
 
       {/* ✅ Preview Tag */}
       {serviceData?.seller?.id === user?.id && serviceData?.status !== 'Active' && (
-        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-2 text-sm text-amber-700 flex items-center gap-2">
-          <Eye className="h-4 w-4 text-amber-600" />
+        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-2 text-sm text-amber-700 flex items-center gap-2 dark:border-amber-500/30 dark:bg-amber-900/20 dark:text-amber-300">
+          <Eye className="h-4 w-4 text-amber-600 dark:text-amber-300 dark:invert" />
           <span>{t('preview.message')}</span>
         </div>
       )}
@@ -430,19 +471,19 @@ function HeaderPanel({ serviceData = {}, Img }) {
       <div className='relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between'>
         <div className='min-w-0'>
           <div className='flex flex-wrap items-center gap-2'>
-            <h1 className='text-[22px] leading-tight md:text-3xl font-extrabold tracking-tight text-slate-900'>{serviceData?.title || 'Untitled Service'}</h1>
+            <h1 className='text-[22px] leading-tight md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-dark-text-primary'>{serviceData?.title || 'Untitled Service'}</h1>
             {chips.map((c, i) => (
               <Chip key={i} icon={c.icon} label={c.text} className={c.classes} />
             ))}
           </div>
 
           {/* Meta */}
-          <div className='mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-700'>
+          <div className='mt-2 flex flex-wrap items-center gap-3 text-sm text-slate-700 dark:text-dark-text-secondary'>
             {!!rating && (
               <Tooltip text={t('serviceRating')}>
                 <span className='inline-flex items-center cursor-default' aria-label={`Rating ${ratingFmt} out of 5`}>
                   <Star className='me-1 h-3.5 w-3.5 text-amber-500 fill-current drop-shadow-sm' />
-                  <span className='font-bold text-sm text-slate-700'>{ratingFmt}</span>
+                  <span className='font-bold text-sm text-slate-700 dark:text-dark-text-secondary'>{ratingFmt}</span>
                 </span>
               </Tooltip>
             )}
@@ -458,7 +499,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
               <>
                 <Separator />
                 <span
-                  className="inline-flex items-center gap-2 text-slate-600"
+                  className="inline-flex items-center gap-2 text-slate-600 dark:text-dark-text-secondary"
                   title={`${serviceCountryName}${serviceStateName ? ` · ${serviceStateName}` : ''}`}
                 >
                   {/* Flag */}
@@ -481,36 +522,36 @@ function HeaderPanel({ serviceData = {}, Img }) {
       </div>
 
       {/* Seller strip */}
-      <div className='mt-6 grid grid-cols-[auto,1fr] items-center gap-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4 backdrop-blur'>
+      <div className='mt-6 grid grid-cols-[auto,1fr] items-center gap-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4 backdrop-blur dark:border-dark-border dark:bg-dark-bg-input'>
         <div className='flex items-center gap-3'>
           <div className='relative'>
             <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-main-400 via-sky-400 to-violet-400 blur opacity-30' />
-            <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(seller?.username)}</span>}</div>
+            <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center dark:bg-dark-bg-card dark:ring-dark-border'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none dark:text-dark-text-secondary'>{getInitials(seller?.username)}</span>}</div>
           </div>
 
           <div className='min-w-0'>
             <div className='flex flex-wrap items-center gap-2'>
-              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none'>
+              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
                 {seller?.username || 'Unknown Seller'}
               </Link>
               {!!seller?.sellerLevel && (
-                <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
-                  <BadgeCheck className='h-3 w-3 text-main-600' />
+                <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600 dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-secondary'>
+                  <BadgeCheck className='h-3 w-3 text-main-600 dark:text-main-400 dark:invert' />
                   {String(seller.sellerLevel).toUpperCase()}
                 </span>
               )}
             </div>
 
-            <p className='mt-1 line-clamp-1 text-sm text-slate-600'>{seller?.description || serviceData?.brief || 'No description provided.'}</p>
+            <p className='mt-1 line-clamp-1 text-sm text-slate-600 dark:text-dark-text-secondary'>{seller?.description || serviceData?.brief || 'No description provided.'}</p>
 
             {!!seller?.skills?.length && (
               <div className='mt-1 flex flex-wrap items-center gap-1.5'>
                 {seller.skills.slice(0, 4).map(s => (
-                  <span key={s} className='rounded-md bg-white px-2 py-0.5 text-[11px] text-slate-600 ring-1 ring-slate-200'>
+                  <span key={s} className='rounded-md bg-white px-2 py-0.5 text-[11px] text-slate-600 ring-1 ring-slate-200 dark:bg-dark-bg-card dark:text-dark-text-secondary dark:ring-dark-border'>
                     {s}
                   </span>
                 ))}
-                {seller.skills.length > 4 ? <span className='text-[11px] text-slate-500'>+{seller.skills.length - 4} more</span> : null}
+                {seller.skills.length > 4 ? <span className='text-[11px] text-slate-500 dark:text-dark-text-secondary'>+{seller.skills.length - 4} more</span> : null}
               </div>
             )}
           </div>
@@ -519,14 +560,14 @@ function HeaderPanel({ serviceData = {}, Img }) {
         {/* Right mini-stats */}
         <div className='justify-self-end hidden md:flex items-center gap-4 text-sm'>
           <div className={`flex items-center gap-2  ${isArabic && "flex-row-reverse"}`}>
-            <Clock3 className='h-4 w-4 text-slate-600' />
-            <span className='text-slate-700'>Avg. response</span>
-            <span className='font-semibold text-slate-900'>{serviceData?.seller?.responseTimeFormatted || '—'}</span>
+            <Clock3 className='h-4 w-4 text-slate-600 dark:text-dark-text-secondary dark:invert' />
+            <span className='text-slate-700 dark:text-dark-text-secondary'>Avg. response</span>
+            <span className='font-semibold text-slate-900 dark:text-dark-text-primary'>{serviceData?.seller?.responseTimeFormatted || '—'}</span>
           </div>
           <div className={`flex items-center gap-2  ${isArabic && "flex-row-reverse"}`}>
-            <Globe2 className='h-4 w-4 text-slate-600' />
-            <span className='text-slate-700'>Lang</span>
-            <span className='font-semibold text-slate-900'>{Array.isArray(seller?.languages) && seller.languages.length ? seller.languages.slice(0, 2).join(', ') : '—'}</span>
+            <Globe2 className='h-4 w-4 text-slate-600 dark:text-dark-text-secondary dark:invert' />
+            <span className='text-slate-700 dark:text-dark-text-secondary'>Lang</span>
+            <span className='font-semibold text-slate-900 dark:text-dark-text-primary'>{Array.isArray(seller?.languages) && seller.languages.length ? seller.languages.slice(0, 2).join(', ') : '—'}</span>
           </div>
         </div>
       </div>
@@ -534,12 +575,12 @@ function HeaderPanel({ serviceData = {}, Img }) {
       {/* Features */}
       <div className='mt-5 flex gap-4 '>
         {features.map(f => (
-          <div key={f.title} className={`flex-1 group relative rounded-xl border ${f.border} bg-[#f9fbfd] p-5  transition-shadow hover:shadow-md`}>
+          <div key={f.title} className={`flex-1 group relative rounded-xl border ${f.border} bg-[#f9fbfd] p-5  transition-shadow hover:shadow-md dark:bg-dark-bg-input dark:border-dark-border`}>
             <div className='flex items-start gap-3'>
               <div className={`shrink-0 rounded-xl p-2 ring-1 ring-white/60 ${f.iconWrap}`}>{f.Icon}</div>
               <div className='min-w-0'>
-                <h3 className='text-base font-semibold tracking-tight text-slate-900'>{f.title}</h3>
-                <p className='mt-1 text-sm text-slate-600/90'>{f.desc}</p>
+                <h3 className='text-base font-semibold tracking-tight text-slate-900 dark:text-dark-text-primary'>{f.title}</h3>
+                <p className='mt-1 text-sm text-slate-600/90 dark:text-dark-text-secondary'>{f.desc}</p>
               </div>
             </div>
           </div>
@@ -566,14 +607,14 @@ function DocumentViewer({ gallery }) {
   if (!documents.length) return null;
 
   return (
-    <div className="relative rounded-xl border border-slate-200 bg-white shadow-custom overflow-hidden">
+    <div className="relative rounded-xl border border-slate-200 bg-white shadow-custom overflow-hidden dark:bg-dark-bg-card dark:border-dark-border">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
-            <FileText className="h-4 w-4" />
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+            <FileText className="h-4 w-4 dark:invert" />
           </span>
-          <h2 id="documents-title" className="text-xl font-semibold text-slate-900">
+          <h2 id="documents-title" className="text-xl font-semibold text-slate-900 dark:text-dark-text-primary">
             {t('documents.title')}
           </h2>
         </div>
@@ -597,14 +638,14 @@ function VedioPlayer({ gallery }) {
   if (!vedio) return null;
 
   return (
-    <div className="relative rounded-xl border border-slate-200 bg-white shadow-custom overflow-hidden">
+    <div className="relative rounded-xl border border-slate-200 bg-white shadow-custom overflow-hidden dark:bg-dark-bg-card dark:border-dark-border">
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700">
-            <PlayCircle className="h-4 w-4" />
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-300">
+            <PlayCircle className="h-4 w-4 dark:invert" />
           </span>
-          <h2 id="video-title" className="text-xl font-semibold text-slate-900">
+          <h2 id="video-title" className="text-xl font-semibold text-slate-900 dark:text-dark-text-primary">
             {t('video.title')}
           </h2>
         </div>
@@ -657,35 +698,35 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
   };
 
   return (
-    <div className='mb-8 relative p-4 rounded-xl border border-slate-200 bg-white shadow-custom  overflow-hidden'>
+    <div className='mb-8 relative p-4 rounded-xl border border-slate-200 bg-white shadow-custom  overflow-hidden dark:bg-dark-bg-card dark:border-dark-border'>
       <div className='relative group outline-none' tabIndex={0} role='region' aria-label='Service gallery' onKeyDown={onKeyDown}>
-        <div className='relative w-full aspect-[16/9] bg-slate-100'>
-          {!loaded && <div className='absolute inset-0 animate-pulse bg-slate-100' />}
+        <div className='relative w-full aspect-[16/9] bg-slate-100 dark:bg-dark-bg-input'>
+          {loaded && <div className='absolute inset-0 animate-pulse bg-slate-100 dark:bg-dark-border' />}
 
           <motion.img key={safeImages[active]?.url} src={safeImages[active]?.url?.startsWith('http') ? safeImages[active]?.url : baseImg + safeImages[active]?.url} alt={`Image ${active + 1}`} onLoad={() => setLoaded(true)} className={` rounded-xl absolute inset-0 h-full w-full object-cover transition-transform duration-300   ${loaded ? 'opacity-100' : 'opacity-0'}`} initial={{ opacity: 0, scale: 1.01 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0.2, scale: 1.005 }} />
 
           {/* edge fades */}
-          <div className='pointer-events-none absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-white/50 to-transparent' />
-          <div className='pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white/50 to-transparent' />
+          <div className='pointer-events-none absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-white/50 to-transparent dark:from-dark-bg-card/60' />
+          <div className='pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white/50 to-transparent dark:from-dark-bg-card/60' />
 
           {/* controls */}
           {safeImages.length > 1 && (
             <>
-              <button type='button' aria-label='Previous image' onClick={prev} className=' cursor-pointer absolute flex-none left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500'>
-                <ChevronLeft className='h-[25px] w-[21px] cursor-pointer flex-none ' />
+              <button type='button' aria-label='Previous image' onClick={prev} className=' cursor-pointer absolute flex-none left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500 dark:bg-dark-bg-card/80 dark:hover:bg-dark-bg-card dark:border dark:border-dark-border'>
+                <ChevronLeft className='h-[25px] w-[21px] cursor-pointer flex-none' />
               </button>
-              <button type='button' aria-label='Next image' onClick={next} className=' cursor-pointer absolute flex-none right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500'>
-                <ChevronRight className='h-[25px] w-[21px] cursor-pointer flex-none ' />
+              <button type='button' aria-label='Next image' onClick={next} className=' cursor-pointer absolute flex-none right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/80 backdrop-blur px-2.5 py-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500 dark:bg-dark-bg-card/80 dark:hover:bg-dark-bg-card dark:border dark:border-dark-border'>
+                <ChevronRight className='h-[25px] w-[21px] cursor-pointer flex-none' />
               </button>
             </>
           )}
 
           {/* index pill + open lightbox */}
           <div className='absolute bottom-3 left-3 flex items-center gap-2'>
-            <span className='rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow'>
+            <span className='rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow dark:bg-dark-bg-card/90 dark:text-dark-text-primary dark:border dark:border-dark-border'>
               {active + 1} / {safeImages.length}
             </span>
-            <button type='button' onClick={() => setLightbox(true)} className=' cursor-pointer inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow hover:bg-white'>
+            <button type='button' onClick={() => setLightbox(true)} className=' cursor-pointer inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow hover:bg-white dark:bg-dark-bg-card/90 dark:text-dark-text-primary dark:hover:bg-dark-bg-card dark:border dark:border-dark-border'>
               <Maximize2 className='h-3.5 w-3.5' />
               View
             </button>
@@ -696,8 +737,8 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
       {/* Thumbnails strip */}
       <div className='relative  pt-4 '>
         {/* edge masks */}
-        <div className='pointer-events-none absolute inset-y-0 left-0  w-8 bg-gradient-to-r from-white to-transparent' />
-        <div className='pointer-events-none absolute inset-y-0 right-0  w-8 bg-gradient-to-l from-white to-transparent' />
+        <div className='pointer-events-none absolute inset-y-0 left-0  w-8 bg-gradient-to-r from-white to-transparent dark:from-dark-bg-card' />
+        <div className='pointer-events-none absolute inset-y-0 right-0  w-8 bg-gradient-to-l from-white to-transparent dark:from-dark-bg-card' />
 
         <div ref={stripRef} className='flex gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory ' role='tablist' aria-label='Select image'>
           {safeImages.map((img, i) => {
@@ -711,7 +752,7 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
                 aria-label={`Show image ${i + 1}`}
                 onClick={() => setActive(i)}
                 className={` hover:scale-[.95] duration-300 cursor-pointer relative h-20 w-28 flex-shrink-0 snap-start overflow-hidden rounded-xl border transition 
-                 ${activeState ? 'border-main-500 ring-2 ring-main-100' : 'border-slate-200 hover:border-slate-300'}`}>
+                 ${activeState ? 'border-main-500 ring-2 ring-main-100 dark:ring-main-500/20' : 'border-slate-200 hover:border-slate-300 dark:border-dark-border dark:hover:border-main-500/40'}`}>
                 <Img src={img.url} alt={img.alt || `Thumbnail ${i + 1}`} className='h-full w-full object-cover' loading='lazy' decoding='async' />
               </button>
             );
@@ -723,7 +764,7 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
       <AnimatePresence>
         {lightbox && (
           <motion.div className='fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <button aria-label='Close' onClick={() => setLightbox(false)} className=' z-[10] absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500'>
+            <button aria-label='Close' onClick={() => setLightbox(false)} className=' z-[10] absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow hover:bg-white focus:outline-none focus:ring-2 focus:ring-main-500 dark:bg-dark-bg-card/90 dark:hover:bg-dark-bg-card dark:border dark:border-dark-border'>
               <X className='h-5 w-5' />
             </button>
 
@@ -733,11 +774,11 @@ function MediaGallery({ images = [], initialIndex = 0 }) {
                 <motion.img key={`lb-${safeImages[active]?.url}`} src={safeImages[active]?.url?.startsWith('http') ? safeImages[active]?.url : baseImg + safeImages[active]?.url} alt={`Image ${active + 1}`} initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className='max-h-[90vh] w-full mx-auto max-w-[92vw] rounded-xl object-contain shadow-2xl' />
                 {safeImages.length > 1 && (
                   <>
-                    <button onClick={prev} className='absolute start-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white' aria-label='Previous image'>
-                      <ChevronLeft className='h-5 w-5' />
+                    <button onClick={prev} className='absolute start-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white dark:bg-dark-bg-card/90 dark:hover:bg-dark-bg-card dark:border dark:border-dark-border' aria-label='Previous image'>
+                      <ChevronLeft className='h-5 w-5 ' />
                     </button>
-                    <button onClick={next} className='absolute end-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white' aria-label='Next image'>
-                      <ChevronRight className='h-5 w-5' />
+                    <button onClick={next} className='absolute end-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow hover:bg-white dark:bg-dark-bg-card/90 dark:hover:bg-dark-bg-card dark:border dark:border-dark-border' aria-label='Next image'>
+                      <ChevronRight className='h-5 w-5 ' />
                     </button>
                   </>
                 )}
@@ -771,14 +812,14 @@ function AboutService({ serviceData = {}, onTagClick }) {
   const longBrief = brief.length > 180;
 
   return (
-    <section aria-labelledby='about-title' className='my-8 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden'>
+    <section aria-labelledby='about-title' className='my-8 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:bg-dark-bg-card dark:border-dark-border'>
       {/* Header */}
       <div className='flex items-center justify-between px-6 pt-6'>
         <div className='flex items-center gap-2'>
-          <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-main-50 text-main-700'>
-            <Info className='h-4 w-4' />
+          <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-main-50 text-main-700 dark:bg-main-900/20 dark:text-main-300'>
+            <Info className='h-4 w-4 dark:invert' />
           </span>
-          <h2 id='about-title' className='text-xl font-semibold text-slate-900'>
+          <h2 id='about-title' className='text-xl font-semibold text-slate-900 dark:text-dark-text-primary'>
             {t('about.title')}
           </h2>
         </div>
@@ -786,9 +827,9 @@ function AboutService({ serviceData = {}, onTagClick }) {
 
       {/* Brief with collapse */}
       <div className='px-6 pb-4'>
-        <div className={`relative mt-4 text-slate-700 leading-7 ${expanded ? '' : 'max-h-32 overflow-hidden pr-1'}`}>
+        <div className={`relative mt-4 text-slate-700 leading-7 dark:text-dark-text-secondary ${expanded ? '' : 'max-h-32 overflow-hidden pr-1'}`}>
           <p className='whitespace-pre-line'>{brief || t('about.noDescription')}</p>
-          {!expanded && longBrief && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent' />}
+          {!expanded && longBrief && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-white to-transparent dark:from-dark-bg-card' />}
         </div>
 
         {longBrief && (
@@ -801,23 +842,23 @@ function AboutService({ serviceData = {}, onTagClick }) {
 
       {/* Tags */}
       {tags.length > 0 && (
-        <div className='border-t border-slate-100 px-6 pb-6 pt-4'>
+        <div className='border-t border-slate-100 px-6 pb-6 pt-4 dark:border-dark-border'>
           <div className='mb-2 flex items-center gap-2'>
-            <TagIcon className='h-4 w-4 text-slate-500' />
-            <h3 className='text-sm font-medium text-slate-900'>{t('about.tags')}</h3>
-            <span className='text-xs text-slate-500'>({tags.length})</span>
+            <TagIcon className='h-4 w-4 text-slate-500 dark:text-dark-text-secondary dark:invert' />
+            <h3 className='text-sm font-medium text-slate-900 dark:text-dark-text-primary'>{t('about.tags')}</h3>
+            <span className='text-xs text-slate-500 dark:text-dark-text-secondary'>({tags.length})</span>
           </div>
 
           <AnimatePresence initial={false}>
             <motion.div layout className='flex flex-wrap gap-2' transition={{ layout: { duration: 0.2 } }}>
               {tags.slice(0, expanded ? tags.length : 10).map((t, i) => (
-                <motion.button key={t.label + i} layout onClick={() => onTagClick?.(t.label)} className='group inline-flex items-center gap-1 rounded-xl border border-main-100 bg-main-50 px-3 py-1.5 text-sm text-main-800 hover:bg-main-100' title={t.count > 1 ? `${t.label} (${t.count})` : t.label}>
+                <motion.button key={t.label + i} layout onClick={() => onTagClick?.(t.label)} className='group inline-flex items-center gap-1 rounded-xl border border-main-100 bg-main-50 px-3 py-1.5 text-sm text-main-800 hover:bg-main-100 dark:border-main-500/30 dark:bg-main-900/20 dark:text-main-200 dark:hover:bg-main-900/30' title={t.count > 1 ? `${t.label} (${t.count})` : t.label}>
                   <span>#{t.label}</span>
-                  {t.count > 1 && <span className='rounded-xl bg-white/70 px-1.5 text-xs text-main-700 group-hover:bg-white'>×{t.count}</span>}
+                  {t.count > 1 && <span className='rounded-xl bg-white/70 px-1.5 text-xs text-main-700 group-hover:bg-white dark:bg-dark-bg-card/80 dark:text-main-200 dark:group-hover:bg-dark-bg-card'>×{t.count}</span>}
                 </motion.button>
               ))}
               {!expanded && tags.length > 10 && (
-                <button onClick={() => setExpanded(true)} className='inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50'>
+                <button onClick={() => setExpanded(true)} className='inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary dark:hover:bg-dark-bg-card'>
                   +{tags.length - 10} more
                 </button>
               )}
@@ -860,26 +901,26 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
   };
 
   return (
-    <section className='rounded-xl border border-slate-200 bg-white p-6 shadow-sm mb-6' aria-labelledby='packages-title'>
+    <section className='rounded-xl border border-slate-200 bg-white p-6 shadow-sm mb-6 dark:bg-dark-bg-card dark:border-dark-border' aria-labelledby='packages-title'>
       {/* Header */}
       <div className="mb-5 flex flex-col gap-4 xs:flex-row xs:items-center xs:justify-between">
         {/* Title */}
         <div className="flex items-center gap-2">
-          <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-slate-100">
-            <Table2 className="h-4 w-4 text-slate-700" />
+          <div className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-slate-100 dark:bg-dark-bg-input dark:ring-dark-border">
+            <Table2 className="h-4 w-4 text-slate-700 dark:text-dark-text-secondary dark:invert" />
           </div>
-          <h2 id="packages-title" className="text-lg md:text-xl font-semibold text-slate-900">
+          <h2 id="packages-title" className="text-lg md:text-xl font-semibold text-slate-900 dark:text-dark-text-primary">
             {t('packages.title')}
           </h2>
         </div>
 
         {/* View toggle */}
-        <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 self-start sm:self-auto">
+        <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 self-start sm:self-auto dark:border-dark-border dark:bg-dark-bg-input">
           <button
             type="button"
             onClick={() => setView('cards')}
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
-        ${view === 'cards' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+        ${view === 'cards' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50 dark:text-dark-text-primary dark:hover:bg-dark-bg-card'}`}
             aria-pressed={view === 'cards'}
             aria-label={t('packages.cardsView')}
           >
@@ -889,7 +930,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
             type="button"
             onClick={() => setView('compare')}
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm transition
-        ${view === 'compare' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+        ${view === 'compare' ? 'gradient text-white' : 'text-slate-700 hover:bg-slate-50 dark:text-dark-text-primary dark:hover:bg-dark-bg-card'}`}
             aria-pressed={view === 'compare'}
             aria-label={t('packages.compareView')}
           >
@@ -916,13 +957,13 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                 const recommended = index === recommendedIndex;
 
                 return (
-                  <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-main-300 bg-main-50/30 ring-1 ring-main-200 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'}`}>
+                  <motion.div type='button' key={pkg.type + index} whileHover={{ y: -3 }} className={` group relative flex h-full flex-col items-start rounded-xl border p-5 transition ${active ? 'border-main-300 bg-main-50/30 ring-1 ring-main-200 shadow-md dark:border-main-500/40 dark:bg-main-900/10 dark:ring-main-500/20' : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm dark:border-dark-border dark:bg-dark-bg-input dark:hover:bg-dark-bg-card'}`}>
                     <div className='mb-2 flex flex-wrap w-full items-start justify-between gap-1'>
                       <div className='flex items-center flex-wrap gap-2'>
-                        <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900'>{pkg.type ? t(`packages.${pkg.type.toLowerCase()}`) : ''}</h3>
+                        <h3 className='text-lg font-bold uppercase tracking-wide text-slate-900 dark:text-dark-text-primary'>{pkg.type ? t(`packages.${pkg.type.toLowerCase()}`) : ''}</h3>
                         {recommended && (
-                          <span className='inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800'>
-                            <Crown className='h-3.5 w-3.5' /> {t('packages.recommended')}
+                          <span className='inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:border-amber-500/30 dark:bg-amber-900/20 dark:text-amber-200'>
+                            <Crown className='h-3.5 w-3.5 dark:invert' /> {t('packages.recommended')}
                           </span>
                         )}
                         {/* ✅ Show Test flag if pkg.test is true */}
@@ -932,7 +973,7 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                           </span>
                         )} */}
                       </div>
-                      <PriceTag price={pkg.price} className='!text-lg !font-bold !text-slate-900' />
+                      <PriceTag price={pkg.price} className='!text-lg !font-bold !text-slate-900 dark:!text-dark-text-primary' />
                     </div>
                     {/* Second title */}
                     {/* {pkg.title && (
@@ -941,19 +982,19 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                       </h4>
                     )} */}
                     {/* Description */}
-                    {pkg.description && <p className='mb-4 line-clamp-2 text-sm leading-6 text-slate-600'>{pkg.description}</p>}
+                    {pkg.description && <p className='mb-4 line-clamp-2 text-sm leading-6 text-slate-600 dark:text-dark-text-secondary'>{pkg.description}</p>}
 
                     {/* Meta */}
-                    <div className='mb-4 flex w-full items-center justify-between flex-wrap text-sm text-slate-700'>
+                    <div className='mb-4 flex w-full items-center justify-between flex-wrap text-sm text-slate-700 dark:text-dark-text-secondary'>
                       <span className='inline-flex items-center gap-1.5'>
-                        <Clock className='h-4 w-4 text-slate-600' />
-                        <span className='font-medium text-slate-900'>{pkg.deliveryTime}</span>
-                        <span className='text-slate-500'>Day(s)</span>
+                        <Clock className='h-4 w-4 text-slate-600 dark:text-dark-text-secondary dark:invert' />
+                        <span className='font-medium text-slate-900 dark:text-dark-text-primary'>{pkg.deliveryTime}</span>
+                        <span className='text-slate-500 dark:text-dark-text-secondary'>Day(s)</span>
                       </span>
                       <span className='inline-flex items-center gap-1.5'>
-                        <Box className='h-4 w-4 text-slate-600' />
-                        <span className='font-medium text-slate-900'>{pkg.revisions}</span>
-                        <span className='text-slate-500'>Revisions</span>
+                        <Box className='h-4 w-4 text-slate-600 dark:text-dark-text-secondary dark:invert' />
+                        <span className='font-medium text-slate-900 dark:text-dark-text-primary'>{pkg.revisions}</span>
+                        <span className='text-slate-500 dark:text-dark-text-secondary'>Revisions</span>
                       </span>
                     </div>
 
@@ -961,11 +1002,11 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                     <ul className='mb-4 w-full space-y-2 pb-12'>
                       {(pkg.features || []).slice(0, 4).map((feature, i) => (
                         <li key={i} className='flex items-start text-sm'>
-                          <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-main-600' />
-                          <span className='text-slate-700'>{feature}</span>
+                          <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-main-600 dark:text-main-400 dark:invert' />
+                          <span className='text-slate-700 dark:text-dark-text-secondary'>{feature}</span>
                         </li>
                       ))}
-                      {pkg.features?.length > 4 && <li className='pl-6 text-xs text-slate-500'>+ {pkg.features.length - 4} more</li>}
+                      {pkg.features?.length > 4 && <li className='pl-6 text-xs text-slate-500 dark:text-dark-text-secondary'>+ {pkg.features.length - 4} more</li>}
                     </ul>
 
                     {/* CTA */}
@@ -987,17 +1028,17 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
               <div className='min-w-[780px]'>
                 <div className='grid grid-cols-[220px_repeat(3,minmax(180px,1fr))] gap-2'>
                   {/* Header row (package names) */}
-                  <div className='px-2 py-3 text-sm font-medium text-slate-500'>Option</div>
+                  <div className='px-2 py-3 text-sm font-medium text-slate-500 dark:text-dark-text-secondary'>Option</div>
                   {list.map((p, i) => {
                     const active = selectedName === p.name; // (UI only; logic untouched)
                     return (
                       <div
                         key={'h' + i}
                         className={`rounded-xl px-4 py-3 text-center text-sm font-semibold uppercase tracking-wide
-                          ${active ? 'border border-main-500 bg-main-50 text-main-900' : 'border border-slate-200 bg-white text-slate-900'}`}>
+                          ${active ? 'border border-main-500 bg-main-50 text-main-900 dark:bg-main-900/20 dark:text-main-200 dark:border-main-500/40' : 'border border-slate-200 bg-white text-slate-900 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'}`}>
                         {p.type}
                         {p.title && (
-                          <div className="mt-1 text-xs font-medium text-slate-600 normal-case">
+                          <div className="mt-1 text-xs font-medium text-slate-600 normal-case dark:text-dark-text-secondary">
                             {p.title}
                           </div>
                         )}
@@ -1007,50 +1048,50 @@ function PackagesSection({ packages, selectedPackage, setSelectedPackage }) {
                   })}
 
                   {/* ✅ New Test row */}
-                  <div className="py-3 pl-2 text-sm text-slate-600">Test</div>
+                  <div className="py-3 pl-2 text-sm text-slate-600 dark:text-dark-text-secondary">Test</div>
                   {list.map((p, i) => (
                     <div
                       key={"test" + i}
-                      className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm"
+                      className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center text-sm dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary"
                     >
                       {p.test ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-800">
-                          <Beaker className="h-3 w-3" /> Yes
+                        <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-800 dark:border-indigo-500/30 dark:bg-indigo-900/20 dark:text-indigo-200">
+                          <Beaker className="h-3 w-3 dark:invert" /> Yes
                         </span>
                       ) : (
-                        <span className="text-slate-500">No</span>
+                        <span className="text-slate-500 dark:text-dark-text-secondary">No</span>
                       )}
                     </div>
                   ))}
 
                   {/* Price */}
-                  <div className='py-3 pl-2 text-sm text-slate-600'>Price</div>
+                  <div className='py-3 pl-2 text-sm text-slate-600 dark:text-dark-text-secondary'>Price</div>
                   {list.map((p, i) => (
-                    <div key={'price' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
+                    <div key={'price' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center dark:border-dark-border dark:bg-dark-bg-input'>
                       <PriceTag price={p.price} className='!text-base !font-semibold' />
                     </div>
                   ))}
 
                   {/* Delivery */}
-                  <div className='py-3 pl-2 text-sm text-slate-600'>Delivery</div>
+                  <div className='py-3 pl-2 text-sm text-slate-600 dark:text-dark-text-secondary'>Delivery</div>
                   {list.map((p, i) => (
-                    <div key={'del' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
+                    <div key={'del' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>
                       {p.deliveryTime} Day(s)
                     </div>
                   ))}
 
                   {/* Revisions */}
-                  <div className='py-3 pl-2 text-sm text-slate-600'>Revisions</div>
+                  <div className='py-3 pl-2 text-sm text-slate-600 dark:text-dark-text-secondary'>Revisions</div>
                   {list.map((p, i) => (
-                    <div key={'rev' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
+                    <div key={'rev' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>
                       {p.revisions}
                     </div>
                   ))}
 
                   {/* Features count */}
-                  <div className='py-3 pl-2 text-sm text-slate-600'>Features</div>
+                  <div className='py-3 pl-2 text-sm text-slate-600 dark:text-dark-text-secondary'>Features</div>
                   {list.map((p, i) => (
-                    <div key={'fc' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center'>
+                    <div key={'fc' + i} className='rounded-xl border border-slate-200 bg-white px-4 py-3 text-center dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>
                       {(p.features || []).length}
                     </div>
                   ))}
@@ -1096,22 +1137,22 @@ function RequirementsSection({ triedSubmit, requirements, answers, onChange, val
 
 
   return (
-    <section className='relative mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-custom '>
+    <section className='relative mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-custom dark:bg-dark-bg-card dark:border-dark-border'>
       {/* header */}
       <div className='flex items-center justify-between gap-3 px-6 pt-6'>
         <div className='min-w-0'>
-          <h2 className='text-xl font-semibold text-slate-900'>{t('requirements.title')}</h2>
-          <p className='mt-1 text-sm text-slate-600'>{t('requirements.subtitle')}</p>
+          <h2 className='text-xl font-semibold text-slate-900 dark:text-dark-text-primary'>{t('requirements.title')}</h2>
+          <p className='mt-1 text-sm text-slate-600 dark:text-dark-text-secondary'>{t('requirements.subtitle')}</p>
         </div>
         {total > 0 && (
-          <div className='shrink-0 rounded-full border border-main-200 bg-main-50 px-3 py-1 text-xs font-medium text-main-800'>
+          <div className='shrink-0 rounded-full border border-main-200 bg-main-50 px-3 py-1 text-xs font-medium text-main-800 dark:border-main-500/40 dark:bg-main-900/20 dark:text-main-200'>
             {answered}/{total} {t('requirements.complete')}
           </div>
         )}
       </div>
 
       {/* progress */}
-      <div className='mx-6 mt-4 h-2 rounded-full bg-slate-100'>
+      <div className='mx-6 mt-4 h-2 rounded-full bg-slate-100 dark:bg-dark-bg-input'>
         <div className='h-2 rounded-full bg-gradient-to-r from-main-400 to-main-600' style={{ width: `${progress}%` }} />
       </div>
 
@@ -1173,7 +1214,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
   return (
     <motion.div key={req.id} id={`requirement-${req.id}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className=' '>
       <div className='flex items-start justify-between gap-4'>
-        <label className='block text-base font-semibold text-slate-900'>
+        <label className='block text-base font-semibold text-slate-900 dark:text-dark-text-primary'>
           {idx + 1}. {req.question}
           {req.isRequired && <span className='ml-1 text-red-500'>*</span>}
         </label>
@@ -1198,7 +1239,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
               onBlur={() => onChange(req.id, localVal)}
               className={`w-full transition  `}
             />
-            <div className="absolute right-0 mt-1 text-xs text-slate-500">
+            <div className="absolute right-0 mt-1 text-xs text-slate-500 dark:text-dark-text-secondary">
               {localVal.length}/3000
             </div>
           </div>
@@ -1222,14 +1263,14 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
       {req.requirementType === 'file' && (
         <div className='mt-3 relative'>
           <label
-            className={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed bg-slate-50 p-6 transition hover:bg-slate-100
+            className={`flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed bg-slate-50 p-6 transition hover:bg-slate-100 dark:bg-dark-bg-input dark:hover:bg-dark-bg-card
                       ${showErr ? 'border-red-300' : 'border-slate-300'}`}>
             <div className='text-center'>
-              <UploadCloud className='mx-auto h-7 w-7 text-slate-500' />
-              <p className='mt-2 text-sm text-slate-700'>
+              <UploadCloud className='mx-auto h-7 w-7 text-slate-500 dark:text-dark-text-secondary dark:invert' />
+              <p className='mt-2 text-sm text-slate-700 dark:text-dark-text-secondary'>
                 <span className='font-medium'>{t('requirements.clickToUpload')}</span> {t('requirements.orDragDrop')}
               </p>
-              <p className='text-xs text-slate-500'>{t('requirements.anyFileType')}</p>
+              <p className='text-xs text-slate-500 dark:text-dark-text-secondary'>{t('requirements.anyFileType')}</p>
             </div>
             {/* <input type='file' className='hidden' onChange={e => onChange(req.id, e.target.files?.[0] || null)} /> */}
             <AttachFilesButton cnBtn={'absolute inset-0  opacity-0 '} maxSelection={1} hiddenFiles={true} onChange={files => {
@@ -1238,8 +1279,8 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
           </label>
 
           {!!val && (
-            <div className='mt-2 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700'>
-              <CheckCircle2 className='h-4 w-4 text-main-600' />
+            <div className='mt-2 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-primary'>
+              <CheckCircle2 className='h-4 w-4 text-main-600 dark:text-main-400 dark:invert' />
               {t('requirements.selected')}: <span className='font-medium'>{val?.name || val?.filename || String(val)}</span>
             </div>
           )}
@@ -1248,7 +1289,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
 
       {showErr && (
         <p className='mt-2 inline-flex items-center gap-1.5 text-sm text-red-600'>
-          <AlertCircle className='h-4 w-4' />
+          <AlertCircle className='h-4 w-4 dark:invert' />
           {errMsg || t('requirements.fieldRequired')}
         </p>
       )}
@@ -1260,7 +1301,7 @@ function RequirementField({ idx, answers, requirement, triedSubmit, validationEr
 
 
 function SkeletonLine({ className = '' }) {
-  return <div className={`!h-3 shimmer rounded bg-slate-200/80 ${className}`} />;
+  return <div className={`!h-3 shimmer rounded bg-slate-200/80 dark:bg-dark-border/80 ${className}`} />;
 }
 
 
@@ -1320,31 +1361,31 @@ function AboutSeller({ serviceData }) {
   }
 
   return (
-    <section className='bg-white rounded-xl shadow-custom  border border-slate-200 mb-6'>
+    <section className='bg-white rounded-xl shadow-custom  border border-slate-200 mb-6 dark:bg-dark-bg-card dark:border-dark-border'>
       {/* header */}
       <div className='p-6'>
         <div className='flex items-center gap-3'>
           <div className='relative'>
             <span className='absolute -inset-0.5 rounded-full bg-[conic-gradient(var(--tw-gradient-stops))] from-main-400 via-sky-400 to-violet-400 blur opacity-30' />
-            <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none'>{getInitials(seller?.username)}</span>}</div>
+            <div className='relative size-12 overflow-hidden rounded-full border border-white shadow-sm ring-1 ring-slate-200 bg-white flex items-center justify-center dark:bg-dark-bg-input dark:ring-dark-border'>{seller?.profileImage && Img ? <Img src={seller.profileImage} alt={`${seller?.username || 'Seller'} avatar`} className='h-full w-full object-cover' /> : <span className='text-sm font-semibold text-slate-600 select-none dark:text-dark-text-secondary'>{getInitials(seller?.username)}</span>}</div>
           </div>
 
           <div className='min-w-0'>
             <div className='flex flex-wrap items-center gap-2'>
-              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none'>
+              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
                 {seller?.username || 'Unknown Seller'}
               </Link>
               <IdentityStatus user={seller} />
               <TopRatedBadge isTopRated={seller?.topRated} size='xs' />
               {!!seller?.sellerLevel && (
-                <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600'>
-                  <BadgeCheck className='h-3 w-3 text-main-600' />
+                <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-secondary'>
+                  <BadgeCheck className='h-3 w-3 text-main-600 dark:text-main-400 dark:invert' />
                   {String(seller.sellerLevel).toUpperCase()}
                 </span>
               )}
             </div>
 
-            <p className='mt-1 line-clamp-1 text-sm text-slate-600'>{seller?.description || serviceData?.brief || 'No description provided.'}</p>
+            <p className='mt-1 line-clamp-1 text-sm text-slate-600 dark:text-dark-text-secondary'>{seller?.description || serviceData?.brief || 'No description provided.'}</p>
           </div>
         </div>
 
@@ -1356,9 +1397,9 @@ function AboutSeller({ serviceData }) {
       </div>
 
       {/* info grid */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-6 border-y border-slate-100'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-6 border-y border-slate-100 dark:border-dark-border'>
         <InfoRow
-          icon={<MapPin className='h-5 w-5 text-slate-400' />}
+          icon={<MapPin className='h-5 w-5 text-slate-400 dark:text-dark-text-secondary dark:invert' />}
           title={t('seller.from')}
           value={
             <span className='inline-flex items-start gap-1'>
@@ -1369,15 +1410,15 @@ function AboutSeller({ serviceData }) {
             </span>
           }
         />
-        <InfoRow icon={<Calendar className='h-5 w-5 text-slate-400' />} title={t('seller.memberSince')} value={seller?.memberSince ? `${new Date(seller.memberSince).toLocaleDateString()} • ${timeSince(seller.memberSince)}` : 'Not specified'} />
+        <InfoRow icon={<Calendar className='h-5 w-5 text-slate-400 dark:text-dark-text-secondary dark:invert' />} title={t('seller.memberSince')} value={seller?.memberSince ? `${new Date(seller.memberSince).toLocaleDateString()} • ${timeSince(seller.memberSince)}` : 'Not specified'} />
         <InfoRow
-          icon={<Globe className='h-5 w-5 text-slate-400' />}
+          icon={<Globe className='h-5 w-5 text-slate-400 dark:text-dark-text-secondary dark:invert' />}
           title={t('seller.languages')}
           value={
             languages.length ? (
               <div className='flex flex-wrap  mt-1 gap-1.5'>
                 {languages.map((l, i) => (
-                  <span key={i} className='rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs'>
+                  <span key={i} className='rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>
                     {l}
                   </span>
                 ))}
@@ -1392,14 +1433,14 @@ function AboutSeller({ serviceData }) {
       {/* description */}
       {(seller?.description || serviceData?.brief) && (
         <div className='px-6 pt-4'>
-          <div className={`relative text-slate-700 leading-7 ${descOpen ? '' : 'max-h-24 overflow-hidden pr-1'}`}>
+          <div className={`relative text-slate-700 leading-7 dark:text-dark-text-secondary ${descOpen ? '' : 'max-h-24 overflow-hidden pr-1'}`}>
             <p className='whitespace-pre-line'>{seller?.description || serviceData?.brief}</p>
-            {!descOpen && (seller?.description || serviceData?.brief || '').length > 160 && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent' />}
+            {!descOpen && (seller?.description || serviceData?.brief || '').length > 160 && <div className='pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent dark:from-dark-bg-card' />}
           </div>
           {(seller?.description || serviceData?.brief || '').length > 160 && (
             <button onClick={() => setDescOpen(v => !v)} className='mt-2 inline-flex items-center gap-1 text-sm font-medium text-main-700 hover:text-main-800'>
               {descOpen ? t('seller.showLess') : t('seller.readMore')}
-              <ChevronDown className={`h-4 w-4 transition ${descOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 transition ${descOpen ? 'rotate-180' : ''} dark:invert`} />
             </button>
           )}
         </div>
@@ -1408,27 +1449,27 @@ function AboutSeller({ serviceData }) {
       <div className='px-6 pb-6 pt-4 space-y-6'>
         {!!skills.length && (
           <div>
-            <div className='mb-1 text-sm font-medium text-slate-900'>{t('seller.keySkills')}</div>
+            <div className='mb-1 text-sm font-medium text-slate-900 dark:text-dark-text-primary'>{t('seller.keySkills')}</div>
             <div className='flex flex-wrap gap-1.5'>
               {skills.slice(0, 6).map((s, i) => (
-                <span key={i} className='rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs text-main-800'>
+                <span key={i} className='rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-xs text-main-800 dark:border-main-500/30 dark:bg-main-900/20 dark:text-main-200'>
                   {s}
                 </span>
               ))}
-              {skills.length > 6 && <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-600'>+{skills.length - 6} more</span>}
+              {skills.length > 6 && <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-600 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-secondary'>+{skills.length - 6} more</span>}
             </div>
           </div>
         )}
 
         {!!certifications.length && (
           <div>
-            <div className='mb-1 flex items-center gap-2 text-sm font-medium text-slate-900'>
-              <ShieldCheck className='h-4 w-4 text-main-600' /> {t('seller.certifications')}
+            <div className='mb-1 flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-dark-text-primary'>
+              <ShieldCheck className='h-4 w-4 text-main-600 dark:text-main-400 dark:invert' /> {t('seller.certifications')}
             </div>
-            <ul className='space-y-1 text-sm text-slate-700'>
+            <ul className='space-y-1 text-sm text-slate-700 dark:text-dark-text-secondary'>
               {certifications.slice(0, 3).map((c, i) => (
                 <li key={i}>
-                  {c.name} — <span className='text-slate-600'>{c.issuingOrganization}</span> ({c.year})
+                  {c.name} — <span className='text-slate-600 dark:text-dark-text-secondary'>{c.issuingOrganization}</span> ({c.year})
                 </li>
               ))}
             </ul>
@@ -1437,13 +1478,13 @@ function AboutSeller({ serviceData }) {
 
         {!!education.length && (
           <div>
-            <div className='mb-1 flex items-center gap-2 text-sm font-medium text-slate-900'>
-              <GraduationCap className='h-4 w-4 text-sky-600' /> {t('seller.education')}
+            <div className='mb-1 flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-dark-text-primary'>
+              <GraduationCap className='h-4 w-4 text-sky-600 dark:text-sky-300 dark:invert' /> {t('seller.education')}
             </div>
-            <ul className='space-y-1 text-sm text-slate-700'>
+            <ul className='space-y-1 text-sm text-slate-700 dark:text-dark-text-secondary'>
               {education.slice(0, 2).map((e, i) => (
                 <li key={i}>
-                  {e.degree} — <span className='text-slate-600'>{e.institution}</span> ({e.year})
+                  {e.degree} — <span className='text-slate-600 dark:text-dark-text-secondary'>{e.institution}</span> ({e.year})
                 </li>
               ))}
             </ul>
@@ -1452,16 +1493,16 @@ function AboutSeller({ serviceData }) {
 
         {!!portfolio.length && (
           <div>
-            <div className='mb-2 flex items-center gap-2 text-sm font-medium text-slate-900'>
-              <ImageIcon className='h-4 w-4' /> {t('seller.portfolio')}
+            <div className='mb-2 flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-dark-text-primary'>
+              <ImageIcon className='h-4 w-4 ' /> {t('seller.portfolio')}
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
               {portfolio.map((p, i) => (
-                <a key={i} href={resolveUrl(p)} target='_blank' rel='noopener noreferrer' className='group relative block overflow-hidden rounded-xl border border-slate-200 bg-slate-50' title={p.title}>
+                <a key={i} href={resolveUrl(p)} target='_blank' rel='noopener noreferrer' className='group relative block overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-dark-border dark:bg-dark-bg-input' title={p.title}>
                   <Img src={p} alt={p.title || 'Portfolio'} className='h-28 w-full object-cover transition group-hover:scale-[1.02]' />
                   <div className='absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/50 to-transparent px-2 py-1.5 text-xs text-white opacity-0 group-hover:opacity-100 transition'>
                     <span className='line-clamp-1'>{p.title}</span>
-                    <ExternalLink className='h-3.5 w-3.5' />
+                    <ExternalLink className='h-3.5 w-3.5 dark:invert' />
                   </div>
                 </a>
               ))}
@@ -1490,57 +1531,57 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
   return (
     <div className='w-full lg:w-[400px]'>
       <aside className='sticky top-28'>
-        <div className={`relative rounded-xl border border-slate-200 bg-white p-6 ${selectedPackage && "pt-[36px]"} shadow-custom`}>
+        <div className={`relative rounded-xl border border-slate-200 bg-white p-6 ${selectedPackage && "pt-[36px]"} shadow-custom dark:bg-dark-bg-card dark:border-dark-border`}>
           <div className='pointer-events-none absolute -inset-px rounded-xl p-[1px]   ' />
 
           {selectedPackage ? (
             <>
               <div className='mb-4 flex items-start justify-between'>
-                <h3 className='text-lg font-semibold text-slate-900'>{selectedPackage.name}</h3>
+                <h3 className='text-lg font-semibold text-slate-900 dark:text-dark-text-primary'>{selectedPackage.name}</h3>
                 <FavoriteButton serviceId={serviceData?.id} packageType={selectedPackage.name} />
               </div>
 
               <div className='mb-3 flex items-center justify-between'>
                 <div>
-                  <span className='text-slate-600'> {selectedPackage.title}</span>
+                  <span className='text-slate-600 dark:text-dark-text-secondary'> {selectedPackage.title}</span>
                 </div>
                 <PriceTag price={selectedPackage.price} className='!text-xl font-bold' />
               </div>
 
               <div className='mb-4 flex flex-wrap items-center gap-2 text-xs text-slate-500'>
-                <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>{valueMeta.count} {t('sidebar.features')}</span>
+                <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>{valueMeta.count} {t('sidebar.features')}</span>
                 {/* <span className='rounded-full border border-slate-200 bg-white px-2 py-0.5'>~ {valueMeta.perFeature} / {t('sidebar.feature')}</span> */}
-                {selectedPackage.test && <span className='flex gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5'>
-                  <Beaker className="h-3.5 w-3.5" /> {t('sidebar.test')}</span>
+                {selectedPackage.test && <span className='flex gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>
+                  <Beaker className="h-3.5 w-3.5 " /> {t('sidebar.test')}</span>
                 }
                 {serviceData?.fastDelivery && (
-                  <span className='inline-flex items-center gap-1 rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-main-800'>
-                    <Zap className='h-3.5 w-3.5' /> {t('sidebar.fastDelivery')}
+                  <span className='inline-flex items-center gap-1 rounded-full border border-main-200 bg-main-50 px-2 py-0.5 text-main-800 dark:border-main-500/40 dark:bg-main-900/20 dark:text-main-200'>
+                    <Zap className='h-3.5 w-3.5 ' /> {t('sidebar.fastDelivery')}
                   </span>
                 )}
                 {serviceData?.additionalRevision && (
-                  <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5'>
-                    <Repeat className='h-3.5 w-3.5' /> {t('sidebar.extraRevisions')}
+                  <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>
+                    <Repeat className='h-3.5 w-3.5 ' /> {t('sidebar.extraRevisions')}
                   </span>
                 )}
               </div>
 
-              {selectedPackage.description && <p className='mb-5 text-sm leading-6 text-slate-600'>{selectedPackage.description}</p>}
+              {selectedPackage.description && <p className='mb-5 text-sm leading-6 text-slate-600 dark:text-dark-text-secondary'>{selectedPackage.description}</p>}
 
-              <div className='mb-5 space-y-2 text-sm text-slate-700'>
+              <div className='mb-5 space-y-2 text-sm text-slate-700 dark:text-dark-text-secondary'>
                 <div className='flex items-center'>
-                  <Clock className='mr-2 h-4 w-4 text-slate-400' /> <span>{selectedPackage.deliveryTime} {t('sidebar.dayDelivery')}</span>
+                  <Clock className='mr-2 h-4 w-4 text-slate-400 dark:text-dark-text-secondary dark:invert' /> <span>{selectedPackage.deliveryTime} {t('sidebar.dayDelivery')}</span>
                 </div>
                 <div className='flex items-center'>
-                  <Box className='mr-2 h-4 w-4 text-slate-400' /> <span>{selectedPackage.revisions} {t('sidebar.revisions')}</span>
+                  <Box className='mr-2 h-4 w-4 text-slate-400 dark:text-dark-text-secondary dark:invert' /> <span>{selectedPackage.revisions} {t('sidebar.revisions')}</span>
                 </div>
               </div>
 
               <ul className='mb-4 space-y-2'>
                 {featuresPreview.map((f, i) => (
                   <li key={i} className='flex items-start text-sm'>
-                    <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-main-600' />
-                    <span className='text-slate-700'>{f}</span>
+                    <CheckCircle2 className='mr-2 mt-0.5 h-4 w-4 flex-shrink-0 text-main-600 dark:text-main-400 dark:invert' />
+                    <span className='text-slate-700 dark:text-dark-text-secondary'>{f}</span>
                   </li>
                 ))}
                 {hasMore && (
@@ -1553,18 +1594,18 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
                 <Button href={!canOrder ? "/auth?tab=ligin" : null} name={t('sidebar.continue')} className='flex-1' onClick={onTryOpenOrderOptions} />
-                {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-main-500'>
-                  <MessageCircle size={18} />
+                {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-main-500 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary dark:hover:bg-dark-bg-card'>
+                  <MessageCircle size={18} className='' />
                 </Link>}
               </div>
 
-              <div className='mt-4 flex items-center justify-center text-xs text-slate-500'>
-                <Shield className='mr-1 h-4 w-4' />
+              <div className='mt-4 flex items-center justify-center text-xs text-slate-500 dark:text-dark-text-secondary'>
+                <Shield className='mr-1 h-4 w-4 dark:invert' />
                 {t('sidebar.secureCheckout')} • {t('sidebar.buyerProtection')}
               </div>
             </>
           ) : (
-            <div className='py-8 text-center text-slate-500'>{t('sidebar.selectPackage')}</div>
+            <div className='py-8 text-center text-slate-500 dark:text-dark-text-secondary'>{t('sidebar.selectPackage')}</div>
           )}
         </div>
       </aside>
@@ -1578,19 +1619,19 @@ function InfoRow({ icon, title, value }) {
     <div className=''>
       <div className='flex items-center gap-1'>
         <div className='mt-0.5'>{icon}</div>
-        <p className='text-sm font-medium text-slate-500'>{title}</p>
+        <p className='text-sm font-medium text-slate-500 dark:text-dark-text-secondary'>{title}</p>
       </div>
-      <div className='text-slate-900'>{value}</div>
+      <div className='text-slate-900 dark:text-dark-text-primary'>{value}</div>
     </div>
   );
 }
 
 function StatPill({ icon, label, value }) {
   return (
-    <span className='inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 shadow-custom  text-slate-700'>
+    <span className='inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 shadow-custom  text-slate-700 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary'>
       {icon}
       <span className='font-medium'>{value}</span>
-      <span className='text-slate-500'>· {label}</span>
+      <span className='text-slate-500 dark:text-dark-text-secondary'>· {label}</span>
     </span>
   );
 }
@@ -1598,7 +1639,7 @@ function StatPill({ icon, label, value }) {
 /* === tiny helper === */
 function Chip({ icon, label }) {
   return (
-    <span className='inline-flex items-center gap-1.5 rounded-md bg-white px-2 py-1 shadow-custom '>
+    <span className='inline-flex items-center gap-1.5 rounded-md bg-white px-2 py-1 shadow-custom dark:bg-dark-bg-input dark:text-dark-text-primary'>
       {icon}
       {label}
     </span>
@@ -1608,7 +1649,7 @@ function Chip({ icon, label }) {
 
 function SkeletonPage() {
   return (
-    <div className='container  !px-4 !py-8  '>
+    <div className='container  !px-4 !py-8 dark:bg-dark-bg-base  '>
       {/* crumbs */}
       <div className='mb-6'>
         <SkeletonLine className='w-1/3 h-4 mb-2' />
@@ -1621,8 +1662,8 @@ function SkeletonPage() {
           <div>
             <SkeletonLine className='w-2/3 h-7 mb-4' />
             <SkeletonLine className='w-1/2 mb-6' />
-            <div className='flex items-center gap-4 pt-6 border-t border-gray-100'>
-              <div className='w-16 h-16 bg-slate-200 rounded-xl' />
+            <div className='flex items-center gap-4 pt-6 border-t border-gray-100 dark:border-dark-border'>
+              <div className='w-16 h-16 bg-slate-200 rounded-xl dark:bg-dark-border' />
               <div>
                 <SkeletonLine className='w-32 h-4 mb-2' />
                 <SkeletonLine className='w-48' />
@@ -1635,7 +1676,7 @@ function SkeletonPage() {
             {[1, 2].map(i => (
               <div key={i}>
                 <div className='flex items-center gap-3 mb-3'>
-                  <div className='w-9 h-9 bg-slate-200 rounded-xl' />
+                  <div className='w-9 h-9 bg-slate-200 rounded-xl dark:bg-dark-border' />
                   <SkeletonLine className='w-24' />
                 </div>
                 <SkeletonLine className='w-full' />
@@ -1644,11 +1685,11 @@ function SkeletonPage() {
           </div>
 
           {/* Gallery */}
-          <div className='rounded-xl shadow-custom  overflow-hidden border border-slate-100 bg-white'>
-            <div className='h-72 bg-slate-200' />
+          <div className='rounded-xl shadow-custom  overflow-hidden border border-slate-100 bg-white dark:border-dark-border dark:bg-dark-bg-card'>
+            <div className='h-72 bg-slate-200 dark:bg-dark-border' />
             <div className='p-4 flex gap-2'>
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className='w-20 h-20 bg-slate-200 rounded-xl' />
+                <div key={i} className='w-20 h-20 bg-slate-200 rounded-xl dark:bg-dark-border' />
               ))}
             </div>
           </div>
@@ -1666,13 +1707,13 @@ function SkeletonPage() {
             <SkeletonLine className='w-1/4 h-5 mb-6' />
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
               {[1, 2, 3].map(i => (
-                <div key={i} className='bg-slate-50 rounded-xl p-5 border border-slate-100'>
+                <div key={i} className='bg-slate-50 rounded-xl p-5 border border-slate-100 dark:bg-dark-bg-input dark:border-dark-border'>
                   <SkeletonLine className='w-1/3 h-4 mb-4' />
                   <SkeletonLine className='w-1/2 mb-4' />
                   <SkeletonLine className='w-full mb-3' />
                   <SkeletonLine className='w-3/4 mb-2' />
                   <SkeletonLine className='w-1/2 mb-4' />
-                  <div className='h-10 bg-slate-200 rounded' />
+                  <div className='h-10 bg-slate-200 rounded dark:bg-dark-border' />
                 </div>
               ))}
             </div>
@@ -1687,8 +1728,8 @@ function SkeletonPage() {
             <SkeletonLine className=' !h-8 w-full mb-6' />
             <SkeletonLine className=' !h-8 w-3/4 mb-2' />
             <SkeletonLine className=' !h-8 w-1/2 mb-6' />
-            <div className='h-10 bg-slate-200 rounded mb-3' />
-            <div className='h-10 bg-slate-200 rounded' />
+            <div className='h-10 bg-slate-200 rounded mb-3 dark:bg-dark-border' />
+            <div className='h-10 bg-slate-200 rounded dark:bg-dark-border' />
           </div>
         </div>
       </div>
@@ -1761,7 +1802,15 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
 
   return (
     <div className='mt-3'>
-      <div ref={containerRef} role='radiogroup' aria-required={isRequired ? 'true' : 'false'} aria-label={req?.question || 'Multiple choice'} tabIndex={0} onKeyDown={onKeyDown} className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 outline-none'>
+      <div
+        ref={containerRef}
+        role='radiogroup'
+        aria-required={isRequired ? 'true' : 'false'}
+        aria-label={req?.question || 'Multiple choice'}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 outline-none'
+      >
         {normalized.map((opt, i) => {
           const active = val === opt.value;
           return (
@@ -1774,15 +1823,21 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
               whileHover={{ y: 0 }}
               whileTap={{ scale: 0.98 }}
               className={`group cursor-pointer relative text-left rounded-xl border px-3.5 py-3 transition
-                ${active ? 'border-main-500 bg-gradient-to-b from-main-50 to-white ring-2 ring-main-100 shadow-custom ' : 'border-slate-300 hover:border-slate-400 bg-white'}`}>
+              ${active
+                  ? 'border-main-500 bg-gradient-to-b from-main-50 to-white ring-2 ring-main-100 shadow-custom dark:from-main-700/20 dark:to-dark-bg-input dark:ring-main-200'
+                  : 'border-slate-300 hover:border-slate-400 bg-white dark:border-dark-border dark:bg-dark-bg-input'}`}
+            >
               {/* decorative halo */}
-              <div className='  pointer-events-none absolute -inset-px rounded-xl opacity-0 transition group-hover:opacity-100 bg-gradient-to-r from-main-200/20 via-transparent to-sky-200/20' />
+              <div className='pointer-events-none absolute -inset-px rounded-xl opacity-0 transition group-hover:opacity-100 bg-gradient-to-r from-main-200/20 via-transparent to-sky-200/20 dark:from-main-600/20 dark:to-slate-700/20' />
 
               <div className='flex items-start gap-3'>
                 {/* bullet / check */}
                 <span
                   className={`mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border transition
-                  ${active ? 'border-main-500 bg-main-500 text-white' : 'border-slate-300 bg-white text-transparent'}`}>
+                  ${active
+                      ? 'border-main-500 bg-main-500 text-white dark:border-main-400 dark:bg-main-600'
+                      : 'border-slate-300 bg-white text-transparent dark:border-dark-border dark:bg-dark-bg-input'}`}
+                >
                   <svg viewBox='0 0 20 20' className='h-3.5 w-3.5 fill-current'>
                     <path d='M7.629 13.233 4.4 10.004l1.2-1.2 2.029 2.029 6.771-6.771 1.2 1.2z' />
                   </svg>
@@ -1790,12 +1845,17 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
 
                 <div className='min-w-0'>
                   <div className='flex items-center gap-2'>
-                    <span className='ml-auto text-[10px] text-slate-400'>[{i + 1}]</span>
-
-                    <span className={`text-sm font-medium ${active ? 'text-main-800' : 'text-slate-800'}`}>{opt.label}</span>
+                    <span className='ml-auto text-[10px] text-slate-400 dark:text-dark-text-secondary'>[{i + 1}]</span>
+                    <span className={`text-sm font-medium ${active ? 'text-main-800 dark:text-main-200' : 'text-slate-800 dark:text-dark-text-primary'}`}>
+                      {opt.label}
+                    </span>
                   </div>
 
-                  {opt.hint && <p className={`mt-1 text-xs leading-5 ${active ? 'text-main-700' : 'text-slate-600'}`}>{opt.hint}</p>}
+                  {opt.hint && (
+                    <p className={`mt-1 text-xs leading-5 ${active ? 'text-main-700 dark:text-main-200' : 'text-slate-600 dark:text-dark-text-secondary'}`}>
+                      {opt.hint}
+                    </p>
+                  )}
                 </div>
               </div>
             </motion.button>
@@ -1806,17 +1866,19 @@ function MultipleChoiceFancy({ req, value, onSelect }) {
       {/* Inline "Other" text field if chosen */}
       {isOther && (
         <div className='mt-3'>
-          <label className='mb-1 block text-sm font-medium text-slate-900'>{t('requirements.otherText')}</label>
+          <label className='mb-1 block text-sm font-medium text-slate-900 dark:text-dark-text-primary'>
+            {t('requirements.otherText')}
+          </label>
           <input
             type="text"
             value={otherText}
             placeholder={t('requirements.otherPlaceholder')}
-            onChange={e => setOtherText(e.target.value.slice(0, 500))} // enforce max length
+            onChange={e => setOtherText(e.target.value.slice(0, 500))}
             onBlur={() => UpdateOtherText(otherText)}
-            maxLength={500} // browser-level enforcement
-            className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-main-500 focus:ring-2 focus:ring-main-100'
+            maxLength={500}
+            className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-main-500 focus:ring-2 focus:ring-main-100 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary dark:placeholder-dark-text-secondary'
           />
-          <div className="mt-1 text-[11px] text-slate-500">
+          <div className="mt-1 text-[11px] text-slate-500 dark:text-dark-text-secondary">
             {otherText.length}/500 • {t('requirements.includeWithSelection')}
           </div>
         </div>
@@ -1851,15 +1913,15 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
   const summaryItems = useMemo(
     () => [
       {
-        icon: <FileText className='h-4 w-4' />,
+        icon: <FileText className='h-4 w-4 dark:invert' />,
         label: `${selectedPackage?.title ?? ''} Package`,
       },
       {
-        icon: <Timer className='h-4 w-4' />,
+        icon: <Timer className='h-4 w-4 dark:invert' />,
         label: `${selectedPackage?.deliveryTime ?? '-'} Day Delivery`,
       },
       {
-        icon: <Repeat className='h-4 w-4' />,
+        icon: <Repeat className='h-4 w-4 dark:invert' />,
         label: `${selectedPackage?.revisions ?? '-'} Revisions`,
       },
     ],
@@ -1872,52 +1934,52 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
       {isSidebarOpen && <div className='fixed inset-0 z-[90] bg-black/50 backdrop-blur-sm transition-opacity' onClick={toggleSidebar} aria-hidden='true' />}
 
       {/* Drawer */}
-      <aside ref={drawerRef} role='dialog' aria-modal='true' aria-labelledby='order-options-title' className={`overflow-y-auto !h-screen fixed right-0 top-0 z-[100] w-[360px] max-w-full sm:w-[420px] bg-white border-l shadow-2xl transition-transform duration-300 ease-out will-change-transform ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <aside ref={drawerRef} role='dialog' aria-modal='true' aria-labelledby='order-options-title' className={`overflow-y-auto !h-screen fixed right-0 top-0 z-[100] w-[360px] max-w-full sm:w-[420px] bg-white border-l shadow-2xl transition-transform duration-300 ease-out will-change-transform dark:bg-dark-bg-card dark:border-dark-border ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className='pointer-events-none absolute left-0 top-0 h-full w-2 bg-gradient-to-b from-main-200/50 via-transparent to-main-200/50' />
 
         {/* Header */}
         <div className='overflow-y-auto h-[calc(100dvh-140px)]'>
-          <div className='sticky top-0 z-10 bg-white px-6 pt-6 pb-4'>
+          <div className='sticky top-0 z-10 bg-white px-6 pt-6 pb-4 dark:bg-dark-bg-card'>
             <div className='flex items-start justify-between gap-3'>
-              <h2 id='order-options-title' className='text-2xl font-bold text-slate-900'>
+              <h2 id='order-options-title' className='text-2xl font-bold text-slate-900 dark:text-dark-text-primary'>
                 {t('orderOptions.title')}
               </h2>
-              <button ref={firstFocusRef} onClick={toggleSidebar} aria-label={t('orderOptions.close')} className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50'>
-                <X className='h-5 w-5' />
+              <button ref={firstFocusRef} onClick={toggleSidebar} aria-label={t('orderOptions.close')} className='inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-dark-border dark:text-dark-text-secondary dark:hover:bg-dark-bg-input'>
+                <X className='h-5 w-5 dark:invert' />
               </button>
             </div>
             <Divider className='my-4' />
             <div className='mb-2'>
               <div className='flex items-center justify-between gap-2'>
-                <h3 className='text-lg font-semibold text-slate-900 line-clamp-1'>{serviceData?.title}</h3>
+                <h3 className='text-lg font-semibold text-slate-900 line-clamp-1 dark:text-dark-text-primary'>{serviceData?.title}</h3>
                 <PriceTag price={selectedPackage?.price ?? 0} className='!text-lg font-bold' />
               </div>
-              {selectedPackage?.description && <p className='mt-1 text-sm text-slate-600 line-clamp-2'>{selectedPackage.description}</p>}
+              {selectedPackage?.description && <p className='mt-1 text-sm text-slate-600 line-clamp-2 dark:text-dark-text-secondary'>{selectedPackage.description}</p>}
             </div>
           </div>
 
           {/* Content */}
           <div className='px-6 pt-2 space-y-6 '>
             <div>
-              <label className='mb-2 flex items-center gap-2 text-sm font-medium text-slate-900'>
-                <FileText className='h-4 w-4 text-slate-500' />
+              <label className='mb-2 flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-dark-text-primary'>
+                <FileText className='h-4 w-4 text-slate-500 dark:text-dark-text-secondary dark:invert' />
                 {t('orderOptions.specialInstructions')}
               </label>
               <textarea rows={4} value={notes} onChange={e => {
                 if (e.target.value.length <= 750) setNotes(e.target.value);
               }}
-                maxLength={750} placeholder={t('orderOptions.sellerShouldKnow')} className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-main-500 focus:ring-2 focus:ring-main-100' />
-              <div className='mt-1 text-right text-xs text-slate-500'> {notes.length}/750 {t('orderOptions.chars')}</div>
+                maxLength={750} placeholder={t('orderOptions.sellerShouldKnow')} className='w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-main-500 focus:ring-2 focus:ring-main-100 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary dark:placeholder-dark-text-secondary' />
+              <div className='mt-1 text-right text-xs text-slate-500 dark:text-dark-text-secondary'> {notes.length}/750 {t('orderOptions.chars')}</div>
             </div>
 
             {/* Summary card */}
-            <div className='rounded-xl border border-main-200 bg-main-50/50 p-4'>
-              <div className='text-slate-800'>
+            <div className='rounded-xl border border-main-200 bg-main-50/50 p-4 dark:border-main-500/30 dark:bg-main-900/10'>
+              <div className='text-slate-800 dark:text-dark-text-primary'>
                 <PriceTag price={selectedPackage?.price ?? 0} />
-                <div className='mt-4 space-y-2 text-slate-700'>
+                <div className='mt-4 space-y-2 text-slate-700 dark:text-dark-text-secondary'>
                   {summaryItems.map((it, i) => (
                     <div key={i} className='flex items-center gap-2'>
-                      <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-slate-200'>{it.icon}</span>
+                      <span className='inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white border border-slate-200 dark:bg-dark-bg-card dark:border-dark-border'>{it.icon}</span>
                       <span className='text-sm font-medium'>{it.label}</span>
                     </div>
                   ))}
@@ -1929,13 +1991,13 @@ function OrderOptions({ loadingSubmit, isSidebarOpen, onComplete, setIsSidebarOp
         </div>
 
         {/* Sticky Footer */}
-        <div className='absolute bottom-0 left-0 right-0 z-10 border-t border-slate-200 bg-white/95 px-6 py-4 backdrop-blur'>
+        <div className='absolute bottom-0 left-0 right-0 z-10 border-t border-slate-200 bg-white/95 px-6 py-4 backdrop-blur dark:border-dark-border dark:bg-dark-bg-card/95'>
           <div className='mb-3 flex items-center justify-between'>
-            <span className='text-sm text-slate-600'>{t('orderOptions.total')}</span>
+            <span className='text-sm text-slate-600 dark:text-dark-text-secondary'>{t('orderOptions.total')}</span>
             <PriceTag price={selectedPackage?.price ?? 0} className='!text-xl font-bold' />
           </div>
 
-          <Button name={t('orderOptions.continueToRequirements')} loading={loadingSubmit} className='w-full' onClick={() => onComplete(notes)} iconRight={<ChevronRight className='ml-1 h-4 w-4' />} />
+          <Button name={t('orderOptions.continueToRequirements')} loading={loadingSubmit} className='w-full' onClick={() => onComplete(notes)} iconRight={<ChevronRight className='ml-1 h-4 w-4 dark:invert' />} />
         </div>
       </aside>
     </div>
@@ -1951,15 +2013,15 @@ function RatingSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2].map((i) => (
-        <div key={i} className="p-5 rounded-2xl border border-slate-100 bg-white animate-pulse">
+        <div key={i} className="p-5 rounded-2xl border border-slate-100 bg-white animate-pulse dark:border-dark-border dark:bg-dark-bg-card">
           <div className="flex justify-between mb-4">
             <div className="flex gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-100" />
-              <div className="space-y-2"><div className="h-3 w-24 bg-slate-100 rounded" /><div className="h-2 w-16 bg-slate-50 rounded" /></div>
+              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-dark-border" />
+              <div className="space-y-2"><div className="h-3 w-24 bg-slate-100 rounded dark:bg-dark-border" /><div className="h-2 w-16 bg-slate-50 rounded dark:bg-dark-border/60" /></div>
             </div>
-            <div className="h-4 w-16 bg-slate-100 rounded" />
+            <div className="h-4 w-16 bg-slate-100 rounded dark:bg-dark-border" />
           </div>
-          <div className="h-3 w-full bg-slate-50 rounded" />
+          <div className="h-3 w-full bg-slate-50 rounded dark:bg-dark-border/60" />
         </div>
       ))}
     </div>
@@ -2001,14 +2063,14 @@ function ServiceRatings({ serviceSlug }) {
   if (loading) return <RatingSkeleton />;
 
   return (
-    <div className="bg-white rounded-xl shadow-custom  border border-slate-200  space-y-4">
+    <div className="bg-white rounded-xl shadow-custom  border border-slate-200  space-y-4 dark:bg-dark-bg-card dark:border-dark-border">
       <div className="grid grid-cols-1 gap-4">
         {reviews.length > 0 ? (
           reviews.map((review) => (
             <ReviewItem key={review.id} review={review} />
           ))
         ) : (
-          <div className="text-center py-8 text-slate-400 text-sm">
+          <div className="text-center py-8 text-slate-400 text-sm dark:text-dark-text-secondary">
             {t('noServiceReviews')}
           </div>
         )}
@@ -2019,7 +2081,7 @@ function ServiceRatings({ serviceSlug }) {
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
-            className="px-6 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all disabled:opacity-50"
+            className="px-6 py-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all disabled:opacity-50 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary dark:hover:bg-dark-bg-card"
           >
             {loadingMore ? t('loading') : t('loadMore')}
           </button>
@@ -2034,7 +2096,7 @@ const RatingStars = ({ score }) => (
     {[1, 2, 3, 4, 5].map((s) => (
       <Star
         key={s}
-        className={`w-3.5 h-3.5 ${s <= Math.round(score) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-200'}`}
+        className={`w-3.5 h-3.5 ${s <= Math.round(score) ? 'fill-yellow-400 text-yellow-400' : 'text-slate-200 dark:text-dark-border'}`}
       />
     ))}
   </div>
@@ -2054,10 +2116,10 @@ function ReviewItem({ review }) {
   const displayText = isExpanded ? text : `${text?.substring(0, 200)}...`;
 
   return (
-    <div className="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:border-main-100">
+    <div className="p-5 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:border-main-100 dark:border-dark-border dark:bg-dark-bg-card dark:hover:border-main-500/40">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-100 bg-slate-50">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-100 bg-slate-50 dark:border-dark-border dark:bg-dark-bg-input">
             <Img
               src={reviewer?.profileImage}
               fallback='/public/no-user.png'
@@ -2068,11 +2130,11 @@ function ReviewItem({ review }) {
           <div className="min-w-0">
             <Link
               href={`/profile/${reviewer?.id}`}
-              className="block font-bold text-slate-900 hover:text-main-600 truncate transition-colors"
+              className="block font-bold text-slate-900 hover:text-main-600 truncate transition-colors dark:text-dark-text-primary dark:hover:text-main-400"
             >
               {reviewer?.username || t('unknown')}
             </Link>
-            <div className="text-[10px] font-medium text-slate-400">
+            <div className="text-[10px] font-medium text-slate-400 dark:text-dark-text-secondary">
               {ratedAt ? new Date(ratedAt).toLocaleDateString() : ''}
             </div>
           </div>
@@ -2080,14 +2142,14 @@ function ReviewItem({ review }) {
 
         <div className="flex flex-col items-end gap-1">
           <RatingStars score={score} />
-          <span className="text-xs font-bold text-slate-700">{score?.toFixed(1)}</span>
+          <span className="text-xs font-bold text-slate-700 dark:text-dark-text-primary">{score?.toFixed(1)}</span>
         </div>
       </div>
 
       <div className="mt-4 text-sm leading-relaxed">
         {hasText ? (
           <>
-            <p className="whitespace-pre-wrap text-slate-600">
+            <p className="whitespace-pre-wrap text-slate-600 dark:text-dark-text-secondary">
               {shouldTruncate ? displayText : text}
             </p>
             {shouldTruncate && (
@@ -2096,15 +2158,15 @@ function ReviewItem({ review }) {
                 className="mt-2 flex items-center gap-1 text-xs font-bold text-main-600 hover:underline"
               >
                 {isExpanded ? (
-                  <>{t('showLess')} <ChevronUp className="h-3 w-3" /></>
+                  <>{t('showLess')} <ChevronUp className="h-3 w-3 dark:invert" /></>
                 ) : (
-                  <>{t('showMore')} <ChevronDown className="h-3 w-3" /></>
+                  <>{t('showMore')} <ChevronDown className="h-3 w-3 dark:invert" /></>
                 )}
               </button>
             )}
           </>
         ) : (
-          <p className="text-slate-400 italic text-xs">{t('noTextFeedback')}</p>
+          <p className="text-slate-400 italic text-xs dark:text-dark-text-secondary">{t('noTextFeedback')}</p>
         )}
       </div>
     </div>

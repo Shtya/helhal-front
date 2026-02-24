@@ -117,19 +117,18 @@ export default function Page() {
             <div className="flex flex-col items-start gap-1">
               <Link
                 href={href}
-                className="text-sm font-medium text-slate-800 hover:underline max-w-[220px] truncate"
+                className="text-sm font-medium text-slate-800 dark:text-dark-text-primary hover:underline max-w-[220px] truncate"
                 title={title}
               >
                 {title}
               </Link>
-              <span className={`inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 ring-1 ring-slate-200`}>
+              <span className="inline-block rounded-md bg-slate-100 dark:bg-dark-bg-card px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:text-dark-text-secondary ring-1 ring-slate-200 dark:ring-dark-border">
                 {badge}
               </span>
             </div>
           );
         }
       },
-
       {
         key: isBuyer ? 'seller' : 'buyer',
         label: isBuyer ? t('columns.freelancer') : t('columns.client')
@@ -540,9 +539,9 @@ export default function Page() {
   }, [actionLoading, isBuyer, isSeller, t]);
 
   return (
-    <div className='container'>
+    <div className='container min-h-[calc(100vh-120px)] '>
       <div className='mt-8 mb-4 flex items-center justify-between gap-2 flex-wrap'>
-        <h1 className='text-3xl font-bold text-center mb-4 '>{t('title')}</h1>
+        <h1 className='text-3xl font-bold text-center mb-4 dark:text-dark-text-primary'>{t('title')}</h1>
         <InputSearch iconLeft={'/icons/search.svg'} placeholder={t('searchPlaceholder')} onSearch={onSearch} />
       </div>
 
@@ -550,13 +549,34 @@ export default function Page() {
 
       <AnimatePresence mode='wait'>
         <motion.div key={activeTab + search}>
-          {err && <div className='mt-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700'>{err}</div>}
-          <Table loading={loading} data={orders} columns={columns} actions={renderActions} page={pagination.page} rowsPerPage={pagination.limit} totalCount={pagination.total} onPageChange={onPageChange} />
+          {err && (
+            <div className='mt-6 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-rose-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-400'>
+              {err}
+            </div>
+          )}
+          <Table
+            loading={loading}
+            data={orders}
+            columns={columns}
+            actions={renderActions}
+            page={pagination.page}
+            rowsPerPage={pagination.limit}
+            totalCount={pagination.total}
+            onPageChange={onPageChange}
+          />
         </motion.div>
       </AnimatePresence>
       <DisputeModal open={openModal === 'dispute'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
       <DeliverModel open={openModal === 'deliver'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
-      <ReviewSubmissionModel open={openModal === 'receive' || openModal === 'submission'} showCongratulations={() => handleOpenModal(selectedRow, 'congratulation')} readOnly={openModal === 'submission'} onClose={handleCloseModal} selectedRow={selectedRow} patchOrderRow={patchOrderRow} setRowLoading={setRowLoading} />
+      <ReviewSubmissionModel
+        open={openModal === 'receive' || openModal === 'submission'}
+        showCongratulations={() => handleOpenModal(selectedRow, 'congratulation')}
+        readOnly={openModal === 'submission'}
+        onClose={handleCloseModal}
+        selectedRow={selectedRow}
+        patchOrderRow={patchOrderRow}
+        setRowLoading={setRowLoading}
+      />
       <CongratulationsModal
         open={openModal === 'congratulation'}
         onClose={() => {
@@ -574,6 +594,9 @@ export default function Page() {
       <ReviewDetailsModal
         open={openModal === 'view-feedback'}
         onClose={handleCloseModal}
+        onAddReview={() => {
+          handleOpenModal(selectedRow, 'give-feedback')
+        }}
         orderId={selectedRow?.id}
       />
 

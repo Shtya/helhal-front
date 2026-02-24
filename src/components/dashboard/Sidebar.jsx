@@ -74,7 +74,7 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
   return (
     <aside role='navigation' aria-label='Dashboard sidebar' className='h-full flex flex-col'>
       {/* Brand / Toggle strip */}
-      <div className='h-16 px-3 flex items-center justify-between border-b border-slate-200/80 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/65'>
+      <div className='h-[66px] px-3 flex items-center justify-between border-b border-slate-200/80 dark:border-dark-border bg-white/90 dark:bg-dark-bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-white/65'>
         <div className={`flex  ${!open && "!w-full flex-none justify-center"} items-center gap-3 overflow-hidden`}>
           <Link href={`${role === 'seller' ? '/jobs' : '/'}`} >
             <motion.div whileHover={{ rotate: -4, scale: 1.05 }} transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.6 }}
@@ -83,12 +83,12 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
             </motion.div>
           </Link>
           <div className={`leading-tight whitespace-nowrap ${!open && '!hidden '}`}>
-            <div className={`text-slate-900 font-semibold transition-[opacity,transform,width] `}>{t('Dashboard.sidebar.adminDashboard')}</div>
-            <div className={`text-xs text-slate-500 transition-[opacity,transform,width]`}>{t('Dashboard.sidebar.controlCenter')}</div>
+            <div className={`text-slate-900 dark:text-dark-text-primary font-semibold transition-[opacity,transform,width] `}>{t('Dashboard.sidebar.adminDashboard')}</div>
+            <div className={`text-xs text-slate-500 dark:text-dark-text-secondary transition-[opacity,transform,width]`}>{t('Dashboard.sidebar.controlCenter')}</div>
           </div>
         </div>
         {isMobile && (
-          <button onClick={closeOnMobile} className='lg:hidden rounded-lg px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100' aria-label={t('Dashboard.sidebar.close')}>
+          <button onClick={closeOnMobile} className='lg:hidden rounded-lg px-3 py-1.5 text-sm text-slate-600 dark:text-dark-text-primary hover:bg-slate-100 dark:hover:bg-dark-bg-input/50' aria-label={t('Dashboard.sidebar.close')}>
             ✕
           </button>
         )}
@@ -103,22 +103,22 @@ export default function Sidebar({ open, isMobile = false, setOpen }) {
               const Icon = item.icon;
               return (
                 <motion.li key={item.href} variants={itemVariants} className='relative'>
-                  <Link href={item.href} prefetch className='group relative z-10 flex items-center gap-3 h-11 px-2 rounded-xl text-slate-700 outline-none focus-visible:ring-2 focus-visible:ring-main-500/70' aria-current={isActive ? 'page' : undefined} onClick={closeOnMobile}>
+                  <Link href={item.href} prefetch className='group relative z-10 flex items-center gap-3 h-11 px-2 rounded-xl text-slate-700 dark:text-dark-text-secondary outline-none focus-visible:ring-2 focus-visible:ring-main-500/70' aria-current={isActive ? 'page' : undefined} onClick={closeOnMobile}>
                     {/* Active background */}
-                    {isActive && <motion.span layoutId='active-row-bg' className='absolute inset-0 rounded-xl bg-main-50 border border-main-100' transition={{ type: 'spring', stiffness: 420, damping: 35 }} />}
+                    {isActive && <motion.span layoutId='active-row-bg' className='absolute inset-0 rounded-xl bg-main-50 dark:bg-main-900 border border-main-100 dark:border-main-700' transition={{ type: 'spring', stiffness: 420, damping: 35 }} />}
 
                     {/* Left accent when active */}
-                    <motion.span className='absolute left-0 top-1/2 -translate-y-1/2 h-[calc(100%-10px)] w-1.5 rounded-r bg-main-500' initial={{ opacity: 0, scaleY: 0.2 }} animate={isActive ? { opacity: 1, scaleY: 1 } : { opacity: 0, scaleY: 0 }} transition={{ type: 'spring', stiffness: 350, damping: 28 }} />
+                    <motion.span className='absolute start-0 top-1/2 -translate-y-1/2 h-[calc(100%-10px)] w-1.5 rounded-r bg-main-500' initial={{ opacity: 0, scaleY: 0.2 }} animate={isActive ? { opacity: 1, scaleY: 1 } : { opacity: 0, scaleY: 0 }} transition={{ type: 'spring', stiffness: 350, damping: 28 }} />
 
                     <span className={`relative  ${!open && " w-full"} z-10 shrink-0`}>
-                      <Icon className={`h-5 w-5  mx-auto ${isActive ? 'text-main-600' : 'text-slate-400 group-hover:text-main-600'}`} />
+                      <Icon className={`h-5 w-5  mx-auto ${isActive ? 'text-main-600 dark:text-main-400' : 'text-slate-400 dark:text-dark-text-secondary group-hover:text-main-600 dark:group-hover:text-main-400'}`} />
                     </span>
 
                     {/* Label (hide when collapsed) */}
                     <span className={`relative z-10 text-sm font-medium transition-all duration-200 ${open ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'} `}>{item.title}</span>
 
                     {/* Badge stays aligned to the right only when expanded */}
-                    {item.badge != null && open && <span className='ml-auto relative z-10 rounded-full bg-slate-100 text-slate-700 text-xs px-2 py-0.5'>{item.badge}</span>}
+                    {item.badge != null && open && <span className='ml-auto relative z-10 rounded-full bg-slate-100 dark:bg-dark-bg-input text-slate-700 dark:text-dark-text-primary text-xs px-2 py-0.5'>{item.badge}</span>}
                   </Link>
                 </motion.li>
               );

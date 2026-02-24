@@ -97,26 +97,49 @@ export default function ActionsMenu({ options = [], align = 'right', buttonClass
 
   return (
     <>
-      <button ref={btnRef} type='button' onClick={toggle} aria-label={ariaLabel} aria-expanded={open} aria-haspopup='menu' className={buttonClassName || 'h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 bg-white hover:bg-slate-50'}>
-        <MoreHorizontal className='h-5 w-5 text-slate-700' />
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={toggle}
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className={
+          buttonClassName ||
+          "h-9 w-9 inline-flex items-center justify-center rounded-md border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-card hover:bg-slate-50 dark:hover:bg-dark-bg-input"
+        }
+      >
+        <MoreHorizontal className="h-5 w-5 text-slate-700 dark:text-dark-text-primary" />
       </button>
 
       {open &&
         createPortal(
-          <div ref={menuRef} role='menu' style={{ position: 'absolute', top: pos.top, left: pos.left, minWidth: pos.width }} className='z-[9999] rounded-lg border border-slate-200 bg-white p-2 shadow-lg'>
+          <div
+            ref={menuRef}
+            role="menu"
+            style={{ position: "absolute", top: pos.top, left: pos.left, minWidth: pos.width }}
+            className="z-[9999] rounded-lg border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-card p-2 shadow-lg"
+          >
             {visibleOptions.length === 0 ? (
-              <div className='px-3 py-2 start text-sm text-slate-400'>No actions</div>
+              <div className="px-3 py-2 text-sm text-slate-400 dark:text-dark-text-secondary">
+                No actions
+              </div>
             ) : (
               visibleOptions.map((opt, i) => {
-                const className = `w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-slate-50 text-left
-                    ${opt.danger ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-700'}
-                    ${opt.disabled ? 'opacity-50 cursor-not-allowed' : ''}`;
+                const className = `w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md text-left
+                hover:bg-slate-50 dark:hover:bg-dark-bg-input
+                ${opt.danger
+                    ? "text-rose-600 hover:bg-rose-50"
+                    : "text-slate-700 dark:text-dark-text-primary"
+                  }
+                ${opt.disabled ? "opacity-50 cursor-not-allowed" : ""}`;
 
                 const content = (
                   <>
-                    {opt.icon ? <span className='h-4 w-4'>{opt.icon}</span> : null}
-                    <span className='truncate'>{opt.label}</span>
-                  </>)
+                    {opt.icon ? <span className="h-4 w-4">{opt.icon}</span> : null}
+                    <span className="truncate">{opt.label}</span>
+                  </>
+                );
 
                 function handleClick() {
                   if (opt.disabled) return;
@@ -129,7 +152,6 @@ export default function ActionsMenu({ options = [], align = 'right', buttonClass
                     <Link
                       key={i}
                       href={opt.href}
-                      disabled={opt.disabled}
                       role="menuitem"
                       className={className}
                       onClick={handleClick}
@@ -142,19 +164,19 @@ export default function ActionsMenu({ options = [], align = 'right', buttonClass
                 return (
                   <button
                     key={i}
-                    type='button'
-                    role='menuitem'
+                    type="button"
+                    role="menuitem"
                     disabled={opt.disabled}
                     className={className}
                     onClick={handleClick}
                   >
                     {content}
                   </button>
-                )
+                );
               })
             )}
           </div>,
-          document.body,
+          document.body
         )}
     </>
   );

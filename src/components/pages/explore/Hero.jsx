@@ -96,56 +96,51 @@ export default function Hero() {
 	return (
 		<section
 			className={[
-				'relative my-6 overflow-hidden rounded-2xl border', // Reduced vertical margin (my-10 to my-6)
-				'border-slate-200/70 bg-white',
-				'shadow-[0_1px_0_rgba(15,23,42,0.04)]',
+				'relative my-6 overflow-hidden rounded-2xl border transition-colors duration-200',
+				'border-slate-200/70 bg-white dark:bg-dark-bg-card dark:border-dark-border',
+				'shadow-[0_1px_0_rgba(15,23,42,0.04)] dark:shadow-none',
 			].join(' ')}
 			dir={isArabic ? 'rtl' : 'ltr'}
 		>
 			<div className="pointer-events-none absolute inset-0">
-				<div className="absolute -top-28 -left-24 h-60 w-60 rounded-full bg-main-400/15 blur-3xl" />
-				<div className="absolute -bottom-28 -right-24 h-60 w-60 rounded-full bg-main-400/10 blur-3xl" />
+				<div className="absolute -top-28 -left-24 h-60 w-60 rounded-full bg-main-400/15 dark:bg-main-500/10 blur-3xl" />
+				<div className="absolute -bottom-28 -right-24 h-60 w-60 rounded-full bg-main-400/10 dark:bg-main-600/5 blur-3xl" />
 				<div
-					className="absolute inset-0 opacity-[0.07]" // Reduced opacity of grid
+					className="absolute inset-0 opacity-[0.07] dark:opacity-[0.03]"
 					style={{
 						backgroundImage:
 							'linear-gradient(to right, rgba(15,23,42,0.14) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.14) 1px, transparent 1px)',
-						backgroundSize: '24px 24px', // Smaller grid size
+						backgroundSize: '24px 24px',
 						maskImage: 'radial-gradient(circle at 35% 20%, black 0%, transparent 60%)',
 						WebkitMaskImage: 'radial-gradient(circle at 35% 20%, black 0%, transparent 60%)',
 					}}
 				/>
 			</div>
 
-			{/* Reduced Padding: from py-10/14 to py-6/8 */}
 			<div className="relative z-10 px-6 py-6 md:px-8 md:py-8">
 				<motion.div variants={container} initial="hidden" animate="show">
-					{/* Top label */}
-					<motion.div variants={item} className="mb-2 inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-2.5 py-0.5 text-[11px] text-slate-600 backdrop-blur/50">
-						<Sparkles className="h-3.5 w-3.5 text-main-600" />
+					<motion.div variants={item} className="mb-2 inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-2.5 py-0.5 text-[11px] text-slate-600 backdrop-blur/50 dark:bg-dark-bg-input/50 dark:border-dark-border dark:text-dark-text-secondary">
+						<Sparkles className="h-3.5 w-3.5 text-main-600 dark:text-main-400" />
 						<span>{t('hero.quickActions')}</span>
 					</motion.div>
 
-					{/* Smaller Headline: from text-3xl/5xl to text-2xl/3xl */}
 					<motion.h1
 						variants={item}
-						className="text-balance text-2xl font-bold tracking-tight text-slate-900 md:text-3xl"
+						className="text-balance text-2xl font-bold tracking-tight text-slate-900 md:text-3xl dark:text-dark-text-primary"
 					>
 						{t('hero.welcomeBack')}{' '}
-						<span className="bg-gradient-to-r from-main-800 via-main-600 to-main-500 bg-clip-text text-transparent">
+						<span className="bg-gradient-to-r from-main-800 via-main-600 to-main-500 dark:from-main-400 dark:to-main-600 bg-clip-text text-transparent">
 							{user?.username?.trim()}
 						</span>
 					</motion.h1>
 
-					{/* Smaller Subtitle: text-sm md:text-base to text-xs md:text-sm */}
 					<motion.p
 						variants={item}
-						className="mt-2 max-w-xl text-pretty text-xs leading-5 text-slate-600 md:text-sm"
+						className="mt-2 max-w-xl text-pretty text-xs leading-5 text-slate-600 md:text-sm dark:text-dark-text-secondary"
 					>
 						{t('hero.subtitle')}
 					</motion.p>
 
-					{/* Cards Container: Reduced margin mt-8 to mt-5 */}
 					<motion.div
 						variants={item}
 						className="mt-5 flex flex-row gap-4 flex-wrap w-full"
@@ -187,16 +182,16 @@ function ActionCard({
 	const toneStyles =
 		tone === 'main'
 			? {
-				ring: 'ring-main-500/15  ',
-				iconBg: 'bg-main-50 text-main-700 ring-main-200/70  ',
-				chip: 'border-main-200/70 bg-main-50 text-main-700  ',
-				glow: 'bg-main-400/20',
+				ring: 'ring-main-500/15 dark:ring-main-400/10',
+				iconBg: 'bg-main-50 text-main-700 ring-main-200/70 dark:bg-main-900/20 dark:text-main-400 dark:ring-main-800/50',
+				chip: 'border-main-200/70 bg-main-50 text-main-700 dark:border-main-800/50 dark:bg-main-900/30 dark:text-main-400',
+				glow: 'bg-main-400/20 dark:bg-main-500/10',
 			}
 			: {
-				ring: 'ring-slate-500/10 ',
-				iconBg: 'bg-slate-50 text-slate-700 ring-slate-200/70  ',
-				chip: 'border-slate-200/70 bg-slate-50 text-slate-700  ',
-				glow: 'bg-slate-400/15',
+				ring: 'ring-slate-500/10 dark:ring-dark-border',
+				iconBg: 'bg-slate-50 text-slate-700 ring-slate-200/70 dark:bg-dark-bg-input dark:text-dark-text-secondary dark:ring-dark-border',
+				chip: 'border-slate-200/70 bg-slate-50 text-slate-700 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-secondary',
+				glow: 'bg-slate-400/15 dark:bg-dark-bg-input/50',
 			};
 
 	return (
@@ -206,12 +201,10 @@ function ActionCard({
 			transition={{ duration: 0.5, ease: 'easeOut', delay }}
 			whileHover={reduceMotion ? undefined : { y: -3 }}
 			className={[
-				'w-full md:max-w-[540px] group relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-5',
-				'shadow-sm transition-all',
-				'hover:shadow-md hover:border-slate-200',
+				'w-full md:max-w-[540px] group relative overflow-hidden rounded-2xl border p-5 transition-all duration-200',
+				'border-slate-200/70 bg-white dark:bg-dark-bg-card dark:border-dark-border',
+				'shadow-sm hover:shadow-md dark:hover:border-dark-text-secondary/20',
 				'focus-within:ring-2 focus-within:ring-main-500/30',
-				' ',
-				' ',
 			].join(' ')}
 		>
 			{/* Hover sheen + ring */}
@@ -219,94 +212,52 @@ function ActionCard({
 			<div className="pointer-events-none absolute -inset-24 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
 				<div className={`absolute left-8 top-10 h-44 w-44 rounded-full blur-3xl ${toneStyles.glow}`} />
 			</div>
-			<div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-				<div
-					className="absolute -left-20 top-0 h-full w-56 rotate-12 bg-gradient-to-r from-transparent via-white/60 to-transparent "
-					style={{ filter: 'blur(1px)' }}
-				/>
-			</div>
 
 			<div className="relative flex items-start justify-between gap-4">
 				<div className="flex items-center gap-3">
-					<div
-						className={[
-							'grid h-12 w-12 place-items-center rounded-2xl ring-1',
-							toneStyles.iconBg,
-						].join(' ')}
-						aria-hidden="true"
-					>
+					<div className={['grid h-12 w-12 place-items-center rounded-2xl ring-1', toneStyles.iconBg].join(' ')}>
 						<Icon className="h-6 w-6" />
 					</div>
-
-					<div className="flex flex-col">
-						<div
-							className={[
-								'inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-medium',
-								toneStyles.chip,
-							].join(' ')}
-						>
-							{displayChip}
-						</div>
+					<div className={['inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-medium', toneStyles.chip].join(' ')}>
+						{displayChip}
 					</div>
 				</div>
-
-				<Arrow className="h-5 w-5 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-slate-600  " />
+				<Arrow className="h-5 w-5 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-slate-600 dark:group-hover:text-dark-text-primary" />
 			</div>
 
-			<h3 className="relative mt-4 text-lg font-semibold text-slate-900 md:text-xl ">
+			<h3 className="relative mt-4 text-lg font-semibold text-slate-900 md:text-xl dark:text-dark-text-primary">
 				{title}
 			</h3>
 
-			<ul className="relative mt-2 space-y-2 text-slate-600  ">
+			<ul className="relative mt-2 space-y-2 text-slate-600 dark:text-dark-text-secondary">
 				{lines.map((line, i) => (
 					<li key={i} className="flex gap-2 text-sm leading-6">
-						<span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-slate-300 " />
+						<span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-slate-300 dark:bg-dark-border" />
 						<span className="text-pretty">{line}</span>
 					</li>
 				))}
 			</ul>
 
 			<div className="relative mt-6 flex flex-col sm:flex-row gap-3">
-				{/* Primary CTA */}
 				{mainButtonLabel && href && (
 					<Link
 						href={href}
-						className="
-        w-full sm:flex-1
-        inline-flex items-center justify-center gap-1
-        h-12 px-6 rounded-xl
-        bg-main-600 text-white
-        text-sm md:text-base font-medium
-        hover:shadow-lg hover:bg-main-700
-        transition-all
-      "
+						className="w-full sm:flex-1 inline-flex items-center justify-center gap-1 h-12 px-6 rounded-xl bg-main-600 text-white text-sm md:text-base font-medium hover:bg-main-700 transition-all shadow-main-900/10"
 					>
 						{mainButtonLabel}
-						<Arrow className="h-4 w-4 " />
+						<Arrow className="h-4 w-4" />
 					</Link>
 				)}
 
-				{/* Secondary CTA */}
 				{secondaryButtonLabel && secondaryHref && (
 					<Link
 						href={secondaryHref}
-						className="
-        w-full sm:flex-1
-        inline-flex items-center justify-center
-        h-12 px-6 rounded-xl
-        border border-main-700
-        text-main-700
-        text-sm md:text-base font-medium
-        bg-main-50 hover:bg-main-100
-        transition-all
-      "
+						className="w-full sm:flex-1 inline-flex items-center justify-center h-12 px-6 rounded-xl border border-main-700/50 text-main-700 dark:text-main-400 dark:border-main-800 bg-main-50 dark:bg-main-900/20 hover:bg-main-100 dark:hover:bg-main-900/40 transition-all"
 					>
 						{secondaryButtonLabel}
 					</Link>
 				)}
 			</div>
-
-
 		</motion.article>
 	);
 }

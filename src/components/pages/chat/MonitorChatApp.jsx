@@ -11,9 +11,9 @@ import { MessageSkeletonBubble, Panel } from './ChatApp';
 
 const EmptyState = ({ t, MessageSkeletonBubble: Skeleton }) => (
   <div className="flex-1 max-h-[540px] h-full flex flex-col items-center justify-center p-6 text-center">
-    <Image src="/icons/chat-placeholder.png" alt="Select conversation" width={200} height={200} />
-    <p className="text-gray-600 text-lg -mt-4 mb-1">{t('placeholders.selectConversation')}</p>
-    <p className="text-gray-400 text-sm">{t('placeholders.searchUsers')}</p>
+    <Image src="/icons/chat-placeholder.png" alt="Select conversation" width={200} height={200} className="" />
+    <p className="text-gray-600 dark:text-dark-text-secondary text-lg -mt-4 mb-1">{t('placeholders.selectConversation')}</p>
+    <p className="text-gray-400 dark:text-dark-text-secondary text-sm">{t('placeholders.searchUsers')}</p>
     <div className="w-full max-w-xl mt-8 space-y-4">
       <Skeleton />
       <Skeleton me />
@@ -103,27 +103,27 @@ export default function MonitorChatApp() {
           <Panel cdCard="flex items-stretch h-full !p-0" className="h-full">
             {activeThreadId && activeThread ? (
               <div className="flex flex-col w-full h-full">
-                <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white rounded-t-xl">
+                <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card dark:hover:bg-dark-bg-input/50 rounded-t-xl">
                   <button
                     onClick={() => setShowConversationsSidebar(true)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input transition-colors"
                     aria-label={t('showConversations')}
                   >
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                   </button>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">
+                    <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary truncate">
                       {activeThread.buyer?.username || activeThread.buyer?.person?.username} ↔ {activeThread.seller?.username || activeThread.seller?.person?.username}
                     </h3>
                   </div>
                   <button
                     onClick={() => setShowAboutSidebar(true)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input transition-colors"
                     aria-label={t('showDetails')}
                   >
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary " fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </button>
@@ -145,16 +145,16 @@ export default function MonitorChatApp() {
               </div>
             ) : (
               <div className="w-full">
-                <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white rounded-t-xl">
+                <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card rounded-t-xl">
                   <button
                     onClick={() => setShowConversationsSidebar(true)}
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input transition-colors"
                   >
-                    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                   </button>
-                  <h3 className="font-semibold text-gray-900">{t('allConversations')}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary">{t('allConversations')}</h3>
                 </div>
                 <EmptyState t={tChat} MessageSkeletonBubble={MessageSkeletonBubble} />
               </div>
@@ -194,22 +194,22 @@ function MonitorSidebar({ isOpen, onClose, title, children, position = 'left' })
         onClick={onClose}
       />
       <div
-        className={`fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : position === 'left' ? '-translate-x-full' : 'translate-x-full'
+        className={`fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white dark:bg-dark-bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : position === 'left' ? '-translate-x-full' : 'translate-x-full'
           }`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card sticky top-0 z-10">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text-primary">{title}</h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors"
+            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-dark-bg-input transition-colors"
             aria-label="Close"
           >
-            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-gray-600 dark:text-dark-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-        <div className="h-[calc(100%-73px)] overflow-y-auto">{children}</div>
+        <div className="flex-1 flex flex-col overflow-hidden">{children}</div>
       </div>
     </>
   );

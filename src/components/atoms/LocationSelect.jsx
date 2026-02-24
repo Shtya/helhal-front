@@ -88,9 +88,8 @@ const LocationSelect = forwardRef(({
 
     return (
         <div className="w-full relative">
-
             {label && (
-                <label className={`${cnLabel || ''} mb-1 block text-sm font-medium text-gray-600`}>
+                <label className={`${cnLabel || ''} mb-1 block text-sm font-medium text-gray-600 dark:text-dark-text-secondary`}>
                     {label}
                     {required && <span className='text-red-500 ml-1'>*</span>}
                 </label>
@@ -98,10 +97,11 @@ const LocationSelect = forwardRef(({
             <Select
                 ref={ref}
                 options={options}
-                cnPlaceholder={cnPlaceholder}
+                // Passing dark text color into the placeholder to ensure it's not overridden
+                cnPlaceholder={`${cnPlaceholder || ''} dark:text-dark-text-primary`}
                 onOpenToggle={(val) => setOpen(val)}
                 customSearch={customSearch}
-                value={value} // Pass the ID or the object based on your Select implementation
+                value={value}
                 onChange={onChange}
                 placeholder={placeholder}
                 isLoading={loading}

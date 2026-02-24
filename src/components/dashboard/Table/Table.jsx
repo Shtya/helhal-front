@@ -70,28 +70,32 @@ export default function Table({
 
 
   return (
-    <div className='  rounded-xl shadow-inner ring-1 ring-slate-200' aria-busy={loading} aria-live='polite'>
+    <div className='rounded-xl shadow-inner ring-1 ring-slate-200 dark:ring-dark-border dark:bg-dark-bg-card' aria-busy={loading} aria-live='polite'>
       <div className='overflow-x-auto overflow-y-hidden rounded-xl pb-12'>
         <table className='w-full table-auto border-collapse'>
-          <thead className='bg-slate-50/80 backdrop-blur sticky top-0 z-10 border-b border-slate-200'>
+          <thead className='bg-slate-50/80 backdrop-blur sticky top-0 z-10 border-b border-slate-200 dark:bg-dark-bg-input/80 dark:border-dark-border'>
             <tr>
               {columns.map(column => (
-                <th key={column.key} className='px-4 py-4 rtl:text-right ltr:text-left text-sm text-nowrap font-semibold text-slate-700'>
+                <th key={column.key} className='px-4 py-4 rtl:text-right ltr:text-left text-sm text-nowrap font-semibold text-slate-700 dark:text-dark-text-secondary'>
                   {loading ? <Skeleton className='h-4 w-24' /> : column.label}
                 </th>
               ))}
-              {Actions && <th className='px-4 py-4 rtl:text-right ltr:text-left text-sm text-nowrap font-semibold text-slate-700'>{loading ? <Skeleton className='h-4 w-16' /> : 'Action'}</th>}
+              {Actions && (
+                <th className='px-4 py-4 rtl:text-right ltr:text-left text-sm text-nowrap font-semibold text-slate-700 dark:text-dark-text-secondary'>
+                  {loading ? <Skeleton className='h-4 w-16' /> : 'Action'}
+                </th>
+              )}
             </tr>
           </thead>
 
           <tbody>
             {displayRows.map((row, idx) => (
-              <tr key={row.__skeleton ?? idx} className='odd:bg-main-50/20 hover:bg-slate-50'>
+              <tr key={row.__skeleton ?? idx} className='odd:bg-main-50/20 hover:bg-slate-50 dark:hover:bg-dark-bg-input'>
                 {columns.map(column => {
                   const isSkeleton = loading || row.__skeleton !== undefined;
                   if (isSkeleton) {
                     return (
-                      <td key={column.key} className='text-nowrap px-4 py-4 text-sm text-slate-800'>
+                      <td key={column.key} className='text-nowrap px-4 py-4 text-sm text-slate-800 dark:text-dark-text-primary'>
                         {column.type === 'img' ? (
                           <div className='relative w-[42px] h-[42px]'>
                             <Skeleton className='w-full h-full rounded-full' />
@@ -114,13 +118,22 @@ export default function Table({
 
                   // Render actual cell
                   return (
-                    <td key={column.key} className='text-nowrap px-4 py-4 text-sm text-slate-800 align-middle'>
+                    <td key={column.key} className='text-nowrap px-4 py-4 text-sm text-slate-800 align-middle dark:text-dark-text-primary'>
                       {column.render ? (
                         column.render(row)
                       ) : column.type === 'img' ? (
                         <div className='relative cursor-zoom-in w-[42px] h-[42px]'>
-                          <Img onClick={() => handleImageClick(row[column.key])} src={row[column.key] || ''} alt='Avatar' className='w-full h-full object-cover rounded-full ring-1 ring-slate-200' />
-                          <Eye className='absolute -top-1 -right-1 p-[2px] rounded-md bg-white/90 ring-1 ring-slate-200' onClick={() => handleImageClick(row[column.key])} size={16} />
+                          <Img
+                            onClick={() => handleImageClick(row[column.key])}
+                            src={row[column.key] || ''}
+                            alt='Avatar'
+                            className='w-full h-full object-cover rounded-full ring-1 ring-slate-200 dark:ring-dark-border'
+                          />
+                          <Eye
+                            className='absolute -top-1 -right-1 p-[2px] rounded-md bg-white/90 ring-1 ring-slate-200 dark:bg-dark-bg-card/90 dark:ring-dark-border dark:invert'
+                            onClick={() => handleImageClick(row[column.key])}
+                            size={16}
+                          />
                         </div>
                       ) : column.key === 'status' ? (
                         <span className={getStatusClass(row[column.key], column)}>{row[column.key]}</span>
@@ -154,8 +167,8 @@ export default function Table({
         </table>
       </div>
 
-      <div className='flex justify-between items-center mt-8 py-4 px-4 border-t border-t-slate-200'>
-        <span className='text-sm text-slate-600'>
+      <div className='flex justify-between items-center mt-8 py-4 px-4 border-t border-t-slate-200 dark:border-dark-border'>
+        <span className='text-sm text-slate-600 dark:text-dark-text-secondary'>
           {loading ? (
             <Skeleton className='h-4 w-56' />
           ) : (
@@ -172,15 +185,26 @@ export default function Table({
 
       {selectedImage && !loading && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div ref={ref} className={`relative  rounded-xl `}>
-            <button onClick={closeImagePreview} className='w-9 h-9 inline-flex items-center justify-center z-[52] absolute -top-3 -right-3 text-white bg-slate-900 rounded-full shadow hover:opacity-90'>
-              {!isImageLoading ? <X /> :
-                <span className="relative flex h-6 w-6">
-                  <span className="absolute h-full w-full rounded-full border-4 border-white/30 border-t-white animate-spin"></span>
-                  <span className="absolute h-full w-full rounded-full border-4 border-transparent border-r-white animate-spin-slow"></span>
-                </span>}
+          <div ref={ref} className='relative rounded-xl'>
+            <button
+              onClick={closeImagePreview}
+              className='w-9 h-9 inline-flex items-center justify-center z-[52] absolute -top-3 -right-3 text-white bg-slate-900 rounded-full shadow hover:opacity-90'
+            >
+              {!isImageLoading ? (
+                <X className='dark:invert' />
+              ) : (
+                <span className='relative flex h-6 w-6'>
+                  <span className='absolute h-full w-full rounded-full border-4 border-white/30 border-t-white animate-spin'></span>
+                  <span className='absolute h-full w-full rounded-full border-4 border-transparent border-r-white animate-spin-slow'></span>
+                </span>
+              )}
             </button>
-            <Img src={selectedImage} alt='Preview' className={`${!isImageLoading && 'bg-white ring-1 ring-slate-200'}   p-4 max-w-[80vw] max-h-[80vh] rounded-md  `} onLoad={() => setIsImageLoading(false)} />
+            <Img
+              src={selectedImage}
+              alt='Preview'
+              className={`${!isImageLoading && 'bg-white ring-1 ring-slate-200 dark:bg-dark-bg-card dark:ring-dark-border'} p-4 max-w-[80vw] max-h-[80vh] rounded-md`}
+              onLoad={() => setIsImageLoading(false)}
+            />
           </div>
         </div>
       )}

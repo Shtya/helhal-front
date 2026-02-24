@@ -356,7 +356,7 @@ export default function Header() {
 const MobileToggle = ({ toggleMobileNav, isMobileNavOpen }) => {
   return (
     <motion.button onClick={toggleMobileNav} className='lg:hidden p-2 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card' aria-label='Open menu' whileTap={{ scale: 0.95 }}>
-      {isMobileNavOpen ? <X className='w-6 h-6  dark:invert' strokeWidth={1.5} /> : <Menu className='w-6 h-6 dark:invert' />}
+      {isMobileNavOpen ? <X className='w-6 h-6 ' strokeWidth={1.5} /> : <Menu className='w-6 h-6' />}
     </motion.button>
 
   )
@@ -530,7 +530,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
                           <li key={category?.id || category?.slug}>
                             <Link
                               href={`/services/${encodeURIComponent(category?.slug || '')}`}
-                              className={`block mb-2 text-sm font-semibold text-slate-900 hover:text-main-700 transition-colors ${pathname === `/services/${category?.slug}` || pathname.startsWith(`/services/${category?.slug}/`) ? 'text-main-700' : ''}`}
+                              className={`block mb-2 text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-700 transition-colors ${pathname === `/services/${category?.slug}` || pathname.startsWith(`/services/${category?.slug}/`) ? 'text-main-700' : ''}`}
                             >
                               {categoryName || 'Unnamed Category'}
                             </Link>
@@ -1068,12 +1068,23 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
 }
 
 const roleStyles = {
-  seller: { chip: 'bg-amber-100 text-amber-800', dot: 'bg-amber-500' },
-  buyer: { chip: 'bg-main-100 text-main-800', dot: 'bg-main-500' },
-  admin: { chip: 'bg-indigo-100 text-indigo-800', dot: 'bg-indigo-500' },
-  member: { chip: 'bg-slate-100 text-slate-700', dot: 'bg-slate-400' },
+  seller: {
+    chip: 'bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 dark:border dark:border-amber-500/20',
+    dot: 'bg-amber-500'
+  },
+  buyer: {
+    chip: 'bg-main-100 text-main-800 dark:bg-main-500/10 dark:text-main-400 dark:border dark:border-main-500/20',
+    dot: 'bg-main-500'
+  },
+  admin: {
+    chip: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-400 dark:border dark:border-indigo-500/20',
+    dot: 'bg-indigo-500'
+  },
+  member: {
+    chip: 'bg-slate-100 text-slate-700 dark:bg-dark-bg-input dark:text-dark-text-secondary dark:border dark:border-dark-border',
+    dot: 'bg-slate-400 dark:bg-dark-text-secondary'
+  },
 };
-
 export const getInitials = name =>
   (name || 'User')
     .split(/\s+/)
@@ -1111,7 +1122,11 @@ function UserMiniCard({ user }) {
         </div>
 
         <div className='flex items-center gap-2'>
-          <p className='text-xs text-slate-500 dark:text-dark-text-primary truncate' title={email} aria-label='Email'>
+          <p
+            className='text-xs text-slate-500 dark:text-dark-text-secondary truncate'
+            title={email}
+            aria-label='Email'
+          >
             {email || '—'}
           </p>
         </div>
@@ -1230,7 +1245,7 @@ function RelatedUsers({ user, onClose }) {
 
 
 
-function ThemeToggle() {
+export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   useEffect(() => {
     // On mount, read the theme from the <html> tag (which was set by our blocking script)

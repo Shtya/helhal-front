@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
+
 export function StatCard({
   title,
   value,
@@ -14,28 +15,61 @@ export function StatCard({
   spark = [], // small array of numbers for mini sparkline
 }) {
   return (
-    <motion.div initial={{ y: 8, opacity: 0 }} animate={{ y: 0, opacity: 1 }} whileHover={{ y: -3, scale: 1.01 }} transition={{ type: 'spring', stiffness: 220, damping: 20 }} className='relative overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm'>
+    <motion.div
+      initial={{ y: 8, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      whileHover={{ y: -3, scale: 1.01 }}
+      transition={{ type: 'spring', stiffness: 220, damping: 20 }}
+      className="relative overflow-hidden rounded-2xl bg-white dark:bg-dark-bg-card ring-1 ring-slate-200 dark:ring-dark-border shadow-sm"
+    >
       {/* Ribbon gradient */}
-      <div className={`absolute -top-16 -right-16 h-40 w-40 rounded-full bg-gradient-to-br ${gradient} opacity-20 blur-2xl`} />
-      <div className='p-5 sm:p-6'>
-        <div className='flex items-start justify-between gap-3'>
+      <div
+        className="absolute -top-16 -right-16 h-40 w-40 rounded-full opacity-20 blur-2xl"
+        style={{
+          background: `linear-gradient(135deg, ${gradient})`,
+          filter: 'blur(40px)',
+          mixBlendMode: 'overlay',
+        }}
+      />
+      <div className="p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className='text-xs font-medium uppercase tracking-wide text-slate-500'>{title}</p>
-            <div className='mt-1 flex items-end gap-2'>
-              <AnimatedCounter value={value} className='text-3xl font-extrabold text-slate-900' />
-              {trend && <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${trend.tone === 'down' ? 'bg-red-50 text-red-700 ring-1 ring-red-100' : 'bg-main-50 text-main-700 ring-1 ring-main-100'}`}>{trend.label}</span>}
+            <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-dark-text-secondary">{title}</p>
+            <div className="mt-1 flex items-end gap-2">
+              <AnimatedCounter
+                value={value}
+                className="text-3xl font-extrabold text-slate-900 dark:text-dark-text-primary"
+              />
+              {trend && (
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${trend.tone === 'down'
+                    ? 'bg-red-100 text-red-700 ring-1 ring-red-200 dark:bg-red-800 dark:text-red-300 dark:ring-red-700'
+                    : 'bg-main-50 text-main-700 ring-1 ring-main-100 dark:bg-main-900 dark:text-main-300 dark:ring-main-700'
+                    }`}
+                >
+                  {trend.label}
+                </span>
+              )}
             </div>
           </div>
-          <div className='shrink-0 grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-white to-slate-50 ring-1 ring-slate-200 shadow-inner'>{Icon ? <Icon className='h-5 w-5 text-slate-700' /> : null}</div>
+          <div className="shrink-0 grid place-items-center h-10 w-10 rounded-xl bg-gradient-to-br from-white to-slate-50 dark:from-dark-bg-card dark:to-dark-bg-card ring-1 ring-slate-200 dark:ring-dark-border shadow-inner">
+            {Icon && <Icon className="h-5 w-5 text-slate-700 dark:text-dark-text-secondary" />}
+          </div>
         </div>
 
-        {hint ? <p className='mt-1 text-xs text-slate-500'>{hint}</p> : null}
+        {hint && <p className="mt-1 text-xs text-slate-500 dark:text-dark-text-secondary">{hint}</p>}
 
         {/* Sparkline */}
-        {spark && spark.length > 1 ? (
-          <svg viewBox='0 0 100 28' className='mt-4 h-8 w-full'>
+        {spark && spark.length > 1 && (
+          <svg viewBox="0 0 100 28" className="mt-4 h-8 w-full">
             {/* baseline */}
-            <polyline points={'0,27 100,27'} fill='none' stroke='currentColor' className='text-slate-200' strokeWidth='1' />
+            <polyline
+              points="0,27 100,27"
+              fill="none"
+              stroke="currentColor"
+              className="text-slate-200 dark:text-dark-border"
+              strokeWidth="1"
+            />
             {/* path */}
             {(() => {
               const min = Math.min(...spark);
@@ -43,13 +77,23 @@ export function StatCard({
               const range = max - min || 1;
               const pts = spark.map((v, i) => {
                 const x = (i / (spark.length - 1)) * 100;
-                const y = 27 - ((v - min) / range) * 24; // padding top
+                const y = 27 - ((v - min) / range) * 24;
                 return `${x},${y}`;
               });
-              return <polyline points={pts.join(' ')} fill='none' stroke='currentColor' className='text-main-500' strokeWidth='2' strokeLinejoin='round' strokeLinecap='round' />;
+              return (
+                <polyline
+                  points={pts.join(' ')}
+                  fill="none"
+                  stroke="currentColor"
+                  className="text-main-500 dark:text-main-300"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              );
             })()}
           </svg>
-        ) : null}
+        )}
       </div>
     </motion.div>
   );
@@ -81,8 +125,15 @@ function AnimatedCounter({ value, className = '' }) {
 
 export function GlassCard({ children, className = '', gradient = 'from-sky-400 via-indigo-400 to-violet-500' }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={` border border-slate-200 relative rounded-2xl bg-white/90 ring-1 ring-slate-200 p-5 sm:p-6 ${className}`}>
-      <div className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`} style={{ border: '2px solid transparent' }} />
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`border border-slate-200 dark:border-dark-border relative rounded-2xl bg-white/90 dark:bg-dark-bg-card/90 ring-1 ring-slate-200 dark:ring-dark-border p-5 sm:p-6 ${className}`}
+    >
+      <div
+        className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`}
+        style={{ border: '2px solid transparent' }}
+      />
       <div className={`absolute -inset-px rounded-2xl ${gradient}`} />
       <div className='relative'>{children}</div>
     </motion.div>
@@ -91,11 +142,11 @@ export function GlassCard({ children, className = '', gradient = 'from-sky-400 v
 
 export function MetricBadge({ tone = 'info', children }) {
   const map = {
-    info: 'bg-sky-50 text-sky-800 ring-1 ring-sky-100',
-    success: 'bg-main-50 text-main-800 ring-1 ring-main-100',
-    warning: 'bg-amber-50 text-amber-800 ring-1 ring-amber-100',
-    danger: 'bg-red-50 text-red-800 ring-1 ring-red-100',
-    neutral: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200',
+    info: 'bg-sky-50 text-sky-800 ring-1 ring-sky-100 dark:bg-sky-800/30 dark:text-dark-text-primary dark:ring-dark-border',
+    success: 'bg-main-50 text-main-800 ring-1 ring-main-100 dark:bg-main-800/30 dark:text-dark-text-primary dark:ring-dark-border',
+    warning: 'bg-amber-50 text-amber-800 ring-1 ring-amber-100 dark:bg-amber-800/30 dark:text-dark-text-primary dark:ring-dark-border',
+    danger: 'bg-red-50 text-red-800 ring-1 ring-red-100 dark:bg-red-800/30 dark:text-dark-text-primary dark:ring-dark-border',
+    neutral: 'bg-slate-50 text-slate-700 ring-1 ring-slate-200 dark:bg-dark-bg-card/30 dark:text-dark-text-secondary dark:ring-dark-border',
   };
   return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${map[tone]}`}>{children}</span>;
 }
@@ -113,7 +164,6 @@ const SIZE_CLASS = {
 };
 
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
-
 export function Modal({ className, open, title, subtitle, icon: Icon, onClose, size = 'md', footer, children, closeOnBackdrop = true, hideHeader = false, hideFooter = false, accent = 'main', initialFocusRef }) {
   const panelRef = useRef(null);
   const closeBtnRef = useRef(null);
@@ -179,33 +229,65 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
       {open && (
         <div className={`fixed inset-0 z-[100] ${className}`}>
           {/* Backdrop */}
-          <motion.div className='absolute inset-0 bg-slate-900/60 backdrop-blur-sm' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => closeOnBackdrop && onClose()} />
+          <motion.div
+            className='absolute inset-0 bg-slate-900/60 dark:bg-dark-bg-base/70 backdrop-blur-sm'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => closeOnBackdrop && onClose()}
+          />
+
           {/* Panel */}
-          <motion.div role='dialog' aria-modal='true' aria-labelledby={title ? 'modal-title' : undefined} className='pointer-events-none absolute inset-0 grid place-items-center p-4' initial={{ opacity: 0, y: 12, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 8, scale: 0.98 }} transition={{ type: 'spring', stiffness: 260, damping: 22 }}>
-            <div ref={panelRef} className={`pointer-events-auto w-full ${SIZE_CLASS[size]} max-h-[90vh] overflow-x-hidden overflow-y-auto rounded-2xl`} onClick={e => e.stopPropagation()}>
+          <motion.div
+            role='dialog'
+            aria-modal='true'
+            aria-labelledby={title ? 'modal-title' : undefined}
+            className='pointer-events-none absolute inset-0 grid place-items-center p-4'
+            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+          >
+            <div
+              ref={panelRef}
+              className={`pointer-events-auto w-full ${SIZE_CLASS[size]} max-h-[90vh] overflow-x-hidden overflow-y-auto rounded-2xl`}
+              onClick={e => e.stopPropagation()}
+            >
               {/* Glow border */}
-              <div className={`relative rounded-2xl`}>
-                <div className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br ${accentGrad} opacity-60 blur`} aria-hidden='true' />
+              <div className='relative rounded-2xl'>
+                <div
+                  className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br ${accentGrad} opacity-60 blur`}
+                  aria-hidden='true'
+                />
+
                 {/* Surface */}
-                <div className='relative rounded-2xl bg-white/95 ring-1 ring-slate-200 shadow-2xl'>
+                <div className='relative rounded-2xl bg-white/95 dark:bg-dark-bg-card/95 ring-1 ring-slate-200 dark:ring-dark-border shadow-2xl'>
+
                   {/* Header */}
                   {!hideHeader && (
-                    <div className='sticky top-0 z-10 flex items-start gap-3 px-5 py-4 border-b border-b-slate-200 bg-white/80 backdrop-blur'>
+                    <div className="sticky top-0 z-10 flex items-start gap-3 px-5 py-4 border-b border-b-slate-200 dark:border-b-dark-border bg-white/80 dark:bg-dark-bg-card/80 backdrop-blur">
                       {Icon && (
-                        <div className='  mt-0.5 grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-white to-slate-50 ring-1 ring-slate-200 shadow-inner'>
-                          <Icon className='h-4 w-4 text-slate-700' />
+                        <div className="mt-0.5 grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-white to-slate-50 dark:from-dark-bg-card dark:to-dark-bg-card ring-1 ring-slate-200 dark:ring-dark-border shadow-inner">
+                          <Icon className="h-4 w-4 text-slate-700 dark:text-dark-text-primary" />
                         </div>
                       )}
-                      <div className='flex-1'>
-                        {title ? (
-                          <h2 id='modal-title' className='text-lg font-semibold text-slate-900'>
+                      <div className="flex-1">
+                        {title && (
+                          <h2 id="modal-title" className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary">
                             {title}
                           </h2>
-                        ) : null}
-                        {subtitle ? <p className='mt-0.5 text-sm text-slate-600'>{subtitle}</p> : null}
+                        )}
+                        {subtitle && (
+                          <p className="mt-0.5 text-sm text-slate-600 dark:text-dark-text-secondary">{subtitle}</p>
+                        )}
                       </div>
-                      <button ref={closeBtnRef} onClick={onClose} className='cursor-pointer rounded-lg p-2 text-slate-500 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500' aria-label='Close'>
-                        <X className='h-5 w-5' />
+                      <button
+                        ref={closeBtnRef}
+                        onClick={onClose}
+                        className="cursor-pointer rounded-lg p-2 text-slate-500 dark:text-dark-text-primary hover:bg-slate-100 dark:hover:bg-dark-bg-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-main-500"
+                        aria-label="Close"
+                      >
+                        <X className="h-5 w-5" />
                       </button>
                     </div>
                   )}
@@ -214,7 +296,12 @@ export function Modal({ className, open, title, subtitle, icon: Icon, onClose, s
                   <div className='px-5 py-5 overflow-y-auto'>{children}</div>
 
                   {/* Footer */}
-                  {!hideFooter && <div className='sticky bottom-0 z-10 flex items-center justify-end gap-3 px-5 py-4 border-t bg-white/80 backdrop-blur'>{footer}</div>}
+                  {!hideFooter && (
+                    <div className='sticky bottom-0 z-10 flex items-center justify-end gap-3 px-5 py-4 border-t bg-white/80 dark:bg-dark-bg-card/80 dark:border-t-dark-border backdrop-blur'>
+                      {footer}
+                    </div>
+                  )}
+
                 </div>
               </div>
             </div>

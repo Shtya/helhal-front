@@ -170,17 +170,19 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
       onClick={onClick}
       disabled={disabled}
       className={`w-full px-2 py-1 mx-1 rounded-md flex items-center justify-between text-left transition
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        ${active ? 'gradient text-white' : 'hover:bg-main-50 text-slate-800'}`}>
+      ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+      ${active ? 'gradient text-white' : 'hover:bg-main-50 text-slate-800 dark:text-dark-text-primary dark:hover:bg-dark-bg-card'}`}
+    >
       <span className='flex items-center gap-2'>
         <span
           className={`w-5 h-5 rounded-md border flex items-center justify-center
-            ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513]'}`}>
+          ${active ? 'border-transparent bg-white/20' : 'border-[#007a5520] bg-[#007a5513] dark:border-[#ffffff20] dark:bg-white/10'}`}
+        >
           {active && <Check className='w-3 h-3 text-white' />}
         </span>
         <div>
           <span className={`whitespace-nowrap truncate text-sm ${active ? 'font-medium' : 'font-normal'}`}>{label}</span>
-          <span className={`mx-1 ${active ? 'text-main-50' : 'text-slate-400'} text-[10px]`}>{count}</span>
+          <span className={`mx-1 ${active ? 'text-main-50' : 'text-slate-400 dark:text-dark-text-secondary'} text-[10px]`}>{count}</span>
         </div>
       </span>
     </button>
@@ -219,81 +221,125 @@ export default function SellerDetailsDropdown({ filterOptions = {}, onFilterChan
 
   return (
     <>
-      {open && <div className='fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn' onClick={() => setOpen(false)} />}
+      {open && (
+        <div
+          className='fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-[1px] animate-fadeIn'
+          onClick={() => setOpen(false)}
+        />
+      )}
 
-      <div ref={rootRef} className={`relative inline-block  ${open && 'z-[110]'}`}>
+      <div ref={rootRef} className={`relative inline-block ${open && 'z-[110]'}`}>
         {/* Trigger */}
         <button
           type='button'
           aria-haspopup='listbox'
           aria-expanded={open}
           onClick={() => setOpen(o => !o)}
-          className={`h-[40px] px-4 rounded-md border w-full bg-white flex items-center justify-between text-sm shadow-inner transition 
-            ${open ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]' : 'border-slate-300'}`}
+          className={`
+      h-[40px] px-4 rounded-md border w-full bg-white  dark:bg-dark-bg-input dark:hover:bg-dark-bg-card flex items-center justify-between text-sm shadow-inner transition
+      ${open
+              ? 'ring-2 border-main-700/60 shadow-[inset_0_0_0_3px_var(--color-main-700)/40]'
+              : 'border-slate-300 dark:border-dark-border'}
+      dark:text-dark-text-primary
+    `}
         >
-          <span className='truncate'>{totalSelected > 0 ? `${totalSelected} ${totalSelected > 1 ? t('filters') : t('filter')} ${t('applied')}` : t('title')}</span>
-          <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: open ? BRAND : '#94a3b8' }} />
+          <span className='truncate'>
+            {totalSelected > 0
+              ? `${totalSelected} ${totalSelected > 1 ? t('filters') : t('filter')} ${t('applied')}`
+              : t('title')}
+          </span>
+          <ChevronDown
+            className={`w-4 h-4 ml-2 transition-transform ${open ? 'rotate-180' : ''}`}
+            style={{ color: open ? BRAND : undefined }}
+          />
         </button>
 
         {/* Panel */}
         <div
-          className={` border border-main-700/40  absolute start-0 mt-2 w-full sm:w-[350px] rounded-xl bg-white shadow-[0_6px_24px_rgba(0,0,0,.08)] transition origin-top z-[70]
-          ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
+          className={`
+      absolute start-0 mt-2 w-full sm:w-[350px] rounded-xl border border-main-700/40 
+      bg-white dark:bg-dark-bg-card shadow-[0_6px_24px_rgba(0,0,0,.08)] dark:shadow-[0_6px_24px_rgba(0,0,0,.4)]
+      transition origin-top z-[70]
+      ${open ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}
+    `}
         >
           <div className='py-4 max-h-[70vh] overflow-auto'>
             {/* Seller level */}
             {levelOptions.length > 0 && (
-              <Section title={t('sellerLevel')} subtitle={`${levelOptions.reduce((a, b) => a + b.count, 0)} ${t('total')}`}>
+              <Section
+                title={t('sellerLevel')}
+                subtitle={`${levelOptions.reduce((a, b) => a + b.count, 0)} ${t('total')}`}
+              >
                 {levelOptions.map(o => (
-                  <OptionRow key={o.id} label={o.label} count={o.count} disabled={o.count === 0} active={selected.level.has(o.id)} onClick={() => toggleItem('level', o.id)} />
+                  <OptionRow
+                    key={o.id}
+                    label={o.label}
+                    count={o.count}
+                    disabled={o.count === 0}
+                    active={selected.level.has(o.id)}
+                    onClick={() => toggleItem('level', o.id)}
+                    className='dark:text-dark-text-primary dark:bg-dark-bg-card'
+                  />
                 ))}
               </Section>
             )}
 
             {/* Speaks */}
             {speaksOptions.length > 0 && (
-              <Section title={t('sellerSpeaks')} subtitle={`${speaksOptions.length} ${t('languages')}`}>
+              <Section
+                title={t('sellerSpeaks')}
+                subtitle={`${speaksOptions.length} ${t('languages')}`}
+              >
                 {speaksOptions.map(o => (
-                  <OptionRow key={o.id} label={o.label} count={o.count} disabled={o.count === 0} active={selected.speaks.has(o.id)} onClick={() => toggleItem('speaks', o.id)} />
+                  <OptionRow
+                    key={o.id}
+                    label={o.label}
+                    count={o.count}
+                    disabled={o.count === 0}
+                    active={selected.speaks.has(o.id)}
+                    onClick={() => toggleItem('speaks', o.id)}
+                    className='dark:text-dark-text-primary dark:bg-dark-bg-card'
+                  />
                 ))}
               </Section>
             )}
 
             {/* Countries */}
             {countryOptions.length > 0 && (
-              <Section title={t('sellerCountries')} subtitle={`${countryOptions.length} ${t('countries')}`}>
+              <Section
+                title={t('sellerCountries')}
+                subtitle={`${countryOptions.length} ${t('countries')}`}
+              >
                 {countryOptions.map(o => (
-                  <OptionRow key={o.id} label={o.label} count={o.count} disabled={o.count === 0} active={selected.countries.has(o.id)} onClick={() => toggleItem('countries', o.id)} />
+                  <OptionRow
+                    key={o.id}
+                    label={o.label}
+                    count={o.count}
+                    disabled={o.count === 0}
+                    active={selected.countries.has(o.id)}
+                    onClick={() => toggleItem('countries', o.id)}
+                    className='dark:text-dark-text-primary dark:bg-dark-bg-card'
+                  />
                 ))}
               </Section>
             )}
 
-            {/* Extras (boolean filters) */}
-            {/* {(filterOptions.fastDelivery !== undefined || filterOptions.additionalRevision !== undefined) && (
-              <Section title={t('extras')} one> */}
-            {/* fastDelivery */}
-            {/* <BoolRow
-                  key='fastDelivery'
-                  label={t('fastDelivery')}
-                  count={filterOptions.fastDelivery ?? 0}
-                  active={!!selected.fastDelivery}
-                  onClick={() => toggleExtra('fastDelivery')}
-                /> */}
-            {/* additionalRevision */}
-            {/* <BoolRow
-                  key='additionalRevision'
-                  label={t('additionalRevision')}
-                  count={filterOptions.additionalRevision ?? 0}
-                  active={!!selected.additionalRevision}
-                  onClick={() => toggleExtra('additionalRevision')}
-                /> */}
-            {/* </Section>
-            )} */}
-
             {/* Footer */}
             <div className='px-4 mt-2 -mb-2 flex items-center justify-end gap-2'>
-              <Button icon={<Eraser size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={clearAll} />
-              {hasChanges && <Button icon={<Check size={16} />} color='outline' className='!w-fit !h-[35px]' onClick={applyChanges} />}
+              <Button
+                icon={<Eraser size={16} />}
+                color='outline'
+                className='!w-fit !h-[35px]'
+                onClick={clearAll}
+              />
+              {hasChanges && (
+                <Button
+                  icon={<Check size={16} />}
+                  color='outline'
+                  className='!w-fit !h-[35px]'
+                  onClick={applyChanges}
+                />
+              )}
             </div>
           </div>
         </div>

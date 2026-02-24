@@ -31,13 +31,16 @@ const ColorPickerDialog = ({ isOpen, onClose, color, onChange, onReset, title })
     return (
         <div
             ref={wrapperRef}
-            className="absolute z-50 mt-2 p-3 bg-white border border-gray-200 shadow-2xl rounded-xl animate-in fade-in zoom-in-95 duration-200"
+            className="absolute z-50 mt-2 p-3 bg-white border border-gray-200 shadow-2xl rounded-xl animate-in fade-in zoom-in-95 duration-200
+                   dark:bg-dark-bg-card dark:border-dark-border"
             style={{ left: 0 }}
         >
             {/* Header */}
-            <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{title}</span>
-                <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-100 dark:border-dark-border">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest dark:text-dark-text-primary">
+                    {title}
+                </span>
+                <button className="text-gray-400 hover:text-gray-600 transition-colors dark:text-dark-text-primary dark:hover:text-dark-text-secondary" onClick={onClose}>
                     <MdClose size={16} />
                 </button>
             </div>
@@ -48,16 +51,18 @@ const ColorPickerDialog = ({ isOpen, onClose, color, onChange, onReset, title })
                 color={color}
                 disableAlpha
                 onChange={(color) => onChange(color.hex)}
+                className='dark:bg-dark-bg-card!'
             />
 
             {/* Footer / Reset Button */}
-            <div className="mt-3 pt-2 border-t border-gray-100">
+            <div className="mt-3 pt-2 border-t border-gray-100 dark:border-dark-border">
                 <button
                     onClick={() => {
                         onReset();
                         onClose();
                     }}
-                    className="w-full flex items-center justify-center gap-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="w-full flex items-center justify-center gap-2 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors
+                           dark:text-dark-text-primary dark:bg-dark-bg-input dark:hover:bg-dark-bg-card"
                 >
                     <MdFormatClear size={14} />
                     {t('reset_default')}

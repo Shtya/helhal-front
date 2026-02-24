@@ -85,8 +85,10 @@ export default function DiscoverySection() {
   const moreHref = activeTab === 'all' ? '/services' : `/services/category=${encodeURIComponent(activeTab)}`;
 
   return (
-    <section className='mt-14'>
-      <p className='text-3xl max-md:text-xl font-[900]'>{t('discovery.title')}</p>
+    <section className='mt-14 dark:text-dark-text-primary'>
+      <p className='text-3xl max-md:text-xl font-[900]'>
+        {t('discovery.title')}
+      </p>
 
       {/* Tabs */}
       <div className='mt-4 flex items-center justify-between gap-2 flex-wrap'>
@@ -95,16 +97,31 @@ export default function DiscoverySection() {
       </div>
 
       {/* Grid */}
-      <motion.div className=' mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4' initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }}>
+      <motion.div
+        className='mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35 }}
+      >
         {loading || loadingCategory ? (
-          Array.from({ length: 8 }).map((_, i) => <ServiceCard loading={true} key={`sk-${i}`} />)
+          Array.from({ length: 8 }).map((_, i) => (
+            <ServiceCard loading={true} key={`sk-${i}`} />
+          ))
         ) : err ? (
-          <ErrorState title={t('discovery.errors.loadFailed')} message={err} onRetry={() => fetchServices(activeTab)} />
+          <ErrorState
+            title={t('discovery.errors.loadFailed')}
+            message={err}
+            onRetry={() => fetchServices(activeTab)}
+          />
         ) : services.length === 0 ? (
           <EmptyState onReset={() => setActiveTab('all')} />
         ) : (
-          services.map(svc => (
-            <motion.div key={svc.id || svc.slug} whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
+          services.map((svc) => (
+            <motion.div
+              key={svc.id || svc.slug}
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
               <ServiceCard service={svc} />
             </motion.div>
           ))
@@ -117,9 +134,19 @@ export default function DiscoverySection() {
 
 function EmptyState({ onReset }) {
   const t = useTranslations('Explore');
+
   return (
-    <div className='col-span-full grid place-items-center rounded-2xl border border-slate-200 bg-white p-10 text-slate-600'>
-      <NoResults onClick={onReset} buttonText={t('discovery.empty.resetFilters')} mainText={t('discovery.empty.title')} additionalText={t('discovery.empty.description')} />
+    <div className='col-span-full grid place-items-center rounded-2xl border border-slate-200 bg-white p-10 text-slate-600
+                    dark:bg-dark-bg-card
+                    dark:border-dark-border
+                    dark:text-dark-text-secondary
+                    transition-colors duration-300'>
+      <NoResults
+        onClick={onReset}
+        buttonText={t('discovery.empty.resetFilters')}
+        mainText={t('discovery.empty.title')}
+        additionalText={t('discovery.empty.description')}
+      />
     </div>
   );
 }

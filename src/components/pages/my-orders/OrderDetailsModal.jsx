@@ -87,20 +87,20 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
     <Modal title={t('title')} onClose={onClose} className="!max-w-4xl max-h-[90vh] overflow-y-auto">
       {loading ? (
         <div className="space-y-4 animate-pulse">
-          <div className="h-6 w-1/2 bg-slate-200 rounded" />
-          <div className="h-4 w-3/4 bg-slate-200 rounded" />
-          <div className="h-32 w-full bg-slate-200 rounded" />
+          <div className="h-6 w-1/2 bg-slate-200 rounded dark:bg-dark-border" />
+          <div className="h-4 w-3/4 bg-slate-200 rounded dark:bg-dark-border" />
+          <div className="h-32 w-full bg-slate-200 rounded dark:bg-dark-border" />
         </div>
       ) : error ? (
         <div className="text-center py-8">
-          <p className="text-red-600">{error}</p>
+          <p className="text-red-600 dark:text-red-400">{error}</p>
         </div>
       ) : order ? (
-        <div className="space-y-6">
+        <div className="space-y-6 bg-white dark:bg-dark-bg-card rounded-xl p-4">
           {/* Header Section */}
-          <div className="flex items-start flex-wrap sm:flex-nowrap justify-between gap-4 pb-4 border-b border-slate-200">
+          <div className="flex items-start flex-wrap sm:flex-nowrap justify-between gap-4 pb-4 border-b border-slate-200 dark:border-dark-border">
             <div className="flex-1">
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">{order.title}</h3>
+              <h3 className="text-xl font-semibold text-slate-900 dark:text-dark-text-primary mb-2">{order.title}</h3>
               <div className="flex items-center gap-3 flex-wrap">
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                   {order.status}
@@ -118,8 +118,8 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
               </div>
             </div>
             <div className="sm:text-right">
-              <p className="text-sm text-slate-500">{t('orderId')}</p>
-              <p className="text-xs font-mono text-slate-700">{order.id}</p>
+              <p className="text-sm text-slate-500 dark:text-dark-text-secondary">{t('orderId')}</p>
+              <p className="text-xs font-mono text-slate-700 dark:text-dark-text-primary">{order.id}</p>
             </div>
           </div>
 
@@ -128,22 +128,22 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
             {/* Buyer/Seller */}
             <div className="space-y-3">
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-2">{t('buyer')}</p>
+                <p className="text-sm font-medium text-slate-700 mb-2 dark:text-dark-text-primary">{t('buyer')}</p>
                 {order.buyer ? <UserMini user={order.buyer} href={`/profile/${order.buyer.id}`} /> : <p className="text-sm text-slate-500">—</p>}
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-2">{t('seller')}</p>
-                {order.seller ? <UserMini user={order.seller} href={`/profile/${order.seller.id}`} /> : <p className="text-sm text-slate-500">—</p>}
+                <p className="text-sm font-medium text-slate-700 mb-2 dark:text-dark-text-primary">{t('seller')}</p>
+                {order.seller ? <UserMini user={order.seller} href={`/profile/${order.seller.id}`} /> : <p className="text-sm text-slate-500 dark:text-dark-text-secondary">—</p>}
               </div>
             </div>
 
             {/* Order Details */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-slate-500" />
+                <DollarSign className="h-4 w-4 text-slate-500 dark:text-dark-text-secondary dark:invert" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">{buyerView ? t('totalPaid') : t('orderPrice')}</p>
-                  <p className="text-lg font-semibold text-slate-900 flex gap-1"><Currency />
+                  <p className="text-sm font-medium text-slate-700 dark:text-dark-text-primary">{buyerView ? t('totalPaid') : t('orderPrice')}</p>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary flex gap-1"><Currency />
                     {buyerView
                       ? Number(order?.totalAmount).toFixed(2)  // Buyer sees full cost
                       : Number(subtotal).toFixed(2)     // Seller sees gig price
@@ -152,17 +152,17 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-slate-500" />
+                <Package className="h-4 w-4 text-slate-500 dark:text-dark-text-secondary dark:invert" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">{t('packageType')}</p>
-                  <p className="text-sm text-slate-900 capitalize">{order.packageType}</p>
+                  <p className="text-sm font-medium text-slate-700 dark:text-dark-text-primary">{t('packageType')}</p>
+                  <p className="text-sm text-slate-900 dark:text-dark-text-primary capitalize">{order.packageType}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <FileText className="h-4 w-4 text-slate-500" />
+                <FileText className="h-4 w-4 text-slate-500 dark:text-dark-text-secondary dark:invert" />
                 <div>
-                  <p className="text-sm font-medium text-slate-700">{t('quantity')}</p>
-                  <p className="text-sm text-slate-900">{order.quantity}</p>
+                  <p className="text-sm font-medium text-slate-700 dark:text-dark-text-primary">{t('quantity')}</p>
+                  <p className="text-sm text-slate-900 dark:text-dark-text-primary">{order.quantity}</p>
                 </div>
               </div>
             </div>
@@ -172,65 +172,65 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           <OrderDeliveryTimer order={order} />
 
           {/* Dates */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-200 dark:border-dark-border">
             <div>
-              <p className="text-sm font-medium text-slate-700 mb-1">{t('orderDate')}</p>
-              <p className="text-sm text-slate-600">{formatDateTime(order.orderDate)}</p>
+              <p className="text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">{t('orderDate')}</p>
+              <p className="text-sm text-slate-600 dark:text-dark-text-secondary">{formatDateTime(order.orderDate)}</p>
             </div>
             {order.dueDate && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">{t('dueDate')}</p>
-                <p className="text-sm text-slate-600">{formatDateTime(order.dueDate)}</p>
+                <p className="text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">{t('dueDate')}</p>
+                <p className="text-sm text-slate-600 dark:text-dark-text-secondary">{formatDateTime(order.dueDate)}</p>
               </div>
             )}
             {order.deliveredAt && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">{t('deliveredAt')}</p>
-                <p className="text-sm text-slate-600">{formatDateTime(order.deliveredAt)}</p>
+                <p className="text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">{t('deliveredAt')}</p>
+                <p className="text-sm text-slate-600 dark:text-dark-text-secondary">{formatDateTime(order.deliveredAt)}</p>
               </div>
             )}
             {order.completedAt && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">{t('completedAt')}</p>
-                <p className="text-sm text-slate-600">{formatDateTime(order.completedAt)}</p>
+                <p className="text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">{t('completedAt')}</p>
+                <p className="text-sm text-slate-600 dark:text-dark-text-secondary">{formatDateTime(order.completedAt)}</p>
               </div>
             )}
             {order.cancelledAt && (
               <div>
-                <p className="text-sm font-medium text-slate-700 mb-1">{t('cancelledAt')}</p>
-                <p className="text-sm text-slate-600">{formatDateTime(order.cancelledAt)}</p>
+                <p className="text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">{t('cancelledAt')}</p>
+                <p className="text-sm text-slate-600 dark:text-dark-text-secondary">{formatDateTime(order.cancelledAt)}</p>
               </div>
             )}
           </div>
 
           {/* Service/Job Info */}
           {order.service && (
-            <div className="pt-4 border-t border-slate-200">
-              <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('serviceInformation')}</h4>
-              <div className="bg-slate-50 rounded-lg p-4 space-y-2">
-                <p className="text-sm font-medium text-slate-700">{t('serviceTitle')}</p>
-                <p className="text-sm text-slate-900">{order.service.title}</p>
+            <div className="pt-4 border-t border-slate-200 dark:border-dark-border">
+              <h4 className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary mb-3">{t('serviceInformation')}</h4>
+              <div className="bg-slate-50 rounded-lg p-4 space-y-2 dark:bg-dark-bg-input">
+                <p className="text-sm font-medium text-slate-700 dark:text-dark-text-primary">{t('serviceTitle')}</p>
+                <p className="text-sm text-slate-900 dark:text-dark-text-primary">{order.service.title}</p>
                 {order.service.brief && (
                   <>
-                    <p className="text-sm font-medium text-slate-700 mt-3">{t('description')}</p>
-                    <p className="text-sm text-slate-600">{order.service.brief}</p>
+                    <p className="text-sm font-medium text-slate-700 mt-3 dark:text-dark-text-primary">{t('description')}</p>
+                    <p className="text-sm text-slate-600 dark:text-dark-text-secondary">{order.service.brief}</p>
                   </>
                 )}
                 {order.service.packages && order.service.packages.length > 0 && (
                   <div className="mt-3">
-                    <p className="text-sm font-medium text-slate-700 mb-2">{t('selectedPackage')}</p>
+                      <p className="text-sm font-medium text-slate-700 mb-2 dark:text-dark-text-primary">{t('selectedPackage')}</p>
                     {order.service.packages
                       .find(pkg => pkg.type === order.packageType) && (
-                        <div className="bg-white rounded-lg p-3 border border-slate-200">
-                          <p className="text-sm font-semibold text-slate-900">
+                        <div className="bg-white rounded-lg p-3 border border-slate-200 dark:bg-dark-bg-card dark:border-dark-border">
+                          <p className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary">
                             {order.service.packages.find(pkg => pkg.type === order.packageType).title}
                           </p>
-                          <p className="text-xs text-slate-600 mt-1">
+                          <p className="text-xs text-slate-600 dark:text-dark-text-secondary mt-1">
                             {order.service.packages.find(pkg => pkg.type === order.packageType).description}
                           </p>
                           <div className="mt-2 flex flex-wrap gap-2">
                             {order.service.packages.find(pkg => pkg.type === order.packageType).features?.map((feature, idx) => (
-                              <span key={idx} className="text-xs bg-main-50 text-main-700 px-2 py-1 rounded">
+                              <span key={idx} className="text-xs bg-main-50 text-main-700 px-2 py-1 rounded dark:bg-main-900/20 dark:text-main-400">
                                 {feature}
                               </span>
                             ))}
@@ -245,20 +245,20 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
 
           {/* Requirements Answers */}
           {order.requirementsAnswers && order.requirementsAnswers.length > 0 && (
-            <div className="pt-4 border-t border-slate-200">
-              <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('requirements')}</h4>
+            <div className="pt-4 border-t border-slate-200 dark:border-dark-border">
+              <h4 className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary mb-3">{t('requirements')}</h4>
               <div className="space-y-3">
                 {order.requirementsAnswers.map((req, idx) => {
 
                   return (
-                    <div key={idx} className="bg-slate-50 rounded-lg p-3">
+                    <div key={idx} className="bg-slate-50 rounded-lg p-3 dark:bg-dark-bg-input">
                       {/* Question */}
                       {req?.question ? (
-                        <p className="text-sm font-medium text-slate-700 mb-1">
+                        <p className="text-sm font-medium text-slate-700 mb-1 dark:text-dark-text-primary">
                           {req.question}
                         </p>
                       ) : (
-                        <p className="text-sm font-medium text-slate-400 mb-1">—</p>
+                        <p className="text-sm font-medium text-slate-400 mb-1 dark:text-dark-text-secondary">—</p>
                         // or use "No question" instead of —
                       )}
 
@@ -269,20 +269,20 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                             href={resolveUrl(req.answer)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-main-600 underline hover:text-main-700"
+                            className="text-sm text-main-600 underline hover:text-main-700 dark:text-main-400"
                           >
                             {req.filename || 'Download file'}
                           </a>
                         ) : (
-                          <span className="text-sm text-slate-500">—</span>
+                          <span className="text-sm text-slate-500 dark:text-dark-text-secondary">—</span>
                         )
                       ) : (
-                        <p className="text-sm text-slate-600">{req.answer || '—'}</p>
+                        <p className="text-sm text-slate-600 dark:text-dark-text-secondary">{req.answer || '—'}</p>
                       )}
 
                       {/* ✅ Show Other Answer if it exists */}
                       {req.otherAnswer && (
-                        <p className="mt-1 text-sm text-slate-500 italic">
+                        <p className="mt-1 text-sm text-slate-500 italic dark:text-dark-text-secondary">
                           Other: {req.otherAnswer}
                         </p>
                       )}
@@ -296,11 +296,11 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
           )}
 
           {order.notes && (
-            <div className="pt-4 border-t border-slate-200">
-              <h4 className="text-lg font-semibold text-slate-900 mb-3">
+            <div className="pt-4 border-t border-slate-200 dark:border-dark-border">
+              <h4 className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary mb-3">
                 {t('specialInstructions')}
               </h4>
-              <p className="text-sm text-slate-700 whitespace-pre-line">
+              <p className="text-sm text-slate-700 whitespace-pre-line dark:text-dark-text-secondary">
                 {order.notes}
               </p>
             </div>
@@ -310,18 +310,18 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
 
           {/* Invoices */}
           {invoice && (
-            <div className="pt-4 border-t border-slate-200">
-              <h4 className="text-lg font-semibold text-slate-900 mb-3">{t('invoice')}</h4>
+            <div className="pt-4 border-t border-slate-200 dark:border-dark-border">
+              <h4 className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary mb-3">{t('invoice')}</h4>
               {invoice.payOnDelivery && (
-                <span className="w-fit flex items-center gap-1.5 px-3 py-1 rounded-lg bg-main-50 border border-main-200 text-main-700 text-xs font-bold uppercase tracking-wider">
-                  <Truck className="h-3.5 w-3.5" />
+                <span className="w-fit flex items-center gap-1.5 px-3 py-1 rounded-lg bg-main-50 border border-main-200 text-main-700 text-xs font-bold uppercase tracking-wider dark:bg-main-900/20 dark:border-main-500/40 dark:text-main-400">
+                  <Truck className="h-3.5 w-3.5 dark:invert" />
                   {t('payOnDelivery')}
                 </span>
               )}
-              <div className="bg-slate-50 rounded-lg p-4 space-y-2">
-                <div className="bg-white rounded-lg p-3 border border-slate-200">
+              <div className="bg-slate-50 rounded-lg p-4 space-y-2 dark:bg-dark-bg-input">
+                <div className="bg-white rounded-lg p-3 border border-slate-200 dark:bg-dark-bg-card dark:border-dark-border">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm font-semibold text-slate-900">{t('invoice')} #{invoice.invoiceNumber}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary">{t('invoice')} #{invoice.invoiceNumber}</p>
                     <span className={`text-xs px-2 py-1 rounded-full ${invoice.paymentStatus === 'paid'
                       ? 'bg-main-100 text-main-700'
                       : 'bg-yellow-100 text-yellow-700'
@@ -335,22 +335,22 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                       // Buyer View: Service Price + Buyer Fee
                       <>
                         <div>
-                          <p className="text-slate-600">{t('servicePrice')}</p>
-                          <p className="font-medium text-slate-900 flex gap-1">
+                          <p className="text-slate-600 dark:text-dark-text-secondary">{t('servicePrice')}</p>
+                          <p className="font-medium text-slate-900 dark:text-dark-text-primary flex gap-1">
                             <span><Currency /></span>
                             <span> {Number(invoice.subtotal).toFixed(2)}</span>
                           </p>
                         </div>
                         <div>
-                          <p className="text-slate-600">{t('platformFee')}</p>
-                          <p className="font-medium text-slate-900 flex gap-1">
+                          <p className="text-slate-600 dark:text-dark-text-secondary">{t('platformFee')}</p>
+                          <p className="font-medium text-slate-900 dark:text-dark-text-primary flex gap-1">
                             <span><Currency /> </span>
                             <span>{(Number(invoice.totalAmount) - Number(invoice.subtotal)).toFixed(2)}</span>
                           </p>
                         </div>
-                        <div className="col-span-2 pt-2 border-t border-slate-200">
-                          <p className="text-slate-600">{t('totalAmount')}</p>
-                          <p className="text-lg font-semibold text-slate-900 flex gap-1">
+                        <div className="col-span-2 pt-2 border-t border-slate-200 dark:border-dark-border">
+                          <p className="text-slate-600 dark:text-dark-text-secondary">{t('totalAmount')}</p>
+                          <p className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary flex gap-1">
                             <span><Currency /></span>
                             <span> {Number(invoice.totalAmount).toFixed(2)}</span>
                           </p>
@@ -360,21 +360,21 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                       // Seller View: Service Price - Selling Commission
                       <>
                         <div>
-                          <p className="text-slate-600">{t('subtotal')}</p>
-                          <p className="font-medium text-slate-900 flex gap-1">
+                          <p className="text-slate-600 dark:text-dark-text-secondary">{t('subtotal')}</p>
+                          <p className="font-medium text-slate-900 dark:text-dark-text-primary flex gap-1">
                             <span><Currency /></span>
                             <span>{Number(invoice.subtotal).toFixed(2)}</span>
                           </p>
                         </div>
                         <div>
-                          <p className="text-slate-600">{t('sellingCommission')} ({invoice.sellerServiceFee}%)</p>
+                          <p className="text-slate-600 dark:text-dark-text-secondary">{t('sellingCommission')} ({invoice.sellerServiceFee}%)</p>
                           <p className="font-medium text-rose-600 flex gap-1">
                             <span><Currency /> </span>
                             <span>- {(Number(invoice.subtotal) * (Number(invoice.sellerServiceFee) / 100)).toFixed(2)}</span>
                           </p>
                         </div>
-                        {sellerNetPay ? (<div className="col-span-2 pt-2 border-t border-slate-200">
-                          <p className="text-slate-600">{t('netEarnings')}</p>
+                        {sellerNetPay ? (<div className="col-span-2 pt-2 border-t border-slate-200 dark:border-dark-border">
+                          <p className="text-slate-600 dark:text-dark-text-secondary">{t('netEarnings')}</p>
                           <p className="text-lg font-semibold text-main-700 flex gap-1">
                             <span><Currency /> </span>
                             <span>{sellerNetPay.toFixed(2)}</span>
@@ -384,7 +384,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                       </>
                     )}
                     {invoice.paymentMethod && (
-                      <p className="text-xs text-slate-500 mt-2">{t('paymentMethod')} {invoice.paymentMethod}</p>
+                      <p className="text-xs text-slate-500 dark:text-dark-text-secondary mt-2">{t('paymentMethod')} {invoice.paymentMethod}</p>
                     )}
                   </div>
                   {invoice.payOnDelivery && order?.offlineContract && (

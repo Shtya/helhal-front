@@ -19,7 +19,7 @@ import { showWarningToast } from "@/utils/notifications";
 import { useValues } from "@/context/GlobalContext";
 // Create a component for the icon
 const MyIcon = () => (
-    <svg width="36" height="36" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--color-main-600)' }}>
+    <svg width="36" height="36" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ color: 'var(--color-main-600)' }} className="dark:stroke-main-400">
         <path d="M14 21H28" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M21 28V14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M15.75 38.5H26.25C35 38.5 38.5 35 38.5 26.25V15.75C38.5 7 35 3.5 26.25 3.5H15.75C7 3.5 3.5 7 3.5 15.75V26.25C3.5 35 7 38.5 15.75 38.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -28,7 +28,7 @@ const MyIcon = () => (
 
 const EditIcon = ({ className }) => (
     <svg
-        className={`cursor-pointer hover:scale-[1.1] duration-300 ${className}`}
+        className={`cursor-pointer hover:scale-[1.1] duration-300 ${className} dark:stroke-main-400`}
         width="30"
         height="30"
         viewBox="0 0 42 42"
@@ -66,7 +66,7 @@ function SectionHeader({ title, iconSrc: Icon, actionAria, onAction, disabled })
     const isImagePath = typeof Icon === 'string';
     return (
         <div className='mt-1 flex items-center justify-between'>
-            <h3 className='text-[20px] font-semibold tracking-tight text-[#111827]'>{title}</h3>
+            <h3 className='text-[20px] font-semibold tracking-tight text-[#111827] dark:text-dark-text-primary'>{title}</h3>
             {Icon && (
                 <button
                     onClick={() => onAction?.()}
@@ -82,7 +82,7 @@ function SectionHeader({ title, iconSrc: Icon, actionAria, onAction, disabled })
                         /* Case 2: Inline SVG or Component */
                         <div className="w-9 h-9 flex items-center justify-center">
                             {/* If it's a component <Icon />, if it's an element {Icon} */}
-                            {typeof Icon === 'function' ? <Icon /> : Icon}
+                            {typeof Icon === 'function' ? <Icon className="dark:stroke-main-400 dark:fill-main-400" /> : Icon}
                         </div>
                     )}
                 </button>
@@ -101,7 +101,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
             <div className='mt-2 flex flex-wrap gap-2'>
                 {items.length > 0 ? (
                     items.map((t, i) => (
-                        <span key={`${t}-${i}`} className='group overflow-hidden relative inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] shadow-[0_4px_14px_rgba(0,0,0,0.04)] border border-[#EDEDED]'>
+                        <span key={`${t}-${i}`} className='group overflow-hidden relative inline-flex items-center gap-2 rounded-full bg-white dark:bg-dark-bg-card px-3 py-1.5 text-sm text-[#111827] dark:text-dark-text-primary shadow-[0_4px_14px_rgba(0,0,0,0.04)] border border-[#EDEDED] dark:border-dark-border'>
                             {t || '—'}
                             <button
                                 onClick={() => onRemove?.(i)}
@@ -111,7 +111,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                         </span>
                     ))
                 ) : (
-                    <div className='text-sm text-[#6B7280]'>{t('noItemsAdded')}</div>
+                    <div className='text-sm text-[#6B7280] dark:text-dark-text-secondary'>{t('noItemsAdded')}</div>
                 )}
             </div>
 
@@ -130,7 +130,7 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
                         }}
                         autoFocus
                         placeholder={placeholder || t('addItem')}
-                        className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-main-600'
+                        className='flex-1 min-w-0 rounded-xl border border-[#E5E7EB] dark:border-dark-border px-3 py-2 text-sm text-dark dark:text-dark-text-primary bg-white dark:bg-dark-bg-card outline-none focus:ring-2 focus:ring-main-600'
                     />
                     <button
                         onClick={() => {
@@ -147,7 +147,6 @@ function PillEditor({ items, onAdd, onRemove, placeholder, showInput, setShowInp
         </>
     );
 }
-
 
 
 /* ------------------------------ Small sub-forms ----------------------------- */
@@ -380,9 +379,14 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
     if (loading) return <SkeletonInfoCard />;
 
     return (
-        <Card className={` p-4 sm:p-5 ${className}`}>
-            <SectionHeader title={t('description')} iconSrc={EditIcon} actionAria={editingDesc ? t('finishEditingDescription') : t('editDescription')} onAction={() => setEditingDesc(v => !v)} />
-            <Divider className='!my-2' />
+        <Card className={` p-4 sm:p-5 ${className} dark:bg-dark-bg-card`}>
+            <SectionHeader
+                title={t('description')}
+                iconSrc={EditIcon}
+                actionAria={editingDesc ? t('finishEditingDescription') : t('editDescription')}
+                onAction={() => setEditingDesc(v => !v)}
+            />
+            <Divider className='!my-2 dark:border-dark-border' />
             {editingDesc ? (
                 <>
                     <Textarea
@@ -393,27 +397,33 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                             setInternalDesc(val);
                         }}
                         onBlur={handleDescBlur}
-                        rows={4} placeholder={t('tellBuyers')} />
+                        rows={4} placeholder={t('tellBuyers')}
+                    />
                     <div className='flex justify-between items-center'>
-                        <p className='mt-1 text-xs text-[#6B7280]'>{t('useClearSummary')}</p>
-                        <p className='mt-1 text-xs text-[#6B7280]'>{internalDesc?.trim()?.length}/1000 {t('characters')}</p>
+                        <p className='mt-1 text-xs text-[#6B7280] dark:text-dark-text-secondary'>{t('useClearSummary')}</p>
+                        <p className='mt-1 text-xs text-[#6B7280] dark:text-dark-text-secondary'>{internalDesc?.trim()?.length}/1000 {t('characters')}</p>
                     </div>
                     {errors.description && <p className='text-red-500 text-xs'>{errors.description.message}</p>}
                 </>
             ) : (
-                <p className='mt-1 text-sm leading-7 text-[#292D32]/80'>{internalDesc?.trim() || '—'}</p>
+                <p className='mt-1 text-sm leading-7 text-[#292D32]/80 dark:text-dark-text-secondary'>{internalDesc?.trim() || '—'}</p>
             )}
 
-            <Divider className='!mt-6 !mb-2 ' />
+            <Divider className='!mt-6 !mb-2 dark:border-dark-border' />
 
             {/* Languages */}
             <LanguageSelector value={watch('languages') || []} setValue={val => setValue('languages', val)} />
 
-            <Divider className='!mt-6 !mb-2 ' />
+            <Divider className='!mt-6 !mb-2 dark:border-dark-border' />
 
             {/* Skills */}
-            <SectionHeader title={t('skills')} iconSrc={MyIcon} actionAria={t('addSkill')} onAction={() => setShowSkillInput(true)} disabled={skills.length >= MAX_SKILLS} />
-
+            <SectionHeader
+                title={t('skills')}
+                iconSrc={MyIcon}
+                actionAria={t('addSkill')}
+                onAction={() => setShowSkillInput(true)}
+                disabled={skills.length >= MAX_SKILLS}
+            />
             <PillEditor
                 items={skills}
                 maxSkills={MAX_SKILLS}
@@ -432,27 +442,31 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
 
                     setValue('skills', [...current, val]);
                 }}
-
                 onRemove={i => {
                     const current = skills;
                     setValue('skills', current.filter((_, idx) => idx !== i));
                 }}
             />
 
-
-            <Divider className='!mt-6 !mb-2 ' />
+            <Divider className='!mt-6 !mb-2 dark:border-dark-border' />
 
             {/* Education */}
-            <SectionHeader title={t('education')} iconSrc={MyIcon} actionAria={t('addEducation')} onAction={() => setEduOpen(true)} disabled={educations.length >= MAX_EDUCATIONS} />
+            <SectionHeader
+                title={t('education')}
+                iconSrc={MyIcon}
+                actionAria={t('addEducation')}
+                onAction={() => setEduOpen(true)}
+                disabled={educations.length >= MAX_EDUCATIONS}
+            />
             <div className='mt-2 space-y-2'>
                 {(educations).length > 0 ? (
                     educations.map((e, idx) => (
-                        <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-3 text-sm'>
+                        <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] dark:border-dark-border bg-white dark:bg-dark-bg-card p-3 text-sm'>
                             <div className='min-w-0'>
-                                <div className='font-semibold truncate'>
+                                <div className='font-semibold truncate dark:text-dark-text-primary'>
                                     {e?.degree || '—'} — {e?.institution || '—'}
                                 </div>
-                                <div className='text-[#6B7280]'>{e?.year || '—'}</div>
+                                <div className='text-[#6B7280] dark:text-dark-text-secondary'>{e?.year || '—'}</div>
                             </div>
                             <button onClick={() => onRemoveEducation?.(idx)} className='text-rose-600 hover:text-rose-700' aria-label='Remove education' title='Remove'>
                                 <Trash2 className='h-4 w-4' />
@@ -460,7 +474,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                         </div>
                     ))
                 ) : (
-                    <div className='text-sm text-[#6B7280]'>{t('noEducationAdded')}</div>
+                    <div className='text-sm text-[#6B7280] dark:text-dark-text-secondary'>{t('noEducationAdded')}</div>
                 )}
             </div>
 
@@ -469,32 +483,35 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                 <Modal title={t('addEducationModal')} onClose={() => setEduOpen(false)}>
                     <EducationForm
                         onSubmit={item => {
-
-                            const alreadyHas = educations.some(e => e.degree === item.degree && e.institution === item.institution && e.year === item.year)
+                            const alreadyHas = educations.some(e => e.degree === item.degree && e.institution === item.institution && e.year === item.year);
                             if (alreadyHas) {
                                 showWarningToast(t('educationAlreadyAdded'));
                                 return;
                             }
                             setValue('education', [...educations, item]);
-
                             setEduOpen(false);
                         }}
                     />
                 </Modal>
             )}
 
-
-            <Divider />
+            <Divider className='dark:border-dark-border' />
 
             {/* Certifications */}
-            <SectionHeader title={t('certification')} iconSrc={MyIcon} actionAria={t('addCertification')} onAction={() => setCertOpen(true)} disabled={certifications.length >= MAX_CERTIFICATIONS} />
+            <SectionHeader
+                title={t('certification')}
+                iconSrc={MyIcon}
+                actionAria={t('addCertification')}
+                onAction={() => setCertOpen(true)}
+                disabled={certifications.length >= MAX_CERTIFICATIONS}
+            />
             <div className='mt-2 space-y-2'>
                 {(certifications).length > 0 ? (
                     certifications.map((c, idx) => (
-                        <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] bg-white p-3 text-sm'>
+                        <div key={idx} className='flex items-center justify-between rounded-2xl border border-[#EDEDED] dark:border-dark-border bg-white dark:bg-dark-bg-card p-3 text-sm'>
                             <div className='min-w-0'>
-                                <div className='font-semibold truncate'>{c?.name || '—'}</div>
-                                <div className='text-[#6B7280]'>
+                                <div className='font-semibold truncate dark:text-dark-text-primary'>{c?.name || '—'}</div>
+                                <div className='text-[#6B7280] dark:text-dark-text-secondary'>
                                     {c?.issuingOrganization || c?.issuer || '—'} • {c?.year || '—'}
                                 </div>
                             </div>
@@ -504,7 +521,7 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                         </div>
                     ))
                 ) : (
-                    <div className='text-sm text-[#6B7280]'>{t('noCertificationsAdded')}</div>
+                    <div className='text-sm text-[#6B7280] dark:text-dark-text-secondary'>{t('noCertificationsAdded')}</div>
                 )}
             </div>
 
@@ -513,33 +530,50 @@ export default function InfoCard({ loading, about, setAbout, onRemoveEducation, 
                 <Modal title={t('addCertificationModal')} onClose={() => setCertOpen(false)}>
                     <CertificationForm
                         onSubmit={item => {
-
-                            const alreadyHas = certifications.some(c => c.name === item.name && c.issuingOrganization === item.issuingOrganization && c.year === item.year)
+                            const alreadyHas = certifications.some(c => c.name === item.name && c.issuingOrganization === item.issuingOrganization && c.year === item.year);
                             if (alreadyHas) {
                                 showWarningToast(t('certificationAlreadyAdded'));
                                 return;
                             }
                             setValue('certifications', [...certifications, item]);
-
                             setCertOpen(false);
                         }}
                     />
                 </Modal>
             )}
-            <Divider />
+            <Divider className='dark:border-dark-border' />
+
             {/* Top selects row */}
             <div className=' mt-4 grid grid-cols-1 gap-3 md:grid-cols-2'>
-                <Select key={`${countryLoading} ${countrySelectOptions?.length}`} label={t('country')} options={countrySelectOptions} value={about?.countryId} onChange={opt => onCountryChange?.(opt?.id)} placeholder={t('selectCountry')} isLoading={countryLoading} showSearch={true} />
-                <Select label={t('accountType')} options={accountTypeOptions} value={about?.type} onChange={opt => onTypeChange?.(opt?.id)} placeholder={t('selectType')} />
+                <Select
+                    key={`${countryLoading} ${countrySelectOptions?.length}`}
+                    label={t('country')}
+                    options={countrySelectOptions}
+                    value={about?.countryId}
+                    onChange={opt => onCountryChange?.(opt?.id)}
+                    placeholder={t('selectCountry')}
+                    isLoading={countryLoading}
+                />
+                <Select
+                    label={t('accountType')}
+                    options={accountTypeOptions}
+                    value={about?.type}
+                    onChange={opt => onTypeChange?.(opt?.id)}
+                    placeholder={t('selectType')}
+                />
             </div>
         </Card>
     );
 }
 
 
-function SkeletonInfoCard() {
+
+// Complex skeleton card similar to SkeletonInfoCard
+export function SkeletonInfoCard() {
     return (
-        <div className='rounded-[28px] border border-[#E8ECEF] bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] p-5 sm:p-6 animate-pulse'>
+        <div className='shadow-[0_10px_30px_rgba(0,0,0,0.08)] rounded-xl border border-slate-200 bg-white dark:border-dark-border dark:bg-dark-bg-card p-6'>
+
+            {/* Top grid */}
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                 <SkeletonLine className='h-5 w-40' />
                 <SkeletonLine className='h-5 w-40' />
@@ -549,6 +583,7 @@ function SkeletonInfoCard() {
 
             <Divider />
 
+            {/* Section 1 */}
             <div className='flex items-center justify-between'>
                 <SkeletonLine className='h-6 w-36' />
                 <SkeletonCircle className='h-8 w-8' />
@@ -561,6 +596,7 @@ function SkeletonInfoCard() {
 
             <Divider />
 
+            {/* Section 2 */}
             <div className='flex items-center justify-between'>
                 <SkeletonLine className='h-6 w-28' />
                 <SkeletonCircle className='h-8 w-8' />
@@ -569,6 +605,7 @@ function SkeletonInfoCard() {
 
             <Divider />
 
+            {/* Section 3 */}
             <div className='flex items-center justify-between'>
                 <SkeletonLine className='h-6 w-16' />
                 <SkeletonCircle className='h-8 w-8' />
@@ -580,6 +617,7 @@ function SkeletonInfoCard() {
 
             <Divider />
 
+            {/* Section 4 */}
             <div className='flex items-center justify-between'>
                 <SkeletonLine className='h-6 w-24' />
                 <SkeletonCircle className='h-8 w-8' />
@@ -588,11 +626,13 @@ function SkeletonInfoCard() {
 
             <Divider />
 
+            {/* Section 5 */}
             <div className='flex items-center justify-between'>
                 <SkeletonLine className='h-6 w-32' />
                 <SkeletonCircle className='h-8 w-8' />
             </div>
             <SkeletonBox className='mt-2 h-14' />
+
         </div>
     );
 }
@@ -600,13 +640,15 @@ function SkeletonInfoCard() {
 /* ---- Skeleton atoms ---- */
 
 function SkeletonBox({ className = '' }) {
-    return <div className={`rounded-xl bg-slate-200 ${className}`} />;
+    return <div className={`rounded-xl bg-slate-200 dark:bg-dark-bg-input ${className}`} />;
 }
+
 function SkeletonCircle({ className = '' }) {
-    return <div className={`rounded-full bg-slate-200 ${className}`} />;
+    return <div className={`rounded-full bg-slate-200 dark:bg-dark-bg-input ${className}`} />;
 }
+
 function SkeletonPill() {
-    return <div className='h-8 w-28 rounded-full bg-slate-200 shadow' />;
+    return <div className='h-8 w-28 rounded-full bg-slate-200 dark:bg-dark-bg-input shadow' />;
 }
 
 
@@ -655,15 +697,24 @@ function LanguageSelector({ value = [], setValue }) {
 
     return (
         <>
-            <SectionHeader title={t('languages')} iconSrc={MyIcon} actionAria={t('addLanguage')} onAction={() => setShowLangInput(true)} />
+            <SectionHeader
+                title={t('languages')}
+                iconSrc={MyIcon}
+                actionAria={t('addLanguage')}
+                onAction={() => setShowLangInput(true)}
+            />
             <div className='mt-1 flex flex-wrap items-center gap-2'>
                 {value.map((lang, idx) => (
-                    <div key={idx} className='group relative inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-[#111827] border border-[#EDEDED] shadow'>
+                    <div
+                        key={idx}
+                        className='group relative inline-flex items-center gap-2 rounded-full bg-white dark:bg-dark-bg-card px-3 py-1.5 text-sm text-[#111827] dark:text-dark-text-primary border border-[#EDEDED] dark:border-dark-border shadow'
+                    >
                         <span>{lang}</span>
                         <button
                             onClick={() => setValue(value.filter((_, i) => i !== idx))}
                             className='absolute inset-0 flex items-center justify-center bg-red-500/70 opacity-0 group-hover:opacity-100 transition-opacity'
-                            aria-label='Remove language'>
+                            aria-label='Remove language'
+                        >
                             <X size={20} className='text-white' />
                         </button>
                     </div>
@@ -671,9 +722,8 @@ function LanguageSelector({ value = [], setValue }) {
             </div>
 
             {showLangInput && (
-                <div>
-
-                    <div className='mt-3 flex items-end gap-2'>
+                <div className='mt-3 flex flex-col gap-2'>
+                    <div className='flex items-end gap-2'>
                         <Select
                             label={t('selectLanguage')}
                             isLoading={langLoading}
@@ -691,14 +741,14 @@ function LanguageSelector({ value = [], setValue }) {
                                 setShowLangInput(false);
                             }}
                             disabled={!selectedLang}
-                            className={`rounded-xl border px-3 py-2 text-sm border-main-600 text-main-600 hover:bg-main-50`}>
+                            className='rounded-xl border px-3 py-2 text-sm border-main-600 text-main-600 hover:bg-main-50 dark:border-main-500 dark:text-main-500 dark:hover:bg-dark-bg-input'
+                        >
                             {t('add')}
                         </button>
                     </div>
                     <FormErrorMessage message={langError} />
                 </div>
             )}
-
         </>
     );
 }

@@ -127,13 +127,18 @@ export default function InvoicesManagement() {
       key: 'paymentStatus',
       title: t('columns.paymentStatus'),
       render: (value) => (
-        <span className={`px-2 py-1 rounded-full text-xs ${value === 'paid' ? 'bg-main-100 text-main-800' :
-          value === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-            'bg-red-100 text-red-800'
-          }`}>
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium border
+        ${value === 'paid'
+              ? 'bg-main-100 text-main-800 border-main-200 dark:bg-main-500/15 dark:text-main-400 dark:border-main-500/30'
+              : value === 'pending'
+                ? 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-500/15 dark:text-yellow-400 dark:border-yellow-500/30'
+                : 'bg-red-100 text-red-800 border-red-200 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/30'
+            }`}
+        >
           {value}
         </span>
-      )
+      ),
     },
     {
       key: 'issuedAt',
@@ -191,8 +196,19 @@ export default function InvoicesManagement() {
 
 function GlassCard({ children, className = '', gradient = 'from-sky-400 via-indigo-400 to-violet-500' }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={` border border-slate-200 relative rounded-2xl bg-white/90 ring-1 ring-slate-200 p-5 sm:p-6 ${className}`}>
-      <div className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`} style={{ border: '2px solid transparent' }} />
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`
+        relative rounded-2xl border border-slate-200 bg-white/90 ring-1 ring-slate-200 p-5 sm:p-6
+        dark:border-dark-border dark:bg-dark-bg-card dark:ring-dark-border
+        ${className}
+      `}
+    >
+      <div
+        className={`pointer-events-none absolute inset-0 rounded-2xl [mask:linear-gradient(white,transparent)]`}
+        style={{ border: '2px solid transparent' }}
+      />
       <div className={`absolute -inset-px rounded-2xl ${gradient}`} />
       <div className='relative'>{children}</div>
     </motion.div>

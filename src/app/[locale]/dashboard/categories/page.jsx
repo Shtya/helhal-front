@@ -293,7 +293,8 @@ export default function AdminCategoriesDashboard() {
 
         {apiError && <div className='mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800'>{apiError}</div>}
 
-        <div className='bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden'>
+        <div className="bg-white border border-slate-200 card-glow rounded-2xl shadow-sm ring-1 ring-slate-200 overflow-hidden
+                dark:bg-dark-bg-card dark:border-dark-border dark:ring-dark-border">
           <Table data={rows} columns={columns} Actions={Actions} loading={loading} rowsPerPage={filters.limit} page={filters.page} totalCount={totalCount} onPageChange={p => setFilters(prev => ({ ...prev, page: p }))} />
         </div>
 
@@ -417,14 +418,18 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
 
   return (
     <div className="space-y-4">
+      {/* API Error */}
       {apiError && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        <div className="rounded-md border border-red-200 bg-red-50 dark:border-red-600 dark:bg-red-900 px-3 py-2 text-sm text-red-700 dark:text-red-300">
           {apiError}
         </div>
       )}
 
+      {/* Type */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.type')}</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.type')}
+        </label>
         <Select
           disabled={readOnly}
           value={watch('type')}
@@ -437,22 +442,27 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         />
       </div>
 
+      {/* Parent Category */}
       {type === 'subcategory' && (
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.parentCategory')}</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+            {t('modal.parentCategory')}
+          </label>
           <CategorySelect
             value={watch('parentId')}
             excludes={[value?.id]}
             disabled={readOnly}
-            onChange={cat => { setValue('parentId', cat?.id) }}
+            onChange={cat => setValue('parentId', cat?.id)}
             error={errors.parentId?.message}
           />
         </div>
       )}
 
-
+      {/* Name EN */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.nameEn')}</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.nameEn')}
+        </label>
         <Input
           disabled={readOnly}
           placeholder={t('modal.nameEnPlaceholder')}
@@ -461,8 +471,11 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         />
       </div>
 
+      {/* Name AR */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.nameAr')}</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.nameAr')}
+        </label>
         <Input
           disabled={readOnly}
           placeholder={t('modal.nameArPlaceholder')}
@@ -471,8 +484,11 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         />
       </div>
 
+      {/* Slug */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.slug')}</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.slug')}
+        </label>
         <Input
           disabled={readOnly}
           placeholder={t('modal.slugPlaceholder')}
@@ -481,8 +497,11 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         />
       </div>
 
+      {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">{t('modal.description')}</label>
+        <label className="block text-sm font-medium text-slate-700 dark:text-dark-text-secondary mb-1">
+          {t('modal.description')}
+        </label>
         <Textarea
           disabled={readOnly}
           placeholder={t('modal.desPlaceholder')}
@@ -492,8 +511,8 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         />
       </div>
 
+      {/* Image Picker */}
       <div className={`${!readOnly && "!mb-0"}`}>
-
         <ImagePicker
           value={watch('image')}
           onChange={url => setValue('image', url)}
@@ -502,18 +521,35 @@ function CategoryForm({ mode, value, onChange, onSubmit, onCancel, submitting = 
         />
       </div>
 
+      {/* Footer Buttons */}
       {readOnly ? (
         <div className="flex justify-end">
-          <Button color="white" name={t('modal.close')} onClick={onCancel} className="!w-fit" />
+          <Button
+            color="secondary"
+            name={t('modal.close')}
+            onClick={onCancel}
+            className="!w-fit"
+          />
         </div>
       ) : (
         <div className="flex justify-end gap-3">
-          <Button color="secondary" name={t('modal.cancel')} onClick={onCancel} className="!w-fit" />
+          <Button
+            color="secondary"
+            name={t('modal.cancel')}
+            onClick={onCancel}
+            className="!w-fit"
+          />
           <Button
             type="button"
             color="green"
             onClick={handleSubmit(submit)}
-            name={submitting ? t('modal.saving') : mode === 'edit' ? t('modal.updateCategory') : t('modal.createCategory')}
+            name={
+              submitting
+                ? t('modal.saving')
+                : mode === 'edit'
+                  ? t('modal.updateCategory')
+                  : t('modal.createCategory')
+            }
             disabled={submitting}
             className="!w-fit"
           />

@@ -26,35 +26,60 @@ const InputSearch = ({ className, placeholder, iconLeft, showAction = true, acti
   };
 
   return (
-    <div className={`relative w-full ${className} max-w-[350px] `}>
+    <div className={`relative w-full ${className} max-w-[350px]`}>
       <div
-        className={`search-parnet relative flex items-center rounded-md bg-white h-[40px] px-2 py-2 text-sm gap-1
-        transition border ${searchTerm ? 'border-main-600' : 'border-gray-300'} focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}>
+        className={`search-parnet relative flex items-center rounded-md h-[40px] px-2 py-2 text-sm gap-1 transition-colors duration-300 border
+             ${searchTerm ? 'border-main-600'
+            : 'border-gray-300 dark:border-dark-border'
+          } 
+        bg-white dark:bg-dark-bg-input 
+        focus-within:border-main-600 focus-within:ring-2 focus-within:ring-main-600/20`}
+      >
         {/* Left icon */}
         {iconLeft && (
-          <span className='flex-none text-slate-400'>
-            <Image src={iconLeft} alt='icon' width={20} height={20} />
+          <span className='flex-none text-slate-400 dark:text-dark-text-secondary dark:brightness-150'>
+            <Image
+              src={iconLeft}
+              alt='icon'
+              width={20}
+              height={20}
+              className="dark:invert-[0.2]"
+            />
           </span>
         )}
 
         {/* Input field */}
-        <input type='text' placeholder={defaultPlace} value={searchTerm} onChange={handleChange} onKeyDown={e => {
-          if (e.key === 'Enter') handleSearch(e);
-        }} className={`w-full bg-transparent outline-none text-slate-700 placeholder:text-gray-400 ${actionIcon && 'w-[calc(100%-50px)]'}`} />
+        <input
+          type='text'
+          placeholder={defaultPlace}
+          value={searchTerm}
+          onChange={handleChange}
+          onKeyDown={e => {
+            if (e.key === 'Enter') handleSearch(e);
+          }}
+          className={`w-full bg-transparent outline-none text-slate-700 dark:text-dark-text-primary placeholder:text-gray-400 dark:placeholder:text-dark-text-secondary ${actionIcon && 'w-[calc(100%-50px)]'}`}
+        />
 
-        {/* Action button */}
+        {/* Action button (with icon) */}
         {actionIcon && showAction && (
-          <button onClick={handleSearch} className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-main-600 text-white hover:bg-main-700 transition'>
-            <img src={actionIcon} alt='action icon' className='w-full' />
+          <button
+            onClick={handleSearch}
+            className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-main-600 text-white hover:bg-main-700 transition'
+          >
+            <img src={actionIcon} alt='action icon' className='w-full invert dark:invert-0' />
+          </button>
+        )}
+
+        {/* Action button (default arrow) */}
+        {!actionIcon && showAction && (
+          <button
+            onClick={handleSearch}
+            className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md bg-second text-white hover:opacity-90 duration-300 hover:scale-[1.05] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 cursor-pointer'
+          >
+            <ArrowRight className='w-5 h-5' />
           </button>
         )}
       </div>
-
-      {!actionIcon && showAction && (
-        <button onClick={handleSearch} className='absolute end-2 top-1/2 -translate-y-1/2 p-1 rounded-md  bg-second  text-white hover:opacity-90 duration-300 hover:scale-[1.05] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 cursor-pointer'>
-          <ArrowRight className='w-5 h-5' />
-        </button>
-      )}
     </div>
   );
 };

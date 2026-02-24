@@ -41,14 +41,15 @@ export default function ActionMenuPortal({ children }) {
             <button
                 ref={anchorRef}
                 onClick={() => setMenuOpen(prev => !prev)}
-                className="p-2 text-slate-600 hover:bg-slate-100 rounded-full"
+                className="p-2 text-slate-600 hover:bg-slate-100 rounded-full dark:text-dark-text-primary dark:hover:bg-dark-bg-input"
             >
-                <MoreVertical size={16} />
+                <MoreVertical size={16} className="" />
             </button>
             {menuOpen && createPortal(
                 <div
                     ref={menuRef}
-                    className="absolute z-50 w-48 bg-white rounded-xl shadow-lg border border-slate-200"
+                    className="absolute z-50 w-48 bg-white rounded-xl shadow-lg border border-slate-200
+                           dark:bg-dark-bg-base dark:border-dark-border"
                     style={{ top: position.top, left: position.left }}
                 >
                     <div className="py-1">
