@@ -129,7 +129,7 @@ export default function StatisticsPage() {
 
 
   return (
-    <div className="!py-6 dark:bg-dark-bg-base">
+    <div className="!py-6">
       {/* Page header */}
       <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         <div>
