@@ -89,7 +89,10 @@ export default function DataTable({
             {displayRows.map((row, idx) => {
               const isSkeleton = loading || row.__skeleton !== undefined;
               return (
-                <tr key={row.__skeleton ?? idx} className="hover:bg-gray-50 odd:bg-main-50/20 dark:hover:bg-dark-bg-input">
+                <tr
+                  key={row.__skeleton ?? idx}
+                  className="hover:bg-gray-50 dark:hover:bg-dark-bg-input odd:bg-main-50/20 dark:odd:bg-dark-bg-card"
+                >
                   {columns.map(column => {
                     if (isSkeleton) {
                       return (
@@ -121,11 +124,11 @@ export default function DataTable({
                           column.render(row[column.key], row)
                         ) : column.type === 'img' ? (
                           <div className="relative cursor-zoom-in w-[42px] h-[42px]">
-                              <Img
-                                src={row[column.key] || ''}
-                                alt="Avatar"
-                                className="w-full h-full object-cover rounded-full ring-1 ring-slate-200 dark:ring-dark-border"
-                              />
+                            <Img
+                              src={row[column.key] || ''}
+                              alt="Avatar"
+                              className="w-full h-full object-cover rounded-full ring-1 ring-slate-200 dark:ring-dark-border"
+                            />
                           </div>
                         ) : column.key === 'status' ? (
                           <span className={getStatusClass(row[column.key], column)}>

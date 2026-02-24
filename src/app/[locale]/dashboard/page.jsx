@@ -627,12 +627,22 @@ function formatDate(iso) {
 
 function statusTone(status) {
   const s = String(status || '').toLowerCase();
-  if (['paid', 'completed', 'success', , 'Accepted', 'Delivered', 'approved', 'resolved'].includes(s)) return 'bg-main-50 text-main-700 border border-main-200';
-  if (['pending', 'processing', 'open'].includes(s)) return 'bg-amber-50 text-amber-700 border border-amber-200';
-  if (['failed', 'rejected', 'canceled', 'cancelled', 'Missing Details'].includes(s)) return 'bg-rose-50 text-rose-700 border border-rose-200';
-  return 'bg-slate-50 text-slate-700 border border-slate-200';
-}
 
+  if (['paid', 'completed', 'success', 'accepted', 'delivered', 'approved', 'resolved'].includes(s)) {
+    return 'px-2 py-1 rounded-full text-xs font-medium border bg-main-100 text-main-800 border-main-200 dark:bg-main-500/15 dark:text-main-400 dark:border-main-500/30';
+  }
+
+  if (['pending', 'processing', 'open'].includes(s)) {
+    return 'px-2 py-1 rounded-full text-xs font-medium border bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-500/15 dark:text-yellow-400 dark:border-yellow-500/30';
+  }
+
+  if (['failed', 'rejected', 'canceled', 'cancelled', 'missing details'].includes(s)) {
+    return 'px-2 py-1 rounded-full text-xs font-medium border bg-red-100 text-red-800 border-red-200 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/30';
+  }
+
+  // Default / neutral
+  return 'px-2 py-1 rounded-full text-xs font-medium border bg-slate-100 text-slate-800 border-slate-200 dark:bg-slate-500/15 dark:text-slate-400 dark:border-slate-500/30';
+}
 function randSeries(n = 12, base = 50) {
   const out = [];
   let v = base;

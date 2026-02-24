@@ -161,7 +161,7 @@ const Table = ({ data, columns, actions, loading = false, page = 1, rowsPerPage 
                 key={row.__skeleton ?? idx}
                 className="
                 odd:bg-main-600/5 
-                dark:odd:bg-main-600/10
+                dark:odd:bg-main-600/5
                 hover:bg-gray-50 
                 dark:hover:bg-dark-bg-input
                 transition-colors duration-200
