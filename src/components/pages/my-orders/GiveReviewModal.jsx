@@ -164,7 +164,7 @@ function RatingForm({ orderId, initialData, onClose, fetchOrders }) {
             });
             toast.success(t('submitSuccess'));
             onClose()
-            fetchOrders()
+            fetchOrders?.()
         } catch (err) {
             toast.error(err.response?.data?.message || 'Error');
         } finally {

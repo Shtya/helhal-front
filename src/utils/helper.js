@@ -89,3 +89,32 @@ export function isErrorAbort(error) {
 export function cn(...inputs) {
     return twMerge(clsx(inputs))
 }
+
+
+export function canViewUserProfile(
+    meRole,
+    targetRole
+) {
+    if (meRole === 'admin') return true;
+
+    if (meRole === 'buyer' || meRole === 'seller' || meRole === 'guest' || !meRole) {
+        return targetRole === 'seller' || targetRole === 'admin';
+    }
+
+    return false;
+}
+
+export function canViewContactInfo(
+    viewerRole,
+    targetRole
+) {
+    if (!viewerRole || !targetRole) return false;
+
+    // Admin can see everyone
+    if (viewerRole === 'admin') return true;
+
+    // Everyone else cannot see seller contact info
+    if (targetRole === 'seller') return false;
+
+    return true; // can see everyone else
+}

@@ -7,24 +7,27 @@ import { Mail, Smartphone, Shield, Calendar, Clock, Award, User as UserIcon, Dol
 import api from '@/lib/axios';
 import { StatCard } from '@/components/dashboard/Ui';
 import { useAuth } from '@/context/AuthContext';
-import { resolveUrl } from '@/utils/helper';
+import { canViewContactInfo, canViewUserProfile, resolveUrl } from '@/utils/helper';
 import { formatResponseTime } from '@/utils/profile';
 import { FiClipboard } from 'react-icons/fi';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import IdentityStatus from '@/components/atoms/IdentityStatus';
 import TopRatedBadge from '@/components/atoms/TopRatedBadge';
 import Img from '@/components/atoms/Img';
 import Button from '@/components/atoms/Button';
+import toast from 'react-hot-toast';
 
 export default function ProfilePageClient() {
   const t = useTranslations('Profile.public');
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, role: meRole } = useAuth();
+  const router = useRouter()
   const isSameUser = user?.id === id;
   const [buyer, setBuyer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const canSeeContacts = canViewContactInfo(meRole, buyer?.role);
   useEffect(() => {
     let ignore = false;
     async function fetchUser() {
@@ -37,6 +40,14 @@ export default function ProfilePageClient() {
         if (!ignore) setBuyer(data);
       } catch (e1) {
         if (!ignore) setError(t('failedToLoad'));
+        const status = e1?.response?.status;
+
+        if (status === 401 || status === 403) {
+          setError(t('notAllowed')); // translation key
+          router.push('/'); // redirect to home
+          return;
+        }
+
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -134,7 +145,7 @@ export default function ProfilePageClient() {
               </div>
 
               <div className="mt-2 text-sm/6 flex flex-wrap items-center gap-x-4 gap-y-1 text-white/90">
-                {user?.role !== 'seller' && (
+                {canSeeContacts && (
                   <span className="inline-flex items-center gap-1.5">
                     <Mail className="h-4 w-4" /> {buyer?.email || '—'}
                   </span>
@@ -150,7 +161,7 @@ export default function ProfilePageClient() {
             </div>
 
             {/* Chat Button */}
-            <Link
+            {!isSameUser && <Link
               href={`/chat?userId=${buyer?.id || ''}`}
               className="
     inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-bold rounded-xl
@@ -162,7 +173,7 @@ export default function ProfilePageClient() {
             >
               <Mail className="w-5 h-5" />
               {t('message') || 'Chat with Seller'}
-            </Link>
+            </Link>}
           </div>
 
           {/* KPIs */}
@@ -215,7 +226,7 @@ export default function ProfilePageClient() {
               <VerificationStatusRow
                 icon={Mail}
                 label={t('email')}
-                value={user?.role !== 'seller' ? buyer?.email || '—' : ''}
+                value={canSeeContacts ? buyer?.email || '—' : ''}
                 copyable
                 verified={emailVerified}
               />
@@ -223,7 +234,7 @@ export default function ProfilePageClient() {
                 icon={Smartphone}
                 label={t('phone')}
                 value={
-                  user?.role !== 'seller'
+                  canSeeContacts
                     ? buyer?.phone
                       ? [buyer?.countryCode?.dial_code, buyer?.phone].join(' ')
                       : '—'
@@ -699,14 +710,16 @@ const RatingStars = ({ score }) => (
       <Star
         key={s}
         className={`w-3.5 h-3.5 ${s <= Math.round(score)
-            ? 'fill-yellow-400 text-yellow-400 dark:text-dark-text-primary dark:fill-yellow-400'
-            : 'text-slate-200 dark:text-dark-text-secondary'
+          ? 'fill-yellow-400 text-yellow-400 dark:text-dark-text-primary dark:fill-yellow-400'
+          : 'text-slate-200 dark:text-dark-text-secondary'
           }`}
       />
     ))}
   </div>
 );
 function ReviewItem({ review, profileId }) {
+  const { role } = useAuth()
+
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslations('Profile.public');
 
@@ -716,6 +729,7 @@ function ReviewItem({ review, profileId }) {
   const isProfileOwnerSeller = review.seller.id === profileId;
 
   const reviewer = isProfileOwnerSeller ? review.buyer : review.seller;
+  const canAccess = canViewUserProfile(role, reviewer?.role);
   const score = isProfileOwnerSeller ? review.buyer_total_score : review.seller_total_score;
   const text = isProfileOwnerSeller ? review.buyer_review_text : review.seller_review_text;
   const ratedAt = isProfileOwnerSeller ? review.buyer_rated_at : review.seller_rated_at;
@@ -741,12 +755,18 @@ function ReviewItem({ review, profileId }) {
 
           {/* Reviewer Name & Date */}
           <div className="min-w-0">
-            <Link
+            {canAccess && reviewer?.id ? (<Link
               href={`/profile/${reviewer?.id}`}
               className="block font-bold text-slate-900 dark:text-dark-text-primary hover:text-indigo-600 dark:hover:text-main-400 truncate transition-colors"
             >
               {reviewer?.username}
-            </Link>
+            </Link>) :
+              <div
+                className="block font-bold text-slate-900 dark:text-dark-text-primary hover:text-indigo-600 dark:hover:text-main-400 truncate transition-colors"
+              >
+                {reviewer?.username}
+              </div>
+            }
             <div className="text-[10px] font-medium text-slate-400 dark:text-dark-text-secondary">
               {ratedAt ? new Date(ratedAt).toLocaleDateString() : ''}
             </div>

@@ -14,8 +14,9 @@ import { Banknote, CalendarDays, Clock, FolderOpen, User2, ArrowUp, ExternalLink
 import AttachmentList from '@/components/common/AttachmentList';
 import toast from 'react-hot-toast';
 import Tabs from '@/components/common/Tabs';
-import { isErrorAbort, resolveUrl } from '@/utils/helper';
+import { canViewUserProfile, isErrorAbort, resolveUrl } from '@/utils/helper';
 import { formatDate } from '@/utils/date';
+import { useAuth } from '@/context/AuthContext';
 
 // -------------------------------------------------
 // Service helper — GET /jobs/my-proposals
@@ -315,6 +316,7 @@ function Avatar({ name }) {
 function ProposalCard({ proposal, onOpenJob }) {
   const [expanded, setExpanded] = useState(false);
   const t = useTranslations('Jobs.proposals');
+  const { role } = useAuth()
   const status = getStatus(proposal?.status);
   const submitted = formatDate(proposal?.submittedAt || proposal?.created_at);
   const buyerName = proposal?.job?.buyer?.username || "Unknown buyer";
@@ -324,6 +326,8 @@ function ProposalCard({ proposal, onOpenJob }) {
     if (!proposal?.portfolio) return [];
     return proposal.portfolio.split("\n").map((l) => l.trim()).filter(Boolean);
   }, [proposal?.portfolio]);
+
+  const canAccess = canViewUserProfile(role, proposal?.job?.buyer?.role);
 
   return (
     <motion.article
@@ -438,7 +442,7 @@ function ProposalCard({ proposal, onOpenJob }) {
           <div className="flex items-center gap-3 min-w-0">
             <Avatar name={buyerName} />
             <div className="min-w-0">
-              {proposal?.job?.buyer?.id ? (<a
+              {proposal?.job?.buyer?.id && canAccess ? (<a
                 href={`/profile/${proposal?.job?.buyer?.id}`}
                 className="flex items-center gap-1.5 text-sm font-semibold
                   text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400

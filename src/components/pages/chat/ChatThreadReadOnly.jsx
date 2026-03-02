@@ -8,6 +8,8 @@ import { AccessibleButton } from './ChatThread';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSkeletonBubble } from './ChatApp';
+import { useAuth } from '@/context/AuthContext';
+import { canViewUserProfile } from '@/utils/helper';
 
 /**
  * Read-only ChatThread: same message display as ChatThread but without send input,
@@ -25,6 +27,9 @@ export function ChatThreadReadOnly({
   buyer,
   seller,
 }) {
+  const { role } = useAuth()
+  const canAccessBuyer = canViewUserProfile(role, buyer?.role);
+  const canAccessSeller = canViewUserProfile(role, seller?.role);
   const t = tProp || useTranslations('Chat');
   const tm = tMonitor || t;
   const [lightboxSrc, setLightboxSrc] = useState(null);
@@ -79,9 +84,13 @@ export function ChatThreadReadOnly({
           <div className="flex items-center gap-2">
             <Img src={buyer?.profileImage} altSrc="/no-user.png" alt={buyerName} className="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow" />
             <div>
-              <Link href={`/profile/${buyer?.id}`} className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
+              {canAccessBuyer && buyer?.id ? (<Link href={`/profile/${buyer?.id}`} className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
                 {buyerName}
-              </Link>
+              </Link>) : (
+                <div className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
+                  {buyerName}
+                </div>
+              )}
               <span className="text-xs block text-emerald-600 font-medium">Buyer</span>
             </div>
           </div>
@@ -89,9 +98,13 @@ export function ChatThreadReadOnly({
           <div className="flex items-center gap-2">
             <Img src={seller?.profileImage} altSrc="/no-user.png" alt={sellerName} className="h-10 w-10 rounded-full object-cover ring-2 ring-white shadow" />
             <div>
-              <Link href={`/profile/${seller?.id}`} className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
+              {canAccessSeller && seller?.id ? (<Link href={`/profile/${seller?.id}`} className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
                 {sellerName}
-              </Link>
+              </Link>) : (
+                <div className="text-sm font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400">
+                  {sellerName}
+                </div>
+              )}
               <span className="text-xs block text-main-600 font-medium">Seller</span>
             </div>
           </div>

@@ -194,7 +194,7 @@ function MonitorSidebar({ isOpen, onClose, title, children, position = 'left' })
         onClick={onClose}
       />
       <div
-        className={`fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white dark:bg-dark-bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : position === 'left' ? '-translate-x-full' : 'translate-x-full'
+        className={`flex flex-col  fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white dark:bg-dark-bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : position === 'left' ? '-translate-x-full' : 'translate-x-full'
           }`}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg-card sticky top-0 z-10">

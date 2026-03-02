@@ -870,7 +870,7 @@ export function JobDrawer({ open, onClose, job, jobId, onSubmitProposal }) {
 
                   {/* Client Section */}
                   <section className="space-y-4">
-                    <Client isVerifed={localJob?.buyer?.isIdentityVerified} name={buyerName} subtitle={country} id={localJob?.buyer?.id} />
+                    <Client isVerifed={localJob?.buyer?.isIdentityVerified} name={buyerName} subtitle={country} user={localJob?.buyer} />
                     <div className='mt-3 space-y-2 text-sm'>
                       <div className='flex items-center gap-2 text-slate-700 dark:text-dark-text-secondary'>
                         {localJob?.buyer?.paymentVerified ?

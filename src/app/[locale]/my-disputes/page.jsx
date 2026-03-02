@@ -16,7 +16,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import TabsPagination from '@/components/common/TabsPagination';
 import { MdInfoOutline } from "react-icons/md";
 import { useSearchParams } from 'next/navigation';
-import { initialsFromName, isErrorAbort, updateUrlParams } from '@/utils/helper';
+import { canViewContactInfo, canViewUserProfile, initialsFromName, isErrorAbort, updateUrlParams } from '@/utils/helper';
 import { DisputeStatus, disputeType } from '@/constants/dispute';
 import DisputeStatusPill from '@/components/pages/disputes/DisputeStatusPill';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
@@ -32,8 +32,11 @@ const tabAnimation = {
 
 
 function UserChip({ user }) {
+  const { role } = useAuth()
   if (!user) return <span className="text-gray-500 dark:text-dark-text-secondary">—</span>;
   const letters = initialsFromName(user?.username) || '?';
+  const canAccess = canViewUserProfile(role, user?.role);
+  const canSeeContacts = canViewContactInfo(role, user?.role);
   return (
     <div className="flex items-center gap-2 min-w-0">
       <div className="h-7 w-7 rounded-full bg-gray-200 dark:bg-dark-border overflow-hidden grid place-items-center text-[11px] font-semibold shrink-0">
@@ -48,16 +51,23 @@ function UserChip({ user }) {
           letters
         )}
       </div>
+
       <div className="leading-tight min-w-0">
-        <Link
+        {canAccess && user?.id ? (<Link
           href={`profile/${user?.id}`}
           className="text-xs font-medium truncate hover:underline text-gray-900 dark:text-dark-text-primary"
         >
           {user?.username || '—'}
-        </Link>
-        <div className="text-[11px] text-gray-500 dark:text-dark-text-secondary truncate">
+        </Link>) :
+          <div
+            className="text-xs font-medium truncate text-gray-900 dark:text-dark-text-primary"
+          >
+            {user?.username || '—'}
+          </div>
+        }
+        {canSeeContacts && <div className="text-[11px] text-gray-500 dark:text-dark-text-secondary truncate">
           {user?.email || ''}
-        </div>
+        </div>}
       </div>
     </div>
   );

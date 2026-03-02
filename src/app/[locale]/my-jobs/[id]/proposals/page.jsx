@@ -16,8 +16,9 @@ import api from '@/lib/axios';
 import { useDebounce } from '@/hooks/useDebounce';
 import Select from '@/components/atoms/Select';
 import InputSearch from '@/components/atoms/InputSearch';
-import { isErrorAbort } from '@/utils/helper';
+import { canViewContactInfo, canViewUserProfile, isErrorAbort } from '@/utils/helper';
 import Currency from '@/components/common/Currency';
+import { useAuth } from '@/context/AuthContext';
 
 // ----------------------------
 // API Helpers
@@ -174,8 +175,11 @@ function MetaChip({ icon, text, title }) {
 
 function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
   const t = useTranslations('MyJobs.proposals');
+  const { role } = useAuth()
   const seller = proposal.seller;
+  const canAccess = canViewUserProfile(role, seller?.role);
 
+  const canSeeContacts = canViewContactInfo(role, seller?.role);
   const portfolioUrls = useMemo(() => {
     if (!proposal.portfolio) return [];
 
@@ -208,12 +212,18 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
           <div className="flex-1">
             {/* Username + Level */}
             <div className="flex flex-wrap items-center gap-2">
-              <Link
+              {canAccess && seller.id ? <Link
                 href={`/profile/${seller.id}`}
                 className="text-lg font-semibold text-slate-900 hover:underline dark:text-dark-text-primary dark:hover:text-main-400"
               >
                 {seller.username}
-              </Link>
+              </Link> : (
+                <div
+                  className="text-lg font-semibold text-slate-900 dark:text-dark-text-primary dark:hover:text-main-400"
+                >
+                  {seller.username}
+                </div>
+              )}
               {seller.sellerLevel && (
                 <MetaChip
                   icon={<ShieldCheck className="h-3.5 w-3.5" />}
@@ -225,13 +235,13 @@ function ProposalCard({ proposal, onAcceptClick, onRejectClick }) {
 
             {/* Contact + Meta */}
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-600 dark:text-dark-text-secondary">
-              <NativeLink
+              {canSeeContacts && <NativeLink
                 href={`mailto:${seller.email}`}
                 className="inline-flex items-center gap-1 hover:underline"
               >
                 <Mail className="h-3.5 w-3.5" />
                 {seller.email}
-              </NativeLink>
+              </NativeLink>}
               {seller.country && <span>• {seller.country}</span>}
               {seller.memberSince && (
                 <span>• {t('memberSince')} {new Date(seller.memberSince).toLocaleDateString()}</span>

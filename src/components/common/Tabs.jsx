@@ -43,9 +43,9 @@ export default function Tabs({ tabs, activeTab, setActiveTab, className = '', id
                 />
               )}
               <span
-                className={`relative z-10 flex items-center gap-1.5 ${isPreviewed
-                  ? 'text-white drop-shadow-sm'
-                  : 'text-slate-700 dark:text-dark-text-primary transition-colors duration-300'
+                className={`   relative z-10 flex items-center gap-1.5 ${isPreviewed
+                  ? 'text-white drop-shadow-sm transition-colors duration-300 '
+                  : 'text-slate-700 dark:text-dark-text-primary '
                   }`}
               >
                 {t.icon ? <t.icon className='inline-block w-4 h-4 -mt-0.5' /> : null}

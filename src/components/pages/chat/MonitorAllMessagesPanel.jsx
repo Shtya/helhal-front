@@ -27,7 +27,7 @@ export function MonitorAllMessagesPanel({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="w-full relative pt-6">
+      <div className="flex-1  flex flex-col w-full relative pt-6 overflow-hidden  ">
         <div className="px-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-semibold tracking-tight dark:text-dark-text-primary">{t('allConversations')}</h2>
@@ -73,15 +73,15 @@ export function MonitorAllMessagesPanel({
         </div>
 
         <div className="my-4 h-px w-full bg-slate-200 dark:bg-dark-border" />
-        <div className="px-6">
+        <div className="flex-1 min-h-0 px-6 flex flex-col">
           {loading ? (
-            <div className="py-2 h-[320px] w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-auto">
+            <div className="flex-1 py-2 w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-y-auto xl:h-[320px] xl:flex-none">
               {[...Array(4)].map((_, i) => (
                 <MonitorThreadSkeletonItem key={i} />
               ))}
             </div>
           ) : (
-            <div className="py-2 h-[320px] :w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-auto">
+            <div className="flex-1 py-2 w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-y-auto xl:h-[320px] xl:flex-none">
               <ul className="space-y-2" aria-label="Conversation list">
                 {items.map((it) => (
                   <li key={it.id}>

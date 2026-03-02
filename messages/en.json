@@ -1137,6 +1137,7 @@
       "addImagesSubtitle": "Add up to 6 images."
     },
     "public": {
+      "notAllowed": "You are not allowed to access this page",
       "noReviews": "No reviews yet for this user.",
       "noServiceReviews": "No reviews available.",
       "loadMore": "Load More Reviews",

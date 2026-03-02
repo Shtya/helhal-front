@@ -17,7 +17,7 @@ import Img from '@/components/atoms/Img';
 import { DisputeStatus, disputeType } from '@/constants/dispute';
 import toast from 'react-hot-toast';
 import DisputeChat from '@/components/pages/disputes/DisputeChat';
-import { isErrorAbort } from '@/utils/helper';
+import { canViewContactInfo, isErrorAbort } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import { useTranslations } from 'next-intl';
@@ -26,6 +26,8 @@ import { has } from '@/utils/permissions';
 
 
 function UserMini({ user }) {
+  const { role } = useAuth()
+  const canSeeContacts = canViewContactInfo(role, user?.role);
   const letter = (user?.username?.[0] || '?').toUpperCase();
   const img = user?.profileImage || user?.avatarUrl;
 
@@ -57,9 +59,9 @@ function UserMini({ user }) {
           {user?.username || '—'}
         </h1>
 
-        <p className="text-xs truncate max-w-[160px] text-gray-500 dark:text-dark-text-secondary">
+        {canSeeContacts && (<p className="text-xs truncate max-w-[160px] text-gray-500 dark:text-dark-text-secondary">
           {user?.email || ''}
-        </p>
+        </p>)}
       </div>
     </div>
   );

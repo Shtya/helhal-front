@@ -1,6 +1,8 @@
 'use client';
 
+import { useAuth } from '@/context/AuthContext';
 import { Link } from '@/i18n/navigation';
+import { canViewUserProfile } from '@/utils/helper';
 
 /**
  * BuyerMiniCard.jsx
@@ -9,12 +11,13 @@ import { Link } from '@/i18n/navigation';
  * Tailwind + JS (Next.js App Router friendly)
  */
 export default function UserAvatar({ buyer, href }) {
-  const name = buyer?.username || buyer?.email || 'Unknown';
+  const { role: meRole } = useAuth()
+  const name = buyer?.username || 'Unknown';
   const email = buyer?.email || '—';
   const role = buyer?.role || 'buyer';
   const initials = getInitials(name);
   const profileHref = href || `/profile/${buyer?.id || ''}`;
-
+  const canAccess = canViewUserProfile(meRole, buyer?.role);
   return (
     <div className="mb-4">
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
@@ -24,9 +27,9 @@ export default function UserAvatar({ buyer, href }) {
         </div>
 
         <div className="flex flex-col justify-center min-w-0"
-          onClick={e => e.stopPropagation()}
-          onKeyDown={e => e.stopPropagation()}>
-          <Link
+          onClick={e => canAccess && buyer?.id && e.stopPropagation()}
+          onKeyDown={e => canAccess && buyer?.id && e.stopPropagation()}>
+          {canAccess && buyer?.id ? (<Link
             href={profileHref}
             className="flex flex-wrap items-center gap-2 font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 transition-colors truncate"
             title={name}
@@ -41,7 +44,23 @@ export default function UserAvatar({ buyer, href }) {
             >
               {role}
             </span>
-          </Link>
+          </Link>) : (
+            <div
+              className="flex flex-wrap items-center gap-2 font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 transition-colors truncate"
+              title={name}
+            >
+              <span className="truncate max-w-[140px] sm:max-w-none">{toTitle(name)}</span>
+
+              {/* Role Badge */}
+              <span
+                className={`inline-flex items-center text-[11px] gap-1 px-2 py-0.5 rounded-full border 
+                ${roleTone(role)} 
+                dark:bg-dark-bg-card dark:border-dark-border dark:text-dark-text-secondary`}
+              >
+                {role}
+              </span>
+            </div>
+          )}
 
           {/* Email Text */}
           <div className="text-xs mt-1 text-slate-500 dark:text-dark-text-secondary truncate max-w-[180px] sm:max-w-none" title={email}>

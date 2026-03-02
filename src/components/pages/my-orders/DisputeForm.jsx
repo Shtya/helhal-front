@@ -14,6 +14,7 @@ import { OrderStatus } from "@/constants/order";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useTranslations } from 'next-intl';
+import { canViewUserProfile } from "@/utils/helper";
 
 
 
@@ -111,6 +112,7 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
     // Extract counterpart info
     const counterpart = isBuyer ? selectedRow?._raw?.seller : selectedRow?._raw?.buyer;
     const counterpartRole = isBuyer ? 'freelancer' : 'client';
+    const canAccess = canViewUserProfile(role, counterpart?.role);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -118,7 +120,12 @@ function DisputeForm({ submitting, onSubmit, readOnly = false, defaultValues, se
             <div className="rounded-md bg-gray-50 p-3 text-sm text-gray-700 dark:bg-dark-bg-input dark:text-dark-text-secondary">
                 <p>
                     {t('aboutToOpen')} <span className="font-semibold">{t('dispute')}</span> {t('against')} <span className="font-semibold">{counterpartRole}</span>{' '}
-                    <Link href={`/profile/${counterpart.id}`} className="font-medium text-slate-900 hover:underline dark:text-dark-text-primary dark:hover:text-main-400">@{counterpart?.username}</Link> {t('forOrder')}
+                    {canAccess && counterpart.id ? (
+                        <Link href={`/profile/${counterpart.id}`} className="font-medium text-slate-900 hover:underline dark:text-dark-text-primary dark:hover:text-main-400">@{counterpart?.username}</Link>
+                    ) : (
+                        <div className="font-medium text-slate-900 hover:underline dark:text-dark-text-primary dark:hover:text-main-400">@{counterpart?.username}</div>
+                    )}
+                    {t('forOrder')}
                 </p>
                 <p className="mt-1 font-medium text-slate-800 dark:text-dark-text-primary">
                     {selectedRow?._raw?.title} — ${selectedRow?._raw?.totalAmount}

@@ -131,7 +131,7 @@ function ProfileCard({ loading, editing, setEditing, state, setState, meta, onCo
                     />
                   ) : (
                     <span className="text-2xl font-bold text-[#6B7280] dark:text-dark-text-secondary">
-                      {letterFromName(state.username || state.email)}
+                      {letterFromName(state.username)}
                     </span>
                   )}
 

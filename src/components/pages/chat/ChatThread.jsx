@@ -12,6 +12,8 @@ import { useTranslations } from 'next-intl';
 import Currency from '@/components/common/Currency';
 import { OrderStatus } from '@/constants/order';
 import { formatDate } from '@/utils/date';
+import { useAuth } from '@/context/AuthContext';
+import { canViewContactInfo, canViewUserProfile } from '@/utils/helper';
 
 export const NoMessagesPlaceholder = () => {
   const t = useTranslations('Chat');
@@ -29,6 +31,9 @@ const emojiRange = Array.from({ length: 80 }, (_, i) => String.fromCodePoint(0x1
 
 export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, loadingOlder, onLoadOlder, thread, messages, onSend, t: tProp, isFavorite, isPinned, isArchived, toggleFavorite, togglePin, toggleArchive, isConnected, currentUser }) {
   const t = useTranslations('Chat');
+  const { role } = useAuth()
+  const canAccess = canViewUserProfile(role, thread?.about?.role);
+  const canSeeContacts = canViewContactInfo(role, thread?.about?.role);
   const [text, setText] = useState('');
   const [assets, setAssets] = useState([]);
   const [sending, setSending] = useState(false);
@@ -212,8 +217,12 @@ export function ChatThread({ AllMessagesPanel, pagination, loadingMessagesId, lo
           <div>
             <div className='flex items-center gap-2'>
               <div>
-                <Link href={`/profile/${thread?.about?.id}`} className='text-lg font-semibold tracking-tight'>{thread?.name}</Link>
-                <span className='text-xs  mt-[-3px] font-[500] block '>{thread?.email}</span>
+                {canAccess && thread?.about?.id ? (
+                  <Link href={`/profile/${thread?.about?.id}`} className='text-lg font-semibold tracking-tight'>{thread?.name}</Link>
+                ) : (
+                  <div className='text-lg font-semibold tracking-tight'>{thread?.name}</div>
+                )}
+                {canSeeContacts && <span className='text-xs  mt-[-3px] font-[500] block '>{thread?.email}</span>}
               </div>
               {isPinned && <Pin size={16} className='text-blue-500 dark:text-main-400 dark:invert' />}
               {isArchived && <Archive size={16} className='text-slate-500 dark:text-dark-text-secondary dark:invert' />}

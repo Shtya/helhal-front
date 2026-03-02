@@ -26,6 +26,7 @@ import ReviewSubmissionModel from '@/components/pages/my-orders/ReviewSubmission
 import CongratulationsModal from '@/components/pages/my-orders/Congratulationsmodal';
 import RequestChangesModel from '@/components/pages/my-orders/RequestChangesModel';
 import { Link } from '@/i18n/navigation';
+import GiveReviewModal from '@/components/pages/my-orders/GiveReviewModal';
 
 // ─────────────────────────────────────────────
 // Helpers
@@ -529,20 +530,20 @@ export default function ContractPage() {
     const [actionLoading, setActionLoading] = useState(null);
 
     // ── Fetch Order ──
+    const fetchOrder = async () => {
+        if (!orderId) return;
+        setOrderLoading(true);
+        setOrderError(null);
+        try {
+            const { data } = await api.get(`/orders/${orderId}`);
+            setOrder(data);
+        } catch (err) {
+            setOrderError(err?.response?.data?.message || t('errors.fetchFailed'));
+        } finally {
+            setOrderLoading(false);
+        }
+    };
     useEffect(() => {
-        const fetchOrder = async () => {
-            if (!orderId) return;
-            setOrderLoading(true);
-            setOrderError(null);
-            try {
-                const { data } = await api.get(`/orders/${orderId}`);
-                setOrder(data);
-            } catch (err) {
-                setOrderError(err?.response?.data?.message || t('errors.fetchFailed'));
-            } finally {
-                setOrderLoading(false);
-            }
-        };
         fetchOrder();
     }, [orderId, t]);
 
@@ -571,7 +572,9 @@ export default function ContractPage() {
 
     const setRowLoading = useCallback((_id, val) => setActionLoading(val), []);
 
-    const handleAfterAction = useCallback(() => { fetchTimeline(); }, [fetchTimeline]);
+    const handleAfterAction = useCallback(() => {
+        fetchTimeline();
+    }, [fetchTimeline]);
 
     const selectedRow = order ? { id: order.id, status: order.status, _raw: order } : null;
 
@@ -753,6 +756,13 @@ export default function ContractPage() {
                 onSend={() => { setOpenModal(null); handleAfterAction(); }}
                 selectedRow={selectedRow}
                 patchOrderRow={patchOrderRow}
+            />
+
+            <GiveReviewModal
+                open={openModal === 'give-feedback'}
+                onClose={() => { setOpenModal(null); handleAfterAction(); }}
+                // fetchOrders={fetchOrders}
+                orderId={selectedRow?.id}
             />
         </div>
     );

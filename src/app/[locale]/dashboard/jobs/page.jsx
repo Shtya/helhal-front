@@ -11,7 +11,7 @@ import toast from 'react-hot-toast';
 import { getDateAgo } from '@/utils/date';
 import Client from '@/components/pages/jobs/Client';
 import StatusBadge from '@/components/pages/jobs/StatusBadge';
-import { isErrorAbort, resolveUrl } from '@/utils/helper';
+import { canViewContactInfo, isErrorAbort, resolveUrl } from '@/utils/helper';
 import SearchBox from '@/components/common/Filters/SearchBox';
 import TruncatedText from '@/components/dashboard/TruncatedText';
 import { useLocale, useTranslations } from 'next-intl';
@@ -304,6 +304,8 @@ export default function AdminJobsDashboard() {
 }
 
 function JobView({ value, onClose }) {
+  const { role } = useAuth()
+  const canSeeContacts = canViewContactInfo(role, value.buyer?.role);
   const t = useTranslations('Dashboard.jobs');
   const locale = useLocale();
   if (!value) return null;
@@ -372,8 +374,8 @@ function JobView({ value, onClose }) {
       <Client
         isVerifed={value.buyer?.isIdentityVerified}
         name={value.buyer?.username}
-        subtitle={value.buyer?.email}
-        id={value.buyer?.id}
+        subtitle={canSeeContacts ? value.buyer?.email : undefined}
+        user={value.buyer}
       />
 
       {/* Budget & Budget Type */}

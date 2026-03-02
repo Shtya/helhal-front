@@ -213,8 +213,8 @@ function Hero() {
 
   return (
     <section className='relative w-full overflow-hidden'>
-      <div className='relative min-h-[85svh] md:min-h-[76vh] flex flex-col justify-center py-20 md:py-0'>
-
+      {/* CHANGE: Changed min-h to allow growth and added pb-24 to clear the curve */}
+      <div className='relative min-h-[85svh] md:min-h-[76vh] flex flex-col justify-center '>
         {/* 1. Remove -z-10 and use z-0. Ensure object-cover is still there */}
         <Image
           priority
@@ -229,9 +229,8 @@ function Hero() {
         <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-main-900/35 to-black/60 dark:from-black/70 dark:via-main-900/40 dark:to-black/80 z-10' />
 
         {/* 3. The Content - Wrap in a relative container with a higher z-index (z-20) */}
-        <div className='container relative z-20 !px-4 sm:!px-6 lg:!px-8'>
+        <div className='flex-1 flex items-center container relative z-20 !px-4 sm:!px-6 lg:!px-8 pt-10! '>
           <div className='max-w-3xl mx-auto md:mx-0 text-white text-center md:text-start space-y-5 md:space-y-6'>
-
             {/* Badge */}
             <div className='flex justify-center md:justify-start'>
               <span className='inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase bg-white/10 border border-white/20 rounded-full px-3 py-1 backdrop-blur'>
@@ -281,7 +280,7 @@ function Hero() {
         </div>
 
         {/* Bottom curve - Keep z-30 to ensure it cuts the image */}
-        <div className='absolute -bottom-8 left-0 right-0 h-16 bg-white dark:bg-dark-bg-base rounded-t-[32px] z-30' />
+        <div className='relative h-16 mt-10 -mb-1 bg-white dark:bg-dark-bg-base rounded-t-[32px] z-30 pb-20 md:pb-0' />
       </div>
     </section>
   );

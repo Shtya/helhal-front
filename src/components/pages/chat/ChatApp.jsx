@@ -13,7 +13,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { showNotification } from '@/utils/notifications';
-import { isErrorAbort } from '@/utils/helper';
+import { canViewContactInfo, isErrorAbort } from '@/utils/helper';
 import { useValues } from '@/context/GlobalContext';
 import { useSocket } from '@/context/SocketContext';
 import TopRatedBadge from '@/components/atoms/TopRatedBadge';
@@ -338,7 +338,7 @@ const useChat = () => {
     }
     create();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [targetUserId, user, threads.length, activeThreadId]);
+  }, [targetUserId, user, threads.length, activeThreadId, loading]);
 
   useEffect(() => {
     setCurrentUser(user || {});
@@ -801,7 +801,7 @@ const useChat = () => {
     const resolveAdminId = async () => {
       setAdminLoading(true);
       try {
-        const { data: settings } = await api.get('/settings');
+        const { data: settings } = await api.get('/settings/preview');
         let id = settings?.platformAccountUserId;
 
         if (!id) {
@@ -924,10 +924,12 @@ const useKeyboardShortcuts = () => {
 const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
   const t = useTranslation('Chat');
   useKeyboardShortcuts();
+  const { role } = useAuth()
 
   const { threads, adminLoading, messagesPaginationByThread, userPagination, setUserPagination, loadingMessagesId, loadingOlderThreads, loadOlderMessages, activeThreadId, messagesByThread, aboutUser, query, isConnected, currentUser, searchResults, onCloseSearchMenu, showSearchResults, isSearching, activeTab, setActiveTab, handleSearch, selectThread, sendMessage, handleSearchResultClick, setQuery, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, loading, fetchConversations, contactAdmin } = useChat();
 
   const activeThread = useMemo(() => threads.find(t => t.id === activeThreadId), [threads, activeThreadId]);
+  const canSeeContacts = canViewContactInfo(role, activeThread?.otherUser?.role);
   const [showConversationsSidebar, setShowConversationsSidebar] = useState()
   const [showAboutSidebar, setShowAboutSidebar] = useState()
   const breakpoint = swapEarly ? "2xl" : "xl";
@@ -1028,7 +1030,7 @@ const ChatApp = ({ showContactAdmin = true, swapEarly = false }) => {
                     <h3 className="font-semibold text-gray-900 dark:text-dark-text-primary truncate">
                       {activeThread.otherUser?.username || activeThread.title}
                     </h3>
-                    {activeThread.otherUser?.email && (
+                    {canSeeContacts && activeThread.otherUser?.email && (
                       <p className="text-xs text-gray-500 dark:text-dark-text-secondary truncate">
                         {activeThread.otherUser.email}
                       </p>
@@ -1156,7 +1158,8 @@ export function Panel({ children, cdCard, className }) {
 
 export function AboutPanel({ about = {} }) {
   const t = useTranslation('Chat');
-
+  const { role } = useAuth()
+  const canSeeContacts = canViewContactInfo(role, about?.role);
   return (
     <div className="w-full p-3">
       {/* Header Section */}
@@ -1167,7 +1170,7 @@ export function AboutPanel({ about = {} }) {
           </h2>
           <TopRatedBadge isTopRated={about.topRated} />
         </div>
-        {about.email && (
+        {canSeeContacts && about.email && (
           <p className="text-sm text-gray-500 dark:text-dark-text-secondary break-all">{about.email}</p>
         )}
       </div>
@@ -1329,7 +1332,7 @@ const Sidebar = ({ isOpen, onClose, title, children, position = 'left' }) => {
 
       {/* Sidebar Panel */}
       <div
-        className={`fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white dark:bg-dark-bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen
+        className={`flex flex-col  fixed top-0 ${position === 'left' ? 'left-0' : 'right-0'} h-full w-full max-w-sm bg-white dark:bg-dark-bg-card z-50 shadow-2xl transform transition-transform duration-300 ease-out ${isOpen
           ? 'translate-x-0'
           : position === 'left'
             ? '-translate-x-full'
@@ -1351,7 +1354,7 @@ const Sidebar = ({ isOpen, onClose, title, children, position = 'left' }) => {
         </div>
 
         {/* Sidebar Content */}
-        <div className="h-[calc(100%-73px)] overflow-y-auto">
+        <div className="flex-1 overflow-y-auto">
           {children}
         </div>
       </div>

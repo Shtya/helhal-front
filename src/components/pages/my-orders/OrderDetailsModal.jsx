@@ -218,7 +218,7 @@ export default function OrderDetailsModal({ open, onClose, orderId }) {
                 )}
                 {order.service.packages && order.service.packages.length > 0 && (
                   <div className="mt-3">
-                      <p className="text-sm font-medium text-slate-700 mb-2 dark:text-dark-text-primary">{t('selectedPackage')}</p>
+                    <p className="text-sm font-medium text-slate-700 mb-2 dark:text-dark-text-primary">{t('selectedPackage')}</p>
                     {order.service.packages
                       .find(pkg => pkg.type === order.packageType) && (
                         <div className="bg-white rounded-lg p-3 border border-slate-200 dark:bg-dark-bg-card dark:border-dark-border">

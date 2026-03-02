@@ -22,7 +22,7 @@ import AttachFilesButton from '@/components/atoms/AttachFilesButton';
 import Textarea from '@/components/atoms/Textarea';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
 import { useLocale, useTranslations } from 'next-intl'; // Add this import
-import { resolveUrl } from '@/utils/helper';
+import { canViewUserProfile, resolveUrl } from '@/utils/helper';
 import toast from 'react-hot-toast';
 import CountryFlag from '@/components/common/CountryFlag';
 import IdentityStatus from '@/components/atoms/IdentityStatus';
@@ -368,8 +368,9 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
   const locale = useLocale()
   const isArabic = locale === 'ar'
-  const { user } = useAuth()
+  const { user, role } = useAuth()
   const seller = serviceData?.seller || {};
+  const canAccess = canViewUserProfile(role, seller?.role);
   const rating = Number(serviceData?.rating ?? 0);
   const ratingFmt = rating.toFixed(1);
   const reviewsCount = serviceData?.reviews?.length ?? 0;
@@ -531,9 +532,11 @@ function HeaderPanel({ serviceData = {}, Img }) {
 
           <div className='min-w-0'>
             <div className='flex flex-wrap items-center gap-2'>
-              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
+              {canAccess && seller?.id ? (<Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
                 {seller?.username || 'Unknown Seller'}
-              </Link>
+              </Link>) : <div className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
+                {seller?.username || 'Unknown Seller'}
+              </div>}
               {!!seller?.sellerLevel && (
                 <span className='inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600 dark:border-dark-border dark:bg-dark-bg-card dark:text-dark-text-secondary'>
                   <BadgeCheck className='h-3 w-3 text-main-600 dark:text-main-400 dark:invert' />
@@ -1308,7 +1311,7 @@ function SkeletonLine({ className = '' }) {
 function AboutSeller({ serviceData }) {
   const t = useTranslations('ServiceDetails');
   const seller = serviceData?.seller || {};
-
+  const { role } = useAuth()
   const languages = useMemo(() => {
     const arr = Array.isArray(seller.languages) ? seller.languages : [];
     const seen = new Set();
@@ -1360,6 +1363,7 @@ function AboutSeller({ serviceData }) {
     return rem ? `${years} yr ${rem} mo` : `${years} yr`;
   }
 
+  const canAccess = canViewUserProfile(role, seller?.role);
   return (
     <section className='bg-white rounded-xl shadow-custom  border border-slate-200 mb-6 dark:bg-dark-bg-card dark:border-dark-border'>
       {/* header */}
@@ -1372,9 +1376,11 @@ function AboutSeller({ serviceData }) {
 
           <div className='min-w-0'>
             <div className='flex flex-wrap items-center gap-2'>
-              <Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
+              {canAccess && seller?.id ? (<Link href={`/profile/${seller?.id}`} className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
                 {seller?.username || 'Unknown Seller'}
-              </Link>
+              </Link>) : <div className='font-semibold text-slate-900 leading-none dark:text-dark-text-primary dark:hover:text-main-400'>
+                {seller?.username || 'Unknown Seller'}
+              </div>}
               <IdentityStatus user={seller} />
               <TopRatedBadge isTopRated={seller?.topRated} size='xs' />
               {!!seller?.sellerLevel && (
@@ -2103,10 +2109,12 @@ const RatingStars = ({ score }) => (
 );
 
 function ReviewItem({ review }) {
+  const { role } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslations('Profile.public'); // Reuse the same keys
   // For service reviews, the reviewer is always the buyer
   const reviewer = review.buyer;
+  const canAccess = canViewUserProfile(role, reviewer?.role);
   const score = review.buyer_total_score;
   const text = review.buyer_review_text;
   const ratedAt = review.buyer_rated_at;
@@ -2128,12 +2136,16 @@ function ReviewItem({ review }) {
             />
           </div>
           <div className="min-w-0">
-            <Link
+            {canAccess && reviewer?.id ? (<Link
               href={`/profile/${reviewer?.id}`}
               className="block font-bold text-slate-900 hover:text-main-600 truncate transition-colors dark:text-dark-text-primary dark:hover:text-main-400"
             >
               {reviewer?.username || t('unknown')}
-            </Link>
+            </Link>) : <div
+              className="block font-bold text-slate-900 hover:text-main-600 truncate transition-colors dark:text-dark-text-primary dark:hover:text-main-400"
+            >
+              {reviewer?.username || t('unknown')}
+            </div>}
             <div className="text-[10px] font-medium text-slate-400 dark:text-dark-text-secondary">
               {ratedAt ? new Date(ratedAt).toLocaleDateString() : ''}
             </div>

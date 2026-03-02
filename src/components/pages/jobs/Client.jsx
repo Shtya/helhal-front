@@ -1,11 +1,16 @@
-import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { useTranslations } from 'next-intl';
 import IdentityStatus from "@/components/atoms/IdentityStatus";
+import { useAuth } from "@/context/AuthContext";
+import { canViewUserProfile } from "@/utils/helper";
+import { Link } from "@/i18n/navigation";
 
-export default function Client({ name, isVerifed, subtitle, id }) {
+export default function Client({ name, isVerifed, subtitle, user }) {
+    const id = user?.id;
     const t = useTranslations('Client');
-    const router = useRouter()
+    const { role } = useAuth()
+    const canAccess = canViewUserProfile(role, user?.role);
+
     const Initials = useMemo(
         () =>
             (name || '?')
@@ -17,9 +22,6 @@ export default function Client({ name, isVerifed, subtitle, id }) {
         [name],
     );
 
-    function handleOnClick() {
-        if (id) router?.push(`/profile/${id}`)
-    }
 
     return (
         <div>
@@ -34,18 +36,23 @@ export default function Client({ name, isVerifed, subtitle, id }) {
 
                 <div>
                     <div className="flex gap-2 items-center">
-                        <div
-                            className={`text-sm font-semibold text-slate-900 dark:text-dark-text-primary flex items-center gap-2 
-                            ${id && 'cursor-pointer hover:underline'}`}
-                            onClick={handleOnClick}
+                        {canAccess && id ? (<Link
+                            href={`/profile/${id}`}
+                            className={`text-sm font-semibold text-slate-900 dark:text-dark-text-primary flex items-center gap-2  cursor-pointer hover:underline`}
                         >
                             {name}
-                        </div>
+                        </Link>) : (
+                            <div
+                                className={`text-sm font-semibold text-slate-900 dark:text-dark-text-primary flex items-center gap-2 `}
+                            >
+                                {name}
+                            </div>
+                        )}
                         <IdentityStatus user={{ isVerifed }} size="sm" />
                     </div>
-                    <div className='text-sm text-slate-500 dark:text-dark-text-secondary'>
+                    {subtitle && <div className='text-sm text-slate-500 dark:text-dark-text-secondary'>
                         {subtitle}
-                    </div>
+                    </div>}
                 </div>
             </div>
         </div>

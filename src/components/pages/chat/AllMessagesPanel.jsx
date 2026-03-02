@@ -7,6 +7,8 @@ import { Shimmer } from './ChatApp';
 import { useLocale, useTranslations } from 'next-intl';
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { useRef } from 'react';
+import { canViewContactInfo } from '@/utils/helper';
+import { useAuth } from '@/context/AuthContext';
 
 export function AllMessagesPanel({ showContactAdmin, adminLoading, userPagination, setUserPagination, items, onSearch, query, onSelect, t: tProp, searchResults, onCloseSearchMenu, showSearchResults, isSearching, onSearchResultClick, activeTab, setActiveTab, toggleFavorite, togglePin, toggleArchive, favoriteThreads, pinnedThreads, archivedThreads, currentUser, loading, onRefresh, onContactAdmin }) {
   const t = tProp || useTranslations('Chat');
@@ -14,11 +16,13 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
   const isArabic = locale === 'ar'
   const searchRef = useRef(null)
   useOutsideClick(searchRef, () => onCloseSearchMenu())
+  const { role } = useAuth()
+
 
   return (
     <div className='flex flex-col h-full'>
 
-      <div className='w-full relative pt-6'>
+      <div className='flex-1 flex flex-col w-full relative pt-6 overflow-hidden'>
         <div className=' px-6 '>
 
           <div className='flex items-center justify-between mb-4 '>
@@ -76,19 +80,22 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
                 ) : searchResults.length > 0 ? (
                   <ul
                     ref={searchRef}>
-                    {searchResults.map(user => (
-                      <li key={user.id}>
-                        <AccessibleButton className='w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-dark-bg-input flex items-center gap-3' onClick={() => onSearchResultClick(user)} role='option' aria-describedby={`user-desc-${user.id}`}>
-                          <Img altSrc={'/no-user.png'} src={user.profileImage} alt={user.username} className='h-8 w-8 rounded-full object-cover' />
-                          <div className='flex flex-col'>
-                            <span className='font-medium text-sm dark:text-dark-text-primary'>{user.username}</span>
-                            <span id={`user-desc-${user.id}`} className='text-xs text-gray-500 dark:text-dark-text-secondary truncate whitespace-nowrap w-[220px]'>
-                              {user?.email}
-                            </span>
-                          </div>
-                        </AccessibleButton>
-                      </li>
-                    ))}
+                    {searchResults.map(user => {
+                      const canSeeContacts = canViewContactInfo(role, user?.role);
+                      return (
+                        <li key={user.id}>
+                          <AccessibleButton className='w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-dark-bg-input flex items-center gap-3' onClick={() => onSearchResultClick(user)} role='option' aria-describedby={`user-desc-${user.id}`}>
+                            <Img altSrc={'/no-user.png'} src={user.profileImage} alt={user.username} className='h-8 w-8 rounded-full object-cover' />
+                            <div className='flex flex-col'>
+                              <span className='font-medium text-sm dark:text-dark-text-primary'>{user.username}</span>
+                              {canSeeContacts && <span id={`user-desc-${user.id}`} className='text-xs text-gray-500 dark:text-dark-text-secondary truncate whitespace-nowrap w-[220px]'>
+                                {user?.email}
+                              </span>}
+                            </div>
+                          </AccessibleButton>
+                        </li>
+                      )
+                    })}
                   </ul>
                 ) : (
                   <div className='p-4 text-center text-slate-500 dark:text-dark-text-secondary' aria-live='polite'>
@@ -100,15 +107,15 @@ export function AllMessagesPanel({ showContactAdmin, adminLoading, userPaginatio
           </AnimatePresence>
         </div>
         <div className='my-4 h-px w-full bg-slate-200 dark:bg-dark-border' />
-        <div className=' px-6 '>
+        <div className='flex-1 min-h-0 px-6 flex flex-col'>
           {loading ? (
-            <div className='py-2 h-[320px] w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-auto'>
+            <div className='flex-1 py-2 w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-y-auto xl:h-[320px] xl:flex-none'>
               {[...Array(4)].map((_, i) => (
                 <ThreadSkeletonItem key={i} />
               ))}
             </div>
           ) : (
-            <div className='py-2 h-[320px] w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-auto' >
+            <div className='flex-1 py-2 w-[calc(100%+44px)] ltr:ml-[-22px] rtl:mr-[-22px] px-4 overflow-y-auto xl:h-[320px] xl:flex-none'>
               <ul className='space-y-2' aria-label='Conversation list'>
                 {items.map(it => (
                   <li key={it.id}>

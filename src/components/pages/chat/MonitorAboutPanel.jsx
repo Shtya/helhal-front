@@ -1,5 +1,7 @@
 import Img from '@/components/atoms/Img';
+import { useAuth } from '@/context/AuthContext';
 import { Link } from '@/i18n/navigation';
+import { canViewContactInfo, canViewUserProfile } from '@/utils/helper';
 import { useTranslations } from 'next-intl';
 
 /**
@@ -7,6 +9,12 @@ import { useTranslations } from 'next-intl';
  */
 export function MonitorAboutPanel({ buyer, seller, t: tProp }) {
   const t = tProp || useTranslations('Dashboard.monitor');
+  const { role } = useAuth()
+  const canAccessBuyer = canViewUserProfile(role, buyer?.role);
+  const canAccessSeller = canViewUserProfile(role, seller?.role);
+
+  const canSeeContactsBuyer = canViewContactInfo(role, buyer?.role);
+  const canSeeContactsSeller = canViewContactInfo(role, seller?.role);
 
   const formatDate = (d) => {
     if (!d) return '—';
@@ -43,16 +51,22 @@ export function MonitorAboutPanel({ buyer, seller, t: tProp }) {
               className="h-12 w-12 rounded-full object-cover ring-2 ring-emerald-200"
             />
             <div className="flex-1 min-w-0">
-              <Link
+              {canAccessBuyer && buyer?.id ? (<Link
                 href={`/profile/${buyer?.id}`}
                 className="font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 truncate block"
               >
                 {abbreviateName(buyerName)}
-              </Link>
+              </Link>) : (
+                <div
+                  className="font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 truncate block"
+                >
+                  {abbreviateName(buyerName)}
+                </div>
+              )}
               <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">{t('buyer')}</p>
-              <p className="text-sm text-slate-600 dark:text-dark-text-secondary truncate" title={buyer?.person?.email || buyer?.email}>
+              {canSeeContactsBuyer && <p className="text-sm text-slate-600 dark:text-dark-text-secondary truncate" title={buyer?.person?.email || buyer?.email}>
                 {abbreviateEmail(buyer?.person?.email || buyer?.email)}
-              </p>
+              </p>}
               <p className="text-xs text-slate-500 dark:text-dark-text-secondary mt-1">
                 {t('memberSince')}: {formatDate(buyer?.memberSince || buyer?.created_at)}
               </p>
@@ -70,16 +84,22 @@ export function MonitorAboutPanel({ buyer, seller, t: tProp }) {
               className="h-12 w-12 rounded-full object-cover ring-2 ring-main-200"
             />
             <div className="flex-1 min-w-0">
-              <Link
+              {canAccessSeller && seller?.id ? (<Link
                 href={`/profile/${seller?.id}`}
                 className="font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 truncate block"
               >
                 {abbreviateName(sellerName)}
-              </Link>
+              </Link>) : (
+                <div
+                  className="font-semibold text-slate-900 dark:text-dark-text-primary hover:text-main-600 dark:hover:text-main-400 truncate block"
+                >
+                  {abbreviateName(sellerName)}
+                </div>
+              )}
               <p className="text-xs text-main-700 dark:text-main-400 font-medium">{t('seller')}</p>
-              <p className="text-sm text-slate-600 dark:text-dark-text-secondary truncate" title={seller?.person?.email || seller?.email}>
+              {canSeeContactsSeller && <p className="text-sm text-slate-600 dark:text-dark-text-secondary truncate" title={seller?.person?.email || seller?.email}>
                 {abbreviateEmail(seller?.person?.email || seller?.email)}
-              </p>
+              </p>}
               <p className="text-xs text-slate-500 dark:text-dark-text-secondary mt-1">
                 {t('memberSince')}: {formatDate(seller?.memberSince || seller?.created_at)}
               </p>

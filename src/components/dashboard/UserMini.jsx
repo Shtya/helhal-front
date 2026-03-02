@@ -1,11 +1,16 @@
 import { Link } from "@/i18n/navigation";
 import Img from "../atoms/Img";
+import { useAuth } from "@/context/AuthContext";
+import { canViewContactInfo, canViewUserProfile } from "@/utils/helper";
 
 
 export default function UserMini({ user, href }) {
+    const { role } = useAuth()
     const letter = (user?.username?.[0] || '?').toUpperCase();
     const img = user?.profileImage || user?.avatarUrl;
 
+    const canAccess = canViewUserProfile(role, user?.role);
+    const canSeeContacts = canViewContactInfo(role, user?.role);
     return (
         <div className='flex items-center gap-2 min-w-[220px]'>
             {/* Avatar Container */}
@@ -24,7 +29,7 @@ export default function UserMini({ user, href }) {
 
             {/* User Info */}
             <div className='leading-tight'>
-                {href ? (
+                {href && canAccess ? (
                     <Link
                         href={href}
                         className='font-medium text-sm truncate max-w-[160px] hover:underline text-slate-900 dark:text-dark-text-primary block'
@@ -36,9 +41,9 @@ export default function UserMini({ user, href }) {
                         {user?.username || '—'}
                     </h1>
                 )}
-                <p className='text-xs text-slate-500 dark:text-dark-text-secondary truncate max-w-[160px]'>
+                {canSeeContacts && <p className='text-xs text-slate-500 dark:text-dark-text-secondary truncate max-w-[160px]'>
                     {user?.email || ''}
-                </p>
+                </p>}
             </div>
         </div>
     );
