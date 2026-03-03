@@ -250,14 +250,14 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
       </button>
       <div ref={rootRef} className={`w-full xl:w-xs relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"} top-16 md:top-[88px] left-0 right-0 max-xl:bg-white dark:max-xl:bg-dark-bg-input xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
         <div className='w-full relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
-          <div className='flex min-h-[40px] items-center gap-2 xl:rounded-md xl:border xl:border-slate-200 xl:dark:border-dark-border bg-white/20 dark:bg-dark-bg-input/80 backdrop-blur-3xl px-2 py-1 text-sm transition' style={{ borderColor: open ? BRAND : undefined, boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
+          <div className='flex min-h-[48px] items-center gap-2 xl:rounded-md xl:border-1 xl:border-main-300 shadow-xs xl:dark:border-dark-border bg-white/80 dark:bg-dark-bg-input backdrop-blur-3xl px-2 py-1.5 text-sm transition ' style={{ borderColor: open ? BRAND : undefined, boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
 
             {(!isSeller && !isBuyer) && <button
               ref={scopeBtnRef}
               onClick={() => {
                 setScopeOpen(prev => {
                   const next = !prev;
-                  if (next) setOpen(false); // CLOSE search when opening scope
+                  if (next) setOpen(false);
                   return next;
                 });
               }}
@@ -269,8 +269,8 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
             {(!isSeller && !isBuyer) && <span className='hidden xl:block h-5 w-px bg-slate-200 dark:bg-dark-border mx-1' />}
 
-            <div className='flex-1 max-xl:flex-1 flex items-center gap-2 max-xl:border max-xl:bg-white/20 max-xl:rounded-md max-xl:border-[#cbd5e1] max-xl:p-[10px]'>
-              <Search className='h-5 w-5 xl:h-4 xl:w-4 text-slate-500 dark:text-dark-text-secondary shrink-0' />
+            <div className='flex-1 max-xl:flex-1 flex items-center gap-2 max-xl:border-1 max-xl:bg-white/70 max-xl:rounded-md max-xl:border-main-300 max-xl:p-[10px]'>
+              <Search className='h-5 w-5 xl:h-4 xl:w-4 text-slate-600 dark:text-dark-text-secondary shrink-0' />
               <input
                 ref={inputRef}
                 value={q}
@@ -279,11 +279,11 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                   setOpen(true);
                   setScopeOpen(false);
                   setHighlight({ section: 'recent', index: -1 });
-                }} // typing closes scope
+                }}
                 onFocus={() => {
                   setOpen(true);
                   setScopeOpen(false);
-                }} // focusing closes scope
+                }}
                 onKeyDown={e => {
                   if (e.key === 'ArrowDown') {
                     e.preventDefault();
@@ -308,7 +308,6 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                 className='peer w-full bg-transparent outline-none placeholder:text-slate-400 dark:placeholder:text-dark-text-secondary text-slate-900 dark:text-dark-text-primary'
               />
 
-              {/* Clear & spinner */}
               {loading && <Loader2 className='h-4 w-4 animate-spin text-slate-400 dark:text-dark-text-secondary' />}
               {q && !loading && (
                 <button onClick={() => setQ('')} className='rounded-md p-1 text-slate-500 dark:text-dark-text-secondary hover:bg-slate-100 dark:hover:bg-dark-bg-card' aria-label={t('ariaLabels.clear')}>
@@ -320,7 +319,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
           {/* Scope menu anchored to input (left) */}
           {scopeOpen && !isBuyer && !isSeller && (
-            <div className='absolute start-2 xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-sm transition will-change-transform origin-top scale-100 opacity-100'>
+            <div className='absolute start-2 xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input transition will-change-transform origin-top scale-100 opacity-100'>
               {scopes.map((opt, i) => (
                 <button
                   key={opt.value}
