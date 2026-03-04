@@ -696,6 +696,27 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
   const searchParams = useSearchParams();
   const { isPending, toggleLocale } = useLangSwitcher();
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    const handleScreenChange = (e) => {
+      if (e.matches) {
+        // Screen is lg or larger
+        onClose();
+      }
+    };
+
+    // Run once in case already large
+    handleScreenChange(mediaQuery);
+
+    // Listen for changes
+    mediaQuery.addEventListener("change", handleScreenChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleScreenChange);
+    };
+  }, []);
+
   return (
     <AnimatePresence>
       {open && (
