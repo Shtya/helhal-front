@@ -295,12 +295,12 @@ export default function Header() {
 
         {/* Right: Actions */}
         <div className='flex-1 flex items-center gap-1 md:gap-1.5 lg:gap-2 shrink-0 justify-end'>
-          <div className={`${user ? "max-xl:order-0" : "max-xl:order-1"}  xl:flex-1 xl:flex justify-center items-center`}>
+          <div className={`${user ? "max-2xl:order-0" : "max-2xl:order-1"}  2xl:flex-1 2xl:flex justify-center items-center`}>
             <GlobalSearch isMobileNavOpen={isMobileNavOpen} />
           </div>
           {user ? (
             <>
-              <div className='max-lg:hidden '>
+              <div className='max-lg:hidden max-2xl:-order-1'>
                 <SmallLanguageSwitcher />
               </div>
               {/* <Link href='/chat' aria-label='Go to chat' className='shrink-0 relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 bg-white hover:bg-slate-50'>
@@ -701,16 +701,16 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
       {open && (
         <>
           {/* Overlay */}
-          <motion.button
+          {/* <motion.button
             type='button'
             onClick={onClose}
             className='fixed inset-0 z-30 lg:hidden bg-slate-900/60 backdrop-blur-[12px]'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-          />
+          /> */}
 
-          {/* Drawer Container */}
+          {/* Drawer Container - Fullscreen */}
           <motion.div
             role='dialog'
             aria-modal='true'
@@ -719,20 +719,20 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-            className='fixed inset-y-0 right-0 z-40 lg:hidden h-screen'
+            className='fixed inset-0 z-40 lg:hidden w-screen h-screen'
           >
             <motion.div
               drag='x'
               dragConstraints={{ left: -80, right: 0 }}
               dragElastic={0.04}
               onDragEnd={(_, info) => info.offset.x > 80 && onClose()}
-              className='h-full w-[min(92vw,520px)] overflow-y-auto border-l border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-2xl transition-colors'
+              className='h-full w-full overflow-y-auto bg-white dark:bg-dark-bg-input transition-colors'
             >
               {/* Header */}
               <div className='relative px-4 pt-4 pb-3'>
                 <div className='absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-main-50/20 dark:from-main-900/10 to-transparent pointer-events-none' />
                 <div className='relative flex items-center justify-between'>
-                  <span className='text-sm font-semibold text-slate-700 dark:text-dark-text-primary'>{tHeader('userMenu.menu')}</span>
+                  <span className='text-[15px] md:text-[16px] font-semibold text-slate-700 dark:text-dark-text-primary'>{tHeader('userMenu.menu')}</span>
                   <button onClick={onClose} className='inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-dark-bg-card transition-colors'>
                     <X className='h-5 w-5 text-slate-600 dark:text-dark-text-primary' />
                   </button>
@@ -800,7 +800,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                       key={c.label + fullChildHref}
                       href={fullChildHref}
                       onClick={onClose}
-                      className={`relative flex items-center gap-2 px-4 py-2 text-[15px] rounded-lg transition-colors 
+                      className={`relative flex items-center gap-2 px-4 py-2 text-[14px] md:text-[15px] rounded-lg transition-colors 
                         ${isChildActive
                           ? 'text-main-700 bg-main-50 dark:bg-main-900/20 dark:text-main-400 font-semibold'
                           : 'text-slate-700 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card'
@@ -831,7 +831,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                         key={index}
                         href={item.href}
                         onClick={onClose}
-                        className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors 
+                        className={`flex items-center gap-2 px-4 py-2 text-[14px] md:text-[15px] rounded-lg transition-colors 
                           ${isActive
                             ? 'text-main-700 bg-main-50 dark:bg-main-900/20 dark:text-main-400 font-semibold'
                             : 'text-slate-700 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card'
@@ -854,7 +854,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
                 <motion.button
                   onClick={toggleLocale}
                   disabled={isPending}
-                  className='flex items-center gap-2 w-full px-4 py-2 text-sm text-slate-700 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card rounded-lg transition-colors'
+                  className='flex items-center gap-2 w-full px-4 py-2 text-[14px] md:text-[15px] text-slate-700 dark:text-dark-text-primary hover:bg-slate-50 dark:hover:bg-dark-bg-card rounded-lg transition-colors'
                   whileTap={{ scale: 0.98 }}
                 >
                   <Globe2 size={16} className="text-slate-500 dark:text-dark-text-secondary" />
@@ -864,12 +864,12 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
 
               {/* Logout Button */}
               {user && (
-                <div className='px-2 pb-6'>
+                <div className='px-2 pb-6 max-xl:px-1 max-xl:pb-3'>
                   <motion.button
                     onClick={onLogout}
                     disabled={isLogoutLoading}
                     whileTap={{ scale: 0.98 }}
-                    className='flex items-center gap-2 w-full px-4 py-3 text-sm font-semibold rounded-lg transition-colors
+                    className='flex items-center gap-2 w-full px-4 py-2  text-[14px] md:text-[15px] font-semibold rounded-lg transition-colors
                       text-red-600 bg-red-50 hover:bg-red-100 
                       dark:text-red-400 dark:bg-red-500/10 dark:hover:bg-red-500/20 dark:border dark:border-red-500/20'
                   >
@@ -931,7 +931,7 @@ function MobileServicesMenu({ label, icon, topCategories, loadingTopCategories, 
     <div className='px-1'>
       <button
         onClick={() => setOpen(o => !o)}
-        className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-[16px] font-medium transition-all
+        className={`w-full flex items-center justify-between gap-2 px-4 py-2  rounded-lg text-[14px] md:text-[15px] font-medium transition-all
           ${open
             ? 'bg-main-50 text-main-700 ring-1 ring-main-200 dark:bg-main-900/20 dark:text-main-400 dark:ring-main-500/30'
             : 'text-slate-700 dark:text-dark-text-primary hover:bg-slate-100 dark:hover:bg-dark-bg-card'
@@ -1008,7 +1008,7 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
         <Link
           href={categoryLink}
           onClick={onClose}
-          className={`flex-1 px-3 py-2 rounded-lg text-[15px] transition-colors
+          className={`flex-1 px-4 py-2  rounded-lg text-[14px] md:text-[15px] transition-colors
             ${isActive
               ? 'bg-main-50/70 text-main-700 font-semibold dark:bg-main-900/10 dark:text-main-400'
               : 'text-slate-700 dark:text-dark-text-primary hover:bg-main-50 dark:hover:bg-dark-bg-card hover:text-main-700 dark:hover:text-main-400'
@@ -1047,7 +1047,7 @@ function MobileCategoryItem({ category, categoryName, children, hasChildren, get
                       <Link
                         href={subLink}
                         onClick={onClose}
-                        className={`block px-4 py-2 rounded-lg text-[14px] transition-colors
+                        className={`block px-4 py-2 rounded-lg text-[14px] md:text-[15px] transition-colors
                           ${isSubActive
                             ? 'text-main-700 dark:text-main-400 font-medium'
                             : 'text-slate-600 dark:text-dark-text-secondary hover:text-main-700 dark:hover:text-main-400 hover:bg-slate-50 dark:hover:bg-dark-bg-card'
@@ -1263,7 +1263,7 @@ export function ThemeToggle() {
     <motion.button
       onClick={toggleTheme}
       whileTap={{ scale: 0.96 }}
-      className='relative inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500'
+      className='relative inline-grid shrink-0 h-10 w-10 place-items-center rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500'
       aria-label='Toggle Theme'
     >
       {theme === 'light' ? (

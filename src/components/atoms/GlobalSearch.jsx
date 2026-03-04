@@ -245,12 +245,12 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
   return (
     <div className=''>
 
-      <button onClick={() => setMobileOpen(p => !p)} aria-label={t('ariaLabels.goToChat')} className='xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card'>
+      <button onClick={() => setMobileOpen(p => !p)} aria-label={t('ariaLabels.goToChat')} className='2xl:hidden relative inline-grid place-items-center h-10 w-10 rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card'>
         <Search className='h-5 w-5 text-slate-600 dark:text-dark-text-secondary' />
       </button>
-      <div ref={rootRef} className={`w-full xl:w-xs relative max-xl:z-[1] ${mobileOpen ? "max-xl:absolute" : "hidden"} top-16 md:top-[88px] left-0 right-0 max-xl:bg-white dark:max-xl:bg-dark-bg-input xl:top-auto xl:flex max-xl:shadow max-xl:pb-2 ${className}`}>
+      <div ref={rootRef} className={`w-full 2xl:w-xs relative max-2xl:z-[1] ${mobileOpen ? "max-2xl:absolute" : "hidden"} top-16 md:top-[88px] left-0 right-0 max-2xl:bg-white dark:max-2xl:bg-dark-bg-input 2xl:top-auto 2xl:flex max-2xl:shadow max-2xl:pb-2 ${className}`}>
         <div className='w-full relative' role='combobox' aria-haspopup='listbox' aria-expanded={open && !scopeOpen}>
-          <div className='flex min-h-[44px] items-center gap-2 xl:rounded-md xl:border-1 xl:border-main-300 shadow-xs xl:dark:border-dark-border bg-white/80 dark:bg-dark-bg-input backdrop-blur-3xl px-2 py-1.5 text-sm transition ' style={{ borderColor: open ? BRAND : undefined, boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
+          <div className='flex min-h-[44px] items-center gap-2 2xl:rounded-md 2xl:border-1 2xl:border-main-300 shadow-xs 2xl:dark:border-dark-border bg-white/80 dark:bg-dark-bg-input backdrop-blur-3xl px-2 py-1.5 text-sm transition ' style={{ borderColor: open ? BRAND : undefined, boxShadow: open ? `inset 0 0 0 3px ${BRAND}1f` : undefined }}>
 
             {(!isSeller && !isBuyer) && <button
               ref={scopeBtnRef}
@@ -261,16 +261,16 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
                   return next;
                 });
               }}
-              className='inline-flex items-center gap-1 max-xl:p-[10px] rounded-lg px-2 py-1 text-slate-700 dark:text-dark-text-secondary max-xl:bg-main-600 max-xl:text-white hover:xl:bg-slate-50 dark:hover:xl:bg-dark-bg-card border border-transparent max-xl:border-slate-200 hover:xl:border-slate-200 dark:hover:xl:border-dark-border'
+              className='inline-flex items-center gap-1 max-2xl:p-[10px] rounded-lg px-2 py-1 text-slate-700 dark:text-dark-text-secondary max-2xl:bg-main-600 max-2xl:text-white hover:2xl:bg-slate-50 dark:hover:2xl:bg-dark-bg-card border border-transparent max-2xl:border-slate-200 hover:2xl:border-slate-200 dark:hover:2xl:border-dark-border'
               aria-expanded={scopeOpen}>
               <span className='font-semibold'>{scope.label}</span>
               <ChevronDown className={`h-4 w-4 transition ${scopeOpen ? 'rotate-180' : ''}`} />
             </button>}
 
-            {(!isSeller && !isBuyer) && <span className='hidden xl:block h-5 w-px bg-slate-200 dark:bg-dark-border mx-1' />}
+            {(!isSeller && !isBuyer) && <span className='hidden 2xl:block h-5 w-px bg-slate-200 dark:bg-dark-border mx-1' />}
 
-            <div className='flex-1 max-xl:flex-1 flex items-center gap-2 max-xl:border-1 max-xl:bg-white/70 max-xl:rounded-md max-xl:border-main-300 max-xl:p-[10px]'>
-              <Search className='h-5 w-5 xl:h-4.5 xl:w-4.5 text-slate-500 dark:text-dark-text-secondary shrink-0' />
+            <div className='flex-1 max-2xl:flex-1 flex items-center gap-2 max-2xl:border-1 max-2xl:bg-white/70 max-2xl:rounded-md max-2xl:border-main-300 max-2xl:p-[10px]'>
+              <Search className='h-5 w-5 2xl:h-4.5 2xl:w-4.5 text-slate-500 dark:text-dark-text-secondary shrink-0' />
               <input
                 ref={inputRef}
                 value={q}
@@ -319,7 +319,7 @@ export default function GlobalSearch({ className = '', isMobileNavOpen }) {
 
           {/* Scope menu anchored to input (left) */}
           {scopeOpen && !isBuyer && !isSeller && (
-            <div className='absolute start-2 xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input transition will-change-transform origin-top scale-100 opacity-100'>
+            <div className='absolute start-2 2xl:start-0 z-50 mt-2 w-[220px] overflow-hidden rounded-md border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input transition will-change-transform origin-top scale-100 opacity-100'>
               {scopes.map((opt, i) => (
                 <button
                   key={opt.value}
