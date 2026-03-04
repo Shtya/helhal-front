@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { LoginSuccessAnimation } from "../page";
+import toast from "react-hot-toast";
 
 
 export default function SuccessPage() {
@@ -14,14 +15,14 @@ export default function SuccessPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const redirectUrl = searchParams?.get('redirect') || '/explore';
-    const { user: me, setCurrentUser, refetchUser, updateTokens } = useAuth();
+    const { refetchUser, updateTokens } = useAuth();
     const accessTokenFromUrl = searchParams?.get('accessToken');
     const refreshTokenFromUrl = searchParams?.get('refreshToken');
     // OAuth: if query has tokens, store them and fetch /auth/me
     useEffect(() => {
         const run = async () => {
             if (!accessTokenFromUrl || !refreshTokenFromUrl) {
-                router.push('/auth');
+                router.push('/auth?error=oauth_failed');
             }
             try {
 
