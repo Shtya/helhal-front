@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransition, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo, useTransition, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, usePathname, useRouter } from '@/i18n/navigation'; // if you don't use this alias, swap to next/navigation
 import { useLocale, useTranslations } from 'next-intl';
@@ -22,6 +22,7 @@ import { has } from '@/utils/permissions';
 import { PERMISSION_DOMAINS } from '@/constants/permissions';
 
 import { useTheme } from "next-themes";
+import { createPortal } from 'react-dom';
 /* =========================================================
    Animations
    ========================================================= */
@@ -348,10 +349,15 @@ export default function Header() {
       </div>
 
       {/* Mobile Navigation Drawer */}
-      <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />
+      {createPortal(
+        <MobileDrawer open={isMobileNavOpen} onClose={() => setIsMobileNavOpen(false)} user={user} navLinks={navLinks} navItems={navItems} pathname={pathname} onLogout={handleLogout} isLogoutLoading={isLogoutLoading} topCategories={topCategories} loadingTopCategories={loadingTopCategories} />,
+        document.body
+      )}
     </header>
   );
 }
+
+
 
 const MobileToggle = ({ toggleMobileNav, isMobileNavOpen }) => {
   return (
@@ -688,7 +694,7 @@ function DropdownPanel({ items = [] }) {
 /* =========================================================
    Mobile Drawer
    ========================================================= */
-function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLogout, isLogoutLoading, topCategories, loadingTopCategories }) {
+const MobileDrawer = memo(function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLogout, isLogoutLoading, topCategories, loadingTopCategories }) {
   const tHeader = useTranslations('Header');
   const role = (user?.role || 'member').toLowerCase();
   const { chip } = roleStyles[role] || roleStyles.member;
@@ -718,14 +724,14 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
   }, []);
 
   return (
-    <AnimatePresence>
+    <AnimatePresence >
       {open && (
         <>
           {/* Overlay */}
           {/* <motion.button
             type='button'
             onClick={onClose}
-            className='fixed inset-0 z-30 lg:hidden bg-slate-900/60 backdrop-blur-[12px]'
+            className='fixed inset-0 z-[99998] lg:hidden bg-slate-900/60 backdrop-blur-[12px]'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -740,7 +746,7 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: '100%', opacity: 0 }}
             transition={{ type: 'spring', stiffness: 280, damping: 26 }}
-            className='fixed inset-0 z-40 lg:hidden w-screen h-screen'
+            className='fixed inset-0 z-[99999] lg:hidden w-screen h-screen'
           >
             <motion.div
               drag='x'
@@ -903,10 +909,10 @@ function MobileDrawer({ open, onClose, user, navLinks, navItems, pathname, onLog
             </motion.div>
           </motion.div>
         </>
-      )}
-    </AnimatePresence>
-  );
-}
+      )
+      }
+    </AnimatePresence >)
+})
 
 function MobileCollapsible({ label, icon, children }) {
   const [open, setOpen] = useState(false);

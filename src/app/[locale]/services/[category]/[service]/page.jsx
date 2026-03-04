@@ -576,7 +576,7 @@ function HeaderPanel({ serviceData = {}, Img }) {
       </div>
 
       {/* Features */}
-      <div className='mt-5 flex gap-4 '>
+      <div className={`mt-5 flex gap-4 ${features?.lenngth === 1 ? "grid grid-cols-1" : "grid grid-cols-1 lg:grid-cols-2"}`}>
         {features.map(f => (
           <div key={f.title} className={`flex-1 group relative rounded-xl border ${f.border} bg-[#f9fbfd] p-5  transition-shadow hover:shadow-md dark:bg-dark-bg-input dark:border-dark-border`}>
             <div className='flex items-start gap-3'>
