@@ -216,15 +216,30 @@ function Hero() {
       {/* CHANGE: Changed min-h to allow growth and added pb-24 to clear the curve */}
       <div className='relative min-h-[85svh] md:min-h-[76vh] flex flex-col justify-center '>
         {/* 1. Remove -z-10 and use z-0. Ensure object-cover is still there */}
-        <Image
-          priority
-          loading='eager'
-          src='/images/hero-background.jpg'
-          alt={t('hero.alt')}
-          fill
-          className='hero-image object-cover object-center z-0'
-        />
+        <div className="absolute inset-0">
+          <picture>
+            {/* Desktop */}
+            <source
+              media="(min-width: 1280px)"
+              srcSet="/images/desktop.png"
+            />
 
+            {/* Tablet */}
+            <source
+              media="(min-width: 768px)"
+              srcSet="/images/tablet.png"
+            />
+
+            {/* Mobile (default fallback) */}
+            <img
+              src="/images/mobile.jpg"
+              alt={t('hero.alt')}
+              priority
+              loading='eager'
+              className="w-full h-full object-cover object-center"
+            />
+          </picture>
+        </div>
         {/* 2. The Overlay - Set to z-10 so it sits on the image but under the text */}
         <div className='absolute inset-0 bg-gradient-to-b from-black/60 via-main-900/35 to-black/60 dark:from-black/70 dark:via-main-900/40 dark:to-black/80 z-10' />
 
@@ -240,10 +255,10 @@ function Hero() {
 
             {/* Title + Subtitle */}
             <div className='space-y-3'>
-              <h1 className='text-3xl sm:text-4xl md:text-6xl font-extrabold leading-[1.2] md:leading-[1.1] drop-shadow-lg'>
+              <h1 className='text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.2] md:leading-[1.1] drop-shadow-lg'>
                 {t('hero.title')}
               </h1>
-              <p className='text-main-50/95 text-sm sm:text-lg md:text-xl max-w-xl mx-auto md:mx-0 leading-relaxed'>
+              <p className='text-main-50/95 text-sm md:text-lg lg:text-xl max-w-xl mx-auto md:mx-0 leading-relaxed'>
                 {t('hero.subtitle')}
               </p>
             </div>
