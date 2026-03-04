@@ -21,7 +21,7 @@ import PhoneInputWithCountry from '@/components/atoms/PhoneInputWithCountry';
 import Logo from '@/components/common/Logo';
 import Image from 'next/image';
 import { CheckCircle2 } from 'lucide-react';
-const LoginSuccessAnimation = ({ message, onComplete }) => {
+const LoginSuccessAnimation = ({ message, onComplete, rapid = false }) => {
   const t = useTranslations('Auth');
 
   // useEffect(() => {
@@ -32,11 +32,17 @@ const LoginSuccessAnimation = ({ message, onComplete }) => {
   //   return () => clearTimeout(timer);
   // }, [onComplete]);
 
+  const entry = {
+    duration: rapid ? 0.1 : 0.5,
+    delay: (d) => (rapid ? 0 : d),
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: entry.duration }}
       className="fixed inset-0 h-screen w-screen z-[9999] flex items-center justify-center bg-white dark:bg-dark-bg-base"
     >
       <motion.div
@@ -678,8 +684,7 @@ export default function AuthPage() {
   const tabParam = searchParams?.get('tab') || 'login';
   const loginError = searchParams?.get('error');
   const errorMessage = searchParams?.get('error_message');
-  const accessTokenFromUrl = searchParams?.get('accessToken');
-  const refreshTokenFromUrl = searchParams?.get('refreshToken');
+
   const redirectUrl = searchParams?.get('redirect') || '/explore';
   const referralCode = searchParams?.get('ref');
 
@@ -726,45 +731,7 @@ export default function AuthPage() {
 
   }, [t, router, loginError])
 
-  // OAuth: if query has tokens, store them and fetch /auth/me
-  useEffect(() => {
-    const run = async () => {
-      if (!accessTokenFromUrl) return;
-      try {
 
-        updateTokens({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl });
-        const fatchedUser = await refetchUser();
-
-        //set login data at cookie
-        await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ accessToken: accessTokenFromUrl, refreshToken: refreshTokenFromUrl, user: fatchedUser }),
-        });
-        if (!fatchedUser?.type) {
-          setNeedsUserTypeSelection(true);
-        } else {
-          // Show success animation instead of toast
-          setSuccessMessage(t('success.loggedInSuccessfully'));
-          setShowSuccessAnimation(true);
-
-          setTimeout(() => {
-            // setShowSuccessAnimation(false);
-            if (fatchedUser.role === 'seller') {
-              router.push('/jobs');
-            } else {
-              router.push(redirectUrl);
-            }
-          }, 1000);
-
-        }
-      } catch (e) {
-        console.error('OAuth finalize failed', e);
-        toast.error(t('errors.failedToCompleteLogin'));
-      }
-    };
-    run();
-  }, [accessTokenFromUrl, refreshTokenFromUrl, router, redirectUrl]);
 
   const handleUserTypeSelect = async userType => {
     setLoading(true);
