@@ -218,24 +218,23 @@ function Hero() {
         {/* 1. Remove -z-10 and use z-0. Ensure object-cover is still there */}
         <div className="absolute inset-0">
           <picture>
-            {/* Desktop */}
+            {/* Mobile */}
             <source
-              media="(min-width: 1280px)"
-              srcSet="/images/desktop.png"
+              media="(max-width: 1024px)"
+              srcSet="/images/mobile.jpg"
             />
 
             {/* Tablet */}
             <source
-              media="(min-width: 768px)"
+              media="(max-width: 1279px)"
               srcSet="/images/tablet.png"
             />
 
-            {/* Mobile (default fallback) */}
+            {/* Desktop (default fallback) */}
             <img
-              src="/images/mobile.jpg"
+              src="/images/desktop.png"
               alt={t('hero.alt')}
-              priority
-              loading='eager'
+              loading="eager"
               className="w-full h-full object-cover object-center"
             />
           </picture>
