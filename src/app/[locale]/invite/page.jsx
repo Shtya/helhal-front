@@ -268,6 +268,7 @@ export default function Invite() {
               cnLabel='text-base md:text-lg dark:text-dark-text-primary'
               placeholder='https://…'
               actionIcon='/icons/copy.svg'
+              readonly={true}
               onAction={handleCopy}
               value={link}
               onChange={setLink}
