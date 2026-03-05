@@ -262,7 +262,7 @@ export default memo(function AmazingServiceCard({
           </div>
         </Link>
 
-        <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' />
+        <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' redirect={window.location.pathname} />
       </motion.article>
     </div>
   );

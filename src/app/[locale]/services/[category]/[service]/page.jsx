@@ -1544,7 +1544,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
             <>
               <div className='mb-4 flex items-start justify-between'>
                 <h3 className='text-lg font-semibold text-slate-900 dark:text-dark-text-primary'>{selectedPackage.name}</h3>
-                <FavoriteButton serviceId={serviceData?.id} packageType={selectedPackage.name} />
+                <FavoriteButton serviceId={serviceData?.id} packageType={selectedPackage.name} redirect={window.location.pathname} />
               </div>
 
               <div className='mb-3 flex items-center justify-between'>

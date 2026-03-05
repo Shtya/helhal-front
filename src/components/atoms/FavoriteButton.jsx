@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
-export default function FavoriteButton({ className = '', serviceId, syncWithCart = true, onAdded, onRemoved }) {
+export default function FavoriteButton({ className = '', serviceId, syncWithCart = true, onAdded, onRemoved, redirect = '' }) {
   const { cart, setCart } = useValues();
   const { user } = useAuth()
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function FavoriteButton({ className = '', serviceId, syncWithCart
   const toggleFavorite = async () => {
 
     if (!user) {
-      router.push('/auth?tab=login');
+      router.push(`/auth?tab=login&redirect=${redirect}`);
       return;
     }
 
