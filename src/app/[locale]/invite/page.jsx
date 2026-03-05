@@ -87,7 +87,8 @@ export default function Invite() {
 
   const inviteBodyResolved = useMemo(() => {
     const base = message.replace('{link}', link).trim();
-    const withName = senderName ? `${base}\n\n— ${senderName}` : base;
+    // const withName = senderName ? `${base}\n\n— ${senderName}` : base;
+    const withName = base;
     return withName;
   }, [message, link, senderName]);
 
@@ -110,8 +111,8 @@ export default function Invite() {
 
   const shareLinks = useMemo(
     () => ({
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(link)}&title=${encodeURIComponent(subject)}&summary${encodeURIComponent(inviteBodyResolved)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}&quote=${encodeURIComponent(subject)}&hashtag=%23Helhal`,
       pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(link)}&description=${encodeURIComponent(subject)}`,
       twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(link)}&text=${encodeURIComponent(subject)}&hashtags=Helhal,Freelance`,
       gmail: gmailHref,
@@ -325,6 +326,8 @@ export default function Invite() {
           <IconLink href={shareLinks.linkedin} src='/social/linkedin.png' alt='LinkedIn' className="dark:brightness-90 hover:dark:brightness-110" />
           <IconLink href={shareLinks.gmail} src='/social/google.png' alt='Gmail' />
           <IconLink href={shareLinks.twitter} src='/social/twitter.png' alt='twitter' className="dark:invert" />
+          <IconLink href={shareLinks.facebook} src='/social/facebook.png' alt='Facebook' />
+
           {/* ... other social links */}
         </div>
       </div>

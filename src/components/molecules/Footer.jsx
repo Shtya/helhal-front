@@ -259,7 +259,7 @@ export function Footer() {
                   // After load, only show if link exists
                   if (!item.href) return null;
                   return (
-                    <Link key={item.name} href={item.href} aria-label={item.name}>
+                    < a target='_blank' key={item.name} href={item.href} aria-label={item.name}>
                       <Image
                         src={item.icon}
                         loader={localImageLoader}
@@ -268,7 +268,7 @@ export function Footer() {
                         height={36}
                         className="transition-transform hover:-translate-y-0.5 hover:opacity-90"
                       />
-                    </Link>
+                    </a>
                   );
                 })}
               </div>
