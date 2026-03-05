@@ -501,7 +501,7 @@ function ServicesMegaMenu({ label, icon, active, topCategories, loadingTopCatego
         {open && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: -1 }}
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.2 }}
             className={`z-[100] absolute start-0 mt-1 max-w-[calc(100vw-2rem)] w-[95vw] md:w-[700px] lg:w-[max(800px,70vw)] xl:w-[max(1000px,70vw)] border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-xl rounded-xl overflow-hidden ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
@@ -641,7 +641,10 @@ export function DropdownItem({ label, icon, active, children }) {
         <motion.span layoutId='nav-underline' className={`absolute left-3 right-3 -bottom-0.5 h-0.5 rounded-full ${active || open ? 'bg-main-600' : 'bg-transparent'}`} transition={springy} />
       </button>
 
-      <motion.div initial={{ opacity: 0, y: 6, scale: 0.98 }} animate={open ? { opacity: 1, y: 8, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }} transition={{ duration: 0.16 }} className={`z-[2] absolute start-0 w-[240px] rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+      <motion.div
+        initial={{ opacity: 0, y: 6, scale: 0.98 }}
+        animate={open ? { opacity: 1, y: 3, scale: 1 } : { opacity: 0, y: 6, scale: 0.98 }}
+        transition={{ duration: 0.16 }} className={`z-[2] absolute start-0 w-[240px] rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input shadow-xl ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}>
         {children}
       </motion.div>
     </div>
