@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { motion } from 'framer-motion';
 import Button from '@/components/atoms/Button';
 import FavoriteButton from '@/components/atoms/FavoriteButton';
@@ -68,6 +68,7 @@ export default memo(function AmazingServiceCard({
   index = 0,
   loading = false, // <-- NEW
 }) {
+  const pathname = usePathname()
   const t = useTranslations('Explore');
   const locale = useLocale();
   const cover = service?.cover || service?.gallery?.[0]?.url || service?.category?.image || '/icons/file.png';
@@ -262,7 +263,7 @@ export default memo(function AmazingServiceCard({
           </div>
         </Link>
 
-        <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' redirect={window.location.pathname} />
+        <FavoriteButton serviceId={service.id} className='absolute top-3 right-3 z-[2]' redirect={pathname} />
       </motion.article>
     </div>
   );

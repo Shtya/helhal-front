@@ -14,7 +14,7 @@ import Img from '@/components/atoms/Img';
 import FAQSection from '@/components/common/Faqs';
 import api, { baseImg } from '@/lib/axios';
 import { getInitials } from '@/components/molecules/Header';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import ReactPlayer from 'react-player';
 import AttachmentList from '@/components/common/AttachmentList';
 import { useAuth } from '@/context/AuthContext';
@@ -97,6 +97,7 @@ const scrollToRequirement = id => {
 export default function ServiceDetailsPage({ params }) {
   const t = useTranslations('ServiceDetails'); // Add this
   const { service } = use(params);
+  const pathname = usePathname()
   const { user, role } = useAuth()
   const [serviceData, setServiceData] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
@@ -205,8 +206,8 @@ export default function ServiceDetailsPage({ params }) {
 
   const handleCompleteOrder = async (notes) => {
     if (!user) {
-      const link = window.location.pathname;
-      router.push(`/auth?tab=login&redirect=${link}`);
+
+      router.push(`/auth?tab=login&redirect=${pathname}`);
       return;
     }
     if (!serviceData || !selectedPackage || !canOrder) return;
@@ -1523,6 +1524,7 @@ function AboutSeller({ serviceData }) {
 
 function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrderOptions }) {
   const t = useTranslations('ServiceDetails');
+  const pathname = usePathname()
   const { user } = useAuth();
   const [showAllFeatures, setShowAllFeatures] = useState(false);
   const features = Array.isArray(selectedPackage?.features) ? selectedPackage.features : [];
@@ -1545,7 +1547,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
             <>
               <div className='mb-4 flex items-start justify-between'>
                 <h3 className='text-lg font-semibold text-slate-900 dark:text-dark-text-primary'>{selectedPackage.name}</h3>
-                <FavoriteButton serviceId={serviceData?.id} packageType={selectedPackage.name} redirect={window.location.pathname} />
+                <FavoriteButton serviceId={serviceData?.id} packageType={selectedPackage.name} redirect={pathname} />
               </div>
 
               <div className='mb-3 flex items-center justify-between'>
@@ -1600,7 +1602,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
 
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
-                <Button href={!canOrder ? `/auth?tab=login&redirect=${window.location.pathname}` : null} name={t('sidebar.continue')} className='flex-1' onClick={onTryOpenOrderOptions} />
+                <Button href={!canOrder ? `/auth?tab=login&redirect=${pathname}` : null} name={t('sidebar.continue')} className='flex-1' onClick={onTryOpenOrderOptions} />
                 {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-main-500 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary dark:hover:bg-dark-bg-card'>
                   <MessageCircle size={18} className='' />
                 </Link>}
