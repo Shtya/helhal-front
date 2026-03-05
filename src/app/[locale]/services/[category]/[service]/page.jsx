@@ -186,7 +186,7 @@ export default function ServiceDetailsPage({ params }) {
   const tryOpenOrderOptions = () => {
     if (!canOrder) return;
     if (!user) {
-      router.push('/auth?tab=login');
+      router.push('');
       return;
     }
     const firstInvalidId = getFirstInvalidRequirementId(serviceData?.requirements, requirementAnswers);
@@ -205,7 +205,8 @@ export default function ServiceDetailsPage({ params }) {
 
   const handleCompleteOrder = async (notes) => {
     if (!user) {
-      router.push('/auth?tab=login');
+      const link = window.location.pathname;
+      router.push(`/auth?tab=login&redirect=${link}`);
       return;
     }
     if (!serviceData || !selectedPackage || !canOrder) return;
@@ -1599,7 +1600,7 @@ function PurchaseSidebar({ canOrder, selectedPackage, serviceData, onTryOpenOrde
 
               <div className='flex items-center gap-2'>
                 {/* NEW: gate opening */}
-                <Button href={!canOrder ? "/auth?tab=ligin" : null} name={t('sidebar.continue')} className='flex-1' onClick={onTryOpenOrderOptions} />
+                <Button href={!canOrder ? `/auth?tab=login&redirect=${window.location.pathname}` : null} name={t('sidebar.continue')} className='flex-1' onClick={onTryOpenOrderOptions} />
                 {user && serviceData.seller.id !== user.id && <Link href={`/chat?userId=${serviceData?.seller?.id}`} aria-label={t('sidebar.chatWithSeller')} className='inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 shadow-custom  hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-main-500 dark:border-dark-border dark:bg-dark-bg-input dark:text-dark-text-primary dark:hover:bg-dark-bg-card'>
                   <MessageCircle size={18} className='' />
                 </Link>}
