@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { notificationService } from '@/services/notificationService';
 import { toast } from 'react-hot-toast';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { getLink } from '@/components/common/NotificationPopup';
 import { MoveRight } from 'lucide-react';
 import NoResults from '@/components/common/NoResults';
@@ -80,7 +80,21 @@ const NotificationsPage = () => {
     markOneAsRead,
     markAllAsRead
   } = useNotifications(); // << use the new context
+  const router = useRouter();
 
+  const handleNotificationClick = (notification) => {
+    if (!notification.isRead) {
+      markOneAsRead(notification.id); // optimistic
+    }
+
+    const link = getLink(
+      notification.relatedEntityType,
+      notification.relatedEntityId,
+      notification.type
+    );
+
+    if (link) router.push(link);
+  };
 
   const notificationsApiRef = useRef(null)
   const loadNotifications = useCallback(async () => {
@@ -232,54 +246,49 @@ const NotificationsPage = () => {
         <div className='bg-white dark:bg-dark-bg-card shadow-sm rounded-lg overflow-hidden'>
           <div className='divide-y divide-gray-200 dark:divide-dark-border'>
             {pageNotifications.map(notification => {
-              const { Icon, color } = getNotificationConfig(notification.type, notification.relatedEntityType);
+              const { Icon, color } = getNotificationConfig(
+                notification.type,
+                notification.relatedEntityType
+              );
 
               return (
                 <div
                   key={notification.id}
                   data-notification-id={notification.id}
-                  className={`p-4 hover:bg-gray-50 dark:hover:bg-dark-bg-input transition-colors ${!notification.isRead ? 'bg-blue-50 dark:bg-main-900/10' : ''}`}
+                  onClick={() => handleNotificationClick(notification)}
+                  className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-bg-input transition-colors ${!notification.isRead ? "bg-blue-50 dark:bg-main-900/10" : ""
+                    }`}
                 >
-                  <div className='flex gap-4'>
-                    {/* 1. THE ICON COLUMN - Fixed scope */}
+                  <div className="flex gap-4">
+
+                    {/* Icon */}
                     <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${color}`}>
-                      <Icon className='w-5 h-5' aria-hidden="true" />
+                      <Icon className="w-5 h-5" aria-hidden="true" />
                     </div>
 
-                    {/* 2. THE CONTENT COLUMN */}
-                    <div className='flex-1 min-w-0'>
-                      <div className='flex flex-col xs:flex-row items-start justify-between'>
-                        <h3 className='text-sm font-medium text-gray-900 dark:text-dark-text-primary'>{notification.title}</h3>
-                        <span className='text-xs text-gray-500 whitespace-nowrap xs:ml-2 dark:text-dark-text-secondary'>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+
+                      <div className="flex flex-col xs:flex-row items-start justify-between">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-dark-text-primary">
+                          {notification.title}
+                        </h3>
+
+                        <span className="text-xs text-gray-500 whitespace-nowrap xs:ml-2 dark:text-dark-text-secondary">
                           {formatDate(notification.created_at)}
                         </span>
                       </div>
 
-                      <p className='text-sm text-gray-600 mt-2 dark:text-dark-text-secondary'>{notification.message}</p>
+                      <p className="text-sm text-gray-600 mt-2 dark:text-dark-text-secondary">
+                        {notification.message}
+                      </p>
 
-                      {/* Actions: Link and Mark as Read */}
-                      <div className='flex items-center justify-between mt-3'>
-                        {getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type) && (
-                          <Link
-                            href={getLink(notification.relatedEntityType, notification.relatedEntityId, notification.type)}
-                            className='inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all shadow-sm dark:text-main-400 dark:bg-main-900/20 dark:hover:bg-main-900/30'
-                          >
-                            <span className='text-xs'>
-                              {notification.relatedEntityType === 'proposal' ? t('viewProposal') : t('viewOrder')}
-                            </span>
-                            <MoveRight size={16} />
-                          </Link>
-                        )}
+                      {!notification.isRead && (
+                        <div className="mt-3 text-xs text-blue-600 dark:text-main-400 font-medium">
+                          {t("new")}
+                        </div>
+                      )}
 
-                        {!notification.isRead && (
-                          <button
-                            onClick={() => markOneAsRead(notification.id)}
-                            className='text-xs text-blue-600 hover:text-blue-800 font-medium dark:text-main-400 dark:hover:text-main-300'
-                          >
-                            {t('markAsRead')}
-                          </button>
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>

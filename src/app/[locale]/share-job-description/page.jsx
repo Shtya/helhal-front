@@ -511,7 +511,10 @@ function StepBreadcrumbs({
         <li className="flex items-center">
           <button
             onClick={onReset}
-            className="inline-flex items-center -ml-1.5 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-dark-bg-input transition"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg
+               text-red-600 dark:text-red-400
+               hover:bg-red-50 dark:hover:bg-red-900/20
+               transition-colors"
             title="Reset"
           >
             <svg

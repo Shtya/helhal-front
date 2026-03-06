@@ -198,10 +198,20 @@ export default function Chatbot({ personalData = null }) {
             animate="show"
             exit="hidden"
             variants={fadeIn}
-            className={`fixed bottom-3 ltr:left-3 rtl:right-3 sm:bottom-6 sm:ltr:left-6 sm:rtl:right-6 z-50 bg-white dark:bg-dark-bg-card rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all border border-transparent dark:border-dark-border ${isMinimized
-              ? 'w-[300px] h-[60px]'
-              : 'w-[400px] max-w-[calc(100vw-2rem)] h-[600px] max-h-[calc(100vh-2rem)] sm:w-[400px] sm:h-[600px]'
-              }`}
+            className={`
+        fixed z-50
+        bg-white dark:bg-dark-bg-card
+        flex flex-col overflow-hidden
+        border border-transparent dark:border-dark-border
+        transition-all
+sm:w-[400px] sm:h-[600px]
+        ${isMinimized
+                ? // minimized: bottom center, rounded, shadow, max width 300, height 60 (all screens)
+                'ltr:left-3 rtl:right-3 bottom-6 transform w-[calc(100%-2rem)] max-w-[300px] h-[60px]! rounded-2xl shadow-lg'
+                : // expanded: fullscreen on mobile, popup on desktop
+                'inset-0 sm:bottom-6 sm:ltr:left-6 sm:rtl:right-6 sm:inset-auto w-full h-full  sm:rounded-2xl sm:shadow-2xl max-sm:border-none!'
+              }
+      `}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-main-500 to-main-600 text-white px-5 py-3 flex items-center justify-between shrink-0">

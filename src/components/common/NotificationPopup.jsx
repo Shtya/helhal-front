@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import { useDropdownPosition } from '@/hooks/useDropdownPosition';
 import { useNotifications } from '@/context/NotificationContext';
 import api from '@/lib/axios';
@@ -23,7 +23,7 @@ export const getLink = (relatedEntityType, relatedEntityId, subType) => {
       return `/my-orders?orderId=${relatedEntityId}`; // Order link (adjust this route as necessary)
   }
   else if (relatedEntityType === 'transaction') {
-    return `/my-billing?tab=transactions`;
+    return `/my-billing?tab=billing-history`;
   }
   else {
     return null; // Return null if no matching type is found
@@ -61,6 +61,7 @@ const relTime = iso => {
 const NotificationPopup = ({ admin = false }) => {
   const t = useTranslations('MyOrders.modals.notifications');
   const [open, setOpen] = useState(false);
+  const router = useRouter()
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const [meta, setMeta] = useState({ total_records: 0, per_page: 10, current_page: 1 });
@@ -158,6 +159,17 @@ const NotificationPopup = ({ admin = false }) => {
 
   const goToTarget = n => (n.relatedEntityType === 'order' ? `/my-orders/${n.relatedEntityId}` : '/notifications');
 
+  const handleNotificationClick = async (n) => {
+    if (!n.isRead) {
+      await markOneAsRead(n.id);
+    }
+
+    const link = getLink(n.relatedEntityType, n.relatedEntityId, n.type);
+    if (link) {
+      router.push(link);
+    }
+  };
+
   return (
     <div className='' ref={btnRef}>
       <motion.button onClick={() => setOpen(v => !v)} className='relative inline-grid h-10 w-10 place-items-center rounded-xl border border-slate-200 dark:border-dark-border bg-white dark:bg-dark-bg-input hover:bg-slate-50 dark:hover:bg-dark-bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-main-500' whileTap={{ scale: 0.96 }} aria-label='Notifications'>
@@ -195,65 +207,55 @@ const NotificationPopup = ({ admin = false }) => {
                   <div className='text-sm'>{t('allCaughtUp')}</div>
                 </div>
               ) : (
-                notifications.map(n => {
+                notifications.map((n) => {
                   const { Icon, color } = getNotificationConfig(n.type, n.relatedEntityType);
-                  return (<div
-                    key={n.id}
-                    data-notification-id={`${n.id}`}
-                    className={`px-4 py-3 hover:bg-slate-50 dark:hover:bg-dark-bg-card transition ${!n.isRead ? 'bg-main-50/30 dark:bg-main-900/20' : ''}`}
-                  >
-                    <div className="flex items-start gap-3">
 
-                      {/* icon */}
-                      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${color}`}>
-                        <Icon className='w-5 h-5' aria-hidden="true" />
-                      </div>
+                  return (
+                    <div
+                      key={n.id}
+                      data-notification-id={`${n.id}`}
+                      onClick={() => handleNotificationClick(n)}
+                      className={`px-4 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-dark-bg-card transition ${!n.isRead ? "bg-main-50/30 dark:bg-main-900/20" : ""
+                        }`}
+                    >
+                      <div className="flex items-start gap-3">
 
+                        {/* icon */}
+                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${color}`}>
+                          <Icon className="w-5 h-5" aria-hidden="true" />
+                        </div>
 
-                      <div className="min-w-0 flex-1">
+                        <div className="min-w-0 flex-1">
 
-                        {/* Title + timestamp + View link */}
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="truncate text-sm font-medium text-slate-900 dark:text-dark-text-primary">{n.title}</div>
+                          {/* Title + timestamp */}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="truncate text-sm font-medium text-slate-900 dark:text-dark-text-primary">
+                              {n.title}
+                            </div>
 
-                          <div className="flex items-center gap-3 shrink-0">
-                            {getLink(n.relatedEntityType, n.relatedEntityId, n.type) && (
-                              <Link
-                                href={getLink(n.relatedEntityType, n.relatedEntityId, n.type)}
-                                className="text-[11px] text-blue-600 hover:text-blue-700 font-medium"
-                              >
-                                {t('view')}
-                              </Link>
-                            )}
-                            <div className="text-[11px] text-slate-500 dark:text-dark-text-secondary">{relTime(n.created_at)}</div>
+                            <div className="text-[11px] text-slate-500 dark:text-dark-text-secondary shrink-0">
+                              {relTime(n.created_at)}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Message */}
-                        <div className="mt-0.5 line-clamp-2 text-sm text-slate-600 dark:text-dark-text-secondary">
-                          {n.message}
-                        </div>
+                          {/* Message */}
+                          <div className="mt-0.5 line-clamp-2 text-sm text-slate-600 dark:text-dark-text-secondary">
+                            {n.message}
+                          </div>
 
-                        {/* Bottom actions */}
-                        <div className="mt-2 flex items-center gap-2">
+                          {/* Bottom badge */}
                           {!n.isRead && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-main-100 px-2 py-0.5 text-[11px] font-medium text-main-800">
-                              {t('new')} <ChevronRight className="h-3 w-3" />
-                            </span>
+                            <div className="mt-2">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-main-100 px-2 py-0.5 text-[11px] font-medium text-main-800">
+                                {t("new")} <ChevronRight className="h-3 w-3" />
+                              </span>
+                            </div>
                           )}
 
-                          {!n.isRead && (
-                            <button
-                              onClick={() => markOneAsRead(n.id)}
-                              className="text-[11px] text-slate-600 dark:text-dark-text-secondary hover:text-slate-900 dark:hover:text-dark-text-primary underline-offset-2 hover:underline"
-                            >
-                              {t('markAsRead')}
-                            </button>
-                          )}
                         </div>
                       </div>
                     </div>
-                  </div>)
+                  );
                 }))
 
               }

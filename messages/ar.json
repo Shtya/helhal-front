@@ -2567,7 +2567,8 @@
       "viewProposal": "عرض العرض",
       "viewOrder": "عرض الطلب",
       "markAsRead": "وضع علامة مقروءة",
-      "failedToLoad": "فشل تحميل الإشعارات"
+      "failedToLoad": "فشل تحميل الإشعارات",
+      "new": "جديد"
     }
   },
   "Payment": {

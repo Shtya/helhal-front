@@ -2570,7 +2570,8 @@
       "viewProposal": "View Proposal",
       "viewOrder": "View Order",
       "markAsRead": "Mark as read",
-      "failedToLoad": "Failed to load notifications"
+      "failedToLoad": "Failed to load notifications",
+      "new": "New"
     }
   },
   "Payment": {
